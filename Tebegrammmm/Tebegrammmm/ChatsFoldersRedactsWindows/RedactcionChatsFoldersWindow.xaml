@@ -1,0 +1,43 @@
+﻿<Window x:Class="Tebegrammmm.ChatsFoldersRedactsWindows.RedactcionChatsFoldersWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Tebegrammmm.ChatsFoldersRedactsWindows"
+        mc:Ignorable="d"
+        Title="Папки" Height="500" Width="400" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <ScrollViewer Margin="10">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition Height="50"/>
+                </Grid.RowDefinitions>
+                <StackPanel>
+                    <TextBlock Text="Мои Папки" Foreground="#0077fa" FontSize="20"/>
+                    <ListBox Name="LBChatsFolders" SelectionChanged="LBChatsFolders_SelectionChanged">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="50"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Text="{Binding Icon}" Foreground="#0077fa" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Grid.RowSpan="2" />
+                                    <TextBlock Text="{Binding FolderName}" FontSize="15" Grid.Column="1"/>
+                                    <TextBlock Text="{Binding ChatsCount, StringFormat='Чатов: {0}'}" FontSize="12" Foreground="Gray" Grid.Column="1" Grid.Row="1"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <Button Height="35" Background="Transparent" Content="Добавить новую папку" FontSize="20" Foreground="#0077fa" Click="Button_Click"/>
+                </StackPanel>
+                <Button Grid.Row="1" Height="30" Width="100" Content="Закончить" Click="Button_Click_1"/>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</Window>

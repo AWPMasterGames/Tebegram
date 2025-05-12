@@ -1,0 +1,52 @@
+﻿<Window x:Class="Tebegrammmm.AddContact"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Tebegrammmm"
+        mc:Ignorable="d"
+        Title="Контакт" Height="350" Width="400" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock x:Name="TBTitle" Text="Добавить контакт" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1"/>
+        <Grid Grid.Column="1" Grid.Row="1" Margin="0,10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="Имя" Margin="10,0" Foreground="Gray" VerticalAlignment="Bottom"/>
+            <TextBox x:Name="TBName" Text="" FontSize="20" Grid.Row="1"/>
+        </Grid>
+        <Grid Grid.Column="1" Grid.Row="2" Margin="0,10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="IP Adress" Margin="10,0" Foreground="Gray" VerticalAlignment="Bottom"/>
+            <TextBox x:Name="TBIPAdress" Text="" FontSize="20" Grid.Row="1"/>
+        </Grid>
+        <Grid Grid.Column="1" Grid.Row="3" Margin="0,10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="Port" Margin="10,0" Foreground="Gray" VerticalAlignment="Bottom"/>
+            <TextBox x:Name="TBPort" FontSize="20" Grid.Row="1"/>
+        </Grid>
+        <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button Content="Добавить" Height="25" Width="100" Margin="10" Click="Button_Click_1"/>
+            <Button Content="Отмена" Height="25" Width="75" Margin="10" Click="Button_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>
