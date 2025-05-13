@@ -57,7 +57,7 @@ namespace Tebegrammmm
             IsRunning = true;
         }
 
-        private void LBChatsLoders_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void LBChatsLoders_SelectionChangeFolder(object sender, SelectionChangedEventArgs e)
         {
             if (LBChatsLoders.SelectedItem == null)
             {
@@ -65,7 +65,7 @@ namespace Tebegrammmm
             }
             LBChats.ItemsSource = (LBChatsLoders.SelectedItem as ChatFolder).Contacts;
         }
-        private void LBChats_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void LBChats_SelectionChangedChat(object sender, SelectionChangedEventArgs e)
         {
             if (LBChats.SelectedItem == null)
             {
@@ -162,7 +162,7 @@ namespace Tebegrammmm
             TBMessage.Text = string.Empty;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void Button_Click_SendMessage(object sender, RoutedEventArgs e)
         {
             if (LBChats.SelectedItem == null)
             {
@@ -171,7 +171,7 @@ namespace Tebegrammmm
             SendMessage(TBMessage.Text);
             TBMessage.Focus();
         }
-        private void TBMessage_KeyDown(object sender, KeyEventArgs e)
+        private void TBMessage_KeyDown_SendMessage(object sender, KeyEventArgs e)
         {
             if (LBChats.SelectedItem == null)
             {
@@ -183,7 +183,7 @@ namespace Tebegrammmm
             }
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void Button_Click_AddContact(object sender, RoutedEventArgs e)
         {
             Contact newContact = new Contact();
             AddContact addContact = new AddContact(newContact, "Добавить контакт");
@@ -210,7 +210,7 @@ namespace Tebegrammmm
             }
         }
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
+        private void Button_Click_ContactRedact(object sender, RoutedEventArgs e)
         {
             if (LBChats.SelectedItem == null)
             {
@@ -234,7 +234,7 @@ namespace Tebegrammmm
             Process.GetCurrentProcess().Kill();
         }
 
-        private void Button_Click_3(object sender, RoutedEventArgs e)
+        private void Button_Click_FoldersMenu(object sender, RoutedEventArgs e)
         {
             RedactcionChatsFoldersWindow RCFW = new RedactcionChatsFoldersWindow(User.ChatsFolders);
             RCFW.ShowDialog();
@@ -267,14 +267,14 @@ namespace Tebegrammmm
             this.Dispatcher.Invoke(new Action(() => { SendMessage(Path.GetFileName(filePath),MessageType.File); }));
             MessageBox.Show(ResponseText);
         }
-        private void Button_Click_4(object sender, RoutedEventArgs e)
+        private void Button_Click_SelectFile(object sender, RoutedEventArgs e)
         {
             OpenFileDialog fileDialog = new OpenFileDialog();
             fileDialog.ShowDialog();
             SendFileToServer(fileDialog.FileName);
         }
 
-        private async void LBMessages_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void LBMessages_SelectionChangeMessage(object sender, SelectionChangedEventArgs e)
         {
             if (LBMessages.SelectedItem == null)
             {
@@ -297,7 +297,7 @@ namespace Tebegrammmm
             }
         }
 
-        private void Button_Click_6(object sender, RoutedEventArgs e)
+        private void Button_Click_Settings(object sender, RoutedEventArgs e)
         {
             SettingsPanelWindow SPW = new SettingsPanelWindow(User);
             SPW.ShowDialog();

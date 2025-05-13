@@ -21,8 +21,8 @@
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
-            <Button Height="50" Background="Transparent" Foreground="Gray" BorderBrush="Transparent" Content="☰" FontSize="30" Click="Button_Click_6"/>
-            <ListBox x:Name="LBChatsLoders" Grid.Row="1" Background="Transparent" BorderBrush="Transparent" SelectionChanged="LBChatsLoders_SelectionChanged">
+            <Button Height="50" Background="Transparent" Foreground="Gray" BorderBrush="Transparent" Content="☰" FontSize="30" Click="Button_Click_Settings"/>
+            <ListBox x:Name="LBChatsLoders" Grid.Row="1" Background="Transparent" BorderBrush="Transparent" SelectionChanged="LBChatsLoders_SelectionChangeFolder">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid>
@@ -39,7 +39,7 @@
                     <TextBlock Text="⚒" HorizontalAlignment="Center" Foreground="Gray" FontSize="20"/>
                     <TextBlock Text="Ред." HorizontalAlignment="Center" Foreground="Gray" FontSize="15"/>
                 </StackPanel>
-                <Button Height="50" Background="Transparent" BorderBrush="Transparent" Content="" FontSize="15" Click="Button_Click_3"/>
+                <Button Height="50" Background="Transparent" BorderBrush="Transparent" Content="" FontSize="15" Click="Button_Click_FoldersMenu"/>
             </Grid>
         </Grid>
         <!--Чаты-->
@@ -49,7 +49,7 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,0" >
-                <Button Background="Transparent" BorderBrush="Transparent" Click="Button_Click_1">
+                <Button Background="Transparent" BorderBrush="Transparent" Click="Button_Click_AddContact">
                     <Border BorderBrush="Gray" BorderThickness="2" CornerRadius="20" Width="35" Height="35">
                         <Grid HorizontalAlignment="Center">
                             <Grid.ColumnDefinitions>
@@ -63,7 +63,7 @@
                     </Border>
                 </Button>
             </StackPanel>
-            <ListBox x:Name="LBChats" Grid.Row="2" SelectionChanged="LBChats_SelectionChanged">
+            <ListBox x:Name="LBChats" Grid.Row="2" SelectionChanged="LBChats_SelectionChangedChat">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid Height="50">
@@ -116,12 +116,12 @@
                                 </Grid>
                             </Border>
                         </Button>
-                        <Button  Width="40" Background="Transparent" BorderBrush="Transparent" Click="Button_Click_2">
+                        <Button  Width="40" Background="Transparent" BorderBrush="Transparent" Click="Button_Click_ContactRedact">
                             <TextBlock Text="⋮" FontSize="30" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </Button>
                     </StackPanel>
                 </Grid>
-                <ListBox x:Name="LBMessages" Grid.Row="1" SelectionChanged="LBMessages_SelectionChanged" >
+                <ListBox x:Name="LBMessages" Grid.Row="1" SelectionChanged="LBMessages_SelectionChangeMessage" >
                     <ListBox.Background>
                         <LinearGradientBrush>
                             <GradientStop Color="LightYellow" Offset="0.1"/>
@@ -154,11 +154,11 @@
                         <ColumnDefinition/>
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
-                    <Button Width="40" Content="📄" FontSize="20" Background="Transparent" Click="Button_Click_4" BorderBrush="Transparent"/>
+                    <Button Width="40" Content="📄" FontSize="20" Background="Transparent" Click="Button_Click_SelectFile" BorderBrush="Transparent"/>
                     <ScrollViewer Grid.Column="1" Margin="10">
-                        <TextBox x:Name="TBMessage" KeyDown="TBMessage_KeyDown" TextWrapping="Wrap" FontSize="15"/>
+                        <TextBox x:Name="TBMessage" KeyDown="TBMessage_KeyDown_SendMessage" TextWrapping="Wrap" FontSize="15"/>
                     </ScrollViewer>
-                    <Button Grid.Column="2" Width="40" Content="⌯⌲" Background="Transparent" Margin="10" Click="Button_Click"/>
+                    <Button Grid.Column="2" Width="40" Content="⌯⌲" Background="Transparent" Margin="10" Click="Button_Click_SendMessage"/>
                 </Grid>
             </Grid>
         </Border>
