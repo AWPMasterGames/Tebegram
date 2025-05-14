@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\ПК\\Documents\\GitHub\\Homeworks\\Tebegrammmm\\Tebegrammmm\\Tebegrammmm.csproj": {}
+    "C:\\Users\\ПК\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Tebegrammmm.csproj": {}
   },
   "projects": {
-    "C:\\Users\\ПК\\Documents\\GitHub\\Homeworks\\Tebegrammmm\\Tebegrammmm\\Tebegrammmm.csproj": {
+    "C:\\Users\\ПК\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Tebegrammmm.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\ПК\\Documents\\GitHub\\Homeworks\\Tebegrammmm\\Tebegrammmm\\Tebegrammmm.csproj",
+        "projectUniqueName": "C:\\Users\\ПК\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Tebegrammmm.csproj",
         "projectName": "Tebegrammmm",
-        "projectPath": "C:\\Users\\ПК\\Documents\\GitHub\\Homeworks\\Tebegrammmm\\Tebegrammmm\\Tebegrammmm.csproj",
+        "projectPath": "C:\\Users\\ПК\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Tebegrammmm.csproj",
         "packagesPath": "C:\\Users\\ПК\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\ПК\\Documents\\GitHub\\Homeworks\\Tebegrammmm\\Tebegrammmm\\obj\\",
+        "outputPath": "C:\\Users\\ПК\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

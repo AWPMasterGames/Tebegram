@@ -9,10 +9,12 @@ namespace Tebegrammmm
 {
     public class ChatFolder
     {
+        private int _Id;
         private string _Icon;
         private string _FolderName;
         private bool _IsCanRedact;
 
+        public int Id { get { return _Id; } }
         public string Icon { get { return _Icon; } }
         public string FolderName { get { return _FolderName; } }
         public string ChatsCount { get { return Contacts.Count.ToString(); } }
@@ -22,6 +24,7 @@ namespace Tebegrammmm
 
         public ChatFolder(string icon = "📁", bool isCanRedact = true)
         {
+            _Id = new Random().Next(0,20000000);
             Contacts = new ObservableCollection<Contact>();
             this._Icon = icon;
             this._IsCanRedact = isCanRedact;

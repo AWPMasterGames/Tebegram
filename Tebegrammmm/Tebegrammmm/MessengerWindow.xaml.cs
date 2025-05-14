@@ -13,6 +13,7 @@ using System.Windows.Input;
 using System.Net.Http.Headers;
 using Tebegrammmm.ChatsFoldersRedactsWindows;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Tebegrammmm
 {
@@ -89,14 +90,19 @@ namespace Tebegrammmm
 
                     string s = sr.ReadToEnd();
 
-                    string[] messageData = s.Split(';');
+                    string[] messageData = s.Split('▫');
                     foreach (Contact contact in User.ChatsFolders[0].Contacts)
                     {
                         if (messageData[0] == contact.IPAddress.ToString() & Convert.ToInt32(messageData[1]) == contact.Port)
                         {
                             if (messageData[2] == "Text")
                             {
-                                Message message = new Message(contact.Name, messageData[4], messageData[3]);
+                                string text = messageData[4];
+                                for(int i = 5; i < messageData.Length;i++)
+                                {
+                                    text += messageData[i];
+                                }
+                                Message message = new Message(contact.Name, text, messageData[3]);
                                 this.Dispatcher.BeginInvoke(new Action(() =>
                                 {
                                     contact.Messages.Add(message);
@@ -135,11 +141,11 @@ namespace Tebegrammmm
 
                 string mes = string.Empty;
 
-                mes += $"{User.IpAddress.ToString()};";
-                mes += $"{User.Port};";
-                mes += $"{message.MessageType};";
-                mes += $"{message.Time};";
-                mes += $"{message.Text};";
+                mes += $"{User.IpAddress.ToString()}▫";
+                mes += $"{User.Port}▫";
+                mes += $"{message.MessageType}▫";
+                mes += $"{message.Time}▫";
+                mes += $"{message.Text}▫";
 
                 byte[] buffer = Encoding.Unicode.GetBytes(mes);
                 nw.Write(buffer, 0, buffer.Length);
@@ -267,11 +273,11 @@ namespace Tebegrammmm
             this.Dispatcher.Invoke(new Action(() => { SendMessage(Path.GetFileName(filePath),MessageType.File); }));
             MessageBox.Show(ResponseText);
         }
-        private void Button_Click_SelectFile(object sender, RoutedEventArgs e)
+        private async void Button_Click_SelectFile(object sender, RoutedEventArgs e)
         {
             OpenFileDialog fileDialog = new OpenFileDialog();
             fileDialog.ShowDialog();
-            SendFileToServer(fileDialog.FileName);
+            await SendFileToServer(fileDialog.FileName);
         }
 
         private async void LBMessages_SelectionChangeMessage(object sender, SelectionChangedEventArgs e)

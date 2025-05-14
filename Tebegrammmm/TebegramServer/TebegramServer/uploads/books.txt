@@ -1,0 +1,4 @@
+Microsoft Sans Serif;10;Black;Лень делать что-то;Тимон;Мне лень что-либо деать
+Microsoft Sans Serif;10;Orange;Лень делать что-то 2;Тимон;Сделайт за меня
+Microsoft Sans Serif;10;Green;Лень делать;Тимон;Сделайт за меня
+Microsoft Sans Serif;10;Blue;Лень делать2;Тимон;Сделайт за меня

@@ -17,7 +17,6 @@ namespace Tebegrammmm.ChatsFoldersRedactsWindows
         {
             InitializeComponent();
 
-            InitializeComponent();
             Folder = folder;
             AllConatcs = chatsFolder[0].Contacts;
             FolderContacts = Folder.Contacts;
