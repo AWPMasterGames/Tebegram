@@ -54,6 +54,10 @@ namespace Tebegrammmm
             }
             return null;
         }
-        public static ObservableCollection<User> GetUsers() { return Users; }
+
+        public static ObservableCollection<User> GetUsers()
+        {
+            return Users;
+        }
     }
 }

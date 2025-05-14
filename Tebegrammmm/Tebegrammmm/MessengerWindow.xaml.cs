@@ -50,7 +50,7 @@ namespace Tebegrammmm
             
         }
 
-        private void StartListner()
+        private void StartListner() 
         {
             IPEndPoint endP = new IPEndPoint(IPAddress.Any, User.Port);
             tcpListener = new TcpListener(endP);
@@ -199,7 +199,7 @@ namespace Tebegrammmm
                 User.ChatsFolders[0].Contacts.Add(newContact);
             }
         }
-        private void Button_Click_5(object sender, RoutedEventArgs e)
+        private void Button_Click_RemoveContact(object sender, RoutedEventArgs e)
         {
             GridContactPanel.Visibility = Visibility.Hidden;
             GridMessege.Visibility = Visibility.Hidden;

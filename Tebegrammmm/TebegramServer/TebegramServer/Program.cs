@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.Extensions.FileProviders;
+using TebegramServer.Data;
+using TebegramServer.Classes;
+
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
@@ -27,6 +30,14 @@ app.MapGet("/upload/{FileName}", async (HttpContext context, string FileName) =>
 
     context.Response.Headers.ContentDisposition = $"attachment; filename={FileName}";
     await context.Response.SendFileAsync(fieInfo);
+});
+
+app.MapGet("/login/{UserLogin}-{UserPassword}", async(HttpContext Context, string UserLogin, string UserPassword) =>
+{
+    if(UsersData.Authorize(UserLogin, UserPassword) != null)
+    {
+        await Context.Response.WriteAsync("Succes");
+    }
 });
 
 app.Run();
