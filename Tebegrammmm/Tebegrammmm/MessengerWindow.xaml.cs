@@ -13,7 +13,6 @@ using System.Windows.Input;
 using System.Net.Http.Headers;
 using Tebegrammmm.ChatsFoldersRedactsWindows;
 using System.Threading.Tasks;
-using System.Linq;
 
 namespace Tebegrammmm
 {
@@ -160,8 +159,19 @@ namespace Tebegrammmm
                 MessageBox.Show($"Error: {ex.Message}");
             }
         }
+
+        private void SaveMessageToFile(string message)
+        {
+
+        }
         private void SendMessage(string message, MessageType messageType = MessageType.Text)
         {
+            if(string.IsNullOrWhiteSpace(message))
+            {
+                TBMessage.Text = string.Empty;
+                return;
+            }
+
             Message Message = new Message(User.Name, message, DateTime.Now.ToString("hh:mm"),messageType);
             Contact.Messages.Add(Message);
             SendMessageToUser(Message);
@@ -276,7 +286,18 @@ namespace Tebegrammmm
         private async void Button_Click_SelectFile(object sender, RoutedEventArgs e)
         {
             OpenFileDialog fileDialog = new OpenFileDialog();
-            fileDialog.ShowDialog();
+            //fileDialog.ShowDialog();
+            
+
+            if (fileDialog.ShowDialog() != true)
+            {
+                return;
+            }
+            else if (string.IsNullOrEmpty(fileDialog.FileName))
+            {
+                return;
+            }
+
             await SendFileToServer(fileDialog.FileName);
         }
 
@@ -290,16 +311,37 @@ namespace Tebegrammmm
             else if ((LBMessages.SelectedItem as Message).MessageType == MessageType.File)
             {
                 OpenFolderDialog openFolderDialog = new OpenFolderDialog();
-                openFolderDialog.ShowDialog();
+                //openFolderDialog.ShowDialog();
+
+                if (openFolderDialog.ShowDialog() != true || string.IsNullOrWhiteSpace(openFolderDialog.FolderName))
+                {
+                    MessageBox.Show("Ошибка сервера");
+                    return;
+                }
 
                 string fileName = (LBMessages.SelectedItem as Message).Text;
                 var fileUrl = $"{serverAdress}/upload/{fileName}";
-                using var response = await httpClient.GetStreamAsync(fileUrl);
 
+                /*using var response = await httpClient.GetStreamAsync(fileUrl);
                 using var fs = new FileStream($"{openFolderDialog.FolderName}/{fileName}",FileMode.OpenOrCreate);
                 await response.CopyToAsync(fs);
 
-                MessageBox.Show($"Файл {fileName} скачен");
+                MessageBox.Show($"Файл {fileName} скачен");*/
+
+
+
+                try
+                {
+                    using var response = await httpClient.GetStreamAsync(fileUrl);
+                    using var fs = new FileStream($"{openFolderDialog.FolderName}/{fileName}", FileMode.OpenOrCreate);
+                    await response.CopyToAsync(fs);
+
+                    MessageBox.Show($"Файл {fileName} скачен");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при скачивании файла: {ex.Message}");
+                }
             }
         }
 

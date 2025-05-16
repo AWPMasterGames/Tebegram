@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.Extensions.FileProviders;
 using TebegramServer.Data;
 using TebegramServer.Classes;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
@@ -27,7 +28,7 @@ app.MapGet("/upload/{FileName}", async (HttpContext context, string FileName) =>
 {
     var fileProvider = new PhysicalFileProvider(Directory.GetCurrentDirectory());
     var fieInfo = fileProvider.GetFileInfo($"uploads/{FileName}");
-
+    
     context.Response.Headers.ContentDisposition = $"attachment; filename={FileName}";
     await context.Response.SendFileAsync(fieInfo);
 });
