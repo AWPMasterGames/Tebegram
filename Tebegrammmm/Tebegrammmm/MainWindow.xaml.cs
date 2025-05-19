@@ -1,23 +1,25 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 using System.Net.Http;
+
+
+
 namespace Tebegrammmm
 {
-    /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         public MainWindow()
         {
             InitializeComponent();
-
             TBUserLogin.Focus();
         }
 
         private void Authorization()
         {
-            User user = UsersData.Authorize(TBUserLogin.Text, TBUserPassord.Password);
+            string login = TBUserLogin.Text.Trim();
+            string password = TBUserPassord.Password.Trim();
+
+            User user = UsersData.Authorize(login, password);
             if (user != null)
             {
                 MessengerWindow mw = new MessengerWindow(user);
@@ -26,7 +28,8 @@ namespace Tebegrammmm
             }
             else
             {
-                MessageBox.Show("Неверный логин или пароль");
+                MessageBox.Show("Неверный логин или пароль", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                TBUserPassord.Clear();
             }
         }
 
@@ -49,6 +52,19 @@ namespace Tebegrammmm
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Authorization();
+        }
+
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                this.DragMove();
+            }
         }
     }
 }
