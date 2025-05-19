@@ -117,6 +117,10 @@ namespace Tebegrammmm
                             }
                         }
                     }
+
+                    //Требуется проверка работоспособности
+                    SaveMessageToFile(s);
+
                     client.Close();
                 }
             }
@@ -162,7 +166,58 @@ namespace Tebegrammmm
 
         private void SaveMessageToFile(string message)
         {
+            try
+            {
+                string[] parts = message.Split('▫');
 
+                if (parts.Length < 5)
+                {
+                    MessageBox.Show("Некорректный формат сообщения.");
+                    return;
+                }
+
+                string ip = parts[0];
+                string port = parts[1];
+                string type = parts[2];
+                string time = parts[3];
+                string text = parts[4];
+
+                for (int i = 5; i < parts.Length; i++)
+                {
+                    text += parts[i];
+                }
+
+                string userName = User.Name;
+                string dataFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
+
+                if (!Directory.Exists(dataFolder))
+                {
+                    Directory.CreateDirectory(dataFolder);
+                }
+
+                string userFolder = Path.Combine(dataFolder, userName);
+                if (!Directory.Exists(userFolder))
+                {
+                    Directory.CreateDirectory(userFolder);
+                }
+
+                string safeTime = time.Replace(":", "-").Replace("/", "-").Replace(" ", "_");
+                string fileName = $"message_{safeTime}.txt";
+                string filePath = Path.Combine(userFolder, fileName);
+
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine($"От: {ip}:{port}");
+                sb.AppendLine($"Тип: {type}");
+                sb.AppendLine($"Время: {time}");
+                sb.AppendLine("Сообщение:");
+                sb.AppendLine(text);
+
+                File.WriteAllText(filePath, sb.ToString(), Encoding.UTF8);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при сохранении сообщения: {ex.Message}");
+            }
         }
         private void SendMessage(string message, MessageType messageType = MessageType.Text)
         {
@@ -327,8 +382,6 @@ namespace Tebegrammmm
                 await response.CopyToAsync(fs);
 
                 MessageBox.Show($"Файл {fileName} скачен");*/
-
-
 
                 try
                 {
