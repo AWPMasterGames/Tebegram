@@ -3,7 +3,7 @@
 
 ## Содержание
 
-- <ins> пункт 1	</ins>
+- <ins> [Технологии](https://github.com/AWPMasterGames/Tebegram/blob/main/README.md#%D1%82%D0%B5%D1%85%D0%BD%D0%BE%D0%BB%D0%BE%D0%B3%D0%B8%D0%B8)	</ins>
 
 
 ## Технологии
