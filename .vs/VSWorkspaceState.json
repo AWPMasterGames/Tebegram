@@ -2,8 +2,11 @@
   "ExpandedNodes": [
     "",
     "\\Tebegrammmm",
-    "\\Tebegrammmm\\Tebegrammmm"
+    "\\Tebegrammmm\\Tebegrammmm",
+    "\\Tebegrammmm\\TebegramServer",
+    "\\Tebegrammmm\\TebegramServer\\TebegramServer",
+    "\\Tebegrammmm\\TebegramServer\\TebegramServer\\Data"
   ],
-  "SelectedNode": "\\Tebegrammmm\\Tebegrammmm\\MainWindow.xaml",
+  "SelectedNode": "\\Tebegrammmm\\TebegramServer\\TebegramServer\\Data\\UsersData.cs",
   "PreviewInSolutionExplorer": false
 }
