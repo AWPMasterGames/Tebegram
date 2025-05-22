@@ -1,32 +1,40 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 using System.Net.Http;
+
+
+
 namespace Tebegrammmm
 {
-    /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
+        static HttpClient httpClient = new HttpClient();
+        string serverAdress = "https://localhost:7034";
         public MainWindow()
         {
             InitializeComponent();
-
             TBUserLogin.Focus();
         }
 
-        private void Authorization()
+        private async void Authorization()
         {
-            User user = UsersData.Authorize(TBUserLogin.Text, TBUserPassord.Password);
-            if (user != null)
+            if (string.IsNullOrWhiteSpace(PBUserPassord.Password) || string.IsNullOrWhiteSpace(TBUserLogin.Text))
             {
-                MessengerWindow mw = new MessengerWindow(user);
+                MessageBox.Show("Заполните все поля");
+                return;
+            }
+            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{serverAdress}/login/{TBUserLogin.Text}-{PBUserPassord.Password}");
+            using HttpResponseMessage response = await httpClient.SendAsync(request);
+            string content = await response.Content.ReadAsStringAsync();
+            if (content == "Succes")
+            {
+                MessengerWindow mw = new MessengerWindow(UsersData.FindUser(TBUserLogin.Text));
                 mw.Show();
                 this.Close();
             }
             else
             {
-                MessageBox.Show("Неверный логин или пароль");
+                MessageBox.Show($"{content}");
             }
         }
 
@@ -34,7 +42,7 @@ namespace Tebegrammmm
         {
             if (e.Key == Key.Enter)
             {
-                TBUserPassord.Focus();
+                PBUserPassord.Focus();
             }
         }
 
@@ -49,6 +57,19 @@ namespace Tebegrammmm
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Authorization();
+        }
+
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                this.DragMove();
+            }
         }
     }
 }

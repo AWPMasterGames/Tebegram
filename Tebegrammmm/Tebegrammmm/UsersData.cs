@@ -59,5 +59,14 @@ namespace Tebegrammmm
         {
             return Users;
         }
+
+        public static User FindUser(string userLogin)
+        {
+            foreach (var user in Users)
+            {
+                if (userLogin == user.Login) return user;
+            }
+            return null;
+        }
     }
 }

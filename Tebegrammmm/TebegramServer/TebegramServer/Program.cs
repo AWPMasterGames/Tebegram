@@ -28,17 +28,23 @@ app.MapGet("/upload/{FileName}", async (HttpContext context, string FileName) =>
 {
     var fileProvider = new PhysicalFileProvider(Directory.GetCurrentDirectory());
     var fieInfo = fileProvider.GetFileInfo($"uploads/{FileName}");
-    
+
+    context.Response.Headers.ContentEncoding = "Unicode";
     context.Response.Headers.ContentDisposition = $"attachment; filename={FileName}";
     await context.Response.SendFileAsync(fieInfo);
 });
 
-app.MapGet("/login/{UserLogin}-{UserPassword}", async(HttpContext Context, string UserLogin, string UserPassword) =>
+app.MapGet("/login/{UserLogin}-{UserPassword}", async (HttpContext Context, string UserLogin, string UserPassword) =>
 {
-    if(UsersData.Authorize(UserLogin, UserPassword) != null)
+    if (!UsersData.IsExistUser(UserLogin))
+    {
+        await Context.Response.WriteAsync("Пользователь с таким логином не существует");
+    }
+    else if (UsersData.Authorize(UserLogin, UserPassword) != null)
     {
         await Context.Response.WriteAsync("Succes");
     }
+    else await Context.Response.WriteAsync("Неверный пароль");
 });
 
 app.Run();

@@ -12,6 +12,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Net.Http.Headers;
 using Tebegrammmm.ChatsFoldersRedactsWindows;
+using Tebegrammmm.Classes;
 using System.Threading.Tasks;
 
 namespace Tebegrammmm
@@ -96,8 +97,8 @@ namespace Tebegrammmm
                         {
                             if (messageData[2] == "Text")
                             {
-                                string text = messageData[4];
-                                for(int i = 5; i < messageData.Length;i++)
+                                string text = messageData[5];
+                                for (int i = 6; i < messageData.Length; i++)
                                 {
                                     text += messageData[i];
                                 }
@@ -109,7 +110,7 @@ namespace Tebegrammmm
                             }
                             if (messageData[2] == "File")
                             {
-                                Message message = new Message(contact.Name, messageData[4], messageData[3],MessageType.File);
+                                Message message = new Message(contact.Name, messageData[5], messageData[3], MessageType.File, messageData[4]);
                                 this.Dispatcher.BeginInvoke(new Action(() =>
                                 {
                                     contact.Messages.Add(message);
@@ -117,6 +118,10 @@ namespace Tebegrammmm
                             }
                         }
                     }
+
+                    //Требуется проверка работоспособности
+                    SaveMessageToFile(s);
+
                     client.Close();
                 }
             }
@@ -144,6 +149,7 @@ namespace Tebegrammmm
                 mes += $"{User.Port}▫";
                 mes += $"{message.MessageType}▫";
                 mes += $"{message.Time}▫";
+                mes += $"{message.ServerAdress}▫";
                 mes += $"{message.Text}▫";
 
                 byte[] buffer = Encoding.Unicode.GetBytes(mes);
@@ -162,17 +168,68 @@ namespace Tebegrammmm
 
         private void SaveMessageToFile(string message)
         {
+            try
+            {
+                string[] parts = message.Split('▫');
 
+                if (parts.Length < 5)
+                {
+                    MessageBox.Show("Некорректный формат сообщения.");
+                    return;
+                }
+
+                string ip = parts[0];
+                string port = parts[1];
+                string type = parts[2];
+                string time = parts[3];
+                string text = parts[4];
+
+                for (int i = 5; i < parts.Length; i++)
+                {
+                    text += parts[i];
+                }
+
+                string userName = User.Name;
+                string dataFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
+
+                if (!Directory.Exists(dataFolder))
+                {
+                    Directory.CreateDirectory(dataFolder);
+                }
+
+                string userFolder = Path.Combine(dataFolder, userName);
+                if (!Directory.Exists(userFolder))
+                {
+                    Directory.CreateDirectory(userFolder);
+                }
+
+                string safeTime = time.Replace(":", "-").Replace("/", "-").Replace(" ", "_");
+                string fileName = $"message_{safeTime}.txt";
+                string filePath = Path.Combine(userFolder, fileName);
+
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine($"От: {ip}:{port}");
+                sb.AppendLine($"Тип: {type}");
+                sb.AppendLine($"Время: {time}");
+                sb.AppendLine("Сообщение:");
+                sb.AppendLine(text);
+
+                File.WriteAllText(filePath, sb.ToString(), Encoding.UTF8);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при сохранении сообщения: {ex.Message}");
+            }
         }
-        private void SendMessage(string message, MessageType messageType = MessageType.Text)
+        private void SendMessage(string message, MessageType messageType = MessageType.Text, string ServerFilePath = null)
         {
-            if(string.IsNullOrWhiteSpace(message))
+            if (string.IsNullOrWhiteSpace(message))
             {
                 TBMessage.Text = string.Empty;
                 return;
             }
 
-            Message Message = new Message(User.Name, message, DateTime.Now.ToString("hh:mm"),messageType);
+            Message Message = new Message(User.Name, message, DateTime.Now.ToString("hh:mm"), messageType, ServerFilePath);
             Contact.Messages.Add(Message);
             SendMessageToUser(Message);
             TBMessage.Text = string.Empty;
@@ -255,19 +312,11 @@ namespace Tebegrammmm
             RedactcionChatsFoldersWindow RCFW = new RedactcionChatsFoldersWindow(User.ChatsFolders);
             RCFW.ShowDialog();
         }
-        private string GetMimeType(string fileName)
-        {
-            string mimeType = "application/unknown";
-            string ext = System.IO.Path.GetExtension(fileName).ToLower();
-            Microsoft.Win32.RegistryKey regKey = Microsoft.Win32.Registry.ClassesRoot.OpenSubKey(ext);
-            if (regKey != null && regKey.GetValue("Content Type") != null)
-                mimeType = regKey.GetValue("Content Type").ToString();
-            return mimeType;
-        }
+
         private async Task SendFileToServer(string filePath)
         {
-            string mimeType = GetMimeType(filePath);
-            if (mimeType == "application/unknown")
+            string mimeType = MIME.GetMimeType(Path.GetFileName(Path.GetExtension(filePath)));
+            if (mimeType == "application/octet-stream")
             {
                 MessageBox.Show("Неизвестный тип файла");
                 return;
@@ -280,9 +329,10 @@ namespace Tebegrammmm
 
             using var response = await httpClient.PostAsync($"{serverAdress}/upload", multipar);
             var ResponseText = await response.Content.ReadAsStringAsync();
-            this.Dispatcher.Invoke(new Action(() => { SendMessage(Path.GetFileName(filePath),MessageType.File); }));
+            this.Dispatcher.Invoke(new Action(() => { SendMessage(Path.GetFileName(filePath), MessageType.File, $"{serverAdress}/upload/{Path.GetFileName(filePath)}"); }));
             MessageBox.Show(ResponseText);
         }
+
         private async void Button_Click_SelectFile(object sender, RoutedEventArgs e)
         {
             OpenFileDialog fileDialog = new OpenFileDialog();
@@ -327,8 +377,6 @@ namespace Tebegrammmm
                 await response.CopyToAsync(fs);
 
                 MessageBox.Show($"Файл {fileName} скачен");*/
-
-
 
                 try
                 {
