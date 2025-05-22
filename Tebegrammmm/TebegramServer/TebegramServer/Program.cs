@@ -47,4 +47,17 @@ app.MapGet("/login/{UserLogin}-{UserPassword}", async (HttpContext Context, stri
     else await Context.Response.WriteAsync("Неверный пароль");
 });
 
+app.MapGet("/register/{UserLogin}-{UserPassword}", async (HttpContext Context, string UserLogin, string UserPassword) =>
+{
+    if (UsersData.IsExistUser(UserLogin))
+    {
+        await Context.Response.WriteAsync("Пользователь с таким логином уже существует");
+    }
+    else if (!UsersData.IsExistUser(UserLogin))
+    {
+        UsersData.AddUser(new User(UserLogin,UserPassword));
+        await Context.Response.WriteAsync("Succes");
+    }
+});
+
 app.Run();

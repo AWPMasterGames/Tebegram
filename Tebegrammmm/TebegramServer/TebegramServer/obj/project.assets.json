@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\ПК\\Desktop\\Tebegram-main\\Tebegrammmm\\TebegramServer\\TebegramServer\\TebegramServer.csproj",
+      "projectUniqueName": "C:\\Users\\ПК\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\TebegramServer.csproj",
       "projectName": "TebegramServer",
-      "projectPath": "C:\\Users\\ПК\\Desktop\\Tebegram-main\\Tebegrammmm\\TebegramServer\\TebegramServer\\TebegramServer.csproj",
+      "projectPath": "C:\\Users\\ПК\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\TebegramServer.csproj",
       "packagesPath": "C:\\Users\\ПК\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\ПК\\Desktop\\Tebegram-main\\Tebegrammmm\\TebegramServer\\TebegramServer\\obj\\",
+      "outputPath": "C:\\Users\\ПК\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
