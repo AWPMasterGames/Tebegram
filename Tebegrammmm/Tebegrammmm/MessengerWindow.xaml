@@ -140,7 +140,7 @@
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
                                     <TextBlock Text="{Binding Sender}" Margin="5,0" Foreground="#FF4200FF"/>
-
+                                    <Image Grid.Row="1" Source="{Binding ServerAdress}"/>
                                     <TextBlock Grid.Row="2" Text="{Binding Text}" TextWrapping="Wrap" FontSize="15" Margin="5,0"/>
                                     <TextBlock Grid.Row="3" Text="{Binding Time}" Foreground="#FF7D7D7D" FontSize="10" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                 </Grid>

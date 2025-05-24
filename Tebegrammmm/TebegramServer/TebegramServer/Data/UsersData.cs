@@ -4,19 +4,15 @@ namespace TebegramServer.Data
 {
     public static class UsersData
     {
-        static ObservableCollection<User> Users;
-
-        public static ObservableCollection<User> GetUsers()
-        {
-            if (Users == null)
-            {
-                Users = new ObservableCollection<User>()
+        static ObservableCollection<User> Users = new ObservableCollection<User>()
                 {
                     new User("aa","123"),
                     new User("aa1","1234"),
                     new User("masya","123")
                 };
-            }
+
+        public static ObservableCollection<User> GetUsers()
+        {
             return Users;
         }
 
@@ -48,9 +44,18 @@ namespace TebegramServer.Data
         {
             foreach (var user in Users)
             {
-                if(userLogin == user.Login) return user;
+                if (userLogin == user.Login) return user;
             }
             return null;
+        }
+
+        public static bool IsExistUser(string login)
+        {
+            foreach (var user in Users)
+            {
+                if (login == user.Login) return true;
+            }
+            return false;
         }
     }
 

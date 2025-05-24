@@ -8,28 +8,33 @@ namespace Tebegrammmm
 {
     public partial class MainWindow : Window
     {
+        static HttpClient httpClient = new HttpClient();
+        string serverAdress = "https://localhost:7034";
         public MainWindow()
         {
             InitializeComponent();
             TBUserLogin.Focus();
         }
 
-        private void Authorization()
+        private async void Authorization()
         {
-            string login = TBUserLogin.Text.Trim();
-            string password = TBUserPassord.Password.Trim();
-
-            User user = UsersData.Authorize(login, password);
-            if (user != null)
+            if (string.IsNullOrWhiteSpace(PBUserPassord.Password) || string.IsNullOrWhiteSpace(TBUserLogin.Text))
             {
-                MessengerWindow mw = new MessengerWindow(user);
+                MessageBox.Show("Заполните все поля");
+                return;
+            }
+            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{serverAdress}/login/{TBUserLogin.Text}-{PBUserPassord.Password}");
+            using HttpResponseMessage response = await httpClient.SendAsync(request);
+            string content = await response.Content.ReadAsStringAsync();
+            if (content == "Succes")
+            {
+                MessengerWindow mw = new MessengerWindow(UsersData.FindUser(TBUserLogin.Text));
                 mw.Show();
                 this.Close();
             }
             else
             {
-                MessageBox.Show("Неверный логин или пароль", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-                TBUserPassord.Clear();
+                MessageBox.Show($"{content}");
             }
         }
 
@@ -37,7 +42,7 @@ namespace Tebegrammmm
         {
             if (e.Key == Key.Enter)
             {
-                TBUserPassord.Focus();
+                PBUserPassord.Focus();
             }
         }
 

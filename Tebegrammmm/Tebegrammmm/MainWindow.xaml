@@ -24,7 +24,7 @@
                     Click="CloseButton_Click"/>
 
             <StackPanel VerticalAlignment="Center">
-                <TextBlock Text="Вход в систему"
+                <TextBlock Text="Авторизация"
                            FontSize="28"
                            Foreground="White"
                            HorizontalAlignment="Center"
@@ -41,7 +41,7 @@
                          KeyDown="TextBox_KeyDown"/>
 
                 <TextBlock Text="Пароль" Foreground="LightGray"/>
-                <PasswordBox x:Name="TBUserPassord"
+                <PasswordBox x:Name="PBUserPassord"
                              Height="35"
                              Margin="0 5 0 25"
                              FontSize="14"
