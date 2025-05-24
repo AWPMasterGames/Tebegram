@@ -182,6 +182,7 @@ namespace Tebegrammmm
                 string port = parts[1];
                 string type = parts[2];
                 string time = parts[3];
+
                 string text = parts[4];
 
                 for (int i = 5; i < parts.Length; i++)
