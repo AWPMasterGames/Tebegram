@@ -19,9 +19,11 @@ app.MapPost("/upload", async (HttpContext context) =>
 
         using var fileStream = new FileStream(filePath, FileMode.Create);
         await file.CopyToAsync(fileStream);
+        Logs.Save($"Загружен файл {file.FileName}");
     }
 
     await context.Response.WriteAsync("файл успешно отправлен");
+    
 });
 
 app.MapGet("/upload/{FileName}", async (HttpContext context, string FileName) =>
@@ -43,6 +45,7 @@ app.MapGet("/login/{UserLogin}-{UserPassword}", async (HttpContext Context, stri
     else if (UsersData.Authorize(UserLogin, UserPassword) != null)
     {
         await Context.Response.WriteAsync("Succes");
+        Logs.Save($"Пользователь {UserLogin} авторизировался");
     }
     else await Context.Response.WriteAsync("Неверный пароль");
 });
@@ -57,6 +60,7 @@ app.MapGet("/register/{UserLogin}-{UserPassword}", async (HttpContext Context, s
     {
         UsersData.AddUser(new User(UserLogin, UserPassword));
         await Context.Response.WriteAsync("Succes");
+        Logs.Save($"Пользователь {UserLogin} зарегрестрировался");
     }
 });
 
