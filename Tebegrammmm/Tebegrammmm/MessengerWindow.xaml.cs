@@ -181,6 +181,7 @@ namespace Tebegrammmm
                 string MessegeDataInFile = $"{MessegeData[0]}▫{MessegeData[1]}▫{ContactName}▫{MessegeData[2]}▫{MessegeData[3]}▫{MessegeData[4]}▫{MessegeData[5]}";
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                 if (parts.Length < 5)
                 {
                     MessageBox.Show("Некорректный формат сообщения.");
@@ -200,6 +201,9 @@ namespace Tebegrammmm
                 }
 
                 string userName = User.Name;
+=======
+                string userId = User.Id.ToString();
+>>>>>>> Stashed changes
 =======
                 string userId = User.Id.ToString();
 >>>>>>> Stashed changes

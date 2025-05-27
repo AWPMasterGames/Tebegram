@@ -39,6 +39,7 @@
         {
           "DockedWidth": 45,
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
           "SelectedChildIndex": 1,
           "Children": [
             {
@@ -49,6 +50,12 @@
           "Children": [
             {
               "$type": "Document",
+=======
+          "SelectedChildIndex": 4,
+          "Children": [
+            {
+              "$type": "Document",
+>>>>>>> Stashed changes
               "DocumentIndex": 1,
               "Title": "Message.cs",
               "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Classes\\Message.cs",
@@ -89,6 +96,9 @@
             {
               "$type": "Document",
               "DocumentIndex": 4,
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\Program.cs",
@@ -96,7 +106,11 @@
               "ToolTip": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\Program.cs",
               "RelativeToolTip": "TebegramServer\\TebegramServer\\Program.cs",
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
               "ViewState": "AgIAAAoAAAAAAAAAAADwvzUAAABZAAAAAAAAAA==",
+=======
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAcAAAAaAAAAAAAAAA==",
+>>>>>>> Stashed changes
 =======
               "ViewState": "AgIAAAAAAAAAAAAAAAAqwAcAAAAaAAAAAAAAAA==",
 >>>>>>> Stashed changes
@@ -113,7 +127,11 @@
               "ToolTip": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\MessengerWindow.xaml.cs",
               "RelativeToolTip": "Tebegrammmm\\MessengerWindow.xaml.cs",
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
               "ViewState": "AgIAAMsAAAAAAAAAAAAmwNoAAAANAAAAAAAAAA==",
+=======
+              "ViewState": "AgIAAF0AAAAAAAAAAAAWwNsAAAARAAAAAAAAAA==",
+>>>>>>> Stashed changes
 =======
               "ViewState": "AgIAAF0AAAAAAAAAAAAWwNsAAAARAAAAAAAAAA==",
 >>>>>>> Stashed changes
@@ -125,7 +143,11 @@
             {
               "$type": "Document",
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
               "DocumentIndex": 1,
+=======
+              "DocumentIndex": 5,
+>>>>>>> Stashed changes
 =======
               "DocumentIndex": 5,
 >>>>>>> Stashed changes
