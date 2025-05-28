@@ -65,5 +65,20 @@ namespace Tebegrammmm.ChatsFoldersRedactsWindows
             this.DialogResult = false;
             this.Close();
         }
+        private void Remove_Contact(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.CommandParameter is Contact contact)
+            {
+                if (FolderContacts != null && FolderContacts.Contains(contact))
+                {
+                    FolderContacts.Remove(contact);
+
+                    if (AllConatcs != null && !AllConatcs.Contains(contact))
+                    {
+                        AllConatcs.Add(contact);
+                    }
+                }
+            }
+        }
     }
 }
