@@ -24,7 +24,7 @@ namespace Tebegrammmm
     {
         static HttpClient httpClient = new HttpClient();
         string serverAdress = "https://localhost:7034";
-
+        private static object thisLock = new();
         User User { get; set; }
         Contact Contact { get; set; }
 
@@ -47,10 +47,11 @@ namespace Tebegrammmm
 
             Thread = new Thread(new ThreadStart(ReceiveMessage));
             Thread.Start();
-            
+
+
         }
 
-        private void StartListner() 
+        private void StartListner()
         {
             IPEndPoint endP = new IPEndPoint(IPAddress.Any, User.Port);
             tcpListener = new TcpListener(endP);
@@ -87,7 +88,6 @@ namespace Tebegrammmm
                 {
                     TcpClient client = tcpListener.AcceptTcpClient();
                     StreamReader sr = new StreamReader(client.GetStream(), Encoding.Unicode);
-
                     string s = sr.ReadToEnd();
 
                     string[] messageData = s.Split('▫');
@@ -107,6 +107,7 @@ namespace Tebegrammmm
                                 {
                                     contact.Messages.Add(message);
                                 }));
+                                SaveMessageToFile(contact.Name, s, false);
                             }
                             if (messageData[2] == "File")
                             {
@@ -115,23 +116,27 @@ namespace Tebegrammmm
                                 {
                                     contact.Messages.Add(message);
                                 }));
+                                SaveMessageToFile(contact.Name, s, false);
                             }
                         }
                     }
-
-                    //Требуется проверка работоспособности
-                    SaveMessageToFile(s);
 
                     client.Close();
                 }
             }
             catch (SocketException ex)
             {
-                MessageBox.Show($"Sockets error: {ex.Message}");
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    MessageBox.Show($"Sockets error: {ex.Message}");
+                }));
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error: {ex.Message}");
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    MessageBox.Show($"Error: {ex.Message}");
+                }));
             }
         }
         private void SendMessageToUser(Message message)
@@ -150,11 +155,13 @@ namespace Tebegrammmm
                 mes += $"{message.MessageType}▫";
                 mes += $"{message.Time}▫";
                 mes += $"{message.ServerAdress}▫";
-                mes += $"{message.Text}▫";
+                mes += $"{message.Text}";
+
 
                 byte[] buffer = Encoding.Unicode.GetBytes(mes);
                 nw.Write(buffer, 0, buffer.Length);
                 Client.Close();
+                SaveMessageToFile(User.Name, mes);
             }
             catch (SocketException ex)
             {
@@ -166,12 +173,15 @@ namespace Tebegrammmm
             }
         }
 
-        private void SaveMessageToFile(string message)
+        private void SaveMessageToFile(string ContactName, string messageData, bool IsMe = true)
         {
             try
             {
-                string[] parts = message.Split('▫');
+                string[] MessegeData = messageData.Split('▫');
+                string MessegeDataInFile = $"{MessegeData[0]}▫{MessegeData[1]}▫{ContactName}▫{MessegeData[2]}▫{MessegeData[3]}▫{MessegeData[4]}▫{MessegeData[5]}";
 
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
                 if (parts.Length < 5)
                 {
                     MessageBox.Show("Некорректный формат сообщения.");
@@ -182,6 +192,7 @@ namespace Tebegrammmm
                 string port = parts[1];
                 string type = parts[2];
                 string time = parts[3];
+
                 string text = parts[4];
 
                 for (int i = 5; i < parts.Length; i++)
@@ -190,6 +201,12 @@ namespace Tebegrammmm
                 }
 
                 string userName = User.Name;
+=======
+                string userId = User.Id.ToString();
+>>>>>>> Stashed changes
+=======
+                string userId = User.Id.ToString();
+>>>>>>> Stashed changes
                 string dataFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
 
                 if (!Directory.Exists(dataFolder))
@@ -197,24 +214,36 @@ namespace Tebegrammmm
                     Directory.CreateDirectory(dataFolder);
                 }
 
-                string userFolder = Path.Combine(dataFolder, userName);
+                string userFolder = Path.Combine(dataFolder, userId);
                 if (!Directory.Exists(userFolder))
                 {
                     Directory.CreateDirectory(userFolder);
                 }
+                string ContactFolder;
+                if (IsMe)
+                {
+                    ContactFolder = Path.Combine(userFolder, Contact.Name);
+                }
+                else
+                {
+                    ContactFolder = Path.Combine(userFolder, ContactName);
+                }
 
-                string safeTime = time.Replace(":", "-").Replace("/", "-").Replace(" ", "_");
-                string fileName = $"message_{safeTime}.txt";
-                string filePath = Path.Combine(userFolder, fileName);
+                if (!Directory.Exists(ContactFolder))
+                {
+                    Directory.CreateDirectory(ContactFolder);
+                }
+                DateTime dateTime = DateTime.Now;
+
+                string fileName = $"{dateTime.ToString("dd.MM.yyyy")}.txt";
+                string filePath = Path.Combine(ContactFolder, fileName);
 
                 StringBuilder sb = new StringBuilder();
-                sb.AppendLine($"От: {ip}:{port}");
-                sb.AppendLine($"Тип: {type}");
-                sb.AppendLine($"Время: {time}");
-                sb.AppendLine("Сообщение:");
-                sb.AppendLine(text);
-
-                File.WriteAllText(filePath, sb.ToString(), Encoding.UTF8);
+                sb.AppendLine(MessegeDataInFile);
+                lock (thisLock)
+                {
+                    File.AppendAllText(filePath, sb.ToString(), Encoding.UTF8);
+                }
             }
             catch (Exception ex)
             {
@@ -229,7 +258,7 @@ namespace Tebegrammmm
                 return;
             }
 
-            Message Message = new Message(User.Name, message, DateTime.Now.ToString("hh:mm"), messageType, ServerFilePath);
+            Message Message = new Message(User.Name, message, DateTime.Now.ToString("HH:mm"), messageType, ServerFilePath);
             Contact.Messages.Add(Message);
             SendMessageToUser(Message);
             TBMessage.Text = string.Empty;
@@ -275,7 +304,7 @@ namespace Tebegrammmm
             {
                 for (int j = 0; j < User.ChatsFolders[i].Contacts.Count; j++)
                 {
-                    if(User.ChatsFolders[i].Contacts[j].Name == contact.Name)
+                    if (User.ChatsFolders[i].Contacts[j].Name == contact.Name)
                     {
                         User.ChatsFolders[i].Contacts.RemoveAt(j);
                     }
@@ -312,6 +341,7 @@ namespace Tebegrammmm
             RedactcionChatsFoldersWindow RCFW = new RedactcionChatsFoldersWindow(User.ChatsFolders);
             RCFW.ShowDialog();
         }
+
         private async Task SendFileToServer(string filePath)
         {
             string mimeType = MIME.GetMimeType(Path.GetFileName(Path.GetExtension(filePath)));
@@ -331,11 +361,12 @@ namespace Tebegrammmm
             this.Dispatcher.Invoke(new Action(() => { SendMessage(Path.GetFileName(filePath), MessageType.File, $"{serverAdress}/upload/{Path.GetFileName(filePath)}"); }));
             MessageBox.Show(ResponseText);
         }
+
         private async void Button_Click_SelectFile(object sender, RoutedEventArgs e)
         {
             OpenFileDialog fileDialog = new OpenFileDialog();
             //fileDialog.ShowDialog();
-            
+
 
             if (fileDialog.ShowDialog() != true)
             {
