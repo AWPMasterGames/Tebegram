@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace Tebegrammmm.ChatsFoldersRedactsWindows
 {
@@ -48,6 +49,19 @@ namespace Tebegrammmm.ChatsFoldersRedactsWindows
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+        private T FindButton<T>(DependencyObject obj) where T : DependencyObject
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
+            {
+                var child = VisualTreeHelper.GetChild(obj, i);
+                if (child is T result)
+                    return result;
+                var childResult = FindButton<T>(child);
+                if (childResult != null)
+                    return childResult;
+            }
+            return null;
         }
     }
 }
