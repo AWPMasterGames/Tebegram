@@ -21,4 +21,4 @@
 
 ## Обратная связь и помошь
 Как помочь в разработке проекта? Как отправить предложение или баг-репорт.
-[Фитбэк](https://docs.google.com/forms/d/e/1FAIpQLSc5bHIBepWwhbfkXFlERIS5FmcU8wjlDdAZgtobFgl0gf7b2w/viewform?usp=dialog).
+<br>[Фитбэк](https://docs.google.com/forms/d/e/1FAIpQLSc5bHIBepWwhbfkXFlERIS5FmcU8wjlDdAZgtobFgl0gf7b2w/viewform?usp=dialog).</br>
