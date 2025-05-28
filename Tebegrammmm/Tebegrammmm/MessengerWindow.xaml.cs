@@ -1,4 +1,4 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -180,33 +180,7 @@ namespace Tebegrammmm
                 string[] MessegeData = messageData.Split('▫');
                 string MessegeDataInFile = $"{MessegeData[0]}▫{MessegeData[1]}▫{ContactName}▫{MessegeData[2]}▫{MessegeData[3]}▫{MessegeData[4]}▫{MessegeData[5]}";
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-                if (parts.Length < 5)
-                {
-                    MessageBox.Show("Некорректный формат сообщения.");
-                    return;
-                }
-
-                string ip = parts[0];
-                string port = parts[1];
-                string type = parts[2];
-                string time = parts[3];
-
-                string text = parts[4];
-
-                for (int i = 5; i < parts.Length; i++)
-                {
-                    text += parts[i];
-                }
-
-                string userName = User.Name;
-=======
                 string userId = User.Id.ToString();
->>>>>>> Stashed changes
-=======
-                string userId = User.Id.ToString();
->>>>>>> Stashed changes
                 string dataFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
 
                 if (!Directory.Exists(dataFolder))
@@ -258,7 +232,7 @@ namespace Tebegrammmm
                 return;
             }
 
-            Message Message = new Message(User.Name, message, DateTime.Now.ToString("HH:mm"), messageType, ServerFilePath);
+            Message Message = new Message(User.Name, message, DateTime.Now.ToString("hh:mm"), messageType, ServerFilePath);
             Contact.Messages.Add(Message);
             SendMessageToUser(Message);
             TBMessage.Text = string.Empty;
@@ -341,7 +315,6 @@ namespace Tebegrammmm
             RedactcionChatsFoldersWindow RCFW = new RedactcionChatsFoldersWindow(User.ChatsFolders);
             RCFW.ShowDialog();
         }
-
         private async Task SendFileToServer(string filePath)
         {
             string mimeType = MIME.GetMimeType(Path.GetFileName(Path.GetExtension(filePath)));
@@ -361,7 +334,6 @@ namespace Tebegrammmm
             this.Dispatcher.Invoke(new Action(() => { SendMessage(Path.GetFileName(filePath), MessageType.File, $"{serverAdress}/upload/{Path.GetFileName(filePath)}"); }));
             MessageBox.Show(ResponseText);
         }
-
         private async void Button_Click_SelectFile(object sender, RoutedEventArgs e)
         {
             OpenFileDialog fileDialog = new OpenFileDialog();
