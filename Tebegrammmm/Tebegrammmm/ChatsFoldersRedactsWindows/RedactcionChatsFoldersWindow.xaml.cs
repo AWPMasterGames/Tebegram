@@ -51,6 +51,17 @@ namespace Tebegrammmm.ChatsFoldersRedactsWindows
             this.Close();
         }
 
+        private void Delete_Folder_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.DataContext is ChatFolder folderItem)
+            {
+                if (LBChatsFolders.ItemsSource is ObservableCollection<ChatFolder> collection)
+                {
+                    collection.Remove(folderItem);
+                }
+            }
+        }
+
         private T FindButton<T>(DependencyObject obj) where T : DependencyObject
         {
             for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
@@ -64,5 +75,7 @@ namespace Tebegrammmm.ChatsFoldersRedactsWindows
             }
             return null;
         }
+
+
     }
 }

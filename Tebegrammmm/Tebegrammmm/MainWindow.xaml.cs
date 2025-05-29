@@ -1,6 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 using System.Net.Http;
+using System;
+using Tebegrammmm.Classes;
 
 
 
@@ -23,18 +25,27 @@ namespace Tebegrammmm
                 MessageBox.Show("Заполните все поля");
                 return;
             }
-            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{serverAdress}/login/{TBUserLogin.Text}-{PBUserPassord.Password}");
-            using HttpResponseMessage response = await httpClient.SendAsync(request);
-            string content = await response.Content.ReadAsStringAsync();
-            if (content == "Succes")
+            try
             {
-                MessengerWindow mw = new MessengerWindow(UsersData.FindUser(TBUserLogin.Text));
-                mw.Show();
-                this.Close();
+
+                using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{serverAdress}/login/{TBUserLogin.Text}-{PBUserPassord.Password}");
+                using HttpResponseMessage response = await httpClient.SendAsync(request);
+                string content = await response.Content.ReadAsStringAsync();
+                if (content == "Succes")
+                {
+                    MessengerWindow mw = new MessengerWindow(UsersData.FindUser(TBUserLogin.Text));
+                    mw.Show();
+                    this.Close();
+                }
+                else
+                {
+                    MessageBox.Show($"{content}");
+                }
             }
-            else
+            catch (HttpRequestException ex)
             {
-                MessageBox.Show($"{content}");
+                Log.Save($"[Authorization] Error: {ex.Message}");
+                MessageBox.Show("Ошибка при попытке авторизации\nПодробнее от ошибке можно узнать в краш логах");
             }
         }
 

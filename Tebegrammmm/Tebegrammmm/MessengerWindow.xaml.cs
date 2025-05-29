@@ -127,11 +127,13 @@ namespace Tebegrammmm
             }
             catch (SocketException ex)
             {
-                MessageBox.Show($"Sockets error: {ex.Message}");
+                Log.Save($"[ReceiveMessage] Sockets error: {ex.Message}");
+                MessageBox.Show("Ошибка при получении сообщения\nПодробнее от ошибке можно узнать в краш логах");
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error: {ex.Message}");
+                Log.Save($"[ReceiveMessage] Error: {ex.Message}");
+                MessageBox.Show("Ошибка оправки сообщению\nПодробнее от ошибке можно узнать в краш логах");
             }
         }
         private void SendMessageToUser(Message message)
@@ -158,11 +160,13 @@ namespace Tebegrammmm
             }
             catch (SocketException ex)
             {
-                MessageBox.Show($"Sockets error: {ex.Message}");
+                MessageBox.Show("Ошибка оправки сообщению\nПодробнее от ошибке можно узнать в краш логах");
+                Log.Save($"[SendMessegeToUser] Sockets error: {ex.Message}");
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error: {ex.Message}");
+                MessageBox.Show("Ошибка оправки сообщению\nПодробнее от ошибке можно узнать в краш логах");
+                Log.Save($"[SendMessegeToUser] Error: {ex.Message}");
             }
         }
 
@@ -218,7 +222,8 @@ namespace Tebegrammmm
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при сохранении сообщения: {ex.Message}");
+                Log.Save($"[SaveMessageToFile] Error: {ex.Message}");
+                MessageBox.Show("Ошибка при сохранении сообщения\nПодробнее от ошибке можно узнать в краш логах");
             }
         }
         private void SendMessage(string message, MessageType messageType = MessageType.Text, string ServerFilePath = null)
@@ -386,7 +391,8 @@ namespace Tebegrammmm
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Ошибка при скачивании файла: {ex.Message}");
+                    Log.Save($"[LBMessages_SelectionChangeMessage] Error: {ex.Message}");
+                    MessageBox.Show($"Ошибка при скачивании файла\nПодробнее от ошибке можно узнать в краш логах");
                 }
             }
         }
