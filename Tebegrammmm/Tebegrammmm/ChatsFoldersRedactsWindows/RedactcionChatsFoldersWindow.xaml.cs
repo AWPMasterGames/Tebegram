@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -58,6 +58,21 @@ namespace Tebegrammmm.ChatsFoldersRedactsWindows
                 if (LBChatsFolders.ItemsSource is ObservableCollection<ChatFolder> collection)
                 {
                     collection.Remove(folderItem);
+                }
+            }
+        }
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            foreach (var item in LBChatsFolders.Items)
+            {
+                if (item is ChatFolder folder && folder.IsCanRedact == false)
+                {
+                    var container = LBChatsFolders.ItemContainerGenerator.ContainerFromItem(item) as ListBoxItem;
+                    if (container != null)
+                    {
+                        var button = FindButton<Button>(container);
+                        if (button != null) button.Visibility = Visibility.Hidden;
+                    }
                 }
             }
         }

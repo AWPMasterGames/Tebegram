@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -24,10 +24,9 @@ namespace Tebegrammmm
 
         public ObservableCollection<ChatFolder> ChatsFolders { get; set; }
 
-        public User(string login, string password, string name, string ipadress, int port, ObservableCollection<ChatFolder> chatsFolders)
+        public User(int id, string login, string password, string name, string ipadress, int port, ObservableCollection<ChatFolder> chatsFolders)
         {
-            Random random = new Random();
-            _Id = random.Next(1,2000000000);
+            _Id = id;
             _Login = login;
             _Password = password;
             _Name = name;

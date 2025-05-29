@@ -17,7 +17,8 @@
 
 ## Тестирование
 
-Проект был протестирован Разработчиками.
+[Подробнее](https://github.com/AWPMasterGames/Tebegram/wiki/07_%D0%9A%D0%95%D0%99%D0%A1%D0%AB-%D0%A2%D0%95%D0%A1%D0%A2%D0%9E%D0%92-(%D0%A0%D0%A3%D0%A7%D0%9D%D0%AB%D0%95)).
 
 ## Обратная связь и помошь
 Как помочь в разработке проекта? Как отправить предложение или баг-репорт.
+<br>[Фитбэк](https://docs.google.com/forms/d/e/1FAIpQLSc5bHIBepWwhbfkXFlERIS5FmcU8wjlDdAZgtobFgl0gf7b2w/viewform?usp=dialog).</br>
