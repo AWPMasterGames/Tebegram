@@ -28,7 +28,7 @@ namespace Tebegrammmm.Classes
 
             if (!File.Exists($"{_CrashLogsDirectory}/{dateTime.ToString("dd.MM.yyyy")}.txt"))
             {
-                File.Create($"{_CrashLogsDirectory}/{dateTime.ToString("dd.MM.yyyy")}.txt");
+                File.Create($"{_CrashLogsDirectory}/{dateTime.ToString("dd.MM.yyyy")}.txt").Close();
             }
             lock (_lock)
             {
