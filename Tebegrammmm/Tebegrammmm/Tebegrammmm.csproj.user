@@ -2,12 +2,15 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup />
   <ItemGroup>
-    <Compile Update="SettingsPanelWindow.xaml.cs">
+    <Compile Update="SettingsWindows\SettingsPanelWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="SettingsPanelWindow.xaml">
+    <Page Update="Resourses\MessengerTheme_Base.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="SettingsWindows\SettingsPanelWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

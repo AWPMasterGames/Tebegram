@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace Tebegrammmm.Classes
 {
@@ -25,13 +22,14 @@ namespace Tebegrammmm.Classes
         {
             DateTime dateTime = DateTime.Now;
             CheckDirectoryes();
-
-            if (!File.Exists($"{_CrashLogsDirectory}/{dateTime.ToString("dd.MM.yyyy")}.txt"))
-            {
-                File.Create($"{_CrashLogsDirectory}/{dateTime.ToString("dd.MM.yyyy")}.txt");
-            }
             lock (_lock)
             {
+
+                if (!File.Exists($"{_CrashLogsDirectory}/{dateTime.ToString("dd.MM.yyyy")}.txt"))
+                {
+                    File.Create($"{_CrashLogsDirectory}/{dateTime.ToString("dd.MM.yyyy")}.txt").Close();
+                }
+                Thread.Sleep( 100 );
                 File.AppendAllText($"{_CrashLogsDirectory}/{dateTime.ToString("dd.MM.yyyy")}.txt", $"[{dateTime.ToString("dd.MM.yyyy HH:mm:ss")}]  {log}\n");
             }
         }

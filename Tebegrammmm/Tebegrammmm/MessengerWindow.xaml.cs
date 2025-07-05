@@ -14,6 +14,7 @@ using System.Net.Http.Headers;
 using Tebegrammmm.ChatsFoldersRedactsWindows;
 using Tebegrammmm.Classes;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace Tebegrammmm
 {
@@ -36,6 +37,7 @@ namespace Tebegrammmm
         public MessengerWindow(User user)
         {
             InitializeComponent();
+            LoadStyle();
             GridMessege.Visibility = Visibility.Hidden;
             GridContactPanel.Visibility = Visibility.Hidden;
             this.User = user;
@@ -48,6 +50,14 @@ namespace Tebegrammmm
             Thread = new Thread(new ThreadStart(ReceiveMessage));
             Thread.Start();
 
+        }
+
+        private void LoadStyle()
+        {
+            LinearGradientBrush LGB = (LinearGradientBrush)this.TryFindResource("ChatBackground");
+            ResourceDictionary resourceDictionary = new ResourceDictionary();
+            
+            LBMessages.Background = LGB;
 
         }
 

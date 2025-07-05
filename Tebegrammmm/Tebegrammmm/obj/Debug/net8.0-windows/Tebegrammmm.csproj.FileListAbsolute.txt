@@ -84,7 +84,6 @@ C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0
 C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\Controls\UserControl1.g.cs
 C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\MainWindow.g.cs
 C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\MessengerWindow.g.cs
-C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\SettingsPanelWindow.g.cs
 C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\App.g.cs
 C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\GeneratedInternalTypeHelper.g.cs
 C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\Tebegrammmm_MarkupCompile.cache
@@ -96,7 +95,6 @@ C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0
 C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\Controls\UserControl1.baml
 C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\MainWindow.baml
 C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\MessengerWindow.baml
-C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\SettingsPanelWindow.baml
 C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\Tebegrammmm.g.resources
 C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\Tebegrammmm.Properties.Resources.resources
 C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\Tebegrammmm.csproj.GenerateResource.cache
@@ -145,3 +143,7 @@ C:\Users\Сергей\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debu
 C:\Users\Сергей\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\Tebegrammmm.pdb
 C:\Users\Сергей\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\Tebegrammmm.genruntimeconfig.cache
 C:\Users\Сергей\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\ref\Tebegrammmm.dll
+C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\Resourses\MessengerTheme_Base.baml
+C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\SettingsWindows\SettingsPanelWindow.g.cs
+C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\SettingsWindows\SettingsPanelWindow.baml
+C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\App.baml

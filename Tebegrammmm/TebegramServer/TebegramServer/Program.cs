@@ -1,8 +1,10 @@
-using Microsoft.AspNetCore.Http.Metadata;
-using Microsoft.Extensions.FileProviders;
+п»їusing Microsoft.Extensions.FileProviders;
 using TebegramServer.Data;
 using TebegramServer.Classes;
-using System.Text;
+using System.Collections.ObjectModel;
+using System.Net;
+using TebegramServer;
+using Microsoft.AspNetCore.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
@@ -19,10 +21,10 @@ app.MapPost("/upload", async (HttpContext context) =>
 
         using var fileStream = new FileStream(filePath, FileMode.Create);
         await file.CopyToAsync(fileStream);
-        Logs.Save($"Загружен файл {file.FileName}");
+        Logs.Save($"Р—Р°РіСЂСѓР¶РµРЅ С„Р°Р№Р» {file.FileName}");
     }
 
-    await context.Response.WriteAsync("файл успешно отправлен");
+    await context.Response.WriteAsync("С„Р°Р№Р» СѓСЃРїРµС€РЅРѕ РѕС‚РїСЂР°РІР»РµРЅ");
     
 });
 
@@ -40,27 +42,33 @@ app.MapGet("/login/{UserLogin}-{UserPassword}", async (HttpContext Context, stri
 {
     if (!UsersData.IsExistUser(UserLogin))
     {
-        await Context.Response.WriteAsync("Пользователь с таким логином не существует");
+        await Context.Response.WriteAsync("РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ СЃ С‚Р°РєРёРј Р»РѕРіРёРЅРѕРј РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚");
     }
     else if (UsersData.Authorize(UserLogin, UserPassword) != null)
     {
-        await Context.Response.WriteAsync("Succes");
-        Logs.Save($"Пользователь {UserLogin} авторизировался");
+        await Context.Response.WriteAsync(UsersData.FindUser(UserLogin).ToClientSend());
+        Logs.Save($"РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ {UserLogin} Р°РІС‚РѕСЂРёР·РёСЂРѕРІР°Р»СЃСЏ");
     }
-    else await Context.Response.WriteAsync("Неверный пароль");
+    else await Context.Response.WriteAsync("РќРµРІРµСЂРЅС‹Р№ РїР°СЂРѕР»СЊ");
 });
 
 app.MapGet("/register/{UserLogin}-{UserPassword}", async (HttpContext Context, string UserLogin, string UserPassword) =>
 {
     if (UsersData.IsExistUser(UserLogin))
     {
-        await Context.Response.WriteAsync("Пользователь с таким логином уже существует");
+        await Context.Response.WriteAsync("РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ СЃ С‚Р°РєРёРј Р»РѕРіРёРЅРѕРј СѓР¶Рµ СЃСѓС‰РµСЃС‚РІСѓРµС‚");
     }
     else if (!UsersData.IsExistUser(UserLogin))
     {
-        UsersData.AddUser(new User(UserLogin, UserPassword));
-        await Context.Response.WriteAsync("Succes");
-        Logs.Save($"Пользователь {UserLogin} зарегрестрировался");
+        User NewUser = new User(1, UserLogin, UserPassword, UserLogin, "127.0.0.1", 4004,
+                new ObservableCollection<ChatFolder> {
+                new ChatFolder("Р’СЃРµ С‡Р°С‚С‹",
+                        new ObservableCollection<Contact> {
+                        }, "рџ’¬", false)
+                });
+        UsersData.AddUser(NewUser);
+        await Context.Response.WriteAsync(NewUser.ToClientSend());
+        Logs.Save($"РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ {UserLogin} Р·Р°СЂРµРіСЂРµСЃС‚СЂРёСЂРѕРІР°Р»СЃСЏ");
     }
 });
 

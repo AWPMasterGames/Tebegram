@@ -122,13 +122,13 @@
                     </StackPanel>
                 </Grid>
                 <ListBox x:Name="LBMessages" Grid.Row="1" SelectionChanged="LBMessages_SelectionChangeMessage" >
-                    <ListBox.Background>
+                    <!--<ListBox.Background>
                         <LinearGradientBrush>
                             <GradientStop Color="LightYellow" Offset="0.1"/>
                             <GradientStop Color="LightGreen" Offset="0.5"/>
                             <GradientStop Color="LightYellow" Offset="0.9"/>
                         </LinearGradientBrush>
-                    </ListBox.Background>
+                    </ListBox.Background>-->
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Border Background="White" CornerRadius="25">
