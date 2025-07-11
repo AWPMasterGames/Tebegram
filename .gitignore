@@ -19,4 +19,14 @@ node_modules/
 *.pid
 
 Tebegrammmm/TebegramServer/TebegramServer/uploads/
+
+# Исключение файлов проекта
+*.csproj
+*.user
+*.json
+*.config
+
+# Исключение папок
+Properties/
+references/
 ```
