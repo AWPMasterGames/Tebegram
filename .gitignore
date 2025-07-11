@@ -1,1 +1,22 @@
+```
+# Системные файлы и каталоги
+.vs/
+.vscode/
+bin/
+obj/
+*.user
+*.suo
+
+# Выходные файлы и сборки
+*.log
+
+# Node.js (если JS)
+node_modules/
+
+# Кэш
+*.cache
+*.tmp
+*.pid
+
 Tebegrammmm/TebegramServer/TebegramServer/uploads/
+```
