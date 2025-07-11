@@ -1,31 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Сергей\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Tebegrammmm.csproj": {}
+    "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Tebegrammmm.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Сергей\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Tebegrammmm.csproj": {
+    "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Tebegrammmm.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Сергей\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Tebegrammmm.csproj",
+        "projectUniqueName": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Tebegrammmm.csproj",
         "projectName": "Tebegrammmm",
-        "projectPath": "C:\\Users\\Сергей\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Tebegrammmm.csproj",
-        "packagesPath": "C:\\Users\\Сергей\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Сергей\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\obj\\",
+        "projectPath": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Tebegrammmm.csproj",
+        "packagesPath": "C:\\Users\\makar\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Сергей\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\makar\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0-windows"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -44,7 +38,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.200"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0-windows7.0": {
@@ -70,6 +64,24 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.18, 8.0.18]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.win-x64",
+              "version": "[8.0.18, 8.0.18]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.18, 8.0.18]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.18, 8.0.18]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
@@ -78,7 +90,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.201/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
