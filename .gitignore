@@ -18,8 +18,6 @@ node_modules/
 *.tmp
 *.pid
 
-Tebegrammmm/TebegramServer/TebegramServer/uploads/
-
 # Исключение файлов проекта
 *.csproj
 *.user
@@ -29,4 +27,6 @@ Tebegrammmm/TebegramServer/TebegramServer/uploads/
 # Исключение папок
 Properties/
 references/
+Tebegrammmm/TebegramServer/TebegramServer/uploads/
+
 ```
