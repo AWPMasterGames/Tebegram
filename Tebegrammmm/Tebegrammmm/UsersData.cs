@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -12,7 +12,7 @@ namespace Tebegrammmm
     {
         static private ObservableCollection<User> Users = new ObservableCollection<User>()
         {
-            new User("aa", "123", "Вася жопкин бамбук", "127.0.0.1", 4004,
+            new User(1,"aa", "123", "Вася жопкин бамбук", "127.0.0.1", 4004,
                 new ObservableCollection<ChatFolder>{
                     new ChatFolder("Все чаты",
                         new ObservableCollection<Contact> {
@@ -22,7 +22,7 @@ namespace Tebegrammmm
                 }),
 
 
-            new User("aa1", "1234", "убека", "127.0.0.1", 4005,
+            new User(2,"aa1", "1234", "убека", "127.0.0.1", 4005,
                  new ObservableCollection<ChatFolder>{
                     new ChatFolder("Все чаты",
                         new ObservableCollection<Contact> {
@@ -30,7 +30,7 @@ namespace Tebegrammmm
                             new Contact(IPAddress.Parse( "127.0.0.1"),5005,"Masya")
                         },"💬",false)
                  }),
-             new User("masya", "123", "Мася", "127.0.0.1", 4005,
+             new User(3,"masya", "123", "Мася", "127.0.0.1", 4005,
                  new ObservableCollection<ChatFolder>{
                     new ChatFolder("Все чаты",
                         new ObservableCollection<Contact> {
@@ -58,6 +58,15 @@ namespace Tebegrammmm
         public static ObservableCollection<User> GetUsers()
         {
             return Users;
+        }
+
+        public static User FindUser(string userLogin)
+        {
+            foreach (var user in Users)
+            {
+                if (userLogin == user.Login) return user;
+            }
+            return null;
         }
     }
 }

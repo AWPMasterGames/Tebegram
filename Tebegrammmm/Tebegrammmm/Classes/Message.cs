@@ -9,6 +9,7 @@ namespace Tebegrammmm
     public enum MessageType
     {
         Text,
+        Image,
         File
     }
     public class Message
@@ -19,19 +20,20 @@ namespace Tebegrammmm
 
         private MessageType _MessageType;
         private string _FilePath;
-
+        private string _ServerAdress;
         public string Sender { get { return _Sender; } }
         public string Text { get { return _Text; } }
         public string Time { get { return _Time; } }
         public MessageType MessageType { get { return _MessageType; } }
+        public string ServerAdress { get { return _ServerAdress; } }
 
-        public Message(string sender, string text, string time, MessageType messageType = MessageType.Text, string filePath = null)
+        public Message(string sender, string text, string time, MessageType messageType = MessageType.Text, string serverAdress = null)
         {
             _Sender = sender;
             _Text = text;
             _Time = time;
             _MessageType = messageType;
-            _FilePath = filePath;
+            _ServerAdress = serverAdress;
         }
     }
 }

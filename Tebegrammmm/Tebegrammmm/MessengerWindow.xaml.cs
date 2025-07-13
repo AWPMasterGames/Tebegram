@@ -1,4 +1,4 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -12,7 +12,9 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Net.Http.Headers;
 using Tebegrammmm.ChatsFoldersRedactsWindows;
+using Tebegrammmm.Classes;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace Tebegrammmm
 {
@@ -23,13 +25,19 @@ namespace Tebegrammmm
     {
         static HttpClient httpClient = new HttpClient();
         string serverAdress = "https://localhost:7034";
-
+        private static object thisLock = new();
         User User { get; set; }
         Contact Contact { get; set; }
 
+        TcpClient Client { get; set; }
+
+        TcpListener tcpListener = null;
+        Thread Thread { get; set; }
+        bool IsRunning { get; set; }
         public MessengerWindow(User user)
         {
             InitializeComponent();
+            LoadStyle();
             GridMessege.Visibility = Visibility.Hidden;
             GridContactPanel.Visibility = Visibility.Hidden;
             this.User = user;
@@ -37,8 +45,28 @@ namespace Tebegrammmm
             LBChatsLoders.ItemsSource = User.ChatsFolders;
             LBChatsLoders.SelectedIndex = 0;
 
-            // Start receiving messages
-            _ = ReceiveMessage();
+            StartListner();
+
+            Thread = new Thread(new ThreadStart(ReceiveMessage));
+            Thread.Start();
+
+        }
+
+        private void LoadStyle()
+        {
+            LinearGradientBrush LGB = (LinearGradientBrush)this.TryFindResource("ChatBackground");
+            ResourceDictionary resourceDictionary = new ResourceDictionary();
+            
+            LBMessages.Background = LGB;
+
+        }
+
+        private void StartListner()
+        {
+            IPEndPoint endP = new IPEndPoint(IPAddress.Any, User.Port);
+            tcpListener = new TcpListener(endP);
+            tcpListener.Start();
+            IsRunning = true;
         }
 
         private void LBChatsLoders_SelectionChangeFolder(object sender, SelectionChangedEventArgs e)
@@ -62,100 +90,105 @@ namespace Tebegrammmm
             GridContactPanel.Visibility = Visibility.Visible;
         }
 
-        private async Task ReceiveMessage()
+        void ReceiveMessage()
         {
             try
             {
-                while (true)
+                while (IsRunning)
                 {
-                    var response = await httpClient.GetAsync($"{serverAdress}/messages");
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var messageData = await response.Content.ReadAsStringAsync();
-                        string[] messageParts = messageData.Split('▫');
+                    TcpClient client = tcpListener.AcceptTcpClient();
+                    StreamReader sr = new StreamReader(client.GetStream(), Encoding.Unicode);
+                    string s = sr.ReadToEnd();
 
-                        foreach (Contact contact in User.ChatsFolders[0].Contacts)
+                    string[] messageData = s.Split('▫');
+                    foreach (Contact contact in User.ChatsFolders[0].Contacts)
+                    {
+                        if (messageData[0] == contact.IPAddress.ToString() & Convert.ToInt32(messageData[1]) == contact.Port)
                         {
-                            if (messageParts[0] == contact.IPAddress.ToString() && Convert.ToInt32(messageParts[1]) == contact.Port)
+                            if (messageData[2] == "Text")
                             {
-                                if (messageParts[2] == "Text")
+                                string text = messageData[5];
+                                for (int i = 6; i < messageData.Length; i++)
                                 {
-                                    string text = messageParts[4];
-                                    for (int i = 5; i < messageParts.Length; i++)
-                                    {
-                                        text += messageParts[i];
-                                    }
-                                    Message message = new Message(contact.Name, text, messageParts[3]);
-                                    this.Dispatcher.BeginInvoke(new Action(() =>
-                                    {
-                                        contact.Messages.Add(message);
-                                    }));
+                                    text += messageData[i];
                                 }
-                                if (messageParts[2] == "File")
+                                Message message = new Message(contact.Name, text, messageData[3]);
+                                this.Dispatcher.BeginInvoke(new Action(() =>
                                 {
-                                    Message message = new Message(contact.Name, messageParts[4], messageParts[3], MessageType.File);
-                                    this.Dispatcher.BeginInvoke(new Action(() =>
-                                    {
-                                        contact.Messages.Add(message);
-                                    }));
-                                }
+                                    contact.Messages.Add(message);
+                                }));
+                                SaveMessageToFile(contact.Name, s, false);
+                            }
+                            if (messageData[2] == "File")
+                            {
+                                Message message = new Message(contact.Name, messageData[5], messageData[3], MessageType.File, messageData[4]);
+                                this.Dispatcher.BeginInvoke(new Action(() =>
+                                {
+                                    contact.Messages.Add(message);
+                                }));
+                                SaveMessageToFile(contact.Name, s, false);
                             }
                         }
-
-                        SaveMessageToFile(messageData);
                     }
+
+                    client.Close();
                 }
+            }
+            catch (SocketException ex)
+            {
+                Log.Save($"[ReceiveMessage] Sockets error: {ex.Message}");
+                MessageBox.Show("Ошибка при получении сообщения\nПодробнее от ошибке можно узнать в краш логах");
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error: {ex.Message}");
+                Log.Save($"[ReceiveMessage] Error: {ex.Message}");
+                MessageBox.Show("Ошибка оправки сообщению\nПодробнее от ошибке можно узнать в краш логах");
             }
         }
-
-        private async Task SendMessageToUser(Message message)
+        private void SendMessageToUser(Message message)
         {
             try
             {
-                var content = new StringContent(
-                    $"{User.IpAddress.ToString()}▫{User.Port}▫{message.MessageType}▫{message.Time}▫{message.Text}",
-                    Encoding.Unicode);
+                IPEndPoint endP = new IPEndPoint(Contact.IPAddress, Contact.Port);
+                Client = new TcpClient();
+                Client.Connect(endP);
+                NetworkStream nw = Client.GetStream();
 
-                var response = await httpClient.PostAsync($"{serverAdress}/send", content);
-                if (!response.IsSuccessStatusCode)
-                {
-                    MessageBox.Show("Failed to send message.");
-                }
+                string mes = string.Empty;
+
+                mes += $"{User.IpAddress.ToString()}▫";
+                mes += $"{User.Port}▫";
+                mes += $"{message.MessageType}▫";
+                mes += $"{message.Time}▫";
+                mes += $"{message.ServerAdress}▫";
+                mes += $"{message.Text}";
+
+
+                byte[] buffer = Encoding.Unicode.GetBytes(mes);
+                nw.Write(buffer, 0, buffer.Length);
+                Client.Close();
+                SaveMessageToFile(User.Name, mes);
+            }
+            catch (SocketException ex)
+            {
+                MessageBox.Show("Ошибка оправки сообщению\nПодробнее от ошибке можно узнать в краш логах");
+                Log.Save($"[SendMessegeToUser] Sockets error: {ex.Message}");
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error: {ex.Message}");
+                MessageBox.Show("Ошибка оправки сообщению\nПодробнее от ошибке можно узнать в краш логах");
+                Log.Save($"[SendMessegeToUser] Error: {ex.Message}");
             }
         }
 
-        private void SaveMessageToFile(string message)
+        private void SaveMessageToFile(string ContactName, string messageData, bool IsMe = true)
         {
             try
             {
-                string[] parts = message.Split('▫');
+                string[] MessegeData = messageData.Split('▫');
+                string MessegeDataInFile = $"{MessegeData[0]}▫{MessegeData[1]}▫{ContactName}▫{MessegeData[2]}▫{MessegeData[3]}▫{MessegeData[4]}▫{MessegeData[5]}";
 
-                if (parts.Length < 5)
-                {
-                    MessageBox.Show("Некорректный формат сообщения.");
-                    return;
-                }
-
-                string ip = parts[0];
-                string port = parts[1];
-                string type = parts[2];
-                string time = parts[3];
-                string text = parts[4];
-
-                for (int i = 5; i < parts.Length; i++)
-                {
-                    text += parts[i];
-                }
-
-                string userName = User.Name;
+                string userId = User.Id.ToString();
                 string dataFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
 
                 if (!Directory.Exists(dataFolder))
@@ -163,32 +196,44 @@ namespace Tebegrammmm
                     Directory.CreateDirectory(dataFolder);
                 }
 
-                string userFolder = Path.Combine(dataFolder, userName);
+                string userFolder = Path.Combine(dataFolder, userId);
                 if (!Directory.Exists(userFolder))
                 {
                     Directory.CreateDirectory(userFolder);
                 }
+                string ContactFolder;
+                if (IsMe)
+                {
+                    ContactFolder = Path.Combine(userFolder, Contact.Name);
+                }
+                else
+                {
+                    ContactFolder = Path.Combine(userFolder, ContactName);
+                }
 
-                string safeTime = time.Replace(":", "-").Replace("/", "-").Replace(" ", "_");
-                string fileName = $"message_{safeTime}.txt";
-                string filePath = Path.Combine(userFolder, fileName);
+                if (!Directory.Exists(ContactFolder))
+                {
+                    Directory.CreateDirectory(ContactFolder);
+                }
+                DateTime dateTime = DateTime.Now;
+
+                string fileName = $"{dateTime.ToString("dd.MM.yyyy")}.txt";
+                string filePath = Path.Combine(ContactFolder, fileName);
 
                 StringBuilder sb = new StringBuilder();
-                sb.AppendLine($"От: {ip}:{port}");
-                sb.AppendLine($"Тип: {type}");
-                sb.AppendLine($"Время: {time}");
-                sb.AppendLine("Сообщение:");
-                sb.AppendLine(text);
-
-                File.WriteAllText(filePath, sb.ToString(), Encoding.UTF8);
+                sb.AppendLine(MessegeDataInFile);
+                lock (thisLock)
+                {
+                    File.AppendAllText(filePath, sb.ToString(), Encoding.UTF8);
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при сохранении сообщения: {ex.Message}");
+                Log.Save($"[SaveMessageToFile] Error: {ex.Message}");
+                MessageBox.Show("Ошибка при сохранении сообщения\nПодробнее от ошибке можно узнать в краш логах");
             }
         }
-
-        private async Task SendMessage(string message, MessageType messageType = MessageType.Text)
+        private void SendMessage(string message, MessageType messageType = MessageType.Text, string ServerFilePath = null)
         {
             if (string.IsNullOrWhiteSpace(message))
             {
@@ -196,22 +241,22 @@ namespace Tebegrammmm
                 return;
             }
 
-            Message Message = new Message(User.Name, message, DateTime.Now.ToString("hh:mm"), messageType);
+            Message Message = new Message(User.Name, message, DateTime.Now.ToString("hh:mm"), messageType, ServerFilePath);
             Contact.Messages.Add(Message);
-            await SendMessageToUser(Message);
+            SendMessageToUser(Message);
             TBMessage.Text = string.Empty;
         }
 
-        private async void Button_Click_SendMessage(object sender, RoutedEventArgs e)
+        private void Button_Click_SendMessage(object sender, RoutedEventArgs e)
         {
             if (LBChats.SelectedItem == null)
             {
                 return;
             }
-            await SendMessage(TBMessage.Text);
+            SendMessage(TBMessage.Text);
             TBMessage.Focus();
         }
-        private async void TBMessage_KeyDown_SendMessage(object sender, KeyEventArgs e)
+        private void TBMessage_KeyDown_SendMessage(object sender, KeyEventArgs e)
         {
             if (LBChats.SelectedItem == null)
             {
@@ -219,7 +264,7 @@ namespace Tebegrammmm
             }
             if (e.Key == Key.Enter)
             {
-                await SendMessage(TBMessage.Text);
+                SendMessage(TBMessage.Text);
             }
         }
 
@@ -242,7 +287,7 @@ namespace Tebegrammmm
             {
                 for (int j = 0; j < User.ChatsFolders[i].Contacts.Count; j++)
                 {
-                    if(User.ChatsFolders[i].Contacts[j].Name == contact.Name)
+                    if (User.ChatsFolders[i].Contacts[j].Name == contact.Name)
                     {
                         User.ChatsFolders[i].Contacts.RemoveAt(j);
                     }
@@ -279,19 +324,10 @@ namespace Tebegrammmm
             RedactcionChatsFoldersWindow RCFW = new RedactcionChatsFoldersWindow(User.ChatsFolders);
             RCFW.ShowDialog();
         }
-        private string GetMimeType(string fileName)
-        {
-            string mimeType = "application/unknown";
-            string ext = System.IO.Path.GetExtension(fileName).ToLower();
-            Microsoft.Win32.RegistryKey regKey = Microsoft.Win32.Registry.ClassesRoot.OpenSubKey(ext);
-            if (regKey != null && regKey.GetValue("Content Type") != null)
-                mimeType = regKey.GetValue("Content Type").ToString();
-            return mimeType;
-        }
         private async Task SendFileToServer(string filePath)
         {
-            string mimeType = GetMimeType(filePath);
-            if (mimeType == "application/unknown")
+            string mimeType = MIME.GetMimeType(Path.GetFileName(Path.GetExtension(filePath)));
+            if (mimeType == "application/octet-stream")
             {
                 MessageBox.Show("Неизвестный тип файла");
                 return;
@@ -304,14 +340,14 @@ namespace Tebegrammmm
 
             using var response = await httpClient.PostAsync($"{serverAdress}/upload", multipar);
             var ResponseText = await response.Content.ReadAsStringAsync();
-            this.Dispatcher.Invoke(new Action(() => { SendMessage(Path.GetFileName(filePath),MessageType.File); }));
+            this.Dispatcher.Invoke(new Action(() => { SendMessage(Path.GetFileName(filePath), MessageType.File, $"{serverAdress}/upload/{Path.GetFileName(filePath)}"); }));
             MessageBox.Show(ResponseText);
         }
         private async void Button_Click_SelectFile(object sender, RoutedEventArgs e)
         {
             OpenFileDialog fileDialog = new OpenFileDialog();
             //fileDialog.ShowDialog();
-            
+
 
             if (fileDialog.ShowDialog() != true)
             {
@@ -362,7 +398,8 @@ namespace Tebegrammmm
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Ошибка при скачивании файла: {ex.Message}");
+                    Log.Save($"[LBMessages_SelectionChangeMessage] Error: {ex.Message}");
+                    MessageBox.Show($"Ошибка при скачивании файла\nПодробнее от ошибке можно узнать в краш логах");
                 }
             }
         }

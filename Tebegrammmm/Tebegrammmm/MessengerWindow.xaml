@@ -122,13 +122,13 @@
                     </StackPanel>
                 </Grid>
                 <ListBox x:Name="LBMessages" Grid.Row="1" SelectionChanged="LBMessages_SelectionChangeMessage" >
-                    <ListBox.Background>
+                    <!--<ListBox.Background>
                         <LinearGradientBrush>
                             <GradientStop Color="LightYellow" Offset="0.1"/>
                             <GradientStop Color="LightGreen" Offset="0.5"/>
                             <GradientStop Color="LightYellow" Offset="0.9"/>
                         </LinearGradientBrush>
-                    </ListBox.Background>
+                    </ListBox.Background>-->
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Border Background="White" CornerRadius="25">
@@ -140,7 +140,7 @@
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
                                     <TextBlock Text="{Binding Sender}" Margin="5,0" Foreground="#FF4200FF"/>
-
+                                    <Image Grid.Row="1" Source="{Binding ServerAdress}"/>
                                     <TextBlock Grid.Row="2" Text="{Binding Text}" TextWrapping="Wrap" FontSize="15" Margin="5,0"/>
                                     <TextBlock Grid.Row="3" Text="{Binding Time}" Foreground="#FF7D7D7D" FontSize="10" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                                 </Grid>
