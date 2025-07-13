@@ -1,5 +1,4 @@
 ```
-# Системные файлы и каталоги
 .vs/
 .vscode/
 bin/
@@ -7,24 +6,19 @@ obj/
 *.user
 *.suo
 
-# Выходные файлы и сборки
 *.log
 
-# Node.js (если JS)
 node_modules/
 
-# Кэш
 *.cache
 *.tmp
 *.pid
 
-# Исключение файлов проекта
 *.csproj
 *.user
 *.json
 *.config
 
-# Исключение папок
 Properties/
 references/
 Tebegrammmm/TebegramServer/TebegramServer/uploads/
