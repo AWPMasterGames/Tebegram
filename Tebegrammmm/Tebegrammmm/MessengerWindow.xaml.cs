@@ -27,11 +27,6 @@ namespace Tebegrammmm
         User User { get; set; }
         Contact Contact { get; set; }
 
-        TcpClient Client { get; set; }
-
-        TcpListener tcpListener = null;
-        Thread Thread { get; set; }
-        bool IsRunning { get; set; }
         public MessengerWindow(User user)
         {
             InitializeComponent();
@@ -42,19 +37,8 @@ namespace Tebegrammmm
             LBChatsLoders.ItemsSource = User.ChatsFolders;
             LBChatsLoders.SelectedIndex = 0;
 
-            StartListner();
-
-            Thread = new Thread(new ThreadStart(ReceiveMessage));
-            Thread.Start();
-            
-        }
-
-        private void StartListner() 
-        {
-            IPEndPoint endP = new IPEndPoint(IPAddress.Any, User.Port);
-            tcpListener = new TcpListener(endP);
-            tcpListener.Start();
-            IsRunning = true;
+            // Start receiving messages
+            _ = ReceiveMessage();
         }
 
         private void LBChatsLoders_SelectionChangeFolder(object sender, SelectionChangedEventArgs e)
@@ -78,85 +62,69 @@ namespace Tebegrammmm
             GridContactPanel.Visibility = Visibility.Visible;
         }
 
-        void ReceiveMessage()
+        private async Task ReceiveMessage()
         {
             try
             {
-                while (IsRunning)
+                while (true)
                 {
-                    TcpClient client = tcpListener.AcceptTcpClient();
-                    StreamReader sr = new StreamReader(client.GetStream(), Encoding.Unicode);
-
-                    string s = sr.ReadToEnd();
-
-                    string[] messageData = s.Split('▫');
-                    foreach (Contact contact in User.ChatsFolders[0].Contacts)
+                    var response = await httpClient.GetAsync($"{serverAdress}/messages");
+                    if (response.IsSuccessStatusCode)
                     {
-                        if (messageData[0] == contact.IPAddress.ToString() & Convert.ToInt32(messageData[1]) == contact.Port)
+                        var messageData = await response.Content.ReadAsStringAsync();
+                        string[] messageParts = messageData.Split('▫');
+
+                        foreach (Contact contact in User.ChatsFolders[0].Contacts)
                         {
-                            if (messageData[2] == "Text")
+                            if (messageParts[0] == contact.IPAddress.ToString() && Convert.ToInt32(messageParts[1]) == contact.Port)
                             {
-                                string text = messageData[4];
-                                for(int i = 5; i < messageData.Length;i++)
+                                if (messageParts[2] == "Text")
                                 {
-                                    text += messageData[i];
+                                    string text = messageParts[4];
+                                    for (int i = 5; i < messageParts.Length; i++)
+                                    {
+                                        text += messageParts[i];
+                                    }
+                                    Message message = new Message(contact.Name, text, messageParts[3]);
+                                    this.Dispatcher.BeginInvoke(new Action(() =>
+                                    {
+                                        contact.Messages.Add(message);
+                                    }));
                                 }
-                                Message message = new Message(contact.Name, text, messageData[3]);
-                                this.Dispatcher.BeginInvoke(new Action(() =>
+                                if (messageParts[2] == "File")
                                 {
-                                    contact.Messages.Add(message);
-                                }));
-                            }
-                            if (messageData[2] == "File")
-                            {
-                                Message message = new Message(contact.Name, messageData[4], messageData[3],MessageType.File);
-                                this.Dispatcher.BeginInvoke(new Action(() =>
-                                {
-                                    contact.Messages.Add(message);
-                                }));
+                                    Message message = new Message(contact.Name, messageParts[4], messageParts[3], MessageType.File);
+                                    this.Dispatcher.BeginInvoke(new Action(() =>
+                                    {
+                                        contact.Messages.Add(message);
+                                    }));
+                                }
                             }
                         }
+
+                        SaveMessageToFile(messageData);
                     }
-
-                    //Требуется проверка работоспособности
-                    SaveMessageToFile(s);
-
-                    client.Close();
                 }
-            }
-            catch (SocketException ex)
-            {
-                MessageBox.Show($"Sockets error: {ex.Message}");
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error: {ex.Message}");
             }
         }
-        private void SendMessageToUser(Message message)
+
+        private async Task SendMessageToUser(Message message)
         {
             try
             {
-                IPEndPoint endP = new IPEndPoint(Contact.IPAddress, Contact.Port);
-                Client = new TcpClient();
-                Client.Connect(endP);
-                NetworkStream nw = Client.GetStream();
+                var content = new StringContent(
+                    $"{User.IpAddress.ToString()}▫{User.Port}▫{message.MessageType}▫{message.Time}▫{message.Text}",
+                    Encoding.Unicode);
 
-                string mes = string.Empty;
-
-                mes += $"{User.IpAddress.ToString()}▫";
-                mes += $"{User.Port}▫";
-                mes += $"{message.MessageType}▫";
-                mes += $"{message.Time}▫";
-                mes += $"{message.Text}▫";
-
-                byte[] buffer = Encoding.Unicode.GetBytes(mes);
-                nw.Write(buffer, 0, buffer.Length);
-                Client.Close();
-            }
-            catch (SocketException ex)
-            {
-                MessageBox.Show($"Sockets error: {ex.Message}");
+                var response = await httpClient.PostAsync($"{serverAdress}/send", content);
+                if (!response.IsSuccessStatusCode)
+                {
+                    MessageBox.Show("Failed to send message.");
+                }
             }
             catch (Exception ex)
             {
@@ -219,30 +187,31 @@ namespace Tebegrammmm
                 MessageBox.Show($"Ошибка при сохранении сообщения: {ex.Message}");
             }
         }
-        private void SendMessage(string message, MessageType messageType = MessageType.Text)
+
+        private async Task SendMessage(string message, MessageType messageType = MessageType.Text)
         {
-            if(string.IsNullOrWhiteSpace(message))
+            if (string.IsNullOrWhiteSpace(message))
             {
                 TBMessage.Text = string.Empty;
                 return;
             }
 
-            Message Message = new Message(User.Name, message, DateTime.Now.ToString("hh:mm"),messageType);
+            Message Message = new Message(User.Name, message, DateTime.Now.ToString("hh:mm"), messageType);
             Contact.Messages.Add(Message);
-            SendMessageToUser(Message);
+            await SendMessageToUser(Message);
             TBMessage.Text = string.Empty;
         }
 
-        private void Button_Click_SendMessage(object sender, RoutedEventArgs e)
+        private async void Button_Click_SendMessage(object sender, RoutedEventArgs e)
         {
             if (LBChats.SelectedItem == null)
             {
                 return;
             }
-            SendMessage(TBMessage.Text);
+            await SendMessage(TBMessage.Text);
             TBMessage.Focus();
         }
-        private void TBMessage_KeyDown_SendMessage(object sender, KeyEventArgs e)
+        private async void TBMessage_KeyDown_SendMessage(object sender, KeyEventArgs e)
         {
             if (LBChats.SelectedItem == null)
             {
@@ -250,7 +219,7 @@ namespace Tebegrammmm
             }
             if (e.Key == Key.Enter)
             {
-                SendMessage(TBMessage.Text);
+                await SendMessage(TBMessage.Text);
             }
         }
 
