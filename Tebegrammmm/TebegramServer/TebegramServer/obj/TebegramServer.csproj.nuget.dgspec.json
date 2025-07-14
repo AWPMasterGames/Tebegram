@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\TebegramServer.csproj": {}
+    "c:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\TebegramServer.csproj": {}
   },
   "projects": {
-    "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\TebegramServer.csproj": {
+    "c:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\TebegramServer.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\TebegramServer.csproj",
+        "projectUniqueName": "c:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\TebegramServer.csproj",
         "projectName": "TebegramServer",
-        "projectPath": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\TebegramServer.csproj",
+        "projectPath": "c:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\TebegramServer.csproj",
         "packagesPath": "C:\\Users\\makar\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\obj\\",
+        "outputPath": "c:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

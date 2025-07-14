@@ -251,5 +251,23 @@ namespace TebegramServer.Classes
                 throw;
             }
         }
+
+        // Метод для сохранения сообщения только для одного пользователя (без дублирования)
+        public static async Task SaveMessageForSingleUser(string user, string chatWith, string message, string timestamp, string messageType, string status = "Sent")
+        {
+            var messageData = new
+            {
+                FromUser = user,     // user - тот, для кого мы сохраняем
+                ToUser = chatWith,   // chatWith - с кем он общается
+                Message = message,
+                Timestamp = timestamp,
+                MessageType = messageType,
+                Status = status,
+                SavedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
+            };
+
+            string json = JsonSerializer.Serialize(messageData);
+            await SaveMessageForUser(user, chatWith, json);
+        }
     }
 }

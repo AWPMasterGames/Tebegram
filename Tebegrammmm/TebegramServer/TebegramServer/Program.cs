@@ -99,7 +99,7 @@ app.MapPost("/messages/save", async (HttpContext context) =>
         string messageType = messageData["messageType"]?.ToString() ?? "";
         string status = messageData["status"]?.ToString() ?? "Sent";
         
-        // Сохраняем сообщение в файл для восстановления с статусом
+        // Сохраняем сообщение (MessageStorage уже сохраняет для обоих пользователей)
         await MessageStorage.SaveMessage(fromUser, toUser, messageText, timestamp, messageType, status);
         
         await context.Response.WriteAsync("Message saved");
@@ -137,10 +137,10 @@ app.MapPost("/messages/save-with-dual-status", async (HttpContext context) =>
         string receiverStatus = messageData["receiverStatus"]?.ToString() ?? "Sent";
         
         // Сохраняем сообщение для отправителя с его статусом
-        await MessageStorage.SaveMessage(fromUser, toUser, messageText, timestamp, messageType, senderStatus);
+        await MessageStorage.SaveMessageForSingleUser(fromUser, toUser, messageText, timestamp, messageType, senderStatus);
         
-        // Сохраняем сообщение для получателя с его статусом
-        await MessageStorage.SaveMessage(toUser, fromUser, messageText, timestamp, messageType, receiverStatus);
+        // Сохраняем сообщение для получателя с его статусом  
+        await MessageStorage.SaveMessageForSingleUser(toUser, fromUser, messageText, timestamp, messageType, receiverStatus);
         
         await context.Response.WriteAsync("Message saved with dual status");
         Logs.Save($"Сообщение сохранено с двойным статусом: {fromUser} -> {toUser} (Sender: {senderStatus}, Receiver: {receiverStatus})");
@@ -424,6 +424,89 @@ app.MapPost("/users/clear-open-chat", async (HttpContext context) =>
     {
         await context.Response.WriteAsync($"Error: {ex.Message}");
         Logs.Save($"Ошибка очистки открытого чата: {ex.Message}");
+    }
+});
+
+// Endpoint для отправки сообщения (используется клиентом)
+app.MapPost("/messages/send", async (HttpContext context) =>
+{
+    try
+    {
+        using var reader = new StreamReader(context.Request.Body);
+        string requestBody = await reader.ReadToEndAsync();
+        
+        var messageData = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, object>>(requestBody);
+        
+        if (messageData == null) 
+        {
+            await context.Response.WriteAsync("Invalid message data");
+            return;
+        }
+        
+        string fromUser = messageData["fromUser"]?.ToString() ?? "";
+        string toUser = messageData["toUser"]?.ToString() ?? "";
+        string messageText = messageData["message"]?.ToString() ?? "";
+        string timestamp = messageData["timestamp"]?.ToString() ?? DateTime.Now.ToString("o");
+        string messageType = messageData["messageType"]?.ToString() ?? "Text";
+        string status = messageData["status"]?.ToString() ?? "Sent";
+        
+        // Сохраняем сообщение (MessageStorage уже сохраняет для обоих пользователей)
+        await MessageStorage.SaveMessage(fromUser, toUser, messageText, timestamp, messageType, status);
+        
+        await context.Response.WriteAsync("Message sent successfully");
+        Logs.Save($"Сообщение отправлено: {fromUser} -> {toUser}");
+    }
+    catch (Exception ex)
+    {
+        await context.Response.WriteAsync($"Error: {ex.Message}");
+        Logs.Save($"Ошибка отправки сообщения: {ex.Message}");
+    }
+});
+
+// Endpoint для проверки онлайн статуса пользователя (используется клиентом)
+app.MapGet("/users/online", async (HttpContext context) =>
+{
+    try
+    {
+        string? user = context.Request.Query["user"];
+        if (string.IsNullOrEmpty(user))
+        {
+            await context.Response.WriteAsync("false");
+            return;
+        }
+        
+        // Простая проверка - считаем пользователя онлайн, если он есть в системе
+        bool isOnline = UsersData.IsExistUser(user);
+        await context.Response.WriteAsync(isOnline.ToString().ToLower());
+        
+        Logs.Save($"Проверка онлайн статуса для {user}: {isOnline}");
+    }
+    catch (Exception ex)
+    {
+        await context.Response.WriteAsync("false");
+        Logs.Save($"Ошибка проверки онлайн статуса: {ex.Message}");
+    }
+});
+
+// Endpoint для проверки здоровья сервера (используется для мониторинга туннеля)
+app.MapGet("/health", async (HttpContext context) =>
+{
+    try
+    {
+        var healthInfo = new
+        {
+            status = "healthy",
+            timestamp = DateTime.Now.ToString("o"),
+            server = "TebegramServer",
+            version = "1.0"
+        };
+        
+        string json = System.Text.Json.JsonSerializer.Serialize(healthInfo);
+        await context.Response.WriteAsync(json);
+    }
+    catch (Exception ex)
+    {
+        await context.Response.WriteAsync($"{{\"status\":\"unhealthy\",\"error\":\"{ex.Message}\"}}");
     }
 });
 
