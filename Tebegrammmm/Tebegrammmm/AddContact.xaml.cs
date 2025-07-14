@@ -10,12 +10,14 @@ namespace Tebegrammmm
     public partial class AddContact : Window
     {
         Contact Contact;
+        
         public AddContact(Contact contact, string title)
         {
             InitializeComponent();
             this.Title = title;
             TBTitle.Text = title;
             Contact = contact;
+            
             if (contact.Name != string.Empty)
             {
                 TBName.Text = contact.Name;
@@ -24,10 +26,7 @@ namespace Tebegrammmm
             {
                 TBIPAdress.Text = contact.IPAddress.ToString();
             }
-            if (contact.Port != null)
-            {
-                TBPort.Text = contact.Port.ToString();
-            }
+            TBPort.Text = contact.Port.ToString();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -43,11 +42,13 @@ namespace Tebegrammmm
                 MessageBox.Show("Укажите Имя");
                 return;
             }
+            
             if (Convert.ToInt32(TBPort.Text) < 1500)
             {
                 MessageBox.Show("Минимальное значение для порта 1500");
                 return;
             }
+            
             try
             {
                 Contact.ChangeIpAdress(IPAddress.Parse(TBIPAdress.Text));
@@ -57,6 +58,7 @@ namespace Tebegrammmm
                 MessageBox.Show(ex.Message);
                 return;
             }
+            
             Contact.ChangeName(TBName.Text);
             Contact.ChangePort(Convert.ToInt32(TBPort.Text));
 

@@ -12,7 +12,10 @@ namespace Tebegrammmm
         {
             InitializeComponent();
             User = user;
-            TBIPAdress.Text = User.IpAddress.ToString();
+            TBLogin.Text = User.Login;          // Устанавливаем логин
+            // Показываем localhost вместо 127.0.0.1 для лучшего UX
+            string displayAddress = User.IpAddress.ToString() == "127.0.0.1" ? "localhost" : User.IpAddress.ToString();
+            TBIPAdress.Text = displayAddress;
             TBPort.Text = User.Port.ToString();
         }
     }

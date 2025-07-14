@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -39,6 +39,38 @@ namespace Tebegrammmm
         {
             if(login == _Login & password == _Password) return true;
             return false;
+        }
+
+        public string ToClientSend()
+        {
+            // Формируем строку с данными пользователя для отправки клиенту
+            StringBuilder sb = new StringBuilder();
+            sb.Append($"{Id}▫");
+            sb.Append($"{Login}▫");
+            sb.Append($"{Name}▫");
+            
+            // Добавляем количество чат-папок
+            sb.Append($"{ChatsFolders.Count}▫");
+            
+            // Для каждой папки добавляем информацию
+            foreach (var folder in ChatsFolders)
+            {
+                sb.Append($"{folder.Id}▫");
+                sb.Append($"{folder.FolderName}▫");
+                sb.Append($"{folder.Icon}▫");
+                sb.Append($"{folder.IsCanRedact}▫");
+                sb.Append($"{folder.Contacts.Count}▫");
+                
+                // Для каждого контакта в папке
+                foreach (var contact in folder.Contacts)
+                {
+                    sb.Append($"{contact.Name}▫");
+                    // Вместо IP и порта используем имя пользователя
+                    // sb.Append($"{contact.IPAddress}▫{contact.Port}▫");
+                }
+            }
+            
+            return sb.ToString();
         }
     }
 }
