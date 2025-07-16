@@ -1,1 +1,11 @@
-{"Version":1,"Hash":"GzwSg1ljwc81XwT8lZpe1SfE648EjnH+9wIELo3+RB4=","Source":"TebegramServer","BasePath":"_content/TebegramServer","Mode":"Default","ManifestType":"Build","ReferencedProjectsConfiguration":[],"DiscoveryPatterns":[],"Assets":[],"Endpoints":[]}
+{
+  "Version": 1,
+  "Hash": "QSAA7p3j2NXXgu9gPDmPKMHkqfY9KRH38beSNB1hBRE=",
+  "Source": "TebegramServer",
+  "BasePath": "_content/TebegramServer",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

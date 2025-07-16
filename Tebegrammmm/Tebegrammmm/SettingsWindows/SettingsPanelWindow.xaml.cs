@@ -14,9 +14,8 @@ namespace Tebegrammmm
             User = user;
             TBLogin.Text = User.Login;          // Устанавливаем логин
             // Показываем localhost вместо 127.0.0.1 для лучшего UX
-            string displayAddress = User.IpAddress.ToString() == "127.0.0.1" ? "localhost" : User.IpAddress.ToString();
+            string displayAddress = User.Username;
             TBIPAdress.Text = displayAddress;
-            TBPort.Text = User.Port.ToString();
         }
     }
 }

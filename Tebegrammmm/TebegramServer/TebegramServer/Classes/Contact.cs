@@ -10,39 +10,27 @@ namespace TebegramServer
 {
     public class Contact
     {
-        private IPAddress _IPAddress;
-        private int _Port;
         private string _Name = string.Empty;
-        private string _Username = string.Empty;
         private ObservableCollection<Message> _Messages;
-        public IPAddress IPAddress { get { return _IPAddress; } }
-        public int Port { get { return _Port; } }
         public string Name { get { return _Name; } }
-        public string Username { get { return _Username; } }
         public ObservableCollection<Message> Messages { get { return _Messages; } }
+        public string Username { get; set; }
+        public string Draft { get; set; } = string.Empty; // Черновик сообщения
 
         public Contact()
         {
-            _IPAddress = IPAddress.Loopback;
-            _Port = 0;
             _Messages = new ObservableCollection<Message>();
         }
-        
-        public Contact(IPAddress iPAddress, int port, string name, string username = "")
+        public Contact(string username, string name)
         {
-            _IPAddress = iPAddress;
-            _Port = port;
             _Name = name;
-            _Username = username;
+            Username = username;
             _Messages = new ObservableCollection<Message>();
         }
-        
-        public Contact(IPAddress iPAddress, int port, string name, ObservableCollection<Message> messages, string username = "")
+        public Contact(string username, string name, ObservableCollection<Message> messages)
         {
-            _IPAddress = iPAddress;
-            _Port = port;
             _Name = name;
-            _Username = username;
+            Username = username;
             _Messages = messages;
         }
 
@@ -50,17 +38,15 @@ namespace TebegramServer
         {
             _Name = name;
         }
-        public void ChangeUsername(string username)
+
+        public string GetAllMeseges()
         {
-            _Username = username;
-        }
-        public void ChangeIpAdress(IPAddress ipAddress)
-        {
-            _IPAddress = ipAddress;
-        }
-        public void ChangePort(int port)
-        {
-            _Port = port;
+            string AllMessege = string.Empty;
+            foreach (var message in _Messages)
+            {
+                AllMessege += $"{message.ToString()}❂";
+            }
+            return AllMessege;
         }
     }
 }

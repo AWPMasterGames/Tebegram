@@ -19,19 +19,17 @@ namespace Tebegrammmm
         public string Login { get { return _Login; } }
         public string Name { get { return _Name; } }
 
-        public IPAddress IpAddress;
-        public int Port {get; set; }
+        public string Username { get; set; }
 
         public ObservableCollection<ChatFolder> ChatsFolders { get; set; }
 
-        public User(int id, string login, string password, string name, string ipadress, int port, ObservableCollection<ChatFolder> chatsFolders)
+        public User(int id, string login, string password, string name, string username, ObservableCollection<ChatFolder> chatsFolders)
         {
             _Id = id;
             _Login = login;
             _Password = password;
             _Name = name;
-            IpAddress = IPAddress.Parse(ipadress);
-            Port = port;
+            Username = username;
             ChatsFolders = chatsFolders;
         }
 
@@ -41,36 +39,13 @@ namespace Tebegrammmm
             return false;
         }
 
-        public string ToClientSend()
+        public Contact FindContactByUsername(string username)
         {
-            // Формируем строку с данными пользователя для отправки клиенту
-            StringBuilder sb = new StringBuilder();
-            sb.Append($"{Id}▫");
-            sb.Append($"{Login}▫");
-            sb.Append($"{Name}▫");
-            
-            // Добавляем количество чат-папок
-            sb.Append($"{ChatsFolders.Count}▫");
-            
-            // Для каждой папки добавляем информацию
-            foreach (var folder in ChatsFolders)
+            foreach (Contact contact in ChatsFolders[0].Contacts)
             {
-                sb.Append($"{folder.Id}▫");
-                sb.Append($"{folder.FolderName}▫");
-                sb.Append($"{folder.Icon}▫");
-                sb.Append($"{folder.IsCanRedact}▫");
-                sb.Append($"{folder.Contacts.Count}▫");
-                
-                // Для каждого контакта в папке
-                foreach (var contact in folder.Contacts)
-                {
-                    sb.Append($"{contact.Name}▫");
-                    // Вместо IP и порта используем имя пользователя
-                    // sb.Append($"{contact.IPAddress}▫{contact.Port}▫");
-                }
+                if (contact.Username == username) return contact;
             }
-            
-            return sb.ToString();
+            return null;
         }
     }
 }

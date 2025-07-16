@@ -13,6 +13,7 @@ namespace Tebegrammmm
         File
     }
     
+
     public enum MessageStatus
     {
         Sent,      // Доставлено
@@ -22,6 +23,7 @@ namespace Tebegrammmm
     public class Message
     {
         private string _Sender;
+        private string _Reciver;
         private string _Text;
         private string _Time;
 
@@ -30,6 +32,7 @@ namespace Tebegrammmm
         private string _ServerAdress;
         private MessageStatus _Status;
         public string Sender { get { return _Sender; } }
+        public string Reciver { get { return _Reciver; } }
         public string Text { get { return _Text; } }
         public string Time { get { return _Time; } }
         public MessageType MessageType { get { return _MessageType; } }
@@ -37,9 +40,10 @@ namespace Tebegrammmm
         public string Message_FilePath { get { return _FilePath; } }
         public MessageStatus Status { get { return _Status; } set { _Status = value; } }
 
-        public Message(string sender, string text, string time, MessageType messageType = MessageType.Text, string serverAdress = null, string filePath = null)
+        public Message(string sender, string reciver, string text, string time, MessageType messageType = MessageType.Text, string serverAdress = null, string filePath = null)
         {
             _Sender = sender;
+            _Reciver = reciver;
             _Text = text;
             _Time = time;
             _MessageType = messageType;

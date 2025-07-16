@@ -50,7 +50,7 @@ app.MapGet("/login/{UserLogin}-{UserPassword}", async (HttpContext Context, stri
     }
     else if (UsersData.Authorize(UserLogin, UserPassword) != null)
     {
-        var user = UsersData.FindUser(UserLogin);
+        var user = UsersData.FindUserByLogin(UserLogin);
         if (user != null)
         {
             await Context.Response.WriteAsync(user.ToClientSend());
@@ -64,7 +64,7 @@ app.MapGet("/login/{UserLogin}-{UserPassword}", async (HttpContext Context, stri
     else await Context.Response.WriteAsync("Неверный пароль");
 });
 
-app.MapGet("/register/{UserLogin}-{UserPassword}", async (HttpContext Context, string UserLogin, string UserPassword) =>
+app.MapGet("/register/{UserLogin}-{Username}-{UserPassword}", async (HttpContext Context, string UserLogin, string Username, string UserPassword) =>
 {
     if (UsersData.IsExistUser(UserLogin))
     {
@@ -72,7 +72,7 @@ app.MapGet("/register/{UserLogin}-{UserPassword}", async (HttpContext Context, s
     }
     else if (!UsersData.IsExistUser(UserLogin))
     {
-        User NewUser = new User(1, UserLogin, UserPassword, UserLogin, "127.0.0.1", 4004,
+        User NewUser = new User(1, UserLogin, UserPassword, UserLogin, Username,
                 new ObservableCollection<ChatFolder> {
                 new ChatFolder("Все чаты",
                         new ObservableCollection<Contact> {
@@ -82,6 +82,22 @@ app.MapGet("/register/{UserLogin}-{UserPassword}", async (HttpContext Context, s
         await Context.Response.WriteAsync(NewUser.ToClientSend());
         Logs.Save($"Пользователь {UserLogin} зарегрестрировался");
     }
+});
+
+app.MapGet("/messages/{id}", async (HttpContext Context,int id) =>
+{
+    User user = UsersData.FindUserById(id);
+
+    ChatFolder Folder = user.ChatsFolders[0];
+
+
+    string Messegas = string.Empty;
+    for (int i = 0; i < Folder.Contacts.Count; i++)
+    {
+        Messegas += $"{Folder.Contacts[i].GetAllMeseges()}";
+    }
+
+    await Context.Response.WriteAsync(Messegas);
 });
 
 // Endpoint для сохранения сообщения на сервере
@@ -153,7 +169,7 @@ app.MapPost("/messages/save-with-dual-status", async (HttpContext context) =>
 });
 
 // Endpoint для получения истории сообщений
-app.MapGet("/messages/{userLogin}", async (HttpContext context, string userLogin) =>
+/*app.MapGet("/messages/{userLogin}", async (HttpContext context, string userLogin) =>
 {
     try
     {
@@ -167,7 +183,7 @@ app.MapGet("/messages/{userLogin}", async (HttpContext context, string userLogin
         await context.Response.WriteAsync($"Error: {ex.Message}");
         Logs.Save($"Ошибка получения истории: {ex.Message}");
     }
-});
+});*/
 
 // Endpoint для очистки истории сообщений пользователя
 app.MapDelete("/messages/{userLogin}", async (HttpContext context, string userLogin) =>
