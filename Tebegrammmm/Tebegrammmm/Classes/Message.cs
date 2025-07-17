@@ -51,5 +51,9 @@ namespace Tebegrammmm
             _FilePath = filePath;
             _Status = MessageStatus.Sent; // По умолчанию
         }
+        public override string ToString()
+        {
+            return $"{Sender}▫{Reciver}▫{MessageType}▫{Time}▫{ServerAdress}▫{Text}";
+        }
     }
 }

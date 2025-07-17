@@ -8,6 +8,11 @@ using Microsoft.AspNetCore.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
+void LoadData()
+{
+
+}
+
 // Настройка порта
 builder.WebHost.UseUrls("http://localhost:5000");
 
@@ -98,6 +103,41 @@ app.MapGet("/messages/{id}", async (HttpContext Context,int id) =>
     }
 
     await Context.Response.WriteAsync(Messegas);
+});
+app.MapGet("/NewMessages/{id}", async (HttpContext Context, int id) =>
+{
+    User user = UsersData.FindUserById(id);
+
+    await Context.Response.WriteAsync(user.GetNewMessages());
+});
+app.MapPost("/messages", async (HttpContext Context) =>
+{
+    using StreamReader reader = new StreamReader(Context.Request.Body);
+    string Request = await reader.ReadToEndAsync();
+    string[] messageData = Request.Split('▫');
+    Message message = null;
+    if (messageData[2] == "Text")
+    {
+        string text = messageData[5];
+        for (int i = 6; i < messageData.Length; i++)
+        {
+            text += messageData[i];
+        }
+        message = new Message(messageData[0], messageData[1], text, messageData[3]);
+    }
+    else if (messageData[2] == "File")
+    {
+        message = new Message(messageData[0], messageData[1], messageData[5], messageData[3], MessageType.File, messageData[4]);
+    }
+    User ReciverUser = UsersData.FindUserByUsername(message.Reciver);
+    User SenderUser = UsersData.FindUserByUsername(message.Sender);
+
+    ReciverUser?.FindContactByUsername(message.Sender).Messages.Add(message);
+    ReciverUser?.NewMessages.Add(message);
+    SenderUser?.FindContactByUsername(message.Reciver).Messages.Add(message);
+    SenderUser?.NewMessages.Add(message);
+
+    return Context.Response.StatusCode = 200;
 });
 
 // Endpoint для сохранения сообщения на сервере

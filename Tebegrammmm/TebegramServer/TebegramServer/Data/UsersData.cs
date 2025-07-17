@@ -13,7 +13,7 @@ namespace TebegramServer.Data
                 new ObservableCollection<ChatFolder>{
                     new ChatFolder("Все чаты",
                         new ObservableCollection<Contact> {
-                            new Contact("ybeka","Убека",new ObservableCollection<Message>{new Message("ybeka","vasya","hi","12:30",MessageType.Text)}),
+                            new Contact("ybeka","Убека"),
                             new Contact("masya","Masya")
                         },"💬",false)
                 }),
@@ -23,7 +23,7 @@ namespace TebegramServer.Data
                  new ObservableCollection<ChatFolder>{
                     new ChatFolder("Все чаты",
                         new ObservableCollection<Contact> {
-                            new Contact("vasya","Вася жопкин бамбук",new ObservableCollection<Message>{new Message("ybeka","vasya","hi","12:30",MessageType.Text)}),
+                            new Contact("vasya","Вася жопкин бамбук"),
                             new Contact("masya","Masya")
                         },"💬",false)
                  }),

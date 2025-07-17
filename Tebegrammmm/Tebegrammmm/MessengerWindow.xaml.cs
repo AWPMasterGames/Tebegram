@@ -53,8 +53,8 @@ namespace Tebegrammmm
             // Загружаем историю сообщений с сервера
             GetMessages();
 
-            /*Thread = new Thread(new ThreadStart(GetMessages));
-            Thread.Start();*/
+            Thread = new Thread(new ThreadStart(GetNewMessages));
+            Thread.Start();
 
 
             // Загружаем последний выбранный контакт
@@ -243,6 +243,58 @@ namespace Tebegrammmm
                 }
             }
             catch (HttpRequestException ex)
+            {
+                Log.Save($"[GetMessage] Error: {ex.Message}");
+                MessageBox.Show("Ошибка при попытке авторизации\nПодробнее от ошибке можно узнать в краш логах");
+                return; // Добавляем return, чтобы прекратить выполнение
+            }
+        }
+        async void GetNewMessages()
+        {
+            try
+            {
+                while (true)
+                {
+                    try
+                    {
+
+                        // запрос для получения сообщений с сервера
+                        using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{serverAdress}/NewMessages/{User.Id}");
+                        using HttpResponseMessage response = await httpClient.SendAsync(request);
+                        string content = await response.Content.ReadAsStringAsync();
+                        if (content != "NotFound")
+                        {
+
+                            //распределение сообщений в чаты
+                            try
+                            {
+                                string[] Messages = content.Split('❂');
+                                for (int i = 0; i < Messages.Length; i++)
+                                {
+                                    if(i == Messages.Length) continue;
+                                    await this.Dispatcher.BeginInvoke(new Action(() =>
+                                    {
+                                        AddMessageToUser(Messages[i]);
+                                    }));
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Save($"[GetMessage] Error: {ex.Message}");
+                                //MessageBox.Show("Ошибка при попытке получения сообщений\nПодробнее от ошибке можно узнать в краш логах");
+                                continue;
+                            }
+                        }
+                    }
+                    catch (HttpRequestException ex)
+                    {
+                        continue;
+                    }
+                    // задержка перед новым запросом
+                    Thread.Sleep(2000);
+                }
+            }
+            catch (Exception ex)
             {
                 Log.Save($"[GetMessage] Error: {ex.Message}");
                 MessageBox.Show("Ошибка при попытке авторизации\nПодробнее от ошибке можно узнать в краш логах");
@@ -462,8 +514,23 @@ namespace Tebegrammmm
                 return false;
             }
         }
-
         private async Task SendMessageToUserAsync(Message message)
+        {
+            try
+            {
+                StringContent content = new StringContent(message.ToString());
+                using var request = new HttpRequestMessage(HttpMethod.Post, $"{serverAdress}/messages");
+                request.Content = content;
+                using var response = await httpClient.SendAsync(request);
+                string responseText = await response.Content.ReadAsStringAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Save($"[SendMessageToUser] Error: {ex.Message}");
+                // В случае ошибки сообщение остается Pending (серым)
+            }
+        }
+        private async Task SendMessageToUserAsync1(Message message)
         {
             try
             {
@@ -669,8 +736,8 @@ namespace Tebegrammmm
                 return;
             }
 
-            Message Message = new Message(User.Name, Contact.Username, message, DateTime.Now.ToString("hh:mm"), messageType, ServerFilePath);
-            Contact.Messages.Add(Message);
+            Message Message = new Message(User.Username, Contact.Username, message, DateTime.Now.ToString("hh:mm"), messageType, ServerFilePath);
+            //Contact.Messages.Add(Message);
 
             // Обновляем интерфейс
             UpdateChatDisplay();
