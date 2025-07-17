@@ -1,0 +1,441 @@
+[16.07.2025 13:10:04]  [Authorization] Error: Подключение не установлено, т.к. конечный компьютер отверг запрос на подключение. (localhost:5000)
+[16.07.2025 13:11:28]  [Authorization] Error: Error while copying content to a stream.
+[16.07.2025 13:13:25]  [Authorization] Error: Error while copying content to a stream.
+[16.07.2025 13:47:21]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 13:47:21]  [LoadMessageHistory] Загрузка истории сообщений для aa
+[16.07.2025 13:47:21]  [LoadMessageHistory] Очищены локальные сообщения перед загрузкой истории
+[16.07.2025 13:47:21]  [MessengerWindow] Инициализация завершена
+[16.07.2025 13:47:21]  [LoadMessageHistory] Нет сохраненных сообщений для пользователя
+[16.07.2025 13:47:21]  [UpdateUserLastActivity] Обновлена активность пользователя aa
+[16.07.2025 13:53:12]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 13:53:12]  [LoadMessageHistory] Загрузка истории сообщений для aa
+[16.07.2025 13:53:12]  [LoadMessageHistory] Очищены локальные сообщения перед загрузкой истории
+[16.07.2025 13:53:12]  [MessengerWindow] Инициализация завершена
+[16.07.2025 13:53:12]  [LoadMessageHistory] Нет сохраненных сообщений для пользователя
+[16.07.2025 13:53:13]  [UpdateUserLastActivity] Обновлена активность пользователя aa
+[16.07.2025 13:56:19]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 13:56:19]  [LoadMessageHistory] Загрузка истории сообщений для aa
+[16.07.2025 13:56:19]  [LoadMessageHistory] Очищены локальные сообщения перед загрузкой истории
+[16.07.2025 13:56:19]  [MessengerWindow] Инициализация завершена
+[16.07.2025 13:56:19]  [LoadMessageHistory] Нет сохраненных сообщений для пользователя
+[16.07.2025 13:56:20]  [UpdateUserLastActivity] Обновлена активность пользователя aa
+[16.07.2025 13:56:21]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[16.07.2025 13:56:21]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[16.07.2025 13:56:21]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[16.07.2025 13:56:21]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Убека
+[16.07.2025 13:56:21]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Убека
+[16.07.2025 13:56:44]  [Window_Closing] Остановлен таймер проверки статуса сообщений
+[16.07.2025 14:15:12]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 14:15:12]  [LoadMessageHistory] Загрузка истории сообщений для aa
+[16.07.2025 14:15:13]  [LoadMessageHistory] Очищены локальные сообщения перед загрузкой истории
+[16.07.2025 14:15:13]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[16.07.2025 14:15:13]  [MessengerWindow] Последний выбранный контакт: Убека
+[16.07.2025 14:15:13]  [MessengerWindow] Инициализация завершена
+[16.07.2025 14:15:13]  [LoadMessageHistory] Нет сохраненных сообщений для пользователя
+[16.07.2025 14:15:13]  [UpdateUserLastActivity] Обновлена активность пользователя aa
+[16.07.2025 14:15:13]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[16.07.2025 14:15:13]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[16.07.2025 14:15:14]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[16.07.2025 14:15:14]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Убека
+[16.07.2025 14:15:14]  [RestoreLastSelectedContact] Восстановлен выбор контакта: Убека
+[16.07.2025 14:15:14]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Убека
+[16.07.2025 14:15:19]  [Window_Closing] Остановлен таймер проверки статуса сообщений
+[16.07.2025 14:16:15]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 14:16:15]  [LoadMessageHistory] Загрузка истории сообщений для aa
+[16.07.2025 14:17:51]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 14:18:47]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 14:20:08]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 14:20:08]  [LoadMessageHistory] Загрузка истории сообщений для aa
+[16.07.2025 14:21:58]  [Authorization] Error: Подключение не установлено, т.к. конечный компьютер отверг запрос на подключение. (localhost:5000)
+[16.07.2025 14:22:02]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 14:23:31]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 14:23:32]  [LoadMessageHistory] Загрузка истории сообщений для aa
+[16.07.2025 14:25:56]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 14:25:56]  [LoadMessageHistory] Загрузка истории сообщений для aa
+[16.07.2025 14:26:11]  [LoadMessageHistory] Очищены локальные сообщения перед загрузкой истории
+[16.07.2025 14:26:15]  [SaveMessageToFile] Error: Index was outside the bounds of the array.
+[16.07.2025 14:26:15]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[16.07.2025 14:26:15]  [MessengerWindow] Последний выбранный контакт: Убека
+[16.07.2025 14:26:15]  [MessengerWindow] Инициализация завершена
+[16.07.2025 14:26:15]  [LoadMessageHistory] Ошибка загрузки истории: BadRequest
+[16.07.2025 14:26:16]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[16.07.2025 14:26:16]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[16.07.2025 14:26:16]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[16.07.2025 14:26:16]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Убека
+[16.07.2025 14:26:16]  [RestoreLastSelectedContact] Восстановлен выбор контакта: Убека
+[16.07.2025 14:26:16]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Убека
+[16.07.2025 14:31:18]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 14:31:21]  [LoadMessageHistory] Загрузка истории сообщений для aa
+[16.07.2025 14:31:21]  [SaveMessageToFile] Error: Index was outside the bounds of the array.
+[16.07.2025 14:31:21]  [LoadMessageHistory] Очищены локальные сообщения перед загрузкой истории
+[16.07.2025 14:31:22]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[16.07.2025 14:31:22]  [MessengerWindow] Последний выбранный контакт: Убека
+[16.07.2025 14:31:22]  [MessengerWindow] Инициализация завершена
+[16.07.2025 14:31:25]  [SaveMessageToFile] Error: Index was outside the bounds of the array.
+[16.07.2025 14:31:25]  [LoadMessageHistory] Ошибка загрузки истории: BadRequest
+[16.07.2025 14:31:26]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[16.07.2025 14:31:26]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[16.07.2025 14:31:26]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[16.07.2025 14:31:26]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Убека
+[16.07.2025 14:31:26]  [RestoreLastSelectedContact] Восстановлен выбор контакта: Убека
+[16.07.2025 14:31:26]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Убека
+[16.07.2025 14:31:28]  [AddMessageToUser] Получено сообщение от Убека: hi
+[16.07.2025 14:31:32]  [AddMessageToUser] Получено сообщение от Убека: hi
+[16.07.2025 14:31:39]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 14:31:40]  [LoadMessageHistory] Загрузка истории сообщений для aa
+[16.07.2025 14:31:40]  [SaveMessageToFile] Error: Index was outside the bounds of the array.
+[16.07.2025 14:31:40]  [LoadMessageHistory] Очищены локальные сообщения перед загрузкой истории
+[16.07.2025 14:31:40]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[16.07.2025 14:31:40]  [MessengerWindow] Последний выбранный контакт: Убека
+[16.07.2025 14:31:40]  [MessengerWindow] Инициализация завершена
+[16.07.2025 14:31:40]  [SaveMessageToFile] Error: Index was outside the bounds of the array.
+[16.07.2025 14:31:40]  [LoadMessageHistory] Ошибка загрузки истории: BadRequest
+[16.07.2025 14:31:40]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[16.07.2025 14:31:41]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[16.07.2025 14:31:41]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[16.07.2025 14:31:41]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Убека
+[16.07.2025 14:31:41]  [RestoreLastSelectedContact] Восстановлен выбор контакта: Убека
+[16.07.2025 14:31:41]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Убека
+[16.07.2025 14:31:42]  [AddMessageToUser] Получено сообщение от Убека: hi
+[16.07.2025 14:31:43]  [AddMessageToUser] Получено сообщение от Убека: hi
+[16.07.2025 14:32:06]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 14:32:06]  [LoadMessageHistory] Загрузка истории сообщений для aa
+[16.07.2025 14:32:06]  [SaveMessageToFile] Error: Index was outside the bounds of the array.
+[16.07.2025 14:32:06]  [LoadMessageHistory] Очищены локальные сообщения перед загрузкой истории
+[16.07.2025 14:32:06]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[16.07.2025 14:32:06]  [MessengerWindow] Последний выбранный контакт: Убека
+[16.07.2025 14:32:06]  [MessengerWindow] Инициализация завершена
+[16.07.2025 14:32:06]  [LoadMessageHistory] Ошибка загрузки истории: BadRequest
+[16.07.2025 14:32:06]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[16.07.2025 14:32:07]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[16.07.2025 14:32:07]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[16.07.2025 14:32:07]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Убека
+[16.07.2025 14:32:07]  [AddMessageToUser] Получено сообщение от Убека: hi
+[16.07.2025 14:32:07]  [RestoreLastSelectedContact] Восстановлен выбор контакта: Убека
+[16.07.2025 14:32:07]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Убека
+[16.07.2025 14:32:12]  [SaveMessageToFile] Error: Index was outside the bounds of the array.
+[16.07.2025 14:32:12]  [UpdateChatDisplay] Обновлен интерфейс чата для Убека - всего сообщений: 2
+[16.07.2025 14:32:13]  [AddMessageToUser] Получено сообщение от Убека: hi
+[16.07.2025 14:32:19]  [SaveMessageToFile] Error: Index was outside the bounds of the array.
+[16.07.2025 14:32:19]  [UpdateChatDisplay] Обновлен интерфейс чата для Убека - всего сообщений: 3
+[16.07.2025 14:32:22]  [AddMessageToUser] Получено сообщение от Убека: hi
+[16.07.2025 14:32:27]  [SaveMessageToFile] Error: Index was outside the bounds of the array.
+[16.07.2025 14:32:27]  [UpdateChatDisplay] Обновлен интерфейс чата для Убека - всего сообщений: 4
+[16.07.2025 14:32:29]  [AddMessageToUser] Получено сообщение от Убека: hi
+[16.07.2025 14:32:34]  [SaveMessageToFile] Error: Index was outside the bounds of the array.
+[16.07.2025 14:32:34]  [UpdateChatDisplay] Обновлен интерфейс чата для Убека - всего сообщений: 5
+[16.07.2025 14:32:36]  [AddMessageToUser] Получено сообщение от Убека: hi
+[16.07.2025 14:32:37]  [Window_Closing] Остановлен таймер проверки статуса сообщений
+[16.07.2025 14:33:05]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 14:33:05]  [LoadMessageHistory] Загрузка истории сообщений для aa
+[16.07.2025 14:33:05]  [LoadMessageHistory] Очищены локальные сообщения перед загрузкой истории
+[16.07.2025 14:33:05]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[16.07.2025 14:33:05]  [MessengerWindow] Последний выбранный контакт: Убека
+[16.07.2025 14:33:05]  [MessengerWindow] Инициализация завершена
+[16.07.2025 14:33:05]  [SaveMessageToFile] Error: Index was outside the bounds of the array.
+[16.07.2025 14:33:05]  [LoadMessageHistory] Ошибка загрузки истории: BadRequest
+[16.07.2025 14:33:05]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[16.07.2025 14:33:06]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[16.07.2025 14:33:06]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[16.07.2025 14:33:06]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Убека
+[16.07.2025 14:33:06]  [RestoreLastSelectedContact] Восстановлен выбор контакта: Убека
+[16.07.2025 14:33:06]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Убека
+[16.07.2025 14:33:08]  [AddMessageToUser] Получено сообщение от Убека: hi
+[16.07.2025 14:33:13]  [SaveMessageToFile] Error: Index was outside the bounds of the array.
+[16.07.2025 14:33:13]  [UpdateChatDisplay] Обновлен интерфейс чата для Убека - всего сообщений: 2
+[16.07.2025 14:33:33]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 14:33:33]  [LoadMessageHistory] Загрузка истории сообщений для aa
+[16.07.2025 14:33:33]  [LoadMessageHistory] Очищены локальные сообщения перед загрузкой истории
+[16.07.2025 14:33:33]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[16.07.2025 14:33:33]  [MessengerWindow] Последний выбранный контакт: Убека
+[16.07.2025 14:33:33]  [MessengerWindow] Инициализация завершена
+[16.07.2025 14:33:33]  [SaveMessageToFile] Error: Index was outside the bounds of the array.
+[16.07.2025 14:33:33]  [LoadMessageHistory] Ошибка загрузки истории: BadRequest
+[16.07.2025 14:33:34]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[16.07.2025 14:33:34]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[16.07.2025 14:33:34]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[16.07.2025 14:33:34]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Убека
+[16.07.2025 14:33:34]  [RestoreLastSelectedContact] Восстановлен выбор контакта: Убека
+[16.07.2025 14:33:34]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Убека
+[16.07.2025 14:33:36]  [AddMessageToUser] Получено сообщение от Убека: hi
+[16.07.2025 14:34:04]  [SendMessage] Starting send message: 'a' to contact: Убека
+[16.07.2025 14:34:04]  [UpdateChatDisplay] Обновлен интерфейс чата для Убека - всего сообщений: 2
+[16.07.2025 14:34:05]  [SendMessage] Message added to local contact. Sending to user...
+[16.07.2025 14:34:05]  [SendMessageToUser] Starting send message process
+[16.07.2025 14:34:05]  [SendMessageToUser] Current Contact: Убека (ybeka)
+[16.07.2025 14:34:05]  [SendMessageToUser] Contact validation passed for Убека
+[16.07.2025 14:34:05]  [SendMessageToUser] Сообщение отправляется с статусом Sent
+[16.07.2025 14:34:05]  [SaveMessageToServer] Сообщение сохранено на сервере для ybeka
+[16.07.2025 14:34:05]  [SendMessageToUser] User Убека offline - сообщение остается серым до получения
+[16.07.2025 14:34:05]  [UpdateChatDisplay] Обновлен интерфейс чата для Убека - всего сообщений: 2
+[16.07.2025 14:34:19]  [Window_Closing] Остановлен таймер проверки статуса сообщений
+[16.07.2025 14:34:24]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 14:34:24]  [LoadMessageHistory] Загрузка истории сообщений для aa
+[16.07.2025 14:34:24]  [LoadMessageHistory] Очищены локальные сообщения перед загрузкой истории
+[16.07.2025 14:34:24]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[16.07.2025 14:34:25]  [MessengerWindow] Последний выбранный контакт: Убека
+[16.07.2025 14:34:25]  [MessengerWindow] Инициализация завершена
+[16.07.2025 14:34:25]  [SaveMessageToFile] Error: Index was outside the bounds of the array.
+[16.07.2025 14:34:25]  [LoadMessageHistory] Ошибка загрузки истории: BadRequest
+[16.07.2025 14:34:25]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[16.07.2025 14:34:25]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[16.07.2025 14:34:25]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[16.07.2025 14:34:25]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Убека
+[16.07.2025 14:34:25]  [RestoreLastSelectedContact] Восстановлен выбор контакта: Убека
+[16.07.2025 14:34:26]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Убека
+[16.07.2025 14:34:35]  [AddMessageToUser] Получено сообщение от Убека: hi
+[16.07.2025 14:35:13]  [Window_Closing] Остановлен таймер проверки статуса сообщений
+[16.07.2025 14:36:02]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 14:36:03]  [LoadMessageHistory] Загрузка истории сообщений для aa
+[16.07.2025 14:36:03]  [LoadMessageHistory] Очищены локальные сообщения перед загрузкой истории
+[16.07.2025 14:36:03]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[16.07.2025 14:36:03]  [MessengerWindow] Последний выбранный контакт: Убека
+[16.07.2025 14:36:03]  [MessengerWindow] Инициализация завершена
+[16.07.2025 14:36:03]  [SaveMessageToFile] Error: Index was outside the bounds of the array.
+[16.07.2025 14:36:03]  [LoadMessageHistory] Ошибка загрузки истории: BadRequest
+[16.07.2025 14:36:03]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[16.07.2025 14:36:04]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[16.07.2025 14:36:04]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[16.07.2025 14:36:04]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Убека
+[16.07.2025 14:36:04]  [RestoreLastSelectedContact] Восстановлен выбор контакта: Убека
+[16.07.2025 14:36:04]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Убека
+[16.07.2025 14:38:41]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 14:38:41]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[16.07.2025 14:38:41]  [MessengerWindow] Последний выбранный контакт: Убека
+[16.07.2025 14:38:41]  [MessengerWindow] Инициализация завершена
+[16.07.2025 14:38:41]  [SaveMessageToFile] Error: Index was outside the bounds of the array.
+[16.07.2025 14:38:43]  [AddMessageToUser] Получено сообщение от Убека: hi
+[16.07.2025 14:40:25]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 14:40:26]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[16.07.2025 14:40:26]  [MessengerWindow] Последний выбранный контакт: Убека
+[16.07.2025 14:40:26]  [MessengerWindow] Инициализация завершена
+[16.07.2025 14:41:59]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 14:41:59]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[16.07.2025 14:41:59]  [MessengerWindow] Последний выбранный контакт: Убека
+[16.07.2025 14:41:59]  [MessengerWindow] Инициализация завершена
+[16.07.2025 14:45:11]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 14:45:11]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[16.07.2025 14:45:11]  [MessengerWindow] Последний выбранный контакт: Убека
+[16.07.2025 14:45:11]  [MessengerWindow] Инициализация завершена
+[16.07.2025 14:45:31]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 14:45:31]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[16.07.2025 14:45:32]  [MessengerWindow] Последний выбранный контакт: Убека
+[16.07.2025 14:45:32]  [MessengerWindow] Инициализация завершена
+[16.07.2025 14:47:25]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 14:47:25]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[16.07.2025 14:47:25]  [MessengerWindow] Последний выбранный контакт: Убека
+[16.07.2025 14:47:25]  [MessengerWindow] Инициализация завершена
+[16.07.2025 14:51:52]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 14:51:52]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[16.07.2025 14:51:52]  [MessengerWindow] Последний выбранный контакт: Убека
+[16.07.2025 14:51:52]  [MessengerWindow] Инициализация завершена
+[16.07.2025 14:51:52]  [AddMessageToUser] Получено сообщение от Убека: hi
+[16.07.2025 14:52:00]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[16.07.2025 14:52:00]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[16.07.2025 14:52:00]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[16.07.2025 14:52:01]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Убека
+[16.07.2025 14:52:01]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Убека
+[16.07.2025 14:52:13]  [Window_Closing] Остановлен таймер проверки статуса сообщений
+[16.07.2025 14:52:18]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 14:52:19]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[16.07.2025 14:52:19]  [MessengerWindow] Последний выбранный контакт: Убека
+[16.07.2025 14:52:19]  [MessengerWindow] Инициализация завершена
+[16.07.2025 14:52:19]  [AddMessageToUser] Получено сообщение от Убека: hi
+[16.07.2025 14:52:40]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[16.07.2025 14:52:40]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[16.07.2025 14:52:40]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[16.07.2025 14:52:40]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Убека
+[16.07.2025 14:52:40]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Убека
+[16.07.2025 14:52:50]  [MessengerWindow] Инициализация для пользователя: убека (ybeka)
+[16.07.2025 14:52:50]  [MessengerWindow] Инициализация завершена
+[16.07.2025 14:52:55]  [LBChats_SelectionChanged] Selected contact: Вася жопкин бамбук (vasya)
+[16.07.2025 14:52:56]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[16.07.2025 14:52:56]  [LBChats_SelectionChanged] Restored draft for Вася жопкин бамбук: ''
+[16.07.2025 14:52:56]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Вася жопкин бамбук
+[16.07.2025 14:52:56]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Вася жопкин бамбук
+[16.07.2025 14:53:06]  [Window_Closing] Остановлен таймер проверки статуса сообщений
+[16.07.2025 14:53:07]  [Window_Closing] Остановлен таймер проверки статуса сообщений
+[16.07.2025 14:53:48]  [Authorization] Error: Подключение не установлено, т.к. конечный компьютер отверг запрос на подключение. (localhost:5000)
+[16.07.2025 14:53:54]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 14:53:54]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[16.07.2025 14:53:54]  [MessengerWindow] Последний выбранный контакт: Убека
+[16.07.2025 14:53:54]  [MessengerWindow] Инициализация завершена
+[16.07.2025 14:53:54]  [AddMessageToUser] Получено сообщение от Убека: hi
+[16.07.2025 14:53:59]  [MessengerWindow] Инициализация для пользователя: убека (ybeka)
+[16.07.2025 14:53:59]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Вася жопкин бамбук
+[16.07.2025 14:53:59]  [MessengerWindow] Последний выбранный контакт: Вася жопкин бамбук
+[16.07.2025 14:53:59]  [MessengerWindow] Инициализация завершена
+[16.07.2025 14:54:00]  [LBChats_SelectionChanged] Selected contact: Вася жопкин бамбук (vasya)
+[16.07.2025 14:54:00]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[16.07.2025 14:54:01]  [LBChats_SelectionChanged] Restored draft for Вася жопкин бамбук: ''
+[16.07.2025 14:54:01]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Вася жопкин бамбук
+[16.07.2025 14:54:01]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Вася жопкин бамбук
+[16.07.2025 14:54:03]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[16.07.2025 14:54:03]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[16.07.2025 14:54:03]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[16.07.2025 14:54:04]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Убека
+[16.07.2025 14:54:04]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Убека
+[16.07.2025 14:54:38]  [LBChats_SelectionChanged] Saved draft for Вася жопкин бамбук: ''
+[16.07.2025 14:54:38]  [LBChats_SelectionChanged] Selected contact: Masya (vasya)
+[16.07.2025 14:54:39]  [LBChats_SelectionChanged] Restored draft for Masya: ''
+[16.07.2025 14:54:39]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Masya
+[16.07.2025 14:54:39]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Masya
+[16.07.2025 14:54:39]  [LBChats_SelectionChanged] Saved draft for Masya: ''
+[16.07.2025 14:54:39]  [LBChats_SelectionChanged] Selected contact: Вася жопкин бамбук (vasya)
+[16.07.2025 14:54:39]  [LBChats_SelectionChanged] Restored draft for Вася жопкин бамбук: ''
+[16.07.2025 14:54:40]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Вася жопкин бамбук
+[16.07.2025 14:54:40]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Вася жопкин бамбук
+[16.07.2025 14:54:40]  [Window_Closing] Остановлен таймер проверки статуса сообщений
+[16.07.2025 14:54:42]  [Window_Closing] Остановлен таймер проверки статуса сообщений
+[16.07.2025 14:54:54]  [MessengerWindow] Инициализация для пользователя: убека (ybeka)
+[16.07.2025 14:54:54]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Вася жопкин бамбук
+[16.07.2025 14:54:54]  [MessengerWindow] Последний выбранный контакт: Вася жопкин бамбук
+[16.07.2025 14:54:54]  [MessengerWindow] Инициализация завершена
+[16.07.2025 14:54:55]  [LBChats_SelectionChanged] Selected contact: Вася жопкин бамбук (vasya)
+[16.07.2025 14:54:55]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[16.07.2025 14:54:55]  [LBChats_SelectionChanged] Restored draft for Вася жопкин бамбук: ''
+[16.07.2025 14:54:55]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Вася жопкин бамбук
+[16.07.2025 14:54:56]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Вася жопкин бамбук
+[16.07.2025 14:55:28]  [Window_Closing] Остановлен таймер проверки статуса сообщений
+[16.07.2025 14:57:02]  [Authorization] Error: Подключение не установлено, т.к. конечный компьютер отверг запрос на подключение. (localhost:5000)
+[16.07.2025 14:57:06]  [MessengerWindow] Инициализация для пользователя: убека (ybeka)
+[16.07.2025 14:57:06]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Вася жопкин бамбук
+[16.07.2025 14:57:06]  [MessengerWindow] Последний выбранный контакт: Вася жопкин бамбук
+[16.07.2025 14:57:06]  [MessengerWindow] Инициализация завершена
+[16.07.2025 14:57:07]  [LBChats_SelectionChanged] Selected contact: Masya (masya)
+[16.07.2025 14:57:07]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[16.07.2025 14:57:07]  [LBChats_SelectionChanged] Restored draft for Masya: ''
+[16.07.2025 14:57:08]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Masya
+[16.07.2025 14:57:08]  [LBChats_SelectionChanged] Saved draft for Masya: ''
+[16.07.2025 14:57:08]  [LBChats_SelectionChanged] Selected contact: Вася жопкин бамбук (vasya)
+[16.07.2025 14:57:08]  [LBChats_SelectionChanged] Restored draft for Вася жопкин бамбук: ''
+[16.07.2025 14:57:08]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Вася жопкин бамбук
+[16.07.2025 14:57:08]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Masya
+[16.07.2025 14:57:08]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Вася жопкин бамбук
+[16.07.2025 14:57:46]  [Window_Closing] Остановлен таймер проверки статуса сообщений
+[16.07.2025 14:58:26]  [MessengerWindow] Инициализация для пользователя: убека (ybeka)
+[16.07.2025 14:58:26]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Вася жопкин бамбук
+[16.07.2025 14:58:26]  [MessengerWindow] Последний выбранный контакт: Вася жопкин бамбук
+[16.07.2025 14:58:26]  [MessengerWindow] Инициализация завершена
+[16.07.2025 14:59:10]  [MessengerWindow] Инициализация для пользователя: убека (ybeka)
+[16.07.2025 14:59:10]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Вася жопкин бамбук
+[16.07.2025 14:59:11]  [MessengerWindow] Последний выбранный контакт: Вася жопкин бамбук
+[16.07.2025 14:59:11]  [MessengerWindow] Инициализация завершена
+[16.07.2025 15:35:50]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 15:35:51]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[16.07.2025 15:35:51]  [MessengerWindow] Последний выбранный контакт: Убека
+[16.07.2025 15:35:51]  [MessengerWindow] Инициализация завершена
+[16.07.2025 15:42:43]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 15:42:43]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[16.07.2025 15:42:43]  [MessengerWindow] Последний выбранный контакт: Убека
+[16.07.2025 15:42:43]  [MessengerWindow] Инициализация завершена
+[16.07.2025 15:44:27]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 15:44:27]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[16.07.2025 15:44:27]  [MessengerWindow] Последний выбранный контакт: Убека
+[16.07.2025 15:44:27]  [MessengerWindow] Инициализация завершена
+[16.07.2025 15:45:01]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 15:45:01]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[16.07.2025 15:45:01]  [MessengerWindow] Последний выбранный контакт: Убека
+[16.07.2025 15:45:01]  [MessengerWindow] Инициализация завершена
+[16.07.2025 15:49:40]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 15:49:40]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[16.07.2025 15:49:40]  [MessengerWindow] Последний выбранный контакт: Убека
+[16.07.2025 15:49:40]  [MessengerWindow] Инициализация завершена
+[16.07.2025 15:49:58]  [AddMessageToUser] Получено сообщение от ybeka: hi
+[16.07.2025 15:50:08]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[16.07.2025 15:50:08]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[16.07.2025 15:50:09]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[16.07.2025 15:50:09]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Убека
+[16.07.2025 15:50:09]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Убека
+[16.07.2025 15:51:05]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 15:51:05]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[16.07.2025 15:51:05]  [MessengerWindow] Последний выбранный контакт: Убека
+[16.07.2025 15:51:05]  [MessengerWindow] Инициализация завершена
+[16.07.2025 15:51:06]  [AddMessageToUser] Получено сообщение от ybeka: hi
+[16.07.2025 15:51:13]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[16.07.2025 15:51:13]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[16.07.2025 15:51:13]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[16.07.2025 15:51:13]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Убека
+[16.07.2025 15:51:13]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Убека
+[16.07.2025 15:51:15]  [Window_Closing] Остановлен таймер проверки статуса сообщений
+[16.07.2025 15:51:46]  [MessengerWindow] Инициализация для пользователя: убека (ybeka)
+[16.07.2025 15:51:46]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Вася жопкин бамбук
+[16.07.2025 15:51:46]  [MessengerWindow] Последний выбранный контакт: Вася жопкин бамбук
+[16.07.2025 15:51:46]  [MessengerWindow] Инициализация завершена
+[16.07.2025 15:51:47]  [LBChats_SelectionChanged] Selected contact: Вася жопкин бамбук (vasya)
+[16.07.2025 15:51:48]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[16.07.2025 15:51:48]  [LBChats_SelectionChanged] Restored draft for Вася жопкин бамбук: ''
+[16.07.2025 15:51:48]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Вася жопкин бамбук
+[16.07.2025 15:51:48]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Вася жопкин бамбук
+[16.07.2025 15:51:50]  [Window_Closing] Остановлен таймер проверки статуса сообщений
+[16.07.2025 15:52:17]  [MessengerWindow] Инициализация для пользователя: убека (ybeka)
+[16.07.2025 15:52:17]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Вася жопкин бамбук
+[16.07.2025 15:52:17]  [MessengerWindow] Последний выбранный контакт: Вася жопкин бамбук
+[16.07.2025 15:52:17]  [MessengerWindow] Инициализация завершена
+[16.07.2025 15:53:34]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 15:53:34]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[16.07.2025 15:53:34]  [MessengerWindow] Последний выбранный контакт: Убека
+[16.07.2025 15:53:34]  [MessengerWindow] Инициализация завершена
+[16.07.2025 15:53:34]  [AddMessageToUser] Получено сообщение от Убека: 
+[16.07.2025 15:53:35]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[16.07.2025 15:53:35]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[16.07.2025 15:53:35]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[16.07.2025 15:53:36]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Убека
+[16.07.2025 15:53:36]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Убека
+[16.07.2025 15:53:39]  [Window_Closing] Остановлен таймер проверки статуса сообщений
+[16.07.2025 15:54:06]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 15:54:06]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[16.07.2025 15:54:07]  [MessengerWindow] Последний выбранный контакт: Убека
+[16.07.2025 15:54:07]  [MessengerWindow] Инициализация завершена
+[16.07.2025 15:54:55]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 15:54:56]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[16.07.2025 15:54:56]  [MessengerWindow] Последний выбранный контакт: Убека
+[16.07.2025 15:54:56]  [MessengerWindow] Инициализация завершена
+[16.07.2025 15:54:59]  [AddMessageToUser] Получено сообщение от Убека: hi
+[16.07.2025 15:55:01]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[16.07.2025 15:55:01]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[16.07.2025 15:55:01]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[16.07.2025 15:55:01]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Убека
+[16.07.2025 15:55:01]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Убека
+[16.07.2025 15:55:03]  [Window_Closing] Остановлен таймер проверки статуса сообщений
+[16.07.2025 15:55:08]  [MessengerWindow] Инициализация для пользователя: убека (ybeka)
+[16.07.2025 15:55:08]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Вася жопкин бамбук
+[16.07.2025 15:55:08]  [MessengerWindow] Последний выбранный контакт: Вася жопкин бамбук
+[16.07.2025 15:55:09]  [MessengerWindow] Инициализация завершена
+[16.07.2025 15:55:41]  [MessengerWindow] Инициализация для пользователя: убека (ybeka)
+[16.07.2025 15:55:41]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Вася жопкин бамбук
+[16.07.2025 15:55:41]  [MessengerWindow] Последний выбранный контакт: Вася жопкин бамбук
+[16.07.2025 15:55:41]  [MessengerWindow] Инициализация завершена
+[16.07.2025 15:56:36]  [MessengerWindow] Инициализация для пользователя: убека (ybeka)
+[16.07.2025 15:56:36]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Вася жопкин бамбук
+[16.07.2025 15:56:36]  [MessengerWindow] Последний выбранный контакт: Вася жопкин бамбук
+[16.07.2025 15:56:36]  [MessengerWindow] Инициализация завершена
+[16.07.2025 15:56:36]  [AddMessageToUser] Получено сообщение от ybeka: hi
+[16.07.2025 15:56:37]  [LBChats_SelectionChanged] Selected contact: Вася жопкин бамбук (vasya)
+[16.07.2025 15:56:37]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[16.07.2025 15:56:37]  [LBChats_SelectionChanged] Restored draft for Вася жопкин бамбук: ''
+[16.07.2025 15:56:37]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Вася жопкин бамбук
+[16.07.2025 15:56:37]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Вася жопкин бамбук
+[16.07.2025 15:56:48]  [Window_Closing] Остановлен таймер проверки статуса сообщений
+[16.07.2025 15:57:21]  [MessengerWindow] Инициализация для пользователя: убека (ybeka)
+[16.07.2025 15:57:21]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Вася жопкин бамбук
+[16.07.2025 15:57:21]  [MessengerWindow] Последний выбранный контакт: Вася жопкин бамбук
+[16.07.2025 15:57:22]  [MessengerWindow] Инициализация завершена
+[16.07.2025 15:57:22]  [AddMessageToUser] Получено сообщение от ybeka: hi
+[16.07.2025 15:57:27]  [LBChats_SelectionChanged] Selected contact: Вася жопкин бамбук (vasya)
+[16.07.2025 15:57:28]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[16.07.2025 15:57:28]  [LBChats_SelectionChanged] Restored draft for Вася жопкин бамбук: ''
+[16.07.2025 15:57:28]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Вася жопкин бамбук
+[16.07.2025 15:57:28]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Вася жопкин бамбук
+[16.07.2025 15:57:31]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[16.07.2025 15:57:31]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[16.07.2025 15:57:32]  [MessengerWindow] Последний выбранный контакт: Убека
+[16.07.2025 15:57:32]  [MessengerWindow] Инициализация завершена
+[16.07.2025 15:57:32]  [AddMessageToUser] Получено сообщение от Убека: hi
+[16.07.2025 15:57:33]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[16.07.2025 15:57:33]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[16.07.2025 15:57:33]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[16.07.2025 15:57:33]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Убека
+[16.07.2025 15:57:33]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Убека
+[16.07.2025 16:05:54]  [Window_Closing] Остановлен таймер проверки статуса сообщений
+[16.07.2025 16:05:55]  [Window_Closing] Остановлен таймер проверки статуса сообщений

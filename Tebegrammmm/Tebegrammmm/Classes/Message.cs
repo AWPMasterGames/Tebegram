@@ -35,5 +35,9 @@ namespace Tebegrammmm
             _MessageType = messageType;
             _ServerAdress = serverAdress;
         }
+        public override string ToString()
+        {
+            return $"{Sender}▫{Reciver}▫{MessageType}▫{Time}▫{ServerAdress}▫{Text}";
+        }
     }
 }

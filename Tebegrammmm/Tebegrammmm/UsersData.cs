@@ -6,7 +6,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Tebegrammmm
+/*namespace Tebegrammmm
 {
     public static class UsersData
     {
@@ -69,4 +69,4 @@ namespace Tebegrammmm
             return null;
         }
     }
-}
+}*/
