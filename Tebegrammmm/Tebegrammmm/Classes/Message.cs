@@ -39,5 +39,9 @@ namespace Tebegrammmm
         {
             return $"{Sender}▫{Reciver}▫{MessageType}▫{Time}▫{ServerAdress}▫{Text}";
         }
+        public override string ToString()
+        {
+            return $"{Sender}▫{Reciver}▫{MessageType}▫{Time}▫{ServerAdress}▫{Text}";
+        }
     }
 }

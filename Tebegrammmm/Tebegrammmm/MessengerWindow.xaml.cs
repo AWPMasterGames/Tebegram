@@ -46,7 +46,11 @@ namespace Tebegrammmm
             StartListner();
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             Thread = new Thread(new ThreadStart(ReceiveMessage));
+=======
+            Thread = new Thread(new ThreadStart(GetNewMessages));
+>>>>>>> Stashed changes
 =======
             Thread = new Thread(new ThreadStart(GetNewMessages));
 >>>>>>> Stashed changes
@@ -321,6 +325,7 @@ namespace Tebegrammmm
             }
         }
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         private void SendMessageToUser(Message message)
         {
             try
@@ -330,6 +335,8 @@ namespace Tebegrammmm
                 Client.Connect(endP);
                 NetworkStream nw = Client.GetStream();
 =======
+=======
+>>>>>>> Stashed changes
         private async Task SendMessageToUserAsync(Message message)
         {
             try

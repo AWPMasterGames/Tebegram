@@ -7,6 +7,7 @@
       "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\messengerwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+<<<<<<< Updated upstream
       "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\classes\\message.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\classes\\message.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -25,6 +26,14 @@
     {
       "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\messengerwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\messengerwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+=======
+      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\usersdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\usersdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+>>>>>>> Stashed changes
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{09EAC846-1528-4174-BB74-5950587A38A6}|TebegramServer\\TebegramServer\\TebegramServer.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegramserver\\tebegramserver\\data\\usersdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{09EAC846-1528-4174-BB74-5950587A38A6}|TebegramServer\\TebegramServer\\TebegramServer.csproj|solutionrelative:tebegramserver\\tebegramserver\\data\\usersdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{09EAC846-1528-4174-BB74-5950587A38A6}|TebegramServer\\TebegramServer\\TebegramServer.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegramserver\\tebegramserver\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -38,6 +47,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 45,
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
           "SelectedChildIndex": 1,
@@ -70,18 +80,32 @@
             {
               "$type": "Document",
               "DocumentIndex": 2,
+=======
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+>>>>>>> Stashed changes
               "Title": "UsersData.cs",
               "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\UsersData.cs",
               "RelativeDocumentMoniker": "Tebegrammmm\\UsersData.cs",
               "ToolTip": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\UsersData.cs",
               "RelativeToolTip": "Tebegrammmm\\UsersData.cs",
+<<<<<<< Updated upstream
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAhAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-27T10:44:01.308Z",
+=======
+              "ViewState": "AgIAADEAAAAAAAAAAAAgwEcAAAADAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-17T11:18:10.882Z",
+>>>>>>> Stashed changes
               "EditorCaption": ""
             },
             {
               "$type": "Document",
+<<<<<<< Updated upstream
               "DocumentIndex": 3,
               "Title": "User.cs",
               "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Classes\\User.cs",
@@ -116,6 +140,17 @@
 >>>>>>> Stashed changes
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-15T09:22:23.283Z",
+=======
+              "DocumentIndex": 2,
+              "Title": "UsersData.cs",
+              "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\Data\\UsersData.cs",
+              "RelativeDocumentMoniker": "TebegramServer\\TebegramServer\\Data\\UsersData.cs",
+              "ToolTip": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\Data\\UsersData.cs",
+              "RelativeToolTip": "TebegramServer\\TebegramServer\\Data\\UsersData.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAlAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-17T11:14:11.459Z",
+>>>>>>> Stashed changes
               "EditorCaption": ""
             },
             {
@@ -128,12 +163,16 @@
               "RelativeToolTip": "Tebegrammmm\\MessengerWindow.xaml.cs",
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
               "ViewState": "AgIAAMsAAAAAAAAAAAAmwNoAAAANAAAAAAAAAA==",
 =======
               "ViewState": "AgIAAF0AAAAAAAAAAAAWwNsAAAARAAAAAAAAAA==",
 >>>>>>> Stashed changes
 =======
               "ViewState": "AgIAAF0AAAAAAAAAAAAWwNsAAAARAAAAAAAAAA==",
+>>>>>>> Stashed changes
+=======
+              "ViewState": "AgIAAP0AAAAAAAAAAAAowBQBAABCAAAAAAAAAA==",
 >>>>>>> Stashed changes
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "OverriddenGroupName": "Tebegrammmm",
@@ -142,6 +181,7 @@
             },
             {
               "$type": "Document",
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
               "DocumentIndex": 1,
@@ -158,6 +198,18 @@
               "RelativeToolTip": "Tebegrammmm\\MessengerWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
               "WhenOpened": "2025-05-14T18:41:49.082Z"
+=======
+              "DocumentIndex": 3,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\Program.cs",
+              "RelativeDocumentMoniker": "TebegramServer\\TebegramServer\\Program.cs",
+              "ToolTip": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\Program.cs",
+              "RelativeToolTip": "TebegramServer\\TebegramServer\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-15T10:53:32.778Z",
+              "EditorCaption": ""
+>>>>>>> Stashed changes
             }
           ]
         }

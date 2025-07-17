@@ -2,8 +2,11 @@
   {
     "ContainingType": "Program\u002B\u003C\u003Ec",
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     "Method": "\u003C\u003CMain\u003E$\u003Eb__0_2",
 =======
+=======
+>>>>>>> Stashed changes
     "Method": "\u003C\u003CMain\u003E$\u003Eb__0_21",
     "RelativePath": "",
     "HttpMethod": "GET",
@@ -23,6 +26,9 @@
   {
     "ContainingType": "Program\u002B\u003C\u003Ec",
     "Method": "\u003C\u003CMain\u003E$\u003Eb__0_3",
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     "RelativePath": "login/{UserLogin}-{UserPassword}",
     "HttpMethod": "GET",
@@ -51,8 +57,11 @@
   {
     "ContainingType": "Program\u002B\u003C\u003Ec",
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     "Method": "\u003C\u003CMain\u003E$\u003Eb__0_1",
 =======
+=======
+>>>>>>> Stashed changes
     "Method": "\u003C\u003CMain\u003E$\u003Eb__0_7",
     "RelativePath": "messages",
     "HttpMethod": "POST",
@@ -170,6 +179,9 @@
   {
     "ContainingType": "Program\u002B\u003C\u003Ec",
     "Method": "\u003C\u003CMain\u003E$\u003Eb__0_2",
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     "RelativePath": "upload/{FileName}",
     "HttpMethod": "GET",

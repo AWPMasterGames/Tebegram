@@ -6,6 +6,7 @@
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       "AbsoluteMoniker": "D:0:0:{BB7C4843-4BE6-4A0A-BC2C-69412BFB48F0}|TebegramServer\\TebegramServer.csproj|c:\\users\\\u043F\u043A\\desktop\\tebegram-main\\tebegrammmm\\tebegramserver\\tebegramserver\\data\\usersdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{BB7C4843-4BE6-4A0A-BC2C-69412BFB48F0}|TebegramServer\\TebegramServer.csproj|solutionrelative:tebegramserver\\data\\usersdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -23,12 +24,17 @@
       "AbsoluteMoniker": "D:0:0:{BB7C4843-4BE6-4A0A-BC2C-69412BFB48F0}|TebegramServer\\TebegramServer.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegramserver\\tebegramserver\\classes\\logs.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{BB7C4843-4BE6-4A0A-BC2C-69412BFB48F0}|TebegramServer\\TebegramServer.csproj|solutionrelative:tebegramserver\\classes\\logs.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
 =======
+=======
+>>>>>>> Stashed changes
       "AbsoluteMoniker": "D:0:0:{BB7C4843-4BE6-4A0A-BC2C-69412BFB48F0}|TebegramServer\\TebegramServer.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegramserver\\tebegramserver\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{BB7C4843-4BE6-4A0A-BC2C-69412BFB48F0}|TebegramServer\\TebegramServer.csproj|solutionrelative:tebegramserver\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{BB7C4843-4BE6-4A0A-BC2C-69412BFB48F0}|TebegramServer\\TebegramServer.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegramserver\\tebegramserver\\classes\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{BB7C4843-4BE6-4A0A-BC2C-69412BFB48F0}|TebegramServer\\TebegramServer.csproj|solutionrelative:tebegramserver\\classes\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     }
   ],
@@ -43,6 +49,7 @@
           "Children": [
             {
               "$type": "Document",
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
@@ -68,6 +75,9 @@
               "WhenOpened": "2025-05-22T08:17:03.665Z",
 =======
               "DocumentIndex": 1,
+=======
+              "DocumentIndex": 1,
+>>>>>>> Stashed changes
               "Title": "User.cs",
               "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\Classes\\User.cs",
               "RelativeDocumentMoniker": "TebegramServer\\Classes\\User.cs",
@@ -76,6 +86,9 @@
               "ViewState": "AgIAAEQAAAAAAAAAAAAYwF4AAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-07-17T10:30:16.511Z",
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
               "EditorCaption": ""
             },
@@ -90,12 +103,16 @@
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAABAAAAAAAAAAA==",
 =======
               "ViewState": "AgIAABUAAAAAAAAAAAAAAC8AAAA/AAAAAAAAAA==",
 >>>>>>> Stashed changes
 =======
               "ViewState": "AgIAABUAAAAAAAAAAAAAAC8AAAA/AAAAAAAAAA==",
+>>>>>>> Stashed changes
+=======
+              "ViewState": "AgIAAFYAAAAAAAAAAAAQwBcAAAABAAAAAAAAAA==",
 >>>>>>> Stashed changes
 =======
               "ViewState": "AgIAAFYAAAAAAAAAAAAQwBcAAAABAAAAAAAAAA==",

@@ -85,6 +85,9 @@
             NewMessages.Clear();
             return messages;
         }
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     }
 }
