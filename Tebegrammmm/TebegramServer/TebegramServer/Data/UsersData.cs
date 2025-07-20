@@ -2,50 +2,18 @@
 using System.Net;
 using TebegramServer.Classes;
 using System.Linq;
+using System.Text.Json;
 
 namespace TebegramServer.Data
 {
     public static class UsersData
     {
-        static ObservableCollection<User> Users = new ObservableCollection<User>()
-                {
-            new User(1,"aa", "123", "Вася жопкин бамбук", "vasya",
-                new ObservableCollection<ChatFolder>{
-                    new ChatFolder("Все чаты",
-                        new ObservableCollection<Contact> {
-                            new Contact("ybeka","Убека",new ObservableCollection<Message>{new Message("ybeka","vasya","hi","12:30",MessageType.Text)}),
-                            new Contact("masya","Masya")
-                        },"💬",false)
-                }),
+        static ObservableCollection<User> Users = new ObservableCollection<User>();
 
-
-            new User(2,"aa1", "123", "убека", "ybeka",
-                 new ObservableCollection<ChatFolder>{
-                    new ChatFolder("Все чаты",
-                        new ObservableCollection<Contact> {
-                            new Contact("vasya","Вася жопкин бамбук",new ObservableCollection<Message>{new Message("ybeka","vasya","hi","12:30",MessageType.Text)}),
-                            new Contact("masya","Masya")
-                        },"💬",false)
-                 }),
-             new User(3,"masya", "123", "Мася", "masya",
-                 new ObservableCollection<ChatFolder>{
-                    new ChatFolder("Все чаты",
-                        new ObservableCollection<Contact> {
-                            new Contact("vasya","Вася жопкин бамбук"),
-                            new Contact("ybeka","Убебка")
-                        },"💬",false)
-                 }),
-             new User(4, "admin", "123", "Админ", "admin_228",
-                 new ObservableCollection<ChatFolder>
-                 {
-                     new ChatFolder("Все чаты",
-                         new ObservableCollection<Contact>
-                         {
-                             new Contact("vasya", "Вася"),
-                             new Contact("ybeka", "убека")
-                         }, "💬", false)
-                 })
-                };
+        static UsersData()
+        {
+            LoadUserList();
+        }
 
         public static bool IsExistUser(string login)
         {
@@ -72,6 +40,94 @@ namespace TebegramServer.Data
         public static void AddUser(User user)
         {
             Users.Add(user);
+        }
+
+        private static void LoadUserList()
+        {
+            try
+            {
+                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Users.json");
+                
+                if (!File.Exists(filePath))
+                {
+                    Console.WriteLine($"Файл пользователей не найден: {filePath}");
+                    return;
+                }
+
+                string jsonContent = File.ReadAllText(filePath);
+                var usersData = JsonSerializer.Deserialize<List<UserData>>(jsonContent);
+
+                if (usersData != null)
+                {
+                    foreach (var userData in usersData)
+                    {
+                        var chatsFolders = new ObservableCollection<ChatFolder>();
+                        
+                        foreach (var folderData in userData.ChatsFolders)
+                        {
+                            var contacts = new ObservableCollection<Contact>();
+                            
+                            foreach (var contactData in folderData.Contacts)
+                            {
+                                var messages = new ObservableCollection<Message>();
+                                
+                                foreach (var messageData in contactData.Messages)
+                                {
+                                    var messageType = Enum.TryParse<MessageType>(messageData.MessageType, out var type) ? type : MessageType.Text;
+                                    messages.Add(new Message(messageData.Sender, messageData.Recipient, messageData.Text, messageData.Time, messageType));
+                                }
+                                
+                                contacts.Add(new Contact(contactData.Username, contactData.Name, messages));
+                            }
+                            
+                            chatsFolders.Add(new ChatFolder(folderData.Name, contacts, folderData.Icon, folderData.CanDelete));
+                        }
+                        
+                        Users.Add(new User(userData.Id, userData.Login, userData.Password, userData.Name, userData.Username, chatsFolders));
+                    }
+                }
+                
+                Console.WriteLine($"Загружено пользователей: {Users.Count}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при загрузке пользователей: {ex.Message}");
+            }
+        }
+
+        // Вспомогательные классы для десериализации JSON
+        private class UserData
+        {
+            public int Id { get; set; }
+            public string Login { get; set; } = "";
+            public string Password { get; set; } = "";
+            public string Name { get; set; } = "";
+            public string Username { get; set; } = "";
+            public List<ChatFolderData> ChatsFolders { get; set; } = new();
+        }
+
+        private class ChatFolderData
+        {
+            public string Name { get; set; } = "";
+            public List<ContactData> Contacts { get; set; } = new();
+            public string Icon { get; set; } = "";
+            public bool CanDelete { get; set; }
+        }
+
+        private class ContactData
+        {
+            public string Username { get; set; } = "";
+            public string Name { get; set; } = "";
+            public List<MessageData> Messages { get; set; } = new();
+        }
+
+        private class MessageData
+        {
+            public string Sender { get; set; } = "";
+            public string Recipient { get; set; } = "";
+            public string Text { get; set; } = "";
+            public string Time { get; set; } = "";
+            public string MessageType { get; set; } = "Text";
         }
     }
 }
