@@ -1,11 +1,8 @@
-```
 *.user
-*.suo
 *.log
 *.cache
 *.tmp
 *.pid
-*.csproj
 *.user
 *.config
 
@@ -14,9 +11,6 @@ references/
 Tebegrammmm/TebegramServer/TebegramServer/uploads/
 Tebegrammmm/TebegramServer/TebegramServer/Messages/
 Tebegrammmm/TebegramServer/TebegramServer/Logs/
-.vs/
-.vscode/
 bin/
 obj/
 node_modules/
-```
