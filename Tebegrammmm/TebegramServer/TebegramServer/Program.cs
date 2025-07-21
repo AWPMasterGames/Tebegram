@@ -6,11 +6,6 @@ using TebegramServer;
 
 var builder = WebApplication.CreateBuilder(args);
 
-void LoadData()
-{
-
-}
-
 // Настройка порта
 builder.WebHost.UseUrls("http://localhost:5000");
 

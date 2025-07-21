@@ -7,7 +7,6 @@
 *.pid
 *.csproj
 *.user
-*.json
 *.config
 
 Properties/
