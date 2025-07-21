@@ -57,7 +57,10 @@ namespace Tebegrammmm.ChatsFoldersRedactsWindows
             {
                 if (LBChatsFolders.ItemsSource is ObservableCollection<ChatFolder> collection)
                 {
-                    collection.Remove(folderItem);
+                    if (folderItem.IsCanRedact)
+                    {
+                        collection.Remove(folderItem);
+                    }
                 }
             }
         }

@@ -1,7 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.Net;
-using TebegramServer.Classes;
-using System.Linq;
 
 namespace TebegramServer.Data
 {

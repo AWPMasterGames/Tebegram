@@ -1,11 +1,9 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 using System.Net.Http;
-using System;
 using System.Collections.ObjectModel;
-using System.Net;
 using Tebegrammmm.Classes;
-
+using TebegramServer.Data;
 
 
 namespace Tebegrammmm
@@ -13,7 +11,6 @@ namespace Tebegrammmm
     public partial class MainWindow : Window
     {
         static HttpClient httpClient = new HttpClient();
-        string serverAdress = "http://localhost:5000";
         public MainWindow()
         {
             InitializeComponent();
@@ -30,7 +27,7 @@ namespace Tebegrammmm
             try
             {
 
-                using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{serverAdress}/login/{TBUserLogin.Text}-{PBUserPassord.Password}");
+                using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/login/{TBUserLogin.Text}-{PBUserPassord.Password}");
                 using HttpResponseMessage response = await httpClient.SendAsync(request);
                 string content = await response.Content.ReadAsStringAsync();
 

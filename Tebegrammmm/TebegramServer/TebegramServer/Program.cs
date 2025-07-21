@@ -2,9 +2,7 @@
 using TebegramServer.Data;
 using TebegramServer.Classes;
 using System.Collections.ObjectModel;
-using System.Net;
 using TebegramServer;
-using Microsoft.AspNetCore.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 

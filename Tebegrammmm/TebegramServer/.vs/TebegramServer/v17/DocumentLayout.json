@@ -32,7 +32,7 @@
               "RelativeDocumentMoniker": "TebegramServer\\Classes\\User.cs",
               "ToolTip": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\Classes\\User.cs",
               "RelativeToolTip": "TebegramServer\\Classes\\User.cs",
-              "ViewState": "AgIAAFMAAAAAAAAAAAAAwGoAAAAMAAAAAAAAAA==",
+              "ViewState": "AgIAAE4AAAAAAAAAAAAAwGUAAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-07-21T12:33:38.075Z",
               "EditorCaption": ""
@@ -47,8 +47,7 @@
               "RelativeToolTip": "TebegramServer\\Data\\UsersData.cs",
               "ViewState": "AgIAAC0AAAAAAAAAAAAewD0AAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-05T10:53:53.214Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-05T10:53:53.214Z"
             },
             {
               "$type": "Document",
@@ -60,8 +59,7 @@
               "RelativeToolTip": "TebegramServer\\Program.cs",
               "ViewState": "AgIAAEgAAAAAAAAAAAAAAGYAAAAoAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-06T10:55:27.137Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-06T10:55:27.137Z"
             }
           ]
         }

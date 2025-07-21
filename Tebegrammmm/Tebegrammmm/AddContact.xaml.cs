@@ -1,9 +1,4 @@
-﻿using System;
-using System.Windows;
-using System.Net;
-using System.Net.Http;
-using Tebegrammmm.Classes;
-using TebegramServer.Data;
+﻿using System.Windows;
 
 namespace Tebegrammmm
 {
