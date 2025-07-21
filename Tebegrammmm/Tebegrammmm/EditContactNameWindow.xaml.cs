@@ -24,6 +24,7 @@ namespace Tebegrammmm
                 return;
             }
 
+
             NewName = TBName.Text.Trim();
             this.DialogResult = true;
             this.Close();

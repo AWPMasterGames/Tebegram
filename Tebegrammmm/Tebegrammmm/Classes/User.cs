@@ -33,9 +33,14 @@ namespace Tebegrammmm
             ChatsFolders = chatsFolders;
         }
 
+        public void AddContact(Contact contact)
+        {
+            ChatsFolders[0].Contacts.Add(contact);
+        }
+
         public bool Authorize(string login, string password)
         {
-            if(login == _Login & password == _Password) return true;
+            if (login == _Login & password == _Password) return true;
             return false;
         }
 

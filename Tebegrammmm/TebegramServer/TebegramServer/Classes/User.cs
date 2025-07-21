@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using TebegramServer.Data;
 
 namespace TebegramServer
 {
@@ -74,6 +75,14 @@ namespace TebegramServer
 
             return sb.ToString();
         }
+        public void AddContact(Contact contact)
+        {
+            ChatsFolders[0].Contacts.Add(contact);
+        }
+        public void RemoveContact(Contact contact)
+        {
+            ChatsFolders[0].Contacts.Remove(contact);
+        }
         public Contact FindContactByUsername(string username)
         {
             foreach (Contact contact in ChatsFolders[0].Contacts)
@@ -92,6 +101,23 @@ namespace TebegramServer
             }
             NewMessages.Clear();
             return messages;
+        }
+        public void AddMessage(Message message)
+        {
+            if (message.Sender == Username)
+            {
+                FindContactByUsername(message.Reciver).Messages.Add(message);
+            }
+            else if (FindContactByUsername(message.Sender) == null)
+            {
+                Contact contact = new Contact(UsersData.FindUserByUsername(message.Sender).Username, UsersData.FindUserByUsername(message.Sender).Name);
+                contact.Messages.Add(message);
+                AddContact(contact);
+            }
+            else if (message.Sender != Username)
+            {
+                FindContactByUsername(message.Sender).Messages.Add(message);
+            }
         }
     }
 }

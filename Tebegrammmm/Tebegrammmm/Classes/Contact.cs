@@ -38,5 +38,10 @@ namespace Tebegrammmm
         {
             _Name = name;
         }
+
+        public void ChangeUsername(string username)
+        {
+            Username = username;
+        }
     }
 }

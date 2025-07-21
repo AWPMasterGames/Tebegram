@@ -89,6 +89,13 @@ app.MapGet("/register/{UserLogin}-{Username}-{UserPassword}", async (HttpContext
     }
 });
 
+app.MapGet("/UserName/{username}", async (HttpContext Context, string username) =>
+{
+    User user = UsersData.FindUserByUsername(username);
+
+    await Context.Response.WriteAsync(user.Name);
+});
+
 app.MapGet("/messages/{id}", async (HttpContext Context,int id) =>
 {
     User user = UsersData.FindUserById(id);
@@ -132,11 +139,38 @@ app.MapPost("/messages", async (HttpContext Context) =>
     User ReciverUser = UsersData.FindUserByUsername(message.Reciver);
     User SenderUser = UsersData.FindUserByUsername(message.Sender);
 
-    ReciverUser?.FindContactByUsername(message.Sender).Messages.Add(message);
+    ReciverUser?.AddMessage(message);
     ReciverUser?.NewMessages.Add(message);
-    SenderUser?.FindContactByUsername(message.Reciver).Messages.Add(message);
+    SenderUser?.AddMessage(message);
     SenderUser?.NewMessages.Add(message);
 
+    return Context.Response.StatusCode = 200;
+});
+
+app.MapPost("/Contact",async (HttpContext Context) =>
+{
+    using StreamReader reader = new StreamReader(Context.Request.Body);
+    string Request = await reader.ReadToEndAsync();
+    string[] Data = Request.Split('▫');
+    Contact contact = new Contact(Data[1], Data[2]);
+    UsersData.FindUserById(int.Parse(Data[0]))?.AddContact(contact);
+    return Context.Response.StatusCode = 200;
+});
+app.MapPut("/Contact", async (HttpContext Context) =>
+{
+    using StreamReader reader = new StreamReader(Context.Request.Body);
+    string Request = await reader.ReadToEndAsync();
+    string[] Data = Request.Split('▫');
+    UsersData.FindUserById(int.Parse(Data[0]))?.FindContactByUsername(Data[1]).ChangeName(Data[2]);
+    return Context.Response.StatusCode = 200;
+});
+app.MapDelete("/Contact", async (HttpContext Context) =>
+{
+    using StreamReader reader = new StreamReader(Context.Request.Body);
+    string Request = await reader.ReadToEndAsync();
+    string[] Data = Request.Split('▫');
+    User user = UsersData.FindUserById(int.Parse(Data[0]));
+    user.RemoveContact(user.FindContactByUsername(Data[1]));
     return Context.Response.StatusCode = 200;
 });
 

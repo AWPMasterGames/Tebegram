@@ -38,7 +38,10 @@ namespace TebegramServer
         {
             _Name = name;
         }
-
+        public override string ToString()
+        {
+            return $"{Name}▫{Username}";
+        }
         public string GetAllMeseges()
         {
             string AllMessege = string.Empty;
