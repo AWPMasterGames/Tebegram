@@ -128,17 +128,6 @@ namespace Tebegrammmm
             _ = NotifyServerOpenChat(Contact.Name);
         }
 
-        public MessageType GetMessageType(string type)
-        {
-            switch (type)
-            {
-                case "Text": return MessageType.Text;
-                case "Image": return MessageType.Image;
-                case "File": return MessageType.File;
-            }
-            return MessageType.Text;
-        }
-
         void AddMessageToUser(string MessageData)
         {
             string[] messageData = MessageData.Split('▫');
@@ -271,7 +260,7 @@ namespace Tebegrammmm
                                 string[] Messages = content.Split('❂');
                                 for (int i = 0; i < Messages.Length; i++)
                                 {
-                                    if(i == Messages.Length) continue;
+                                    if (i == Messages.Length) continue;
                                     await this.Dispatcher.BeginInvoke(new Action(() =>
                                     {
                                         AddMessageToUser(Messages[i]);

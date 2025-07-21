@@ -95,7 +95,7 @@ app.MapGet("/messages/{id}", async (HttpContext Context,int id) =>
 
     ChatFolder Folder = user.ChatsFolders[0];
 
-
+    user.NewMessages.Clear();
     string Messegas = string.Empty;
     for (int i = 0; i < Folder.Contacts.Count; i++)
     {
