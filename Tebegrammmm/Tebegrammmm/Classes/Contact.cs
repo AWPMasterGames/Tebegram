@@ -10,31 +10,27 @@ namespace Tebegrammmm
 {
     public class Contact
     {
-        private IPAddress _IPAddress;
-        private int _Port;
         private string _Name = string.Empty;
         private ObservableCollection<Message> _Messages;
-        public IPAddress IPAddress { get { return _IPAddress; } }
-        public int Port { get { return _Port; } }
         public string Name { get { return _Name; } }
         public ObservableCollection<Message> Messages { get { return _Messages; } }
+        public string Username { get; set; }
+        public string Draft { get; set; } = string.Empty; // Черновик сообщения
 
         public Contact()
         {
             _Messages = new ObservableCollection<Message>();
         }
-        public Contact(IPAddress iPAddress, int port, string name)
+        public Contact(string username, string name)
         {
-            _IPAddress = iPAddress;
-            _Port = port;
             _Name = name;
+            Username = username;
             _Messages = new ObservableCollection<Message>();
         }
-        public Contact(IPAddress iPAddress, int port, string name, ObservableCollection<Message> messages)
+        public Contact(string username, string name, ObservableCollection<Message> messages)
         {
-            _IPAddress = iPAddress;
-            _Port = port;
             _Name = name;
+            Username = username;
             _Messages = messages;
         }
 
@@ -42,13 +38,10 @@ namespace Tebegrammmm
         {
             _Name = name;
         }
-        public void ChangeIpAdress(IPAddress ipAddress)
+
+        public void ChangeUsername(string username)
         {
-            _IPAddress = ipAddress;
-        }
-        public void ChangePort(int port)
-        {
-            _Port = port;
+            Username = username;
         }
     }
 }

@@ -1,10 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
 
 namespace Tebegrammmm
 {
@@ -19,26 +13,38 @@ namespace Tebegrammmm
         public string Login { get { return _Login; } }
         public string Name { get { return _Name; } }
 
-        public IPAddress IpAddress;
-        public int Port {get; set; }
+        public string Username { get; set; }
 
         public ObservableCollection<ChatFolder> ChatsFolders { get; set; }
 
-        public User(int id, string login, string password, string name, string ipadress, int port, ObservableCollection<ChatFolder> chatsFolders)
+        public User(int id, string login, string password, string name, string username, ObservableCollection<ChatFolder> chatsFolders)
         {
             _Id = id;
             _Login = login;
             _Password = password;
             _Name = name;
-            IpAddress = IPAddress.Parse(ipadress);
-            Port = port;
+            Username = username;
             ChatsFolders = chatsFolders;
+        }
+
+        public void AddContact(Contact contact)
+        {
+            ChatsFolders[0].Contacts.Add(contact);
         }
 
         public bool Authorize(string login, string password)
         {
-            if(login == _Login & password == _Password) return true;
+            if (login == _Login & password == _Password) return true;
             return false;
+        }
+
+        public Contact FindContactByUsername(string username)
+        {
+            foreach (Contact contact in ChatsFolders[0].Contacts)
+            {
+                if (contact.Username == username) return contact;
+            }
+            return null;
         }
     }
 }

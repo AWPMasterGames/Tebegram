@@ -1,3 +1,16 @@
+*.user
+*.log
+*.cache
+*.tmp
+*.pid
+*.user
+*.config
+
+Properties/
+references/
 Tebegrammmm/TebegramServer/TebegramServer/uploads/
+Tebegrammmm/TebegramServer/TebegramServer/Messages/
 Tebegrammmm/TebegramServer/TebegramServer/Logs/
-Tebegrammmm/Tebegrammmm/bin/Debug/net8.0-windows/Data
+bin/
+obj/
+node_modules/

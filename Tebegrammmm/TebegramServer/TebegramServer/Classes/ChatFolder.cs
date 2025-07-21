@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using System.Collections.ObjectModel;
 namespace TebegramServer
 {
     public class ChatFolder
@@ -25,6 +19,7 @@ namespace TebegramServer
         public ChatFolder(string icon = "📁", bool isCanRedact = true)
         {
             _Id = new Random().Next(0,20000000);
+            _FolderName = "Новая папка";
             Contacts = new ObservableCollection<Contact>();
             this._Icon = icon;
             this._IsCanRedact = isCanRedact;
@@ -32,6 +27,7 @@ namespace TebegramServer
 
         public ChatFolder(string folderName, ObservableCollection<Contact> contacts, string icon = "📁", bool isCanRedact = true)
         {
+            _Id = new Random().Next(0,20000000);
             this._Icon = icon;
             this._FolderName = folderName;
             this.Contacts = contacts;

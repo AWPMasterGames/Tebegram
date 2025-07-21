@@ -1,9 +1,9 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 using System.Net.Http;
-using System;
+using System.Collections.ObjectModel;
 using Tebegrammmm.Classes;
-
+using TebegramServer.Data;
 
 
 namespace Tebegrammmm
@@ -11,7 +11,6 @@ namespace Tebegrammmm
     public partial class MainWindow : Window
     {
         static HttpClient httpClient = new HttpClient();
-        string serverAdress = "https://localhost:7034";
         public MainWindow()
         {
             InitializeComponent();
@@ -28,24 +27,57 @@ namespace Tebegrammmm
             try
             {
 
-                using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{serverAdress}/login/{TBUserLogin.Text}-{PBUserPassord.Password}");
+                using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/login/{TBUserLogin.Text}-{PBUserPassord.Password}");
                 using HttpResponseMessage response = await httpClient.SendAsync(request);
                 string content = await response.Content.ReadAsStringAsync();
-                if (content == "Succes")
+
+                // Проверяем, не является ли ответ ошибкой
+                if (content.StartsWith("Пользователь с таким логином не существует") ||
+                    content.StartsWith("Неверный пароль") ||
+                    content.StartsWith("Ошибка"))
                 {
-                    MessengerWindow mw = new MessengerWindow(UsersData.FindUser(TBUserLogin.Text));
+                    MessageBox.Show($"Ошибка авторизации: {content}");
+                    return;
+                }
+
+                try
+                {
+                    // Пытаемся распарсить JSON с данными пользователя
+                    string[] userData = content.Split('▫');
+
+                    // Создаем пользователя на основе данных с сервера
+
+
+                    User user = new User(int.Parse(userData[0]), userData[1],
+                        PBUserPassord.Password, // Пароль не передается с сервера по безопасности
+                        userData[2],
+                        userData[3],
+                        new ObservableCollection<ChatFolder>{
+                            new ChatFolder(userData[4], new ObservableCollection<Contact> {},userData[5],bool.Parse(userData[6]))}
+
+                    );
+
+                    for (int i = 8; i < userData.Length-1; i++)
+                    {
+                        string[] ContactData = userData[i].Split('&');
+                        user.ChatsFolders[0].AddContact(new Contact(ContactData[0], ContactData[1]));
+                    }
+
+                    MessengerWindow mw = new MessengerWindow(user);
                     mw.Show();
                     this.Close();
                 }
-                else
+                catch (System.Text.Json.JsonException)
                 {
-                    MessageBox.Show($"{content}");
+                    MessageBox.Show("Ошибка обработки данных сервера");
+                    return;
                 }
             }
             catch (HttpRequestException ex)
             {
                 Log.Save($"[Authorization] Error: {ex.Message}");
                 MessageBox.Show("Ошибка при попытке авторизации\nПодробнее от ошибке можно узнать в краш логах");
+                return; // Добавляем return, чтобы прекратить выполнение
             }
         }
 

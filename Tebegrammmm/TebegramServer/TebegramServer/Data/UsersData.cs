@@ -1,86 +1,133 @@
 ﻿using System.Collections.ObjectModel;
 using System.Net;
 using TebegramServer.Classes;
+using System.Linq;
+using System.Text.Json;
+
 namespace TebegramServer.Data
 {
     public static class UsersData
     {
-        static ObservableCollection<User> Users = new ObservableCollection<User>()
-                {
-                    new User(1,"aa", "123", "Вася жопкин бамбук", "127.0.0.1", 4004,
-                new ObservableCollection<ChatFolder>{
-                    new ChatFolder("Все чаты",
-                        new ObservableCollection<Contact> {
-                            new Contact(IPAddress.Parse( "127.0.0.1"),4005,"Убека"),
-                            new Contact(IPAddress.Parse( "127.0.0.1"),5005,"Masya")
-                        },"💬",false)
-                }),
+        static ObservableCollection<User> Users = new ObservableCollection<User>();
 
-
-            new User(2,"aa1", "1234", "убека", "127.0.0.1", 4005,
-                 new ObservableCollection<ChatFolder>{
-                    new ChatFolder("Все чаты",
-                        new ObservableCollection<Contact> {
-                            new Contact(IPAddress.Parse( "127.0.0.1"),4004,"Вася жопкин бамбук"),
-                            new Contact(IPAddress.Parse( "127.0.0.1"),5005,"Masya")
-                        },"💬",false)
-                 }),
-             new User(3,"masya", "123", "Мася", "127.0.0.1", 4005,
-                 new ObservableCollection<ChatFolder>{
-                    new ChatFolder("Все чаты",
-                        new ObservableCollection<Contact> {
-                            new Contact(IPAddress.Parse( "127.0.0.1"),4004,"Вася жопкин бамбук"),
-                            new Contact(IPAddress.Parse( "127.0.0.1"),4005,"Убебка")
-                        },"💬",false)
-                 })
-                };
-
-        public static ObservableCollection<User> GetUsers()
+        static UsersData()
         {
-            return Users;
+            LoadUserList();
+        }
+
+        public static bool IsExistUser(string login)
+        {
+            return Users.Any(user => user.Login == login);
+        }
+
+        public static User? Authorize(string login, string password)
+        {
+            return Users.FirstOrDefault(user => user.Authorize(login,password));
+        }
+        public static User? FindUserById(int id)
+        {
+            return Users.FirstOrDefault(user => user.Id == id);
+        }
+        public static User? FindUserByLogin(string login)
+        {
+            return Users.FirstOrDefault(user => user.Login == login);
+        }
+        public static User? FindUserByUsername(string username)
+        {
+            return Users.FirstOrDefault(user => user.Username == username);
         }
 
         public static void AddUser(User user)
         {
             Users.Add(user);
         }
-        public static void RemoveUser(User user)
-        {
-            Users.Remove(user);
-        }
 
-        public static User Authorize(string login, string password)
+        private static void LoadUserList()
         {
-            for (int i = 0; i < Users.Count; i++)
+            try
             {
-                if (Users[i].Login == login)
+                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Users.json");
+                
+                if (!File.Exists(filePath))
                 {
-                    if (Users[i].Authorize(login, password))
+                    Console.WriteLine($"Файл пользователей не найден: {filePath}");
+                    return;
+                }
+
+                string jsonContent = File.ReadAllText(filePath);
+                var usersData = JsonSerializer.Deserialize<List<UserData>>(jsonContent);
+
+                if (usersData != null)
+                {
+                    foreach (var userData in usersData)
                     {
-                        return Users[i];
+                        var chatsFolders = new ObservableCollection<ChatFolder>();
+                        
+                        foreach (var folderData in userData.ChatsFolders)
+                        {
+                            var contacts = new ObservableCollection<Contact>();
+                            
+                            foreach (var contactData in folderData.Contacts)
+                            {
+                                var messages = new ObservableCollection<Message>();
+                                
+                                foreach (var messageData in contactData.Messages)
+                                {
+                                    var messageType = Enum.TryParse<MessageType>(messageData.MessageType, out var type) ? type : MessageType.Text;
+                                    messages.Add(new Message(messageData.Sender, messageData.Recipient, messageData.Text, messageData.Time, messageType));
+                                }
+                                
+                                contacts.Add(new Contact(contactData.Username, contactData.Name, messages));
+                            }
+                            
+                            chatsFolders.Add(new ChatFolder(folderData.Name, contacts, folderData.Icon, folderData.CanDelete));
+                        }
+                        
+                        Users.Add(new User(userData.Id, userData.Login, userData.Password, userData.Name, userData.Username, chatsFolders));
                     }
                 }
+                
+                Console.WriteLine($"Загружено пользователей: {Users.Count}");
             }
-            return null;
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при загрузке пользователей: {ex.Message}");
+            }
         }
 
-        public static User FindUser(string userLogin)
+        // Вспомогательные классы для десериализации JSON
+        private class UserData
         {
-            foreach (var user in Users)
-            {
-                if (userLogin == user.Login) return user;
-            }
-            return null;
+            public int Id { get; set; }
+            public string Login { get; set; } = "";
+            public string Password { get; set; } = "";
+            public string Name { get; set; } = "";
+            public string Username { get; set; } = "";
+            public List<ChatFolderData> ChatsFolders { get; set; } = new();
         }
 
-        public static bool IsExistUser(string login)
+        private class ChatFolderData
         {
-            foreach (var user in Users)
-            {
-                if (login == user.Login) return true;
-            }
-            return false;
+            public string Name { get; set; } = "";
+            public List<ContactData> Contacts { get; set; } = new();
+            public string Icon { get; set; } = "";
+            public bool CanDelete { get; set; }
+        }
+
+        private class ContactData
+        {
+            public string Username { get; set; } = "";
+            public string Name { get; set; } = "";
+            public List<MessageData> Messages { get; set; } = new();
+        }
+
+        private class MessageData
+        {
+            public string Sender { get; set; } = "";
+            public string Recipient { get; set; } = "";
+            public string Text { get; set; } = "";
+            public string Time { get; set; } = "";
+            public string MessageType { get; set; } = "Text";
         }
     }
-
 }

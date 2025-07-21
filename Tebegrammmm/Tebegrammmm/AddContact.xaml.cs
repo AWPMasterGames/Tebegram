@@ -1,6 +1,4 @@
-﻿using System;
-using System.Windows;
-using System.Net;
+﻿using System.Windows;
 
 namespace Tebegrammmm
 {
@@ -10,24 +8,12 @@ namespace Tebegrammmm
     public partial class AddContact : Window
     {
         Contact Contact;
-        public AddContact(Contact contact, string title)
+        public AddContact(Contact contact)
         {
             InitializeComponent();
-            this.Title = title;
-            TBTitle.Text = title;
+            this.Title = "Добавить контакт";
+            TBTitle.Text = "Добавить контакт";
             Contact = contact;
-            if (contact.Name != string.Empty)
-            {
-                TBName.Text = contact.Name;
-            }
-            if (contact.IPAddress != null)
-            {
-                TBIPAdress.Text = contact.IPAddress.ToString();
-            }
-            if (contact.Port != null)
-            {
-                TBPort.Text = contact.Port.ToString();
-            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -38,28 +24,19 @@ namespace Tebegrammmm
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            if (TBName.Text.Length < 1)
+            if (TBName.Text.Trim().Length < 1)
             {
                 MessageBox.Show("Укажите Имя");
                 return;
             }
-            if (Convert.ToInt32(TBPort.Text) < 1500)
+            if (TBUsername.Text.Trim().Length < 1)
             {
-                MessageBox.Show("Минимальное значение для порта 1500");
+                MessageBox.Show("Укажите имя пользователя");
                 return;
             }
-            try
-            {
-                Contact.ChangeIpAdress(IPAddress.Parse(TBIPAdress.Text));
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-                return;
-            }
-            Contact.ChangeName(TBName.Text);
-            Contact.ChangePort(Convert.ToInt32(TBPort.Text));
-
+            Contact.ChangeName(TBUsername.Text.Trim());
+            Contact.ChangeUsername(TBUsername.Text.Trim());
+                
             this.DialogResult = true;
             this.Close();
         }
