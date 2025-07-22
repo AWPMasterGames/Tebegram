@@ -52,15 +52,6 @@ namespace Tebegrammmm
             Thread = new Thread(new ThreadStart(GetNewMessages));
             Thread.Start();
 
-
-            // Загружаем последний выбранный контакт
-            string lastContact = LoadLastSelectedContact();
-            if (!string.IsNullOrEmpty(lastContact))
-            {
-                lastSelectedContactName = lastContact;
-                Log.Save($"[MessengerWindow] Последний выбранный контакт: {lastContact}");
-            }
-
             Log.Save($"[MessengerWindow] Инициализация завершена");
         }
 
@@ -110,12 +101,6 @@ namespace Tebegrammmm
                 TBMessage.Text = Contact.Draft ?? string.Empty;
                 Log.Save($"[LBChats_SelectionChanged] Restored draft for {Contact.Name}: '{Contact.Draft}'");
             }
-
-            // Сохраняем последний выбранный контакт
-            SaveLastSelectedContact(Contact.Name);
-
-            // Уведомляем сервер об открытии чата
-            _ = NotifyServerOpenChat(Contact.Name);
         }
 
         private async void AddMessageToUser(string MessageData)
@@ -193,12 +178,7 @@ namespace Tebegrammmm
                             this.Dispatcher.BeginInvoke(new Action(() =>
                             {
                                 contact.Messages.Add(message);
-                                if (Contact == contact)
-                                {
-                                    UpdateChatDisplay();
-                                }
                             }));
-                            SaveMessageToFile(contact.Name, MessageData, false);
 
                             // НЕ сохраняем на сервер - это уже сделал отправитель!
                             Log.Save($"[AddMessageToUser] Получено сообщение от {contact.Name}: {text}");
@@ -211,10 +191,6 @@ namespace Tebegrammmm
                             this.Dispatcher.BeginInvoke(new Action(() =>
                             {
                                 contact.Messages.Add(message);
-                                if (Contact == contact)
-                                {
-                                    UpdateChatDisplay();
-                                }
                             }));
                             SaveMessageToFile(contact.Name, MessageData, false);
 
@@ -309,48 +285,48 @@ namespace Tebegrammmm
                 return; // Добавляем return, чтобы прекратить выполнение
             }
         }
+        /*
 
-
-        private async Task<bool> CheckUserOnlineAsync(string Username)
-        {
-            try
-            {
-                // Пробуем сначала через localhost, затем через IP
-                string[] checkUrls = { 
-                    /*$"http://localhost:{port}/", 
-                    $"http://127.0.0.1:{port}/",
-                    $"http://{ip}:{port}/" */
-                };
-
-                using (var client = new HttpClient())
+                private async Task<bool> CheckUserOnlineAsync(string Username)
                 {
-                    client.Timeout = TimeSpan.FromMilliseconds(800); // Очень быстрый таймаут для проверки
-
-                    foreach (string url in checkUrls)
+                    try
                     {
-                        try
+                        // Пробуем сначала через localhost, затем через IP
+                        string[] checkUrls = { 
+                            *//*$"http://localhost:{port}/", 
+                            $"http://127.0.0.1:{port}/",
+                            $"http://{ip}:{port}/" *//*
+                        };
+
+                        using (var client = new HttpClient())
                         {
-                            HttpResponseMessage response = await client.GetAsync(url);
-                            if (response.IsSuccessStatusCode)
+                            client.Timeout = TimeSpan.FromMilliseconds(800); // Очень быстрый таймаут для проверки
+
+                            foreach (string url in checkUrls)
                             {
-                                Log.Save($"[CheckUserOnline] User online at {url}");
-                                return true;
+                                try
+                                {
+                                    HttpResponseMessage response = await client.GetAsync(url);
+                                    if (response.IsSuccessStatusCode)
+                                    {
+                                        Log.Save($"[CheckUserOnline] User online at {url}");
+                                        return true;
+                                    }
+                                }
+                                catch
+                                {
+                                    // Пробуем следующий URL
+                                    continue;
+                                }
                             }
                         }
-                        catch
-                        {
-                            // Пробуем следующий URL
-                            continue;
-                        }
+                        return false;
                     }
-                }
-                return false;
-            }
-            catch
-            {
-                return false;
-            }
-        }
+                    catch
+                    {
+                        return false;
+                    }
+                }*/
         private async Task SendMessageToUserAsync(Message message)
         {
             try
@@ -476,10 +452,6 @@ namespace Tebegrammmm
             }
 
             Message Message = new Message(User.Username, Contact.Username, message, DateTime.Now.ToString("hh:mm"), messageType, ServerFilePath);
-            //Contact.Messages.Add(Message);
-
-            // Обновляем интерфейс
-            UpdateChatDisplay();
 
             Log.Save($"[SendMessage] Message added to local contact. Sending to user...");
             await SendMessageToUserAsync(Message);
@@ -565,9 +537,9 @@ namespace Tebegrammmm
                     }
                     else
                     {
-                        for(int i = 0; i < User.Contacts.Count;i++)
+                        for (int i = 0; i < User.Contacts.Count; i++)
                         {
-                            if(contact.Username == User.Contacts[i].Username)
+                            if (contact.Username == User.Contacts[i].Username)
                             {
                                 LBChats.SelectedIndex = i;
                                 return;
@@ -631,9 +603,6 @@ namespace Tebegrammmm
                 {
                     // Изменяем имя контакта на новое
                     Contact.ChangeName(newName);
-
-                    // Сохраняем изменения в настройках пользователя
-                    SaveContactNameChange(Contact, oldName, Contact.Name);
 
                     // Обновляем интерфейс
                     User.ChatsFolders[0].RemoveContact(Contact);
@@ -763,706 +732,6 @@ namespace Tebegrammmm
             SettingsPanelWindow SPW = new SettingsPanelWindow(User);
             SPW.ShowDialog();
         }
-
-        /*private async Task LoadMessageHistoryAsync()
-        {
-            try
-            {
-                Log.Save($"[LoadMessageHistory] Загрузка истории сообщений для {User.Login}");
-                
-                // Очищаем все сообщения перед загрузкой истории чтобы избежать дублирования
-                foreach (var folder in User.ChatsFolders)
-                {
-                    foreach (var contact in folder.Contacts)
-                    {
-                        contact.Messages.Clear();
-                    }
-                }
-                Log.Save($"[LoadMessageHistory] Очищены локальные сообщения перед загрузкой истории");
-                
-                using (HttpResponseMessage response = await httpClient.GetAsync($"{ServerData.ServerAdress}/messages/{User.Login}"))
-                {
-                    if (response.IsSuccessStatusCode)
-                    {
-                        string json = await response.Content.ReadAsStringAsync();
-                        var messages = System.Text.Json.JsonSerializer.Deserialize<List<Dictionary<string, object>>>(json);
-                        
-                        if (messages != null && messages.Count > 0)
-                        {
-                            // Сортируем сообщения по времени сохранения
-                            messages = messages.OrderBy(m => 
-                            {
-                                if (m.TryGetValue("SavedAt", out var savedAt) && DateTime.TryParse(savedAt?.ToString(), out var date))
-                                    return date;
-                                return DateTime.MinValue;
-                            }).ToList();
-
-                            foreach (var msgData in messages)
-                            {
-                                RestoreMessageFromServer(msgData);
-                            }
-                            Log.Save($"[LoadMessageHistory] Загружено {messages.Count} сообщений");
-                            
-                            // Отмечаем время загрузки сообщений пользователем
-                            await UpdateUserLastActivity();
-                        }
-                        else
-                        {
-                            Log.Save($"[LoadMessageHistory] Нет сохраненных сообщений для пользователя");
-                            // Все равно отмечаем активность
-                            await UpdateUserLastActivity();
-                        }
-                    }
-                    else
-                    {
-                        Log.Save($"[LoadMessageHistory] Ошибка загрузки истории: {response.StatusCode}");
-                    }
-                }
-                
-                // После загрузки истории пробуем восстановить последний выбранный чат
-                this.Dispatcher.BeginInvoke(new Action(() => {
-                    RestoreLastSelectedContact();
-                }));
-            }
-            catch (Exception ex)
-            {
-                Log.Save($"[LoadMessageHistory] Error: {ex.Message}");
-            }
-        }*/
-
-        /*private Task RestoreMessageFromServer(Dictionary<string, object> messageData)
-        {
-            try
-            {
-                string fromUser = messageData["FromUser"]?.ToString() ?? "";
-                string toUser = messageData["ToUser"]?.ToString() ?? "";
-                string messageText = messageData["Message"]?.ToString() ?? "";
-                string timestamp = messageData["Timestamp"]?.ToString() ?? "";
-                string messageType = messageData["MessageType"]?.ToString() ?? "Text";
-                string statusString = messageData["Status"]?.ToString() ?? "Sent";
-
-                // Определяем, кто отправитель относительно текущего пользователя
-                string contactLogin = fromUser == User.Login ? toUser : fromUser;
-                string senderName = fromUser == User.Login ? User.Name : fromUser;
-
-                Log.Save($"[RestoreMessage] Обработка сообщения: {fromUser} -> {toUser}");
-
-                // Находим контакт в списке по логину или имени
-                Contact? targetContact = null;
-                foreach (var folder in User.ChatsFolders)
-                {
-                    // Сначала ищем по Username (логину)
-                    targetContact = folder.Contacts.FirstOrDefault(c => 
-                        !string.IsNullOrEmpty(c.Username) && c.Username == contactLogin);
-                    
-                    // Если не найден по Username, ищем по имени
-                    if (targetContact == null)
-                    {
-                        targetContact = folder.Contacts.FirstOrDefault(c => c.Name == contactLogin);
-                    }
-                    
-                    if (targetContact != null) 
-                    {
-                        Log.Save($"[RestoreMessage] Найден контакт: {targetContact.Name} (Username: {targetContact.Username})");
-                        break;
-                    }
-                }
-
-                if (targetContact != null)
-                {
-                    MessageType msgType = Enum.TryParse(messageType, out MessageType parsedType) ? parsedType : MessageType.Text;
-                    MessageStatus msgStatus = Enum.TryParse(statusString, out MessageStatus parsedStatus) ? parsedStatus : MessageStatus.Sent;
-                    
-                    Message message = new Message(senderName, messageText, timestamp, msgType);
-                    message.Status = msgStatus;
-                    
-                    // Добавляем в UI thread
-                    this.Dispatcher.BeginInvoke(new Action(() =>
-                    {
-                        targetContact.Messages.Add(message);
-                        if (Contact == targetContact)
-                        {
-                            UpdateChatDisplay();
-                        }
-                    }));
-                    
-                    Log.Save($"[RestoreMessage] Восстановлено сообщение: {senderName} -> {targetContact.Name}");
-                }
-                else
-                {
-                    Log.Save($"[RestoreMessage] Контакт не найден для логина: {contactLogin}");
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Save($"[RestoreMessage] Error: {ex.Message}");
-            }
-            
-            return Task.CompletedTask;
-        }*/
-
-        private void UpdateChatDisplay()
-        {
-            if (Contact != null)
-            {
-                LBMessages.ItemsSource = null;
-                LBMessages.ItemsSource = Contact.Messages;
-                Log.Save($"[UpdateChatDisplay] Обновлен интерфейс чата для {Contact.Name} - всего сообщений: {Contact.Messages.Count}");
-            }
-        }
-
-        private void SaveContactNameChange(Contact contact, string oldName, string newName)
-        {
-            try
-            {
-                // Сохраняем изменение имени в настройках пользователя
-                // Можно реализовать сохранение в файл или на сервер
-                Log.Save($"[SaveContactNameChange] Сохранено изменение имени контакта: {oldName} -> {newName}");
-
-                // TODO: Здесь можно добавить сохранение в базу данных или файл настроек
-                // Пока просто логируем изменение
-            }
-            catch (Exception ex)
-            {
-                Log.Save($"[SaveContactNameChange] Error: {ex.Message}");
-            }
-        }
-
-        private void SaveLastSelectedContact(string contactName)
-        {
-            try
-            {
-                string settingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Settings");
-                if (!Directory.Exists(settingsPath))
-                {
-                    Directory.CreateDirectory(settingsPath);
-                }
-
-                string userSettingsFile = Path.Combine(settingsPath, $"{User.Login}_settings.txt");
-                File.WriteAllText(userSettingsFile, $"LastSelectedContact:{contactName}");
-                Log.Save($"[SaveLastSelectedContact] Сохранен последний выбранный контакт: {contactName}");
-            }
-            catch (Exception ex)
-            {
-                Log.Save($"[SaveLastSelectedContact] Error: {ex.Message}");
-            }
-        }
-
-        private string LoadLastSelectedContact()
-        {
-            try
-            {
-                string settingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Settings");
-                string userSettingsFile = Path.Combine(settingsPath, $"{User.Login}_settings.txt");
-
-                if (File.Exists(userSettingsFile))
-                {
-                    string content = File.ReadAllText(userSettingsFile);
-                    if (content.StartsWith("LastSelectedContact:"))
-                    {
-                        string contactName = content.Substring("LastSelectedContact:".Length);
-                        Log.Save($"[LoadLastSelectedContact] Загружен последний выбранный контакт: {contactName}");
-                        return contactName;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Save($"[LoadLastSelectedContact] Error: {ex.Message}");
-            }
-            return "";
-        }
-
-        private void RestoreLastSelectedContact()
-        {
-            try
-            {
-                if (!string.IsNullOrEmpty(lastSelectedContactName))
-                {
-                    // Ищем контакт по имени в списке чатов
-                    foreach (var folder in User.ChatsFolders)
-                    {
-                        var contact = folder.Contacts.FirstOrDefault(c => c.Name == lastSelectedContactName);
-                        if (contact != null)
-                        {
-                            // Выбираем найденный контакт
-                            LBChats.SelectedItem = contact;
-                            Log.Save($"[RestoreLastSelectedContact] Восстановлен выбор контакта: {lastSelectedContactName}");
-                            break;
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Save($"[RestoreLastSelectedContact] Error: {ex.Message}");
-            }
-        }
-
-        private async Task CheckPendingMessagesStatus()
-        {
-            try
-            {
-                foreach (var folder in User.ChatsFolders)
-                {
-                    foreach (var contact in folder.Contacts)
-                    {
-                        // Проверяем, есть ли у контакта сообщения с статусом Pending (серые)
-                        var pendingMessages = contact.Messages.Where(m =>
-                            m.Status == MessageStatus.Pending &&
-                            m.Sender == User.Name).ToList(); // Только наши исходящие сообщения
-
-                        if (pendingMessages.Any())
-                        {
-                            // Проверяем, загрузил ли получатель сообщения с сервера
-                            bool messagesDelivered = await CheckIfMessagesDelivered(contact, pendingMessages);
-
-                            if (messagesDelivered)
-                            {
-                                Log.Save($"[MessageStatusChecker] Пользователь {contact.Name} получил сообщения - обновляем статус {pendingMessages.Count} сообщений на белый");
-
-                                // Обновляем статус всех Pending сообщений на Sent (белые)
-                                foreach (var message in pendingMessages)
-                                {
-                                    message.Status = MessageStatus.Sent;
-
-                                    // Обновляем статус на сервере
-                                    var originalContact = Contact;
-                                    Contact = contact;
-                                    await SaveMessageToServer(message);
-                                    Contact = originalContact;
-                                }
-
-                                // Обновляем UI
-                                this.Dispatcher.BeginInvoke(new Action(() =>
-                                {
-                                    UpdateChatDisplay();
-                                }));
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Save($"[MessageStatusChecker] Error: {ex.Message}");
-            }
-        }
-
-        private async Task<bool> CheckIfMessagesDelivered(Contact contact, List<Message> pendingMessages)
-        {
-            try
-            {
-                // Простая логика: проверяем, онлайн ли получатель
-                bool isOnline = await CheckUserOnlineAsync(contact.Username);
-
-                Log.Save($"[CheckIfMessagesDelivered] Контакт {contact.Name}: онлайн {isOnline}");
-                return isOnline;
-            }
-            catch (Exception ex)
-            {
-                Log.Save($"[CheckIfMessagesDelivered] Error: {ex.Message}");
-                return false;
-            }
-        }
-
-        private async Task UpdateUserLastActivity()
-        {
-            try
-            {
-                var activityData = new
-                {
-                    userId = User.Login,
-                    lastMessageLoad = DateTime.Now.ToString("o") // ISO 8601 format
-                };
-
-                string json = System.Text.Json.JsonSerializer.Serialize(activityData);
-                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                using (HttpResponseMessage response = await httpClient.PostAsync($"{ServerData.ServerAdress}/users/activity", content))
-                {
-                    if (response.IsSuccessStatusCode)
-                    {
-                        Log.Save($"[UpdateUserLastActivity] Обновлена активность пользователя {User.Login}");
-                    }
-                    else
-                    {
-                        Log.Save($"[UpdateUserLastActivity] Ошибка обновления активности: {response.StatusCode}");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Save($"[UpdateUserLastActivity] Error: {ex.Message}");
-            }
-        }
-
-        private async Task NotifyServerOpenChat(string chatWithUser)
-        {
-            try
-            {
-                var chatData = new
-                {
-                    userId = User.Login,
-                    chatWith = chatWithUser
-                };
-
-                string json = System.Text.Json.JsonSerializer.Serialize(chatData);
-                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                using (HttpResponseMessage response = await httpClient.PostAsync($"{ServerData.ServerAdress}/users/open-chat", content))
-                {
-                    if (response.IsSuccessStatusCode)
-                    {
-                        Log.Save($"[NotifyServerOpenChat] Уведомили сервер об открытии чата с {chatWithUser}");
-                    }
-                    else
-                    {
-                        Log.Save($"[NotifyServerOpenChat] Ошибка уведомления: {response.StatusCode}");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Save($"[NotifyServerOpenChat] Error: {ex.Message}");
-            }
-        }
-
-        private async Task NotifyServerCloseChat()
-        {
-            try
-            {
-                var chatData = new
-                {
-                    userId = User.Login
-                };
-
-                string json = System.Text.Json.JsonSerializer.Serialize(chatData);
-                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                using (HttpResponseMessage response = await httpClient.PostAsync($"{ServerData.ServerAdress}/users/close-chat", content))
-                {
-                    if (response.IsSuccessStatusCode)
-                    {
-                        Log.Save($"[NotifyServerCloseChat] Уведомили сервер о закрытии чата");
-                    }
-                    else
-                    {
-                        Log.Save($"[NotifyServerCloseChat] Ошибка уведомления: {response.StatusCode}");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Save($"[NotifyServerCloseChat] Error: {ex.Message}");
-            }
-        }
-
-        private async Task UpdateMessageStatusOnServer(string fromUser, string toUser, string messageText, string timestamp, MessageStatus newStatus)
-        {
-            try
-            {
-                var updateData = new
-                {
-                    fromUser = fromUser,
-                    toUser = toUser,
-                    message = messageText,
-                    timestamp = timestamp,
-                    newStatus = newStatus.ToString()
-                };
-
-                string json = System.Text.Json.JsonSerializer.Serialize(updateData);
-                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                using (HttpResponseMessage response = await httpClient.PostAsync($"{ServerData.ServerAdress}/messages/update-status", content))
-                {
-                    if (response.IsSuccessStatusCode)
-                    {
-                        Log.Save($"[UpdateMessageStatusOnServer] Обновлен статус сообщения: {fromUser} -> {toUser} на {newStatus}");
-                    }
-                    else
-                    {
-                        Log.Save($"[UpdateMessageStatusOnServer] Ошибка обновления статуса: {response.StatusCode}");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Save($"[UpdateMessageStatusOnServer] Error: {ex.Message}");
-            }
-        }
-    }
-    /*private async Task CheckForNewMessages()
-    {
-        try
-        {
-            using (HttpResponseMessage response = await httpClient.GetAsync($"{ServerData.ServerAdress}/messages/{User.Login}"))
-            {
-                if (response.IsSuccessStatusCode)
-                {
-                    string json = await response.Content.ReadAsStringAsync();
-                    var messages = System.Text.Json.JsonSerializer.Deserialize<List<Dictionary<string, object>>>(json);
-
-                    if (messages != null && messages.Count > 0)
-                    {
-                        // Фильтруем только новые сообщения (после последней проверки)
-                        var newMessages = messages.Where(m =>
-                        {
-                            if (m.TryGetValue("SavedAt", out var savedAt) && DateTime.TryParse(savedAt?.ToString(), out var savedDate))
-                            {
-                                return savedDate > lastMessageCheck;
-                            }
-                            return false;
-                        }).ToList();
-
-                        if (newMessages.Any())
-                        {
-                            Log.Save($"[CheckForNewMessages] Найдено {newMessages?.Count} новых сообщений");
-
-                            foreach (var msgData in newMessages)
-                            {
-                                await ProcessNewMessage(msgData);
-                            }
-
-                            // Обновляем время последней проверки
-                            lastMessageCheck = DateTime.Now;
-
-                            // Обновляем интерфейс если нужно
-                            this.Dispatcher.BeginInvoke(new Action(() =>
-                            {
-                                if (Contact != null)
-                                {
-                                    UpdateChatDisplay();
-                                }
-                            }));
-                        }
-                    }
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Log.Save($"[CheckForNewMessages] Error: {ex.Message}");
-        }
-    }*/
-
-    /*private async Task ProcessNewMessage(Dictionary<string, object> messageData)
-    {
-        try
-        {
-            string fromUser = messageData["FromUser"]?.ToString() ?? "";
-            string toUser = messageData["ToUser"]?.ToString() ?? "";
-            string messageText = messageData["Message"]?.ToString() ?? "";
-            string timestamp = messageData["Timestamp"]?.ToString() ?? "";
-            string messageType = messageData["MessageType"]?.ToString() ?? "Text";
-            string statusString = messageData["Status"]?.ToString() ?? "Sent";
-
-            // Определяем, кто отправитель относительно текущего пользователя
-            string contactLogin = fromUser == User.Login ? toUser : fromUser;
-            string senderName = fromUser == User.Login ? User.Name : fromUser;
-
-            // Проверяем, это входящее сообщение (не от нас)
-            if (fromUser != User.Login)
-            {
-                // Находим контакт в списке по логину или имени
-                Contact? targetContact = null;
-                foreach (var folder in User.ChatsFolders)
-                {
-                    // Сначала ищем по Username (логину)
-                    targetContact = folder.Contacts.FirstOrDefault(c =>
-                        !string.IsNullOrEmpty(c.Username) && c.Username == contactLogin);
-
-                    // Если не найден по Username, ищем по имени
-                    if (targetContact == null)
-                    {
-                        targetContact = folder.Contacts.FirstOrDefault(c => c.Name == contactLogin);
-                    }
-
-                    if (targetContact != null)
-                    {
-                        break;
-                    }
-                }
-
-                if (targetContact != null)
-                {
-                    // Проверяем, есть ли уже такое сообщение в локальном чате
-                    bool messageExists = targetContact.Messages.Any(m =>
-                        m.Text == messageText &&
-                        m.Time == timestamp &&
-                        m.Sender == senderName);
-
-                    if (!messageExists)
-                    {
-                        MessageType msgType = Enum.TryParse(messageType, out MessageType parsedType) ? parsedType : MessageType.Text;
-                        MessageStatus msgStatus = Enum.TryParse(statusString, out MessageStatus parsedStatus) ? parsedStatus : MessageStatus.Sent;
-
-                        Message message = new Message(senderName, messageText, timestamp, msgType);
-                        message.Status = msgStatus;
-
-                        // Добавляем в UI thread
-                        this.Dispatcher.BeginInvoke(new Action(() =>
-                        {
-                            targetContact.Messages.Add(message);
-                        }));
-
-                        Log.Save($"[ProcessNewMessage] Добавлено новое входящее сообщение: {senderName} -> {targetContact.Name}");
-                    }
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Log.Save($"[ProcessNewMessage] Error: {ex.Message}");
-        }
-    }*/
-}
-/* {
-     try
-     {
-         Log.Save("[StartPeriodicMessageCheck] Запуск периодической проверки новых сообщений");
-
-         while (true)
-         {
-             await Task.Delay(5000); // Проверяем каждые 5 секунд
-
-             try
-             {
-                 await CheckForNewMessages();
-             }
-             catch (Exception ex)
-             {
-                 Log.Save($"[StartPeriodicMessageCheck] Ошибка проверки сообщений: {ex.Message}");
-             }
-         }
-     }
-     catch (Exception ex)
-     {
-         Log.Save($"[StartPeriodicMessageCheck] Error: {ex.Message}");
-     }
- }*/
-/*private async Task CheckForNewMessages()
-{
-    try
-    {
-        using (HttpResponseMessage response = await httpClient.GetAsync($"{ServerData.ServerAdress}/messages/{User.Login}"))
-        {
-            if (response.IsSuccessStatusCode)
-            {
-                string json = await response.Content.ReadAsStringAsync();
-                var messages = System.Text.Json.JsonSerializer.Deserialize<List<Dictionary<string, object>>>(json);
-
-                if (messages != null && messages.Count > 0)
-                {
-                    // Фильтруем только новые сообщения (после последней проверки)
-                    var newMessages = messages.Where(m => 
-                    {
-                        if (m.TryGetValue("SavedAt", out var savedAt) && DateTime.TryParse(savedAt?.ToString(), out var savedDate))
-                        {
-                            return savedDate > lastMessageCheck;
-                        }
-                        return false;
-                    }).ToList();
-
-                    if (newMessages.Any())
-                    {
-                        Log.Save($"[CheckForNewMessages] Найдено {newMessages.Count} новых сообщений");
-
-                        foreach (var msgData in newMessages)
-                        {
-                            await ProcessNewMessage(msgData);
-                        }
-
-                        // Обновляем время последней проверки
-                        lastMessageCheck = DateTime.Now;
-
-                        // Обновляем интерфейс если нужно
-                        this.Dispatcher.BeginInvoke(new Action(() =>
-                        {
-                            if (Contact != null)
-                            {
-                                UpdateChatDisplay();
-                            }
-                        }));
-                    }
-                }
-            }
-        }
-    }
-    catch (Exception ex)
-    {
-        Log.Save($"[CheckForNewMessages] Error: {ex.Message}");
     }
 }
-
-private async Task ProcessNewMessage(Dictionary<string, object> messageData)
-{
-    try
-    {
-        string fromUser = messageData["FromUser"]?.ToString() ?? "";
-        string toUser = messageData["ToUser"]?.ToString() ?? "";
-        string messageText = messageData["Message"]?.ToString() ?? "";
-        string timestamp = messageData["Timestamp"]?.ToString() ?? "";
-        string messageType = messageData["MessageType"]?.ToString() ?? "Text";
-        string statusString = messageData["Status"]?.ToString() ?? "Sent";
-
-        // Определяем, кто отправитель относительно текущего пользователя
-        string contactLogin = fromUser == User.Login ? toUser : fromUser;
-        string senderName = fromUser == User.Login ? User.Name : fromUser;
-
-        // Проверяем, это входящее сообщение (не от нас)
-        if (fromUser != User.Login)
-        {
-            // Находим контакт в списке по логину или имени
-            Contact? targetContact = null;
-            foreach (var folder in User.ChatsFolders)
-            {
-                // Сначала ищем по Username (логину)
-                targetContact = folder.Contacts.FirstOrDefault(c => 
-                    !string.IsNullOrEmpty(c.Username) && c.Username == contactLogin);
-
-                // Если не найден по Username, ищем по имени
-                if (targetContact == null)
-                {
-                    targetContact = folder.Contacts.FirstOrDefault(c => c.Name == contactLogin);
-                }
-
-                if (targetContact != null) 
-                {
-                    break;
-                }
-            }
-
-            if (targetContact != null)
-            {
-                // Проверяем, есть ли уже такое сообщение в локальном чате
-                bool messageExists = targetContact.Messages.Any(m => 
-                    m.Text == messageText && 
-                    m.Time == timestamp && 
-                    m.Sender == senderName);
-
-                if (!messageExists)
-                {
-                    MessageType msgType = Enum.TryParse(messageType, out MessageType parsedType) ? parsedType : MessageType.Text;
-                    MessageStatus msgStatus = Enum.TryParse(statusString, out MessageStatus parsedStatus) ? parsedStatus : MessageStatus.Sent;
-
-                    Message message = new Message(senderName, messageText, timestamp, msgType);
-                    message.Status = msgStatus;
-
-                    // Добавляем в UI thread
-                    this.Dispatcher.BeginInvoke(new Action(() =>
-                    {
-                        targetContact.Messages.Add(message);
-                    }));
-
-                    Log.Save($"[ProcessNewMessage] Добавлено новое входящее сообщение: {senderName} -> {targetContact.Name}");
-                }
-            }
-        }
-    }
-    catch (Exception ex)
-    {
-        Log.Save($"[ProcessNewMessage] Error: {ex.Message}");
-    }
-}*/
 

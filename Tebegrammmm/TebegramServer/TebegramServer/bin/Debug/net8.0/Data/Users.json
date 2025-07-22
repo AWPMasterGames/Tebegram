@@ -12,15 +12,7 @@
           {
             "Username": "ybeka",
             "Name": "Убека",
-            "Messages": [
-              {
-                "Sender": "ybeka",
-                "Recipient": "vasya",
-                "Text": "hi",
-                "Time": "12:30",
-                "MessageType": "Text"
-              }
-            ]
+            "Messages": []
           },
           {
             "Username": "masya",
@@ -46,15 +38,7 @@
           {
             "Username": "vasya",
             "Name": "Вася жопкин бамбук",
-            "Messages": [
-              {
-                "Sender": "ybeka",
-                "Recipient": "vasya",
-                "Text": "hi",
-                "Time": "12:30",
-                "MessageType": "Text"
-              }
-            ]
+            "Messages": []
           },
           {
             "Username": "masya",
