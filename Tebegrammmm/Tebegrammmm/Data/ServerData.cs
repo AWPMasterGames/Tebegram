@@ -1,4 +1,4 @@
-﻿namespace TebegramServer.Data
+﻿namespace Tebegrammmm.Data
 {
     public static class ServerData
     {
