@@ -7,7 +7,7 @@ using TebegramServer;
 var builder = WebApplication.CreateBuilder(args);
 
 // Настройка порта
-builder.WebHost.UseUrls("http://localhost:5000");
+builder.WebHost.UseUrls("https://localhost:5000");
 
 var app = builder.Build();
 

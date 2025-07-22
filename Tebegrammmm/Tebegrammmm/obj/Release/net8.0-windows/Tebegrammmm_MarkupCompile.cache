@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-C:\Users\Сергей\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Release\net8.0-windows\
+C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Release\net8.0-windows\
 Tebegrammmm
 none
 false
 TRACE;RELEASE;NET;NET8_0;NETCOREAPP
-C:\Users\Сергей\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\App.xaml
-8-1803282027
+C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\App.xaml
+11-506959855
 
-16-1803738195
-198-344842731
-AddContact.xaml;ChatsFoldersRedactsWindows\AddFolderWindow.xaml;ChatsFoldersRedactsWindows\RedactcionChatsFoldersWindow.xaml;ChatsFoldersRedactsWindows\RedactFolderContatcsWindow.xaml;Controls\UserControl1.xaml;MainWindow.xaml;MessengerWindow.xaml;SettingsPanelWindow.xaml;
+2028535897
+334702605804
+AddContact.xaml;ChatsFoldersRedactsWindows\AddContact.xaml;ChatsFoldersRedactsWindows\AddFolderWindow.xaml;ChatsFoldersRedactsWindows\RedactcionChatsFoldersWindow.xaml;ChatsFoldersRedactsWindows\RedactFolderContatcsWindow.xaml;Controls\UserControl1.xaml;EditContactNameWindow.xaml;MainWindow.xaml;MessengerWindow.xaml;Resourses\MessengerTheme_Base.xaml;SettingsWindows\SettingsPanelWindow.xaml;
 
-True
+False
 
