@@ -14,12 +14,36 @@
             "Name": "Убека",
             "Messages": [
               {
+                "Sender": "ybeka",
+                "Recipient": "vasya",
+                "Text": "1",
+                "Time": "2025-07-22 13:50:00",
+                "MessageType": "Text",
+                "MessageString": "ybeka▫vasya▫Text▫2025-07-22 10:50:00▫▫1"
+              },
+              {
                 "Sender": "vasya",
                 "Recipient": "ybeka",
-                "Text": "123",
-                "Time": "2025-07-22 07:16:00",
+                "Text": "2",
+                "Time": "2025-07-22 13:50:00",
                 "MessageType": "Text",
-                "MessageString": "vasya▫ybeka▫Text▫04:16▫▫123"
+                "MessageString": "vasya▫ybeka▫Text▫2025-07-22 10:50:00▫▫2"
+              },
+              {
+                "Sender": "ybeka",
+                "Recipient": "vasya",
+                "Text": "3",
+                "Time": "2025-07-22 13:50:00",
+                "MessageType": "Text",
+                "MessageString": "ybeka▫vasya▫Text▫2025-07-22 10:50:00▫▫3"
+              },
+              {
+                "Sender": "vasya",
+                "Recipient": "ybeka",
+                "Text": "4",
+                "Time": "2025-07-22 13:50:00",
+                "MessageType": "Text",
+                "MessageString": "vasya▫ybeka▫Text▫2025-07-22 10:50:00▫▫4"
               }
             ]
           },
@@ -49,12 +73,36 @@
             "Name": "Вася жопкин бамбук",
             "Messages": [
               {
+                "Sender": "ybeka",
+                "Recipient": "vasya",
+                "Text": "1",
+                "Time": "2025-07-22 13:50:00",
+                "MessageType": "Text",
+                "MessageString": "ybeka▫vasya▫Text▫2025-07-22 10:50:00▫▫1"
+              },
+              {
                 "Sender": "vasya",
                 "Recipient": "ybeka",
-                "Text": "123",
-                "Time": "2025-07-22 07:16:00",
+                "Text": "2",
+                "Time": "2025-07-22 13:50:00",
                 "MessageType": "Text",
-                "MessageString": "vasya▫ybeka▫Text▫04:16▫▫123"
+                "MessageString": "vasya▫ybeka▫Text▫2025-07-22 10:50:00▫▫2"
+              },
+              {
+                "Sender": "ybeka",
+                "Recipient": "vasya",
+                "Text": "3",
+                "Time": "2025-07-22 13:50:00",
+                "MessageType": "Text",
+                "MessageString": "ybeka▫vasya▫Text▫2025-07-22 10:50:00▫▫3"
+              },
+              {
+                "Sender": "vasya",
+                "Recipient": "ybeka",
+                "Text": "4",
+                "Time": "2025-07-22 13:50:00",
+                "MessageType": "Text",
+                "MessageString": "vasya▫ybeka▫Text▫2025-07-22 10:50:00▫▫4"
               }
             ]
           },
