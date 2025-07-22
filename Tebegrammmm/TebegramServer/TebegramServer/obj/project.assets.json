@@ -8,23 +8,23 @@
     "net8.0": []
   },
   "packageFolders": {
-    "C:\\Users\\makar\\.nuget\\packages\\": {},
+    "C:\\Users\\ПК\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\makar\\OneDrive\\Документы\\GitHub\\Tebegram\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\TebegramServer.csproj",
+      "projectUniqueName": "C:\\Users\\ПК\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\TebegramServer.csproj",
       "projectName": "TebegramServer",
-      "projectPath": "C:\\Users\\makar\\OneDrive\\Документы\\GitHub\\Tebegram\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\TebegramServer.csproj",
-      "packagesPath": "C:\\Users\\makar\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\makar\\OneDrive\\Документы\\GitHub\\Tebegram\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\obj\\",
+      "projectPath": "C:\\Users\\ПК\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\TebegramServer.csproj",
+      "packagesPath": "C:\\Users\\ПК\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\ПК\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\makar\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\ПК\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -33,6 +33,7 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -50,8 +51,7 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      },
-      "SdkAnalysisLevel": "9.0.300"
+      }
     },
     "frameworks": {
       "net8.0": {
@@ -75,7 +75,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
