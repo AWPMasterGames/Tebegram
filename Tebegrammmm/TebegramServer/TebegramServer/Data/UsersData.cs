@@ -15,13 +15,15 @@ namespace TebegramServer.Data
         static UsersData()
         {
             LoadUserList();
+            Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Данные пользователей загружены перед запуском сервера");
 
             // Настраиваем таймер для автоматического сохранения каждые 10 секунд
+            // Только если есть пользователи для сохранения
             saveTimer = new System.Timers.Timer(10000); // 10 секунд
             saveTimer.Elapsed += (sender, e) => SaveUserToFile();
             saveTimer.AutoReset = true;
             saveTimer.Start();
-            
+            Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Автосохранение запущено (каждые 10 секунд)");
         }
 
         public static bool IsExistUser(string login)
@@ -48,13 +50,53 @@ namespace TebegramServer.Data
         
         public static void AddUser(User user)
         {
-            Users.Add(user);
-            SaveUserToFile();
+            if (user != null && !Users.Any(u => u.Login == user.Login))
+            {
+                Users.Add(user);
+                Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Добавлен новый пользователь: {user.Login} с ID {user.Id}");
+            }
+        }
+        
+        public static int GetNextUserId()
+        {
+            return Users.Any() ? Users.Max(u => u.Id) + 1 : 1;
+        }
+        
+        // Метод для принудительной инициализации данных перед запуском сервера
+        public static void Initialize()
+        {
+            Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Инициализация UsersData завершена. Пользователей в памяти: {Users.Count}");
+        }
+        
+        // Метод для конвертации времени в часовой пояс пользователя
+        private static string ConvertToUserTimeZone(string timeString)
+        {
+            try
+            {
+                // Пытаемся распарсить время и конвертировать в локальное время
+                if (DateTime.TryParse(timeString, out DateTime dateTime))
+                {
+                    // Конвертируем в локальное время пользователя
+                    return dateTime.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss");
+                }
+                return timeString; // Если не удалось распарсить, возвращаем как есть
+            }
+            catch
+            {
+                return timeString; // При ошибке возвращаем оригинальное время
+            }
         }
         public static void SaveUserToFile()
         {
             try
             {
+                // Если нет пользователей, не сохраняем (чтобы не затереть файл)
+                if (!Users.Any())
+                {
+                    Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Автосохранение пропущено: нет пользователей для сохранения");
+                    return;
+                }
+
                 string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Users.json");
 
                 // Создаем директорию, если она не существует
@@ -87,8 +129,9 @@ namespace TebegramServer.Data
                                     Sender = message.Sender,
                                     Recipient = message.Reciver,
                                     Text = message.Text,
-                                    Time = message.Time,
-                                    MessageType = message.MessageType.ToString()
+                                    Time = ConvertToUserTimeZone(message.Time), // Конвертируем время в часовой пояс пользователя
+                                    MessageType = message.MessageType.ToString(),
+                                    MessageString = message.ToString() // Используем ToString() из Message
                                 }).ToList()
                             }).ToList()
                         }).ToList()
@@ -151,8 +194,9 @@ namespace TebegramServer.Data
                                 Sender = message.Sender,
                                 Recipient = message.Reciver,
                                 Text = message.Text,
-                                Time = message.Time,
-                                MessageType = message.MessageType.ToString()
+                                Time = ConvertToUserTimeZone(message.Time),
+                                MessageType = message.MessageType.ToString(),
+                                MessageString = message.ToString()
                             }).ToList()
                         }).ToList()
                     }).ToList()
@@ -260,6 +304,7 @@ namespace TebegramServer.Data
             public string Text { get; set; } = "";
             public string Time { get; set; } = "";
             public string MessageType { get; set; } = "Text";
+            public string MessageString { get; set; } = "";
         }
     }
 }

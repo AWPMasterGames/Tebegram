@@ -11,6 +11,11 @@ builder.WebHost.UseUrls("http://localhost:5000");
 
 var app = builder.Build();
 
+// ВАЖНО: Инициализируем данные пользователей ПЕРЕД запуском основной логики
+Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Запуск сервера TebegramServer...");
+UsersData.Initialize(); // Принудительно инициализируем данные
+Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Данные пользователей загружены, запускаем веб-сервер...");
+
 app.MapPost("/upload", async (HttpContext context) =>
 {
     IFormFileCollection files = context.Request.Form.Files;
