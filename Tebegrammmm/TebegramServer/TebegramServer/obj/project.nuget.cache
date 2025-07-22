@@ -1,20 +1,18 @@
 {
   "version": 2,
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-  "dgSpecHash": "H4Q7L0Fjgks=",
-  "success": true,
-  "projectFilePath": "c:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\TebegramServer.csproj",
-=======
   "dgSpecHash": "uOnZlM1UQuw=",
   "success": true,
   "projectFilePath": "C:\\Users\\makar\\OneDrive\\Документы\\GitHub\\Tebegram\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\TebegramServer.csproj",
->>>>>>> Stashed changes
-=======
-  "dgSpecHash": "uOnZlM1UQuw=",
-  "success": true,
-  "projectFilePath": "C:\\Users\\makar\\OneDrive\\Документы\\GitHub\\Tebegram\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\TebegramServer.csproj",
->>>>>>> Stashed changes
   "expectedPackageFiles": [],
-  "logs": []
+  "logs": [
+    {
+      "code": "Undefined",
+      "level": "Warning",
+      "message": "Ошибка чтения файла кэша C:\\Users\\makar\\OneDrive\\Документы\\GitHub\\Tebegram\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\obj\\project.nuget.cache: '<' is an invalid start of a property name. Expected a '\"'. Path: $ | LineNumber: 2 | BytePositionInLine: 0.",
+      "projectPath": "C:\\Users\\makar\\OneDrive\\Документы\\GitHub\\Tebegram\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\TebegramServer.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\makar\\OneDrive\\Документы\\GitHub\\Tebegram\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\TebegramServer.csproj",
+      "targetGraphs": []
+    }
+  ]
 }

@@ -7,7 +7,7 @@ using TebegramServer;
 var builder = WebApplication.CreateBuilder(args);
 
 // Настройка порта
-builder.WebHost.UseUrls("http://localhost:5005");
+builder.WebHost.UseUrls("http://localhost:5000");
 
 var app = builder.Build();
 
@@ -15,6 +15,9 @@ var app = builder.Build();
 Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Запуск сервера TebegramServer...");
 UsersData.Initialize(); // Принудительно инициализируем данные
 Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Данные пользователей загружены, запускаем веб-сервер...");
+
+// Главная страница
+app.MapGet("/", () => "Tebegram Server работает!");
 
 app.MapPost("/upload", async (HttpContext context) =>
 {
@@ -96,18 +99,42 @@ app.MapGet("/UserName/{username}", async (HttpContext Context, string username) 
 
 app.MapGet("/messages/{id}", async (HttpContext Context,int id) =>
 {
-    User user = UsersData.FindUserById(id);
-
-    ChatFolder Folder = user.ChatsFolders[0];
-
-    user.NewMessages.Clear();
-    string Messegas = string.Empty;
-    for (int i = 0; i < Folder.Contacts.Count; i++)
+    User? user = UsersData.FindUserById(id);
+    if (user == null)
     {
-        Messegas += $"{Folder.Contacts[i].GetAllMeseges()}";
+        await Context.Response.WriteAsync("User not found");
+        return;
     }
 
-    await Context.Response.WriteAsync(Messegas);
+    // ИСПРАВЛЕНИЕ: Получаем ВСЕ сообщения пользователя (и исходящие, и входящие)
+    try
+    {
+        string messages = string.Empty;
+        
+        // Для каждого контакта в папке получаем полный диалог
+        ChatFolder folder = user.ChatsFolders[0];
+        foreach (var contact in folder.Contacts)
+        {
+            // Получаем диалог между пользователем и контактом из журналов
+            var dialog = await MessageJournal.GetDialogBetweenUsers(user.Username, contact.Username);
+            
+            foreach (var entry in dialog)
+            {
+                // Конвертируем MessageJournalEntry обратно в формат Message
+                messages += $"{entry.Sender}▫{entry.Recipient}▫Text▫{entry.TimeDisplay}▫▫{entry.Text}";
+            }
+        }
+        
+        // Очищаем NewMessages после получения
+        user.NewMessages.Clear();
+        
+        await Context.Response.WriteAsync(messages);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Ошибка получения сообщений для пользователя {id}: {ex.Message}");
+        await Context.Response.WriteAsync("");
+    }
 });
 app.MapGet("/NewMessages/{id}", async (HttpContext Context, int id) =>
 {
@@ -120,7 +147,7 @@ app.MapPost("/messages", async (HttpContext Context) =>
     using StreamReader reader = new StreamReader(Context.Request.Body);
     string Request = await reader.ReadToEndAsync();
     string[] messageData = Request.Split('▫');
-    Message message = null;
+    Message? message = null;
     if (messageData[2] == "Text")
     {
         string text = messageData[5];
@@ -134,13 +161,26 @@ app.MapPost("/messages", async (HttpContext Context) =>
     {
         message = new Message(messageData[0], messageData[1], messageData[5], messageData[3], MessageType.File, messageData[4]);
     }
-    User ReciverUser = UsersData.FindUserByUsername(message.Reciver);
-    User SenderUser = UsersData.FindUserByUsername(message.Sender);
-
-    ReciverUser?.AddMessage(message);
-    ReciverUser?.NewMessages.Add(message);
-    SenderUser?.AddMessage(message);
-    SenderUser?.NewMessages.Add(message);
+    
+    if (message != null)
+    {
+        // 1. Добавляем сообщение в журнал отправителя
+        await MessageJournal.AddMessageToJournal(message.Sender, message);
+        
+        // 2. Добавляем сообщение в старую систему Messages для совместимости
+        User? senderUser = UsersData.FindUserByUsername(message.Sender);
+        User? receiverUser = UsersData.FindUserByUsername(message.Reciver);
+        
+        // Добавляем сообщение отправителю
+        senderUser?.AddMessage(message);
+        
+        // Добавляем сообщение получателю
+        receiverUser?.AddMessage(message);
+        receiverUser?.NewMessages.Add(message);
+        
+        Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Сообщение от {message.Sender} к {message.Reciver} добавлено в журнал: {message.Text}");
+        Logs.Save($"Сообщение от {message.Sender} к {message.Reciver}: {message.Text}");
+    }
 
     return Context.Response.StatusCode = 200;
 });
