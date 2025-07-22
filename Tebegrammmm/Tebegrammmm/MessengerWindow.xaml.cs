@@ -175,10 +175,7 @@ namespace Tebegrammmm
                             Message message = new Message(contact.Name, User.Username, text, messageData[3]);
                             message.Status = MessageStatus.Sent; // Все сообщения просто сохраняются
 
-                            this.Dispatcher.BeginInvoke(new Action(() =>
-                            {
-                                contact.Messages.Add(message);
-                            }));
+                            contact.Messages.Add(message);
 
                             // НЕ сохраняем на сервер - это уже сделал отправитель!
                             Log.Save($"[AddMessageToUser] Получено сообщение от {contact.Name}: {text}");
@@ -188,10 +185,8 @@ namespace Tebegrammmm
                             Message message = new Message(contact.Name, messageData[1], messageData[5], messageData[3], MessageType.File, messageData[4]);
                             message.Status = MessageStatus.Sent; // Файлы тоже просто сохраняются
 
-                            this.Dispatcher.BeginInvoke(new Action(() =>
-                            {
-                                contact.Messages.Add(message);
-                            }));
+                            contact.Messages.Add(message);
+
                             SaveMessageToFile(contact.Name, MessageData, false);
 
                             // НЕ сохраняем на сервер - это уже сделал отправитель!
@@ -256,10 +251,7 @@ namespace Tebegrammmm
                                 for (int i = 0; i < Messages.Length; i++)
                                 {
                                     if (i == Messages.Length) continue;
-                                    await this.Dispatcher.BeginInvoke(new Action(() =>
-                                    {
-                                        AddMessageToUser(Messages[i]);
-                                    }));
+                                    AddMessageToUser(Messages[i]);
                                 }
                             }
                             catch (Exception ex)
