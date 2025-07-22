@@ -104,6 +104,12 @@ namespace TebegramServer
         {
             if (message.Sender == Username)
             {
+                Contact contact = FindContactByUsername(message.Reciver);
+                if (FindContactByUsername(message.Reciver) == null)
+                {
+                    contact = new Contact(UsersData.FindUserByUsername(message.Reciver).Username, UsersData.FindUserByUsername(message.Reciver).Name);
+                    Contacts.Add(contact);
+                }
                 FindContactByUsername(message.Reciver).Messages.Add(message);
             }
             else if (FindContactByUsername(message.Sender) == null)
