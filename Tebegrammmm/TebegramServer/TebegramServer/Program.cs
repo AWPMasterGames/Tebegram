@@ -7,11 +7,6 @@ using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
-void LoadData()
-{
-
-}
-
 // Настройка порта
 builder.WebHost.UseUrls("http://localhost:5000");
 

@@ -128,3 +128,4 @@ c:\Users\makar\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServ
 c:\Users\makar\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\TebegramServer.pdb
 c:\Users\makar\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\TebegramServer.genruntimeconfig.cache
 c:\Users\makar\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\ref\TebegramServer.dll
+C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\bin\Debug\net8.0\Data\Users.json

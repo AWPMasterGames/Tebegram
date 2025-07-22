@@ -299,7 +299,7 @@ namespace Tebegrammmm
                         continue;
                     }
                     // задержка перед новым запросом
-                    Thread.Sleep(2000);
+                    Thread.Sleep(1500);
                 }
             }
             catch (Exception ex)
