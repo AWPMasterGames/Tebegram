@@ -3,8 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\messengerwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\messengerwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\messengerwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\messengerwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\classes\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\classes\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{09EAC846-1528-4174-BB74-5950587A38A6}|TebegramServer\\TebegramServer\\TebegramServer.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegramserver\\tebegramserver\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -18,32 +26,59 @@
       "DocumentGroups": [
         {
           "DockedWidth": 45,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "MainWindow.xaml.cs",
-              "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\MainWindow.xaml.cs",
-              "RelativeDocumentMoniker": "Tebegrammmm\\MainWindow.xaml.cs",
-              "ToolTip": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\MainWindow.xaml.cs",
-              "RelativeToolTip": "Tebegrammmm\\MainWindow.xaml.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAbAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-21T14:28:02.257Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\Program.cs",
               "RelativeDocumentMoniker": "TebegramServer\\TebegramServer\\Program.cs",
               "ToolTip": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\Program.cs",
               "RelativeToolTip": "TebegramServer\\TebegramServer\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAH4AAAAAAAAAAAAQwJoAAAAZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-07-21T14:31:14.032Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MessengerWindow.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\MessengerWindow.xaml.cs",
+              "RelativeDocumentMoniker": "Tebegrammmm\\MessengerWindow.xaml.cs",
+              "ToolTip": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\MessengerWindow.xaml.cs",
+              "RelativeToolTip": "Tebegrammmm\\MessengerWindow.xaml.cs",
+              "ViewState": "AgIAACUCAAAAAAAAAAAqwDsCAAAxAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-22T08:50:51.268Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MessengerWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\MessengerWindow.xaml",
+              "RelativeDocumentMoniker": "Tebegrammmm\\MessengerWindow.xaml",
+              "ToolTip": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\MessengerWindow.xaml",
+              "RelativeToolTip": "Tebegrammmm\\MessengerWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-07-22T10:03:59.629Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "User.cs",
+              "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Classes\\User.cs",
+              "RelativeDocumentMoniker": "Tebegrammmm\\Classes\\User.cs",
+              "ToolTip": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Classes\\User.cs",
+              "RelativeToolTip": "Tebegrammmm\\Classes\\User.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAABeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-22T09:59:21.775Z",
               "EditorCaption": ""
             }
           ]

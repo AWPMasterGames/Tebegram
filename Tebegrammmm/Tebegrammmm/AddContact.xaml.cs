@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Input;
 
 namespace Tebegrammmm
 {
@@ -14,6 +15,7 @@ namespace Tebegrammmm
             this.Title = "Добавить контакт";
             TBTitle.Text = "Добавить контакт";
             Contact = contact;
+            TBName.Focus();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -21,24 +23,27 @@ namespace Tebegrammmm
             this.DialogResult = false;
             this.Close();
         }
-
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void ChangeContact()
         {
-            if (TBName.Text.Trim().Length < 1)
-            {
-                MessageBox.Show("Укажите Имя");
-                return;
-            }
             if (TBUsername.Text.Trim().Length < 1)
             {
                 MessageBox.Show("Укажите имя пользователя");
                 return;
             }
-            Contact.ChangeName(TBUsername.Text.Trim());
+            Contact.ChangeName(TBName.Text.Trim());
             Contact.ChangeUsername(TBUsername.Text.Trim());
-                
+
             this.DialogResult = true;
             this.Close();
+        }
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            ChangeContact();
+        }
+
+        private void TBUsername_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if(e.Key == Key.Enter) ChangeContact();
         }
     }
 }

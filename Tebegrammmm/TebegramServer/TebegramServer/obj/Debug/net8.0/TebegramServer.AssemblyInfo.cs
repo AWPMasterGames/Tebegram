@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TebegramServer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cf1ff7a5461a00f1ee221e1737bbbb567dc1ccf1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c6636f9e99a11745f5199062ea74783ade69bb6f")]
 [assembly: System.Reflection.AssemblyProductAttribute("TebegramServer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TebegramServer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
