@@ -367,3 +367,23 @@
 [22.07.2025 16:07:58]  [AddMessageToUser] Получено сообщение от Убека: 12
 [22.07.2025 16:07:58]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
 [22.07.2025 16:07:58]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[22.07.2025 16:13:19]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[22.07.2025 16:13:19]  [MessengerWindow] Инициализация завершена
+[22.07.2025 16:14:25]  [Authorization] Error: Подключение не установлено, т.к. конечный компьютер отверг запрос на подключение. (localhost:5005)
+[22.07.2025 16:14:36]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[22.07.2025 16:14:36]  [MessengerWindow] Инициализация завершена
+[22.07.2025 16:15:58]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[22.07.2025 16:15:58]  [MessengerWindow] Инициализация завершена
+[22.07.2025 16:16:31]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[22.07.2025 16:16:31]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[22.07.2025 16:16:34]  [SendMessage] Starting send message: '123' to contact: Убека
+[22.07.2025 16:16:34]  [SendMessage] Message added to local contact. Sending to user...
+[22.07.2025 16:16:35]  [AddMessageToUser] Получено сообщение от vasya: 123
+[22.07.2025 16:16:38]  [LBChats_SelectionChanged] Saved draft for Убека: ''
+[22.07.2025 16:16:38]  [LBChats_SelectionChanged] Selected contact: Masya (masya)
+[22.07.2025 16:16:38]  [LBChats_SelectionChanged] Restored draft for Masya: ''
+[22.07.2025 16:16:39]  [LBChats_SelectionChanged] Saved draft for Masya: ''
+[22.07.2025 16:16:39]  [LBChats_SelectionChanged] No item selected
+[22.07.2025 16:16:39]  [LBChats_SelectionChanged] Saved draft for Masya: ''
+[22.07.2025 16:16:39]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[22.07.2025 16:16:39]  [LBChats_SelectionChanged] Restored draft for Убека: ''
