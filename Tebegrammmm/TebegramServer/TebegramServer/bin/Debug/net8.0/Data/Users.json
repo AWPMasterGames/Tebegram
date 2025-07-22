@@ -1,0 +1,288 @@
+[
+  {
+    "Id": 1,
+    "Login": "aa",
+    "Password": "123",
+    "Name": "Вася жопкин бамбук",
+    "Username": "vasya",
+    "ChatsFolders": [
+      {
+        "Name": "Все чаты",
+        "Contacts": [
+          {
+            "Username": "ybeka",
+            "Name": "Убека",
+            "Messages": [
+              {
+                "Sender": "vasya",
+                "Recipient": "ybeka",
+                "Text": "123",
+                "Time": "13:14",
+                "MessageType": "Text",
+                "MessageString": "vasya▫ybeka▫Text▫10:14▫▫123",
+                "Index": 0
+              },
+              {
+                "Sender": "ybeka",
+                "Recipient": "vasya",
+                "Text": "231",
+                "Time": "13:14",
+                "MessageType": "Text",
+                "MessageString": "ybeka▫vasya▫Text▫10:14▫▫231",
+                "Index": 1
+              },
+              {
+                "Sender": "vasya",
+                "Recipient": "ybeka",
+                "Text": "1",
+                "Time": "13:14",
+                "MessageType": "Text",
+                "MessageString": "vasya▫ybeka▫Text▫10:14▫▫1",
+                "Index": 2
+              },
+              {
+                "Sender": "vasya",
+                "Recipient": "ybeka",
+                "Text": "123",
+                "Time": "10:18",
+                "MessageType": "Text",
+                "MessageString": "vasya▫ybeka▫Text▫07:18▫▫123",
+                "Index": 3
+              },
+              {
+                "Sender": "ybeka",
+                "Recipient": "vasya",
+                "Text": "321",
+                "Time": "10:18",
+                "MessageType": "Text",
+                "MessageString": "ybeka▫vasya▫Text▫07:18▫▫321",
+                "Index": 4
+              },
+              {
+                "Sender": "vasya",
+                "Recipient": "ybeka",
+                "Text": "2",
+                "Time": "10:19",
+                "MessageType": "Text",
+                "MessageString": "vasya▫ybeka▫Text▫07:19▫▫2",
+                "Index": 5
+              },
+              {
+                "Sender": "vasya",
+                "Recipient": "ybeka",
+                "Text": "123",
+                "Time": "07:27",
+                "MessageType": "Text",
+                "MessageString": "vasya▫ybeka▫Text▫04:27▫▫123",
+                "Index": 6
+              },
+              {
+                "Sender": "vasya",
+                "Recipient": "ybeka",
+                "Text": "321",
+                "Time": "07:27",
+                "MessageType": "Text",
+                "MessageString": "vasya▫ybeka▫Text▫04:27▫▫321",
+                "Index": 7
+              },
+              {
+                "Sender": "ybeka",
+                "Recipient": "vasya",
+                "Text": "234",
+                "Time": "07:28",
+                "MessageType": "Text",
+                "MessageString": "ybeka▫vasya▫Text▫04:28▫▫234",
+                "Index": 8
+              },
+              {
+                "Sender": "ybeka",
+                "Recipient": "vasya",
+                "Text": "000",
+                "Time": "07:28",
+                "MessageType": "Text",
+                "MessageString": "ybeka▫vasya▫Text▫04:28▫▫000",
+                "Index": 9
+              }
+            ]
+          },
+          {
+            "Username": "masya",
+            "Name": "Masya",
+            "Messages": []
+          }
+        ],
+        "Icon": "\uD83D\uDCAC",
+        "CanDelete": false
+      }
+    ]
+  },
+  {
+    "Id": 2,
+    "Login": "aa1",
+    "Password": "123",
+    "Name": "убека",
+    "Username": "ybeka",
+    "ChatsFolders": [
+      {
+        "Name": "Все чаты",
+        "Contacts": [
+          {
+            "Username": "vasya",
+            "Name": "Вася жопкин бамбук",
+            "Messages": [
+              {
+                "Sender": "vasya",
+                "Recipient": "ybeka",
+                "Text": "123",
+                "Time": "13:14",
+                "MessageType": "Text",
+                "MessageString": "vasya▫ybeka▫Text▫10:14▫▫123",
+                "Index": 0
+              },
+              {
+                "Sender": "ybeka",
+                "Recipient": "vasya",
+                "Text": "231",
+                "Time": "13:14",
+                "MessageType": "Text",
+                "MessageString": "ybeka▫vasya▫Text▫10:14▫▫231",
+                "Index": 1
+              },
+              {
+                "Sender": "vasya",
+                "Recipient": "ybeka",
+                "Text": "1",
+                "Time": "13:14",
+                "MessageType": "Text",
+                "MessageString": "vasya▫ybeka▫Text▫10:14▫▫1",
+                "Index": 2
+              },
+              {
+                "Sender": "vasya",
+                "Recipient": "ybeka",
+                "Text": "123",
+                "Time": "10:18",
+                "MessageType": "Text",
+                "MessageString": "vasya▫ybeka▫Text▫07:18▫▫123",
+                "Index": 3
+              },
+              {
+                "Sender": "ybeka",
+                "Recipient": "vasya",
+                "Text": "321",
+                "Time": "10:18",
+                "MessageType": "Text",
+                "MessageString": "ybeka▫vasya▫Text▫07:18▫▫321",
+                "Index": 4
+              },
+              {
+                "Sender": "vasya",
+                "Recipient": "ybeka",
+                "Text": "2",
+                "Time": "10:19",
+                "MessageType": "Text",
+                "MessageString": "vasya▫ybeka▫Text▫07:19▫▫2",
+                "Index": 5
+              },
+              {
+                "Sender": "vasya",
+                "Recipient": "ybeka",
+                "Text": "123",
+                "Time": "07:27",
+                "MessageType": "Text",
+                "MessageString": "vasya▫ybeka▫Text▫04:27▫▫123",
+                "Index": 6
+              },
+              {
+                "Sender": "vasya",
+                "Recipient": "ybeka",
+                "Text": "321",
+                "Time": "07:27",
+                "MessageType": "Text",
+                "MessageString": "vasya▫ybeka▫Text▫04:27▫▫321",
+                "Index": 7
+              },
+              {
+                "Sender": "ybeka",
+                "Recipient": "vasya",
+                "Text": "234",
+                "Time": "07:28",
+                "MessageType": "Text",
+                "MessageString": "ybeka▫vasya▫Text▫04:28▫▫234",
+                "Index": 8
+              },
+              {
+                "Sender": "ybeka",
+                "Recipient": "vasya",
+                "Text": "000",
+                "Time": "07:28",
+                "MessageType": "Text",
+                "MessageString": "ybeka▫vasya▫Text▫04:28▫▫000",
+                "Index": 9
+              }
+            ]
+          },
+          {
+            "Username": "masya",
+            "Name": "Masya",
+            "Messages": []
+          }
+        ],
+        "Icon": "\uD83D\uDCAC",
+        "CanDelete": false
+      }
+    ]
+  },
+  {
+    "Id": 3,
+    "Login": "masya",
+    "Password": "123",
+    "Name": "Мася",
+    "Username": "masya",
+    "ChatsFolders": [
+      {
+        "Name": "Все чаты",
+        "Contacts": [
+          {
+            "Username": "vasya",
+            "Name": "Вася жопкин бамбук",
+            "Messages": []
+          },
+          {
+            "Username": "ybeka",
+            "Name": "Убебка",
+            "Messages": []
+          }
+        ],
+        "Icon": "\uD83D\uDCAC",
+        "CanDelete": false
+      }
+    ]
+  },
+  {
+    "Id": 4,
+    "Login": "admin",
+    "Password": "123",
+    "Name": "Админ",
+    "Username": "admin_228",
+    "ChatsFolders": [
+      {
+        "Name": "Все чаты",
+        "Contacts": [
+          {
+            "Username": "vasya",
+            "Name": "Вася",
+            "Messages": []
+          },
+          {
+            "Username": "ybeka",
+            "Name": "убека",
+            "Messages": []
+          }
+        ],
+        "Icon": "\uD83D\uDCAC",
+        "CanDelete": false
+      }
+    ]
+  }
+]

@@ -4,7 +4,11 @@ using TebegramServer.Classes;
 using System.Collections.ObjectModel;
 using System.Net;
 using TebegramServer;
+<<<<<<< Updated upstream
 using Microsoft.AspNetCore.Http;
+=======
+using System.Text.Json;
+>>>>>>> Stashed changes
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +17,15 @@ builder.WebHost.UseUrls("http://localhost:5000");
 
 var app = builder.Build();
 
+<<<<<<< Updated upstream
+=======
+// ВАЖНО: Инициализируем данные пользователей ПЕРЕД запуском основной логики
+Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Запуск сервера TebegramServer...");
+UsersData.Initialize(); // Принудительно инициализируем данные
+Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Журнал сообщений инициализирован");
+Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Данные пользователей загружены, запускаем веб-сервер...");
+
+>>>>>>> Stashed changes
 app.MapPost("/upload", async (HttpContext context) =>
 {
     IFormFileCollection files = context.Request.Form.Files;
@@ -166,6 +179,22 @@ app.MapPost("/messages/save-with-dual-status", async (HttpContext context) =>
         await context.Response.WriteAsync($"Error: {ex.Message}");
         Logs.Save($"Ошибка сохранения сообщения с двойным статусом: {ex.Message}");
     }
+<<<<<<< Updated upstream
+=======
+    User ReciverUser = UsersData.FindUserByUsername(message.Reciver);
+    User SenderUser = UsersData.FindUserByUsername(message.Sender);
+
+    ReciverUser?.AddMessage(message);
+    ReciverUser?.NewMessages.Add(message);
+    SenderUser?.AddMessage(message);
+    SenderUser?.NewMessages.Add(message);
+
+    // ВАЖНО: Записываем сообщение в журнал отправителя
+    // Только отправитель записывает сообщение в свой журнал для сохранения порядка
+    await MessageJournal.AddMessageToJournal(message.Sender, message);
+
+    return Context.Response.StatusCode = 200;
+>>>>>>> Stashed changes
 });
 
 // Endpoint для получения истории сообщений
@@ -201,8 +230,58 @@ app.MapDelete("/messages/{userLogin}", async (HttpContext context, string userLo
     }
 });
 
+<<<<<<< Updated upstream
 // Endpoint для обновления активности пользователя
 app.MapPost("/users/activity", async (HttpContext context) =>
+=======
+// API для получения диалога между пользователями из журнала сообщений
+app.MapGet("/Journal/{user1}/{user2}", async (HttpContext Context, string user1, string user2) =>
+{
+    try
+    {
+        var dialog = await MessageJournal.GetDialogBetweenUsers(user1, user2);
+        
+        var dialogJson = JsonSerializer.Serialize(dialog, new JsonSerializerOptions 
+        { 
+            WriteIndented = true,
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        });
+        
+        await Context.Response.WriteAsync(dialogJson);
+    }
+    catch (Exception ex)
+    {
+        Logs.Save($"Ошибка при получении диалога {user1} <-> {user2}: {ex.Message}");
+        Context.Response.StatusCode = 500;
+        await Context.Response.WriteAsync($"Ошибка: {ex.Message}");
+    }
+});
+
+// API для получения журнала пользователя
+app.MapGet("/Journal/{username}", async (HttpContext Context, string username) =>
+{
+    try
+    {
+        var journal = await MessageJournal.GetUserJournal(username);
+        
+        var journalJson = JsonSerializer.Serialize(journal, new JsonSerializerOptions 
+        { 
+            WriteIndented = true,
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        });
+        
+        await Context.Response.WriteAsync(journalJson);
+    }
+    catch (Exception ex)
+    {
+        Logs.Save($"Ошибка при получении журнала {username}: {ex.Message}");
+        Context.Response.StatusCode = 500;
+        await Context.Response.WriteAsync($"Ошибка: {ex.Message}");
+    }
+});
+
+app.MapDelete("/Contact", async (HttpContext Context) =>
+>>>>>>> Stashed changes
 {
     try
     {

@@ -14,11 +14,19 @@
   "project": {
     "version": "1.0.0",
     "restore": {
+<<<<<<< Updated upstream
       "projectUniqueName": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\TebegramServer.csproj",
       "projectName": "TebegramServer",
       "projectPath": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\TebegramServer.csproj",
       "packagesPath": "C:\\Users\\makar\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\obj\\",
+=======
+      "projectUniqueName": "C:\\Users\\makar\\OneDrive\\Документы\\GitHub\\Tebegram\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\TebegramServer.csproj",
+      "projectName": "TebegramServer",
+      "projectPath": "C:\\Users\\makar\\OneDrive\\Документы\\GitHub\\Tebegram\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\TebegramServer.csproj",
+      "packagesPath": "C:\\Users\\makar\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\makar\\OneDrive\\Документы\\GitHub\\Tebegram\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\obj\\",
+>>>>>>> Stashed changes
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -75,7 +83,11 @@
             "privateAssets": "all"
           }
         },
+<<<<<<< Updated upstream
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302/PortableRuntimeIdentifierGraph.json"
+=======
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
+>>>>>>> Stashed changes
       }
     }
   }

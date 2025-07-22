@@ -1,0 +1,22 @@
+[
+  {
+    "Timestamp": "2025-07-22 16:27:37.398",
+    "Sender": "vasya",
+    "Recipient": "ybeka",
+    "Text": "123",
+    "MessageType": "Text",
+    "TimeDisplay": "04:27",
+    "MessageString": "vasya▫ybeka▫Text▫04:27▫▫123",
+    "SequenceNumber": 1
+  },
+  {
+    "Timestamp": "2025-07-22 16:27:51.776",
+    "Sender": "vasya",
+    "Recipient": "ybeka",
+    "Text": "321",
+    "MessageType": "Text",
+    "TimeDisplay": "04:27",
+    "MessageString": "vasya▫ybeka▫Text▫04:27▫▫321",
+    "SequenceNumber": 2
+  }
+]
