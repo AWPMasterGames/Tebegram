@@ -168,7 +168,10 @@ namespace Tebegrammmm
                     // НЕ сохраняем на сервер - это уже сделал отправитель!
                     Log.Save($"[AddMessageToUser] Получен файл от {messageData[0]}: {messageData[4]}");
                 }
-                User.AddContact(contact);
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    User.AddContact(contact);
+                }));
             }
             else foreach (Contact contact in User.ChatsFolders[0].Contacts)
                 {
