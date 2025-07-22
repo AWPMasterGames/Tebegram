@@ -10,6 +10,7 @@ namespace TebegramServer.Data
     public static class UsersData
     {
         static ObservableCollection<User> Users = new ObservableCollection<User>();
+        public static int UsersCount { get {  return Users.Count; } }
         private static System.Timers.Timer saveTimer;
 
         static UsersData()
