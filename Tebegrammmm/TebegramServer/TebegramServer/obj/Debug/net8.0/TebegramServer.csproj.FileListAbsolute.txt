@@ -158,3 +158,4 @@ C:\Users\makar\OneDrive\Документы\GitHub\Tebegram\Tebegram\Tebegrammmm\
 C:\Users\makar\OneDrive\Документы\GitHub\Tebegram\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\staticwebassets.build.endpoints.json
 C:\Users\makar\OneDrive\Документы\GitHub\Tebegram\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\TebegramServer.genruntimeconfig.cache
 C:\Users\makar\OneDrive\Документы\GitHub\Tebegram\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\ref\TebegramServer.dll
+C:\Users\makar\OneDrive\Документы\GitHub\Tebegram\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
