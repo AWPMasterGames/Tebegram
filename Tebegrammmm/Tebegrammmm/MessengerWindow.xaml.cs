@@ -118,7 +118,10 @@ namespace Tebegrammmm
                     }
                     Message message = new Message(User.Name, User.Username, text, messageData[3]);
                     message.Status = MessageStatus.Sent; // Все сообщения просто сохраняются
-                    contact.Messages.Add(message);
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        contact.Messages.Add(message);
+                    }));
                     // НЕ сохраняем на сервер - это уже сделал отправитель!
                     Log.Save($"[AddMessageToUser] Получено сообщение от {messageData[0]}: {text}");
                 }
@@ -126,7 +129,10 @@ namespace Tebegrammmm
                 {
                     Message message = new Message(User.Name, messageData[1], messageData[5], messageData[3], MessageType.File, messageData[4]);
                     message.Status = MessageStatus.Sent; // Файлы тоже просто сохраняются
-                    contact.Messages.Add(message);
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        contact.Messages.Add(message);
+                    }));
                     // НЕ сохраняем на сервер - это уже сделал отправитель!
                     Log.Save($"[AddMessageToUser] Получен файл от {messageData[0]}: {messageData[4]}");
                 }
@@ -146,7 +152,10 @@ namespace Tebegrammmm
                     }
                     Message message = new Message(User.Name, User.Username, text, messageData[3]);
                     message.Status = MessageStatus.Sent; // Все сообщения просто сохраняются
-                    contact.Messages.Add(message);
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        contact.Messages.Add(message);
+                    }));
                     // НЕ сохраняем на сервер - это уже сделал отправитель!
                     Log.Save($"[AddMessageToUser] Получено сообщение от {messageData[0]}: {text}");
                 }
@@ -154,7 +163,10 @@ namespace Tebegrammmm
                 {
                     Message message = new Message(User.Name, messageData[1], messageData[5], messageData[3], MessageType.File, messageData[4]);
                     message.Status = MessageStatus.Sent; // Файлы тоже просто сохраняются
-                    contact.Messages.Add(message);
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        contact.Messages.Add(message);
+                    }));
                     // НЕ сохраняем на сервер - это уже сделал отправитель!
                     Log.Save($"[AddMessageToUser] Получен файл от {messageData[0]}: {messageData[4]}");
                 }
@@ -175,7 +187,10 @@ namespace Tebegrammmm
                             Message message = new Message(contact.Name, User.Username, text, messageData[3]);
                             message.Status = MessageStatus.Sent; // Все сообщения просто сохраняются
 
-                            contact.Messages.Add(message);
+                            Dispatcher.Invoke(new Action(() =>
+                            {
+                                contact.Messages.Add(message);
+                            }));
 
                             // НЕ сохраняем на сервер - это уже сделал отправитель!
                             Log.Save($"[AddMessageToUser] Получено сообщение от {contact.Name}: {text}");
@@ -185,7 +200,10 @@ namespace Tebegrammmm
                             Message message = new Message(contact.Name, messageData[1], messageData[5], messageData[3], MessageType.File, messageData[4]);
                             message.Status = MessageStatus.Sent; // Файлы тоже просто сохраняются
 
-                            contact.Messages.Add(message);
+                            Dispatcher.Invoke(new Action(() =>
+                            {
+                                contact.Messages.Add(message);
+                            }));
 
                             SaveMessageToFile(contact.Name, MessageData, false);
 
