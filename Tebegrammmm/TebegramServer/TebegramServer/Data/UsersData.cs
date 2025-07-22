@@ -341,6 +341,9 @@ namespace TebegramServer.Data
 =======
             public string MessageString { get; set; } = "";
             public int Index { get; set; } = 0; // Добавляем индекс для сохранения порядка
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
         }
     }

@@ -5,7 +5,11 @@ using System.Collections.ObjectModel;
 using System.Net;
 using TebegramServer;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 using Microsoft.AspNetCore.Http;
+=======
+using System.Text.Json;
+>>>>>>> Stashed changes
 =======
 using System.Text.Json;
 >>>>>>> Stashed changes
@@ -231,9 +235,12 @@ app.MapDelete("/messages/{userLogin}", async (HttpContext context, string userLo
 });
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 // Endpoint для обновления активности пользователя
 app.MapPost("/users/activity", async (HttpContext context) =>
 =======
+=======
+>>>>>>> Stashed changes
 // API для получения диалога между пользователями из журнала сообщений
 app.MapGet("/Journal/{user1}/{user2}", async (HttpContext Context, string user1, string user2) =>
 {

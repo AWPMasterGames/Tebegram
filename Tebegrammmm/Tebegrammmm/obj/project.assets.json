@@ -126,11 +126,19 @@
     "version": "1.0.0",
     "restore": {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       "projectUniqueName": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Tebegrammmm.csproj",
       "projectName": "Tebegrammmm",
       "projectPath": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Tebegrammmm.csproj",
       "packagesPath": "C:\\Users\\makar\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\obj\\",
+=======
+      "projectUniqueName": "C:\\Users\\makar\\OneDrive\\Документы\\GitHub\\Tebegram\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Tebegrammmm.csproj",
+      "projectName": "Tebegrammmm",
+      "projectPath": "C:\\Users\\makar\\OneDrive\\Документы\\GitHub\\Tebegram\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Tebegrammmm.csproj",
+      "packagesPath": "C:\\Users\\makar\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\makar\\OneDrive\\Документы\\GitHub\\Tebegram\\Tebegram\\Tebegrammmm\\Tebegrammmm\\obj\\",
+>>>>>>> Stashed changes
 =======
       "projectUniqueName": "C:\\Users\\makar\\OneDrive\\Документы\\GitHub\\Tebegram\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Tebegrammmm.csproj",
       "projectName": "Tebegrammmm",
@@ -208,7 +216,11 @@
           }
         },
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302/PortableRuntimeIdentifierGraph.json"
+=======
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
+>>>>>>> Stashed changes
 =======
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
 >>>>>>> Stashed changes
