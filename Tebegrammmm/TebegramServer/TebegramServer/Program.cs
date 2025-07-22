@@ -7,7 +7,7 @@ using TebegramServer;
 var builder = WebApplication.CreateBuilder(args);
 
 // Настройка порта
-builder.WebHost.UseUrls("http://localhost:5000");
+builder.WebHost.UseUrls("http://localhost:5005");
 
 var app = builder.Build();
 
@@ -178,3 +178,4 @@ app.MapDelete("/Contact", async (HttpContext Context) =>
     user.RemoveContact(user.FindContactByUsername(Data[1]));
     return Context.Response.StatusCode = 200;
 });
+app.Run();

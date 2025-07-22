@@ -116,7 +116,7 @@ namespace Tebegrammmm
                     {
                         text += messageData[i];
                     }
-                    Message message = new Message(User.Name, User.Username, text, messageData[2]);
+                    Message message = new Message(User.Name, User.Username, text, messageData[3]);
                     message.Status = MessageStatus.Sent; // Все сообщения просто сохраняются
                     contact.Messages.Add(message);
                     // НЕ сохраняем на сервер - это уже сделал отправитель!
@@ -144,7 +144,7 @@ namespace Tebegrammmm
                     {
                         text += messageData[i];
                     }
-                    Message message = new Message(User.Name, User.Username, text, messageData[2]);
+                    Message message = new Message(User.Name, User.Username, text, messageData[3]);
                     message.Status = MessageStatus.Sent; // Все сообщения просто сохраняются
                     contact.Messages.Add(message);
                     // НЕ сохраняем на сервер - это уже сделал отправитель!
@@ -172,7 +172,7 @@ namespace Tebegrammmm
                                 text += messageData[i];
                             }
 
-                            Message message = new Message(contact.Name, User.Username, text, messageData[2]);
+                            Message message = new Message(contact.Name, User.Username, text, messageData[3]);
                             message.Status = MessageStatus.Sent; // Все сообщения просто сохраняются
 
                             this.Dispatcher.BeginInvoke(new Action(() =>
