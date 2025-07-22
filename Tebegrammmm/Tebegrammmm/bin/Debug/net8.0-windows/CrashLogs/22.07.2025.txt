@@ -201,3 +201,27 @@
 [22.07.2025 13:26:08]  [MessengerWindow] Последний выбранный контакт: aa
 [22.07.2025 13:26:08]  [MessengerWindow] Инициализация завершена
 [22.07.2025 13:26:08]  [AddMessageToUser] Получено сообщение от Убека: hi
+[22.07.2025 13:35:12]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[22.07.2025 13:35:12]  [LoadLastSelectedContact] Загружен последний выбранный контакт: aa
+[22.07.2025 13:35:12]  [MessengerWindow] Последний выбранный контакт: aa
+[22.07.2025 13:35:12]  [MessengerWindow] Инициализация завершена
+[22.07.2025 13:35:12]  [AddMessageToUser] Получено сообщение от Убека: hi
+[22.07.2025 13:35:13]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[22.07.2025 13:35:14]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[22.07.2025 13:35:14]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Убека
+[22.07.2025 13:35:14]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Убека
+[22.07.2025 13:35:30]  [LBChats_SelectionChanged] Saved draft for Убека: ''
+[22.07.2025 13:35:30]  [LBChats_SelectionChanged] No item selected
+[22.07.2025 13:35:35]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[22.07.2025 13:35:35]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[22.07.2025 13:35:35]  [MessengerWindow] Последний выбранный контакт: Убека
+[22.07.2025 13:35:35]  [MessengerWindow] Инициализация завершена
+[22.07.2025 13:35:36]  [LBChats_SelectionChanged] Selected contact: Masya (masya)
+[22.07.2025 13:35:36]  [LBChats_SelectionChanged] Restored draft for Masya: ''
+[22.07.2025 13:35:36]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Masya
+[22.07.2025 13:35:36]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Masya
+[22.07.2025 13:35:47]  [LBChats_SelectionChanged] Saved draft for Masya: ''
+[22.07.2025 13:35:47]  [LBChats_SelectionChanged] Selected contact: убека (ybeka)
+[22.07.2025 13:35:48]  [LBChats_SelectionChanged] Restored draft for убека: ''
+[22.07.2025 13:35:48]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: убека
+[22.07.2025 13:35:48]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с убека
