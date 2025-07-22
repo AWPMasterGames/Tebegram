@@ -3,16 +3,27 @@ using System.Net;
 using TebegramServer.Classes;
 using System.Linq;
 using System.Text.Json;
+using System.Timers;
 
 namespace TebegramServer.Data
 {
     public static class UsersData
     {
         static ObservableCollection<User> Users = new ObservableCollection<User>();
+        private static System.Timers.Timer saveTimer;
 
         static UsersData()
         {
             LoadUserList();
+            Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Данные пользователей загружены перед запуском сервера");
+
+            // Настраиваем таймер для автоматического сохранения каждые 10 секунд
+            // Только если есть пользователи для сохранения
+            saveTimer = new System.Timers.Timer(10000); // 10 секунд
+            saveTimer.Elapsed += (sender, e) => SaveUserToFile();
+            saveTimer.AutoReset = true;
+            saveTimer.Start();
+            Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Автосохранение запущено (каждые 10 секунд)");
         }
 
         public static bool IsExistUser(string login)
@@ -35,13 +46,10 @@ namespace TebegramServer.Data
         public static User? FindUserByUsername(string username)
         {
             return Users.FirstOrDefault(user => user.Username == username);
-        }
-
+        }   
+        
         public static void AddUser(User user)
         {
-<<<<<<< Updated upstream
-            Users.Add(user);
-=======
             if (user != null && !Users.Any(u => u.Login == user.Login))
             {
                 Users.Add(user);
@@ -60,38 +68,6 @@ namespace TebegramServer.Data
             Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Инициализация UsersData завершена. Пользователей в памяти: {Users.Count}");
         }
         
-        // Метод для очистки всех сообщений у всех пользователей
-        public static void ClearAllMessages()
-        {
-            try
-            {
-                int totalMessagesCleared = 0;
-                
-                foreach (var user in Users)
-                {
-                    foreach (var folder in user.ChatsFolders)
-                    {
-                        foreach (var contact in folder.Contacts)
-                        {
-                            totalMessagesCleared += contact.Messages.Count;
-                            contact.Messages.Clear();
-                        }
-                    }
-                    // Также очищаем новые сообщения
-                    user.NewMessages.Clear();
-                }
-                
-                Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Очищено {totalMessagesCleared} сообщений у {Users.Count} пользователей");
-                
-                // Принудительно сохраняем изменения
-                SaveUserToFile();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Ошибка при очистке сообщений: {ex.Message}");
-            }
-        }
-        
         // Метод для конвертации времени в часовой пояс пользователя
         private static string ConvertToUserTimeZone(string timeString)
         {
@@ -100,8 +76,8 @@ namespace TebegramServer.Data
                 // Пытаемся распарсить время и конвертировать в локальное время
                 if (DateTime.TryParse(timeString, out DateTime dateTime))
                 {
-                    // Конвертируем в локальное время пользователя и показываем только час:минуты
-                    return dateTime.ToLocalTime().ToString("HH:mm");
+                    // Конвертируем в локальное время пользователя
+                    return dateTime.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss");
                 }
                 return timeString; // Если не удалось распарсить, возвращаем как есть
             }
@@ -148,15 +124,14 @@ namespace TebegramServer.Data
                             {
                                 Username = contact.Username,
                                 Name = contact.Name,
-                                Messages = contact.Messages.Select((message, index) => new MessageData
+                                Messages = contact.Messages.Select(message => new MessageData
                                 {
                                     Sender = message.Sender,
-                                    Recipient = message.Reciver, // Используем правильное название свойства
+                                    Recipient = message.Reciver,
                                     Text = message.Text,
                                     Time = ConvertToUserTimeZone(message.Time), // Конвертируем время в часовой пояс пользователя
                                     MessageType = message.MessageType.ToString(),
-                                    MessageString = message.ToString(), // Используем ToString() из Message
-                                    Index = index // Сохраняем индекс для правильного порядка
+                                    MessageString = message.ToString() // Используем ToString() из Message
                                 }).ToList()
                             }).ToList()
                         }).ToList()
@@ -214,15 +189,14 @@ namespace TebegramServer.Data
                         {
                             Username = contact.Username,
                             Name = contact.Name,
-                            Messages = contact.Messages.Select((message, index) => new MessageData
+                            Messages = contact.Messages.Select(message => new MessageData
                             {
                                 Sender = message.Sender,
-                                Recipient = message.Reciver, // Используем правильное название свойства
+                                Recipient = message.Reciver,
                                 Text = message.Text,
                                 Time = ConvertToUserTimeZone(message.Time),
                                 MessageType = message.MessageType.ToString(),
-                                MessageString = message.ToString(),
-                                Index = index // Сохраняем индекс для правильного порядка
+                                MessageString = message.ToString()
                             }).ToList()
                         }).ToList()
                     }).ToList()
@@ -242,7 +216,6 @@ namespace TebegramServer.Data
             {
                 Console.WriteLine($"Ошибка при сохранении всех пользователей: {ex.Message}");
             }
->>>>>>> Stashed changes
         }
 
         private static void LoadUserList()
@@ -274,15 +247,9 @@ namespace TebegramServer.Data
                             {
                                 var messages = new ObservableCollection<Message>();
                                 
-                                // Сортируем сообщения по индексу для сохранения правильного порядка
-                                var sortedMessages = contactData.Messages.OrderBy(m => m.Index).ToList();
-                                
-                                foreach (var messageData in sortedMessages)
+                                foreach (var messageData in contactData.Messages)
                                 {
                                     var messageType = Enum.TryParse<MessageType>(messageData.MessageType, out var type) ? type : MessageType.Text;
-                                    // Важно: используем правильный порядок параметров конструктора Message
-                                    // Message(sender, reciver, text, time, messageType, serverAdress)
-                                    // messageData.Recipient соответствует параметру reciver в конструкторе
                                     messages.Add(new Message(messageData.Sender, messageData.Recipient, messageData.Text, messageData.Time, messageType));
                                 }
                                 
@@ -337,14 +304,7 @@ namespace TebegramServer.Data
             public string Text { get; set; } = "";
             public string Time { get; set; } = "";
             public string MessageType { get; set; } = "Text";
-<<<<<<< Updated upstream
-=======
             public string MessageString { get; set; } = "";
-            public int Index { get; set; } = 0; // Добавляем индекс для сохранения порядка
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
         }
     }
 }

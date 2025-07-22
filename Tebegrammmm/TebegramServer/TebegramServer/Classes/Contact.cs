@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using System.Collections.ObjectModel;
 namespace TebegramServer
 {
     public class Contact
@@ -38,7 +31,10 @@ namespace TebegramServer
         {
             _Name = name;
         }
-
+        public override string ToString()
+        {
+            return $"{Name}▫{Username}";
+        }
         public string GetAllMeseges()
         {
             string AllMessege = string.Empty;

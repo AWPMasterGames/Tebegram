@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Net;
 using System.Text;
-using System.Threading.Tasks;
+using TebegramServer.Data;
 
 namespace TebegramServer
 {
@@ -17,11 +13,13 @@ namespace TebegramServer
 
         public int Id { get { return _Id; } }
         public string Login { get { return _Login; } }
+        public string Password { get { return _Password; } }
         public string Name { get { return _Name; } }
 
         public string Username { get; set; }
 
         public ObservableCollection<ChatFolder> ChatsFolders { get; set; }
+        public ObservableCollection<Message> NewMessages = new ObservableCollection<Message>();
 
         public User(int id, string login, string password, string name, string username, ObservableCollection<ChatFolder> chatsFolders)
         {
@@ -72,6 +70,50 @@ namespace TebegramServer
             //}
 
             return sb.ToString();
+        }
+        public void AddContact(Contact contact)
+        {
+            ChatsFolders[0].Contacts.Add(contact);
+        }
+        public void RemoveContact(Contact contact)
+        {
+            ChatsFolders[0].Contacts.Remove(contact);
+        }
+        public Contact FindContactByUsername(string username)
+        {
+            foreach (Contact contact in ChatsFolders[0].Contacts)
+            {
+                if (contact.Username == username) return contact;
+            }
+            return null;
+        }
+        public string GetNewMessages()
+        {
+            string messages = string.Empty;
+            if (NewMessages.Count == 0) return "NotFound";
+            foreach (Message message in NewMessages)
+            {
+                messages += message.ToString();
+            }
+            NewMessages.Clear();
+            return messages;
+        }
+        public void AddMessage(Message message)
+        {
+            if (message.Sender == Username)
+            {
+                FindContactByUsername(message.Reciver).Messages.Add(message);
+            }
+            else if (FindContactByUsername(message.Sender) == null)
+            {
+                Contact contact = new Contact(UsersData.FindUserByUsername(message.Sender).Username, UsersData.FindUserByUsername(message.Sender).Name);
+                contact.Messages.Add(message);
+                AddContact(contact);
+            }
+            else if (message.Sender != Username)
+            {
+                FindContactByUsername(message.Sender).Messages.Add(message);
+            }
         }
     }
 }

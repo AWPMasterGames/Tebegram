@@ -33,16 +33,8 @@
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
-            <TextBlock Text="IP Adress" Margin="10,0" Foreground="Gray" VerticalAlignment="Bottom"/>
-            <TextBox x:Name="TBIPAdress" Text="" FontSize="20" Grid.Row="1"/>
-        </Grid>
-        <Grid Grid.Column="1" Grid.Row="3" Margin="0,10">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-            </Grid.RowDefinitions>
-            <TextBlock Text="Port" Margin="10,0" Foreground="Gray" VerticalAlignment="Bottom"/>
-            <TextBox x:Name="TBPort" FontSize="20" Grid.Row="1"/>
+            <TextBlock Text="Username" Margin="10,0" Foreground="Gray" VerticalAlignment="Bottom"/>
+            <TextBox x:Name="TBUsername" Text="" FontSize="20" Grid.Row="1" KeyDown="TBUsername_KeyDown"/>
         </Grid>
         <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
             <Button Content="Добавить" Height="25" Width="100" Margin="10" Click="Button_Click_1"/>

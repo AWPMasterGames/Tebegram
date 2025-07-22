@@ -29,21 +29,13 @@
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
-                    <TextBlock Text="IPAdress" Foreground="Gray" FontSize="15"/>
-                    <TextBlock Name="TBIPAdress" Grid.Row="1" FontSize="20"/>
-                </Grid>
-                <Grid Margin="10,5">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
-                    </Grid.RowDefinitions>
-                    <TextBlock Text="Port" Foreground="Gray" FontSize="15"/>
-                    <TextBlock Name="TBPort" Grid.Row="1" FontSize="20"/>
+                    <TextBlock Text="Username" Foreground="Gray" FontSize="15"/>
+                    <TextBlock Name="TBUsername" Grid.Row="1" FontSize="20"/>
                 </Grid>
 
             </StackPanel>
             <StackPanel Grid.Row="2" Margin="0,10" Orientation="Horizontal">
-                <Button Content="Тема" Width="100" Height="25"/>
+                <!--<Button Content="Тема" Width="100" Height="25"/>-->
             </StackPanel>
         </Grid>
     </ScrollViewer>

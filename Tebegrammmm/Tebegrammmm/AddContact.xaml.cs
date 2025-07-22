@@ -1,6 +1,5 @@
-﻿using System;
-using System.Windows;
-using System.Net;
+﻿using System.Windows;
+using System.Windows.Input;
 
 namespace Tebegrammmm
 {
@@ -10,22 +9,13 @@ namespace Tebegrammmm
     public partial class AddContact : Window
     {
         Contact Contact;
-        
-        public AddContact(Contact contact, string title)
+        public AddContact(Contact contact)
         {
             InitializeComponent();
-            this.Title = title;
-            TBTitle.Text = title;
+            this.Title = "Добавить контакт";
+            TBTitle.Text = "Добавить контакт";
             Contact = contact;
-            
-            if (contact.Name != string.Empty)
-            {
-                TBName.Text = contact.Name;
-            }
-            if (contact.Username != null)
-            {
-                TBIPAdress.Text = contact.Username;
-            }
+            TBName.Focus();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -33,19 +23,27 @@ namespace Tebegrammmm
             this.DialogResult = false;
             this.Close();
         }
-
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void ChangeContact()
         {
-            if (TBName.Text.Length < 1)
+            if (TBUsername.Text.Trim().Length < 1)
             {
-                MessageBox.Show("Укажите Имя");
+                MessageBox.Show("Укажите имя пользователя");
                 return;
             }
-            
-            Contact.ChangeName(TBName.Text);
+            Contact.ChangeName(TBName.Text.Trim());
+            Contact.ChangeUsername(TBUsername.Text.Trim());
 
             this.DialogResult = true;
             this.Close();
+        }
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            ChangeContact();
+        }
+
+        private void TBUsername_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if(e.Key == Key.Enter) ChangeContact();
         }
     }
 }
