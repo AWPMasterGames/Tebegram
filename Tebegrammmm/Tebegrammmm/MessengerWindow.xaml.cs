@@ -14,10 +14,8 @@ using System.Net.Http.Headers;
 using Tebegrammmm.ChatsFoldersRedactsWindows;
 using Tebegrammmm.Classes;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Media;
-using TebegramServer.Data;
+using Tebegrammmm.Data;
 
 namespace Tebegrammmm
 {
