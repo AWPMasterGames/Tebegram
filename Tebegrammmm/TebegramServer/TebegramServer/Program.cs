@@ -173,7 +173,3 @@ app.MapDelete("/Contact", async (HttpContext Context) =>
     user.RemoveContact(user.FindContactByUsername(Data[1]));
     return Context.Response.StatusCode = 200;
 });
-
-app.MapGet("/", () => "Сервер работает. Используйте доступные маршруты.");
-
-app.Run();

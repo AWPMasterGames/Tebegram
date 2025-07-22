@@ -3,17 +3,25 @@ using System.Net;
 using TebegramServer.Classes;
 using System.Linq;
 using System.Text.Json;
+using System.Timers;
 
 namespace TebegramServer.Data
 {
     public static class UsersData
     {
         static ObservableCollection<User> Users = new ObservableCollection<User>();
+        private static System.Timers.Timer saveTimer;
 
         static UsersData()
         {
             LoadUserList();
-            //SaveUserToFile
+
+            // Настраиваем таймер для автоматического сохранения каждые 10 секунд
+            saveTimer = new System.Timers.Timer(10000); // 10 секунд
+            saveTimer.Elapsed += (sender, e) => SaveUserToFile();
+            saveTimer.AutoReset = true;
+            saveTimer.Start();
+            
         }
 
         public static bool IsExistUser(string login)
@@ -38,8 +46,12 @@ namespace TebegramServer.Data
             return Users.FirstOrDefault(user => user.Username == username);
         }   
         
-        
-        public static void SaveUserToFile(User user)
+        public static void AddUser(User user)
+        {
+            Users.Add(user);
+            SaveUserToFile();
+        }
+        public static void SaveUserToFile()
         {
             try
             {
@@ -48,30 +60,11 @@ namespace TebegramServer.Data
                 // Создаем директорию, если она не существует
                 Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
 
-                List<UserData> usersData;
-
-                // Загружаем существующие данные или создаем новый список
-                if (File.Exists(filePath))
-                {
-                    string existingContent = File.ReadAllText(filePath);
-                    usersData = JsonSerializer.Deserialize<List<UserData>>(existingContent) ?? new List<UserData>();
-                }
-                else
-                {
-                    usersData = new List<UserData>();
-                }
+                List<UserData> usersData = new List<UserData>();
 
                 // Проходим по всем пользователям из коллекции Users
                 foreach (var currentUser in Users)
                 {
-                    // Проверяем, есть ли уже этот пользователь в файле
-                    var existingUser = usersData.FirstOrDefault(u => u.Id == currentUser.Id);
-                    if (existingUser != null)
-                    {
-                        // Обновляем существующего пользователя
-                        usersData.Remove(existingUser);
-                    }
-
                     // Конвертируем User в UserData
                     var userData = new UserData
                     {
@@ -114,12 +107,18 @@ namespace TebegramServer.Data
                 string jsonContent = JsonSerializer.Serialize(usersData, options);
                 File.WriteAllText(filePath, jsonContent);
 
-                Console.WriteLine($"Все пользователи ({Users.Count}) сохранены в файл через SaveUserToFile");
+                Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Автосохранение: {Users.Count} пользователей сохранено в файл");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Ошибка при сохранении пользователей: {ex.Message}");
+                Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Ошибка при автосохранении пользователей: {ex.Message}");
             }
+        }
+
+        public static void StopAutoSave()
+        {
+            saveTimer?.Stop();
+            saveTimer?.Dispose();
         }
 
         public static void SaveAllUsers()
