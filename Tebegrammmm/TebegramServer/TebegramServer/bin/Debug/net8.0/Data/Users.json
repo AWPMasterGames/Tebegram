@@ -12,7 +12,16 @@
           {
             "Username": "ybeka",
             "Name": "Убека",
-            "Messages": []
+            "Messages": [
+              {
+                "Sender": "vasya",
+                "Recipient": "ybeka",
+                "Text": "123",
+                "Time": "2025-07-22 07:16:00",
+                "MessageType": "Text",
+                "MessageString": "vasya▫ybeka▫Text▫04:16▫▫123"
+              }
+            ]
           },
           {
             "Username": "masya",
@@ -20,7 +29,7 @@
             "Messages": []
           }
         ],
-        "Icon": "💬",
+        "Icon": "\uD83D\uDCAC",
         "CanDelete": false
       }
     ]
@@ -38,7 +47,16 @@
           {
             "Username": "vasya",
             "Name": "Вася жопкин бамбук",
-            "Messages": []
+            "Messages": [
+              {
+                "Sender": "vasya",
+                "Recipient": "ybeka",
+                "Text": "123",
+                "Time": "2025-07-22 07:16:00",
+                "MessageType": "Text",
+                "MessageString": "vasya▫ybeka▫Text▫04:16▫▫123"
+              }
+            ]
           },
           {
             "Username": "masya",
@@ -46,7 +64,7 @@
             "Messages": []
           }
         ],
-        "Icon": "💬",
+        "Icon": "\uD83D\uDCAC",
         "CanDelete": false
       }
     ]
@@ -72,7 +90,7 @@
             "Messages": []
           }
         ],
-        "Icon": "💬",
+        "Icon": "\uD83D\uDCAC",
         "CanDelete": false
       }
     ]
@@ -98,7 +116,7 @@
             "Messages": []
           }
         ],
-        "Icon": "💬",
+        "Icon": "\uD83D\uDCAC",
         "CanDelete": false
       }
     ]

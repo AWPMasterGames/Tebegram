@@ -19,6 +19,8 @@ namespace TebegramServer
         public string Username { get; set; }
 
         public ObservableCollection<ChatFolder> ChatsFolders { get; set; }
+        public ObservableCollection<Contact> Contacts { get { return ChatsFolders[0].Contacts; } }
+
         public ObservableCollection<Message> NewMessages = new ObservableCollection<Message>();
 
         public User(int id, string login, string password, string name, string username, ObservableCollection<ChatFolder> chatsFolders)
