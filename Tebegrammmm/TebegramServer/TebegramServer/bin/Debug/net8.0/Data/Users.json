@@ -1,0 +1,122 @@
+[
+  {
+    "Id": 1,
+    "Login": "aa",
+    "Password": "123",
+    "Name": "Вася жопкин бамбук",
+    "Username": "vasya",
+    "ChatsFolders": [
+      {
+        "Name": "Все чаты",
+        "Contacts": [
+          {
+            "Username": "ybeka",
+            "Name": "Убека",
+            "Messages": [
+              {
+                "Sender": "ybeka",
+                "Recipient": "vasya",
+                "Text": "hi",
+                "Time": "12:30",
+                "MessageType": "Text"
+              }
+            ]
+          },
+          {
+            "Username": "masya",
+            "Name": "Masya",
+            "Messages": []
+          }
+        ],
+        "Icon": "💬",
+        "CanDelete": false
+      }
+    ]
+  },
+  {
+    "Id": 2,
+    "Login": "aa1",
+    "Password": "123",
+    "Name": "убека",
+    "Username": "ybeka",
+    "ChatsFolders": [
+      {
+        "Name": "Все чаты",
+        "Contacts": [
+          {
+            "Username": "vasya",
+            "Name": "Вася жопкин бамбук",
+            "Messages": [
+              {
+                "Sender": "ybeka",
+                "Recipient": "vasya",
+                "Text": "hi",
+                "Time": "12:30",
+                "MessageType": "Text"
+              }
+            ]
+          },
+          {
+            "Username": "masya",
+            "Name": "Masya",
+            "Messages": []
+          }
+        ],
+        "Icon": "💬",
+        "CanDelete": false
+      }
+    ]
+  },
+  {
+    "Id": 3,
+    "Login": "masya",
+    "Password": "123",
+    "Name": "Мася",
+    "Username": "masya",
+    "ChatsFolders": [
+      {
+        "Name": "Все чаты",
+        "Contacts": [
+          {
+            "Username": "vasya",
+            "Name": "Вася жопкин бамбук",
+            "Messages": []
+          },
+          {
+            "Username": "ybeka",
+            "Name": "Убебка",
+            "Messages": []
+          }
+        ],
+        "Icon": "💬",
+        "CanDelete": false
+      }
+    ]
+  },
+  {
+    "Id": 4,
+    "Login": "admin",
+    "Password": "123",
+    "Name": "Админ",
+    "Username": "admin_228",
+    "ChatsFolders": [
+      {
+        "Name": "Все чаты",
+        "Contacts": [
+          {
+            "Username": "vasya",
+            "Name": "Вася",
+            "Messages": []
+          },
+          {
+            "Username": "ybeka",
+            "Name": "убека",
+            "Messages": []
+          }
+        ],
+        "Icon": "💬",
+        "CanDelete": false
+      }
+    ]
+  }
+]

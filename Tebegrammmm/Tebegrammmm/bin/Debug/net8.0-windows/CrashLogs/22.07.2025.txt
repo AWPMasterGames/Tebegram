@@ -1,0 +1,203 @@
+[22.07.2025 11:56:46]  [Authorization] Error: Error while copying content to a stream.
+[22.07.2025 11:56:56]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[22.07.2025 11:56:56]  [LoadLastSelectedContact] Загружен последний выбранный контакт: убека
+[22.07.2025 11:56:56]  [MessengerWindow] Последний выбранный контакт: убека
+[22.07.2025 11:56:56]  [MessengerWindow] Инициализация завершена
+[22.07.2025 11:56:58]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[22.07.2025 11:56:58]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[22.07.2025 11:56:58]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[22.07.2025 11:56:58]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Убека
+[22.07.2025 11:56:58]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Убека
+[22.07.2025 11:57:13]  [Window_Closing] Остановлен таймер проверки статуса сообщений
+[22.07.2025 12:04:13]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[22.07.2025 12:04:13]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[22.07.2025 12:04:13]  [MessengerWindow] Последний выбранный контакт: Убека
+[22.07.2025 12:04:14]  [MessengerWindow] Инициализация завершена
+[22.07.2025 12:04:54]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[22.07.2025 12:04:54]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[22.07.2025 12:04:54]  [MessengerWindow] Последний выбранный контакт: Убека
+[22.07.2025 12:04:54]  [MessengerWindow] Инициализация завершена
+[22.07.2025 12:05:42]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[22.07.2025 12:05:42]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[22.07.2025 12:05:42]  [MessengerWindow] Последний выбранный контакт: Убека
+[22.07.2025 12:05:42]  [MessengerWindow] Инициализация завершена
+[22.07.2025 12:06:00]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[22.07.2025 12:06:01]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[22.07.2025 12:06:01]  [MessengerWindow] Последний выбранный контакт: Убека
+[22.07.2025 12:06:01]  [MessengerWindow] Инициализация завершена
+[22.07.2025 12:07:14]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[22.07.2025 12:07:14]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[22.07.2025 12:07:14]  [MessengerWindow] Последний выбранный контакт: Убека
+[22.07.2025 12:07:14]  [MessengerWindow] Инициализация завершена
+[22.07.2025 12:11:07]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[22.07.2025 12:11:07]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[22.07.2025 12:11:07]  [MessengerWindow] Последний выбранный контакт: Убека
+[22.07.2025 12:11:07]  [MessengerWindow] Инициализация завершена
+[22.07.2025 12:12:04]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[22.07.2025 12:12:04]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Убека
+[22.07.2025 12:12:04]  [MessengerWindow] Последний выбранный контакт: Убека
+[22.07.2025 12:12:04]  [MessengerWindow] Инициализация завершена
+[22.07.2025 12:13:12]  [LBChats_SelectionChanged] Selected contact: admin_228 (admin_228)
+[22.07.2025 12:13:12]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[22.07.2025 12:13:13]  [LBChats_SelectionChanged] Restored draft for admin_228: ''
+[22.07.2025 12:13:13]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: admin_228
+[22.07.2025 12:13:13]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с admin_228
+[22.07.2025 12:13:24]  [LBChats_SelectionChanged] Saved draft for admin_228: ''
+[22.07.2025 12:13:24]  [LBChats_SelectionChanged] No item selected
+[22.07.2025 12:13:24]  [Window_Closing] Остановлен таймер проверки статуса сообщений
+[22.07.2025 12:15:29]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[22.07.2025 12:15:29]  [LoadLastSelectedContact] Загружен последний выбранный контакт: admin_228
+[22.07.2025 12:15:30]  [MessengerWindow] Последний выбранный контакт: admin_228
+[22.07.2025 12:15:30]  [MessengerWindow] Инициализация завершена
+[22.07.2025 12:25:20]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[22.07.2025 12:25:20]  [LoadLastSelectedContact] Загружен последний выбранный контакт: admin_228
+[22.07.2025 12:25:20]  [MessengerWindow] Последний выбранный контакт: admin_228
+[22.07.2025 12:25:20]  [MessengerWindow] Инициализация завершена
+[22.07.2025 12:25:30]  [SendAddNewContactRequest] Error: Error while copying content to a stream.
+[22.07.2025 12:25:44]  [SendAddNewContactRequest] Error: Error while copying content to a stream.
+[22.07.2025 12:25:59]  [SendAddNewContactRequest] Error: Error while copying content to a stream.
+[22.07.2025 12:26:46]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[22.07.2025 12:26:46]  [LoadLastSelectedContact] Загружен последний выбранный контакт: admin_228
+[22.07.2025 12:26:46]  [MessengerWindow] Последний выбранный контакт: admin_228
+[22.07.2025 12:26:46]  [MessengerWindow] Инициализация завершена
+[22.07.2025 12:26:49]  [LBChats_SelectionChanged] Selected contact: Админ (admin_228)
+[22.07.2025 12:26:49]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[22.07.2025 12:26:49]  [LBChats_SelectionChanged] Restored draft for Админ: ''
+[22.07.2025 12:26:49]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Админ
+[22.07.2025 12:26:49]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Админ
+[22.07.2025 12:27:01]  [Window_Closing] Остановлен таймер проверки статуса сообщений
+[22.07.2025 12:28:33]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[22.07.2025 12:28:33]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Админ
+[22.07.2025 12:28:33]  [MessengerWindow] Последний выбранный контакт: Админ
+[22.07.2025 12:28:34]  [MessengerWindow] Инициализация завершена
+[22.07.2025 12:28:36]  [LBChats_SelectionChanged] Selected contact: Админ (admin_228)
+[22.07.2025 12:28:36]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[22.07.2025 12:28:36]  [LBChats_SelectionChanged] Restored draft for Админ: ''
+[22.07.2025 12:28:36]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Админ
+[22.07.2025 12:28:36]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Админ
+[22.07.2025 12:28:39]  [LBChats_SelectionChanged] Saved draft for Админ: ''
+[22.07.2025 12:28:39]  [LBChats_SelectionChanged] Selected contact: 1 (admin_228)
+[22.07.2025 12:28:39]  [LBChats_SelectionChanged] Restored draft for 1: ''
+[22.07.2025 12:28:39]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: 1
+[22.07.2025 12:28:39]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с 1
+[22.07.2025 12:28:39]  [LBChats_SelectionChanged] Saved draft for 1: ''
+[22.07.2025 12:28:40]  [LBChats_SelectionChanged] Selected contact: Masya (masya)
+[22.07.2025 12:28:40]  [LBChats_SelectionChanged] Restored draft for Masya: ''
+[22.07.2025 12:28:40]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Masya
+[22.07.2025 12:28:40]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Masya
+[22.07.2025 12:28:40]  [LBChats_SelectionChanged] Saved draft for Masya: ''
+[22.07.2025 12:28:40]  [LBChats_SelectionChanged] Selected contact: Админ (admin_228)
+[22.07.2025 12:28:40]  [LBChats_SelectionChanged] Restored draft for Админ: ''
+[22.07.2025 12:28:40]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Админ
+[22.07.2025 12:28:41]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Админ
+[22.07.2025 12:28:42]  [LBChats_SelectionChanged] Saved draft for Админ: ''
+[22.07.2025 12:28:42]  [LBChats_SelectionChanged] No item selected
+[22.07.2025 12:28:43]  [LBChats_SelectionChanged] Saved draft for Админ: ''
+[22.07.2025 12:28:43]  [LBChats_SelectionChanged] Selected contact: 1 (admin_228)
+[22.07.2025 12:28:43]  [LBChats_SelectionChanged] Restored draft for 1: ''
+[22.07.2025 12:28:43]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: 1
+[22.07.2025 12:28:43]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с 1
+[22.07.2025 12:28:44]  [LBChats_SelectionChanged] Saved draft for 1: ''
+[22.07.2025 12:28:44]  [LBChats_SelectionChanged] No item selected
+[22.07.2025 12:30:18]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[22.07.2025 12:30:18]  [LoadLastSelectedContact] Загружен последний выбранный контакт: 1
+[22.07.2025 12:30:19]  [MessengerWindow] Последний выбранный контакт: 1
+[22.07.2025 12:30:19]  [MessengerWindow] Инициализация завершена
+[22.07.2025 12:30:20]  [LBChats_SelectionChanged] Selected contact: 1 (admin_228)
+[22.07.2025 12:30:20]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[22.07.2025 12:30:20]  [LBChats_SelectionChanged] Restored draft for 1: ''
+[22.07.2025 12:30:20]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: 1
+[22.07.2025 12:30:20]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с 1
+[22.07.2025 12:30:20]  [LBChats_SelectionChanged] Saved draft for 1: ''
+[22.07.2025 12:30:21]  [LBChats_SelectionChanged] No item selected
+[22.07.2025 12:31:16]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[22.07.2025 12:31:16]  [LoadLastSelectedContact] Загружен последний выбранный контакт: 1
+[22.07.2025 12:31:16]  [MessengerWindow] Последний выбранный контакт: 1
+[22.07.2025 12:31:16]  [MessengerWindow] Инициализация завершена
+[22.07.2025 12:31:23]  [SendAddNewContactRequest] Error: Error while copying content to a stream.
+[22.07.2025 12:31:51]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[22.07.2025 12:31:51]  [LoadLastSelectedContact] Загружен последний выбранный контакт: 1
+[22.07.2025 12:31:51]  [MessengerWindow] Последний выбранный контакт: 1
+[22.07.2025 12:31:51]  [MessengerWindow] Инициализация завершена
+[22.07.2025 12:31:52]  [LBChats_SelectionChanged] Selected contact: Админ (admin_228)
+[22.07.2025 12:31:53]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[22.07.2025 12:31:53]  [LBChats_SelectionChanged] Restored draft for Админ: ''
+[22.07.2025 12:31:53]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Админ
+[22.07.2025 12:31:53]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Админ
+[22.07.2025 12:31:53]  [LBChats_SelectionChanged] Saved draft for Админ: ''
+[22.07.2025 12:31:53]  [LBChats_SelectionChanged] No item selected
+[22.07.2025 12:40:23]  [Authorization] Error: Подключение не установлено, т.к. конечный компьютер отверг запрос на подключение. (localhost:5000)
+[22.07.2025 12:40:27]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[22.07.2025 12:40:27]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Админ
+[22.07.2025 12:40:27]  [MessengerWindow] Последний выбранный контакт: Админ
+[22.07.2025 12:40:27]  [MessengerWindow] Инициализация завершена
+[22.07.2025 12:40:36]  [SendAddNewContactRequest] Error: The request message was already sent. Cannot send the same request message multiple times.
+[22.07.2025 12:40:59]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[22.07.2025 12:40:59]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Админ
+[22.07.2025 12:40:59]  [MessengerWindow] Последний выбранный контакт: Админ
+[22.07.2025 12:40:59]  [MessengerWindow] Инициализация завершена
+[22.07.2025 12:41:44]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[22.07.2025 12:41:44]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Админ
+[22.07.2025 12:41:44]  [MessengerWindow] Последний выбранный контакт: Админ
+[22.07.2025 12:41:44]  [MessengerWindow] Инициализация завершена
+[22.07.2025 12:41:45]  [LBChats_SelectionChanged] Selected contact: Админ (admin_228)
+[22.07.2025 12:41:45]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[22.07.2025 12:41:45]  [LBChats_SelectionChanged] Restored draft for Админ: ''
+[22.07.2025 12:41:45]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Админ
+[22.07.2025 12:41:46]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Админ
+[22.07.2025 12:41:46]  [LBChats_SelectionChanged] Saved draft for Админ: ''
+[22.07.2025 12:41:46]  [LBChats_SelectionChanged] No item selected
+[22.07.2025 12:42:16]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[22.07.2025 12:42:16]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Админ
+[22.07.2025 12:42:16]  [MessengerWindow] Последний выбранный контакт: Админ
+[22.07.2025 12:42:16]  [MessengerWindow] Инициализация завершена
+[22.07.2025 12:42:18]  [LBChats_SelectionChanged] Selected contact: Админ (admin_228)
+[22.07.2025 12:42:18]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[22.07.2025 12:42:18]  [LBChats_SelectionChanged] Restored draft for Админ: ''
+[22.07.2025 12:42:18]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Админ
+[22.07.2025 12:42:18]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Админ
+[22.07.2025 12:42:18]  [LBChats_SelectionChanged] Saved draft for Админ: ''
+[22.07.2025 12:42:18]  [LBChats_SelectionChanged] No item selected
+[22.07.2025 12:45:41]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[22.07.2025 12:45:41]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Админ
+[22.07.2025 12:45:41]  [MessengerWindow] Последний выбранный контакт: Админ
+[22.07.2025 12:45:41]  [MessengerWindow] Инициализация завершена
+[22.07.2025 12:45:43]  [LBChats_SelectionChanged] Selected contact: Админ (admin_228)
+[22.07.2025 12:45:43]  [MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)
+[22.07.2025 12:45:43]  [LBChats_SelectionChanged] Restored draft for Админ: ''
+[22.07.2025 12:45:43]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Админ
+[22.07.2025 12:45:43]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Админ
+[22.07.2025 12:45:43]  [LBChats_SelectionChanged] Saved draft for Админ: ''
+[22.07.2025 12:45:44]  [LBChats_SelectionChanged] No item selected
+[22.07.2025 12:45:57]  [LBChats_SelectionChanged] Saved draft for Админ: ''
+[22.07.2025 12:45:57]  [LBChats_SelectionChanged] Selected contact: Админ (admin_228)
+[22.07.2025 12:45:57]  [LBChats_SelectionChanged] Restored draft for Админ: ''
+[22.07.2025 12:45:57]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Админ
+[22.07.2025 12:45:57]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Админ
+[22.07.2025 12:46:04]  [LBChats_SelectionChanged] Saved draft for Админ: ''
+[22.07.2025 12:46:04]  [LBChats_SelectionChanged] No item selected
+[22.07.2025 12:46:12]  [Window_Closing] Остановлен таймер проверки статуса сообщений
+[22.07.2025 12:52:36]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[22.07.2025 12:52:36]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Админ
+[22.07.2025 12:52:36]  [MessengerWindow] Последний выбранный контакт: Админ
+[22.07.2025 12:52:36]  [MessengerWindow] Инициализация завершена
+[22.07.2025 13:04:29]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[22.07.2025 13:04:29]  [LoadLastSelectedContact] Загружен последний выбранный контакт: Админ
+[22.07.2025 13:04:29]  [MessengerWindow] Последний выбранный контакт: Админ
+[22.07.2025 13:04:29]  [MessengerWindow] Инициализация завершена
+[22.07.2025 13:04:45]  [LBChats_SelectionChanged] Selected contact: Админ (admin_228)
+[22.07.2025 13:04:45]  [LBChats_SelectionChanged] Restored draft for Админ: ''
+[22.07.2025 13:04:45]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: Админ
+[22.07.2025 13:04:46]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с Админ
+[22.07.2025 13:04:46]  [LBChats_SelectionChanged] Saved draft for Админ: ''
+[22.07.2025 13:04:46]  [LBChats_SelectionChanged] No item selected
+[22.07.2025 13:05:02]  [LBChats_SelectionChanged] Saved draft for Админ: ''
+[22.07.2025 13:05:02]  [LBChats_SelectionChanged] Selected contact: aa (admin_228)
+[22.07.2025 13:05:02]  [LBChats_SelectionChanged] Restored draft for aa: ''
+[22.07.2025 13:05:03]  [SaveLastSelectedContact] Сохранен последний выбранный контакт: aa
+[22.07.2025 13:05:03]  [NotifyServerOpenChat] Уведомили сервер об открытии чата с aa
+[22.07.2025 13:26:08]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[22.07.2025 13:26:08]  [LoadLastSelectedContact] Загружен последний выбранный контакт: aa
+[22.07.2025 13:26:08]  [MessengerWindow] Последний выбранный контакт: aa
+[22.07.2025 13:26:08]  [MessengerWindow] Инициализация завершена
+[22.07.2025 13:26:08]  [AddMessageToUser] Получено сообщение от Убека: hi

@@ -30,10 +30,7 @@ namespace Tebegrammmm
         private static object thisLock = new();
         User User { get; set; }
         Contact Contact { get; set; }
-
-        HttpListener httpListener = null;
         Thread Thread { get; set; }
-        bool IsRunning { get; set; }
         private string lastSelectedContactName = "";
 
         public MessengerWindow(User user)
@@ -102,12 +99,6 @@ namespace Tebegrammmm
             Contact = LBChats.SelectedItem as Contact;
             Log.Save($"[LBChats_SelectionChanged] Selected contact: {Contact?.Name} ({Contact?.Username})");
 
-            // Запускаем проверку статуса сообщений если еще не запущена
-            if (messageStatusTimer == null)
-            {
-                StartMessageStatusChecker();
-            }
-
             GridChat.DataContext = Contact;
             LBMessages.ItemsSource = Contact.Messages;
             GridMessege.Visibility = Visibility.Visible;
@@ -127,7 +118,7 @@ namespace Tebegrammmm
             _ = NotifyServerOpenChat(Contact.Name);
         }
 
-         private async void AddMessageToUser(string MessageData)
+        private async void AddMessageToUser(string MessageData)
         {
             string[] messageData = MessageData.Split('▫');
             if (messageData[0] == User.Username)
@@ -155,7 +146,7 @@ namespace Tebegrammmm
                     Log.Save($"[AddMessageToUser] Получен файл от {messageData[0]}: {messageData[4]}");
                 }
             }
-            else if(User.FindContactByUsername(messageData[0]) == null)
+            else if (User.FindContactByUsername(messageData[0]) == null)
             {
                 using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/UserName/{messageData[0]}");
                 using HttpResponseMessage response = await httpClient.SendAsync(request);
@@ -308,7 +299,7 @@ namespace Tebegrammmm
                         continue;
                     }
                     // задержка перед новым запросом
-                    Thread.Sleep(2000);
+                    Thread.Sleep(1500);
                 }
             }
             catch (Exception ex)
@@ -524,7 +515,7 @@ namespace Tebegrammmm
             }
         }
 
-        private async void SendAddNewContactRequest(string data)
+        private async Task<bool> SendAddNewContactRequest(string data)
         {
             try
             {
@@ -532,10 +523,22 @@ namespace Tebegrammmm
                 using var request = new HttpRequestMessage(HttpMethod.Post, $"{ServerData.ServerAdress}/Contact");
                 request.Content = content;
                 using var response = await httpClient.SendAsync(request);
+                string[] temp = data.Split('▫');
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    string[] temp = data.Split('▫');
+                    if (temp[2].Trim().Length < 1)
+                    {
+                        using HttpRequestMessage GetNameRequest = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/UserName/{temp[1]}");
+                        using HttpResponseMessage NameResponse = await httpClient.SendAsync(GetNameRequest);
+                        string Name = await NameResponse.Content.ReadAsStringAsync();
+                        temp[2] = Name;
+                    }
                     User.AddContact(new Contact(temp[1], temp[2]));
+                    return true;
+                }
+                else if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    MessageBox.Show($"{temp[1]} не найден", "ошибка");
                 }
             }
             catch (Exception ex)
@@ -543,17 +546,36 @@ namespace Tebegrammmm
                 Log.Save($"[SendAddNewContactRequest] Error: {ex.Message}");
                 // В случае ошибки сообщение остается Pending (серым)
             }
+            return false;
         }
 
-        private void Button_Click_AddContact(object sender, RoutedEventArgs e)
+        private async void Button_Click_AddContact(object sender, RoutedEventArgs e)
         {
             string data = $"{User.Id}";
             Contact contact = new();
-            AddContact addContact = new AddContact(contact);
-
-            if (addContact.ShowDialog() == true)
+            while (true)
             {
-                SendAddNewContactRequest($"{User.Id}▫{contact.Username}▫{contact.Name}");
+                AddContact addContact = new AddContact(contact);
+                if (addContact.ShowDialog() == true)
+                {
+                    if (User.FindContactByUsername(contact.Username) == null)
+                    {
+                        bool result = await SendAddNewContactRequest($"{User.Id}▫{contact.Username}▫{contact.Name}");
+                        if (result) return;
+                    }
+                    else
+                    {
+                        for(int i = 0; i < User.Contacts.Count;i++)
+                        {
+                            if(contact.Username == User.Contacts[i].Username)
+                            {
+                                LBChats.SelectedIndex = i;
+                                return;
+                            }
+                        }
+                    }
+                }
+                else { return; }
             }
         }
 
@@ -655,20 +677,6 @@ namespace Tebegrammmm
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            IsRunning = false;
-
-            // Останавливаем таймер проверки статуса сообщений
-            if (messageStatusTimer != null)
-            {
-                messageStatusTimer.Stop();
-                messageStatusTimer.Dispose();
-                Log.Save("[Window_Closing] Остановлен таймер проверки статуса сообщений");
-            }
-
-            if (httpListener != null && httpListener.IsListening)
-            {
-                httpListener.Stop();
-            }
             Process.GetCurrentProcess().Kill();
         }
 
@@ -989,18 +997,6 @@ namespace Tebegrammmm
             {
                 Log.Save($"[RestoreLastSelectedContact] Error: {ex.Message}");
             }
-        }
-
-        // Таймер для периодической проверки статуса сообщений
-        private System.Timers.Timer messageStatusTimer;
-
-        private void StartMessageStatusChecker()
-        {
-            messageStatusTimer = new System.Timers.Timer(5000); // Проверяем каждые 5 секунд для быстрого отклика
-            messageStatusTimer.Elapsed += async (sender, e) => await CheckPendingMessagesStatus();
-            messageStatusTimer.AutoReset = true;
-            messageStatusTimer.Start();
-            Log.Save("[MessageStatusChecker] Запущена периодическая проверка статуса сообщений (каждые 5 сек)");
         }
 
         private async Task CheckPendingMessagesStatus()

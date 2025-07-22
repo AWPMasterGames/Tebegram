@@ -3,6 +3,7 @@ using TebegramServer.Data;
 using TebegramServer.Classes;
 using System.Collections.ObjectModel;
 using TebegramServer;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -145,7 +146,14 @@ app.MapPost("/Contact",async (HttpContext Context) =>
     using StreamReader reader = new StreamReader(Context.Request.Body);
     string Request = await reader.ReadToEndAsync();
     string[] Data = Request.Split('▫');
-    Contact contact = new Contact(Data[1], Data[2]);
+    User UContact = UsersData.FindUserByUsername(Data[1]);
+    if (UContact == null)
+    {
+        return Context.Response.StatusCode = 404;
+    }
+    Contact contact;
+    if (Data[2].Trim().Length < 1) contact = new Contact(UContact.Username, UContact.Name);
+    else contact = new Contact(UContact.Username, Data[2]);
     UsersData.FindUserById(int.Parse(Data[0]))?.AddContact(contact);
     return Context.Response.StatusCode = 200;
 });
