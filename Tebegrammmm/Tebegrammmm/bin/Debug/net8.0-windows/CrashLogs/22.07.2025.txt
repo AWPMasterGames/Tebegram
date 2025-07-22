@@ -641,3 +641,35 @@
 [22.07.2025 17:18:59]  [LBChats_SelectionChanged] Saved draft for Masya: ''
 [22.07.2025 17:18:59]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
 [22.07.2025 17:19:00]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[22.07.2025 17:38:10]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[22.07.2025 17:38:10]  [MessengerWindow] Инициализация завершена
+[22.07.2025 17:38:11]  [AddMessageToUser] Получено сообщение от Убека: 1
+[22.07.2025 17:38:11]  [AddMessageToUser] Получено сообщение от vasya: 2
+[22.07.2025 17:38:11]  [AddMessageToUser] Получено сообщение от Убека: 3
+[22.07.2025 17:38:11]  [AddMessageToUser] Получено сообщение от vasya: 4
+[22.07.2025 17:38:11]  [AddMessageToUser] Получено сообщение от Убека: 5 хуй
+[22.07.2025 17:38:11]  [AddMessageToUser] Получено сообщение от vasya: 123
+[22.07.2025 17:38:11]  [AddMessageToUser] Получено сообщение от vasya: 6
+[22.07.2025 17:38:11]  [AddMessageToUser] Получено сообщение от Убека: 7
+[22.07.2025 17:38:12]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[22.07.2025 17:38:12]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[22.07.2025 17:38:26]  [MessengerWindow] Инициализация для пользователя: убека (ybeka)
+[22.07.2025 17:38:26]  [MessengerWindow] Инициализация завершена
+[22.07.2025 17:38:27]  [AddMessageToUser] Получено сообщение от ybeka: 1
+[22.07.2025 17:38:27]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: 2
+[22.07.2025 17:38:27]  [AddMessageToUser] Получено сообщение от ybeka: 3
+[22.07.2025 17:38:27]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: 4
+[22.07.2025 17:38:27]  [AddMessageToUser] Получено сообщение от ybeka: 5 хуй
+[22.07.2025 17:38:27]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: 123
+[22.07.2025 17:38:27]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: 6
+[22.07.2025 17:38:27]  [AddMessageToUser] Получено сообщение от ybeka: 7
+[22.07.2025 17:38:28]  [LBChats_SelectionChanged] Selected contact: Вася жопкин бамбук (vasya)
+[22.07.2025 17:38:28]  [LBChats_SelectionChanged] Restored draft for Вася жопкин бамбук: ''
+[22.07.2025 17:38:31]  [SendMessage] Starting send message: 'ss' to contact: Вася жопкин бамбук
+[22.07.2025 17:38:31]  [SendMessage] Message added to local contact. Sending to user...
+[22.07.2025 17:38:32]  [AddMessageToUser] Получено сообщение от Убека: ss
+[22.07.2025 17:38:32]  [AddMessageToUser] Получено сообщение от ybeka: ss
+[22.07.2025 17:41:27]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[22.07.2025 17:41:27]  [MessengerWindow] Инициализация завершена
+[22.07.2025 17:41:28]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[22.07.2025 17:41:28]  [LBChats_SelectionChanged] Restored draft for Убека: ''
