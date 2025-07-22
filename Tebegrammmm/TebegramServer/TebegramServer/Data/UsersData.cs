@@ -40,6 +40,139 @@ namespace TebegramServer.Data
         public static void AddUser(User user)
         {
             Users.Add(user);
+            SaveUserToFile(user);
+        }
+
+        public static void SaveUserToFile(User user)
+        {
+            try
+            {
+                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Users.json");
+                
+                // Создаем директорию, если она не существует
+                Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
+                
+                List<UserData> usersData;
+                
+                // Загружаем существующие данные или создаем новый список
+                if (File.Exists(filePath))
+                {
+                    string existingContent = File.ReadAllText(filePath);
+                    usersData = JsonSerializer.Deserialize<List<UserData>>(existingContent) ?? new List<UserData>();
+                }
+                else
+                {
+                    usersData = new List<UserData>();
+                }
+                
+                // Проверяем, существует ли уже пользователь с таким ID
+                var existingUser = usersData.FirstOrDefault(u => u.Id == user.Id);
+                if (existingUser != null)
+                {
+                    // Обновляем существующего пользователя
+                    usersData.Remove(existingUser);
+                }
+                
+                // Конвертируем User в UserData
+                var userData = new UserData
+                {
+                    Id = user.Id,
+                    Login = user.Login,
+                    Password = user.Password,
+                    Name = user.Name,
+                    Username = user.Username,
+                    ChatsFolders = user.ChatsFolders.Select(folder => new ChatFolderData
+                    {
+                        Name = folder.FolderName,
+                        Icon = folder.Icon,
+                        CanDelete = folder.IsCanRedact,
+                        Contacts = folder.Contacts.Select(contact => new ContactData
+                        {
+                            Username = contact.Username,
+                            Name = contact.Name,
+                            Messages = contact.Messages.Select(message => new MessageData
+                            {
+                                Sender = message.Sender,
+                                Recipient = message.Reciver,
+                                Text = message.Text,
+                                Time = message.Time,
+                                MessageType = message.MessageType.ToString()
+                            }).ToList()
+                        }).ToList()
+                    }).ToList()
+                };
+                
+                // Добавляем нового/обновленного пользователя
+                usersData.Add(userData);
+                
+                // Сохраняем в файл с форматированием
+                var options = new JsonSerializerOptions 
+                { 
+                    WriteIndented = true,
+                    Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                };
+                string jsonContent = JsonSerializer.Serialize(usersData, options);
+                File.WriteAllText(filePath, jsonContent);
+                
+                Console.WriteLine($"Пользователь {user.Username} сохранен в файл");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при сохранении пользователя: {ex.Message}");
+            }
+        }
+
+        public static void SaveAllUsers()
+        {
+            try
+            {
+                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Users.json");
+                
+                // Создаем директорию, если она не существует
+                Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
+                
+                var usersData = Users.Select(user => new UserData
+                {
+                    Id = user.Id,
+                    Login = user.Login,
+                    Password = user.Password,
+                    Name = user.Name,
+                    Username = user.Username,
+                    ChatsFolders = user.ChatsFolders.Select(folder => new ChatFolderData
+                    {
+                        Name = folder.FolderName,
+                        Icon = folder.Icon,
+                        CanDelete = folder.IsCanRedact,
+                        Contacts = folder.Contacts.Select(contact => new ContactData
+                        {
+                            Username = contact.Username,
+                            Name = contact.Name,
+                            Messages = contact.Messages.Select(message => new MessageData
+                            {
+                                Sender = message.Sender,
+                                Recipient = message.Reciver,
+                                Text = message.Text,
+                                Time = message.Time,
+                                MessageType = message.MessageType.ToString()
+                            }).ToList()
+                        }).ToList()
+                    }).ToList()
+                }).ToList();
+                
+                var options = new JsonSerializerOptions 
+                { 
+                    WriteIndented = true,
+                    Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                };
+                string jsonContent = JsonSerializer.Serialize(usersData, options);
+                File.WriteAllText(filePath, jsonContent);
+                
+                Console.WriteLine($"Все пользователи ({Users.Count}) сохранены в файл");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при сохранении всех пользователей: {ex.Message}");
+            }
         }
 
         private static void LoadUserList()

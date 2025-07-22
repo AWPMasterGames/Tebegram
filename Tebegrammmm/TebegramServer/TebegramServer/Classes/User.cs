@@ -13,6 +13,7 @@ namespace TebegramServer
 
         public int Id { get { return _Id; } }
         public string Login { get { return _Login; } }
+        public string Password { get { return _Password; } }
         public string Name { get { return _Name; } }
 
         public string Username { get; set; }
