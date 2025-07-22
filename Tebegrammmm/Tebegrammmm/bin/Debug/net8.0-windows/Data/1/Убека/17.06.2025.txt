@@ -1,3 +1,0 @@
-﻿127.0.0.1▫4005▫Убека▫Text▫12:20▫▫хуй
-127.0.0.1▫4005▫Убека▫File▫12:20▫https://localhost:7034/upload/photo_2025-06-13_15-58-23.jpg▫photo_2025-06-13_15-58-23.jpg
-127.0.0.1▫4004▫Вася жопкин бамбук▫File▫12:20▫https://localhost:7034/upload/makeitmeme_kX8lD.jpeg▫makeitmeme_kX8lD.jpeg
