@@ -735,3 +735,7 @@
 [22.07.2025 17:55:02]  [SendMessage] Message added to local contact. Sending to user...
 [22.07.2025 17:55:03]  [AddMessageToUser] Получено сообщение от ybeka: ss
 [22.07.2025 17:55:04]  [AddMessageToUser] Получено сообщение от Убека: ss
+[22.07.2025 17:57:40]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[22.07.2025 17:57:40]  [MessengerWindow] Инициализация завершена
+[22.07.2025 17:57:41]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[22.07.2025 17:57:41]  [LBChats_SelectionChanged] Restored draft for Убека: ''
