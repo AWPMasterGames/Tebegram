@@ -1,0 +1,4 @@
+[23.07.2025 12:00:45]  [Authorization] Error: Error while copying content to a stream.
+[23.07.2025 12:00:57]  [Authorization] Error: Error while copying content to a stream.
+[23.07.2025 12:01:28]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[23.07.2025 12:01:28]  [MessengerWindow] Инициализация завершена
