@@ -17,7 +17,24 @@
           {
             "Username": "masya",
             "Name": "Masya",
-            "Messages": []
+            "Messages": [
+              {
+                "Sender": "vasya",
+                "Recipient": "masya",
+                "Text": "hqdefault (1).jpg",
+                "Time": "2025-08-31 20:18:00",
+                "MessageType": "File",
+                "MessageString": "vasya▫masya▫File▫2025-08-31 17:18:00▫▫hqdefault (1).jpg"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "vasya",
+                "Text": "123",
+                "Time": "2025-08-31 20:19:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫vasya▫Text▫2025-08-31 17:19:00▫▫123"
+              }
+            ]
           }
         ],
         "Icon": "\uD83D\uDCAC",
@@ -64,12 +81,107 @@
           {
             "Username": "vasya",
             "Name": "Вася жопкин бамбук",
-            "Messages": []
+            "Messages": [
+              {
+                "Sender": "vasya",
+                "Recipient": "masya",
+                "Text": "hqdefault (1).jpg",
+                "Time": "2025-08-31 20:18:00",
+                "MessageType": "File",
+                "MessageString": "vasya▫masya▫File▫2025-08-31 17:18:00▫▫hqdefault (1).jpg"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "vasya",
+                "Text": "123",
+                "Time": "2025-08-31 20:19:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫vasya▫Text▫2025-08-31 17:19:00▫▫123"
+              }
+            ]
           },
           {
             "Username": "ybeka",
             "Name": "Убебка",
             "Messages": []
+          },
+          {
+            "Username": "ZXCCursed",
+            "Name": "zxc123",
+            "Messages": [
+              {
+                "Sender": "ZXCCursed",
+                "Recipient": "masya",
+                "Text": "123",
+                "Time": "2025-08-31 17:28:00",
+                "MessageType": "Text",
+                "MessageString": "ZXCCursed▫masya▫Text▫2025-08-31 14:28:00▫▫123"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "ZXCCursed",
+                "Text": "qq",
+                "Time": "2025-08-31 17:28:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫ZXCCursed▫Text▫2025-08-31 14:28:00▫▫qq"
+              },
+              {
+                "Sender": "ZXCCursed",
+                "Recipient": "masya",
+                "Text": "123",
+                "Time": "2025-08-31 17:28:00",
+                "MessageType": "Text",
+                "MessageString": "ZXCCursed▫masya▫Text▫2025-08-31 14:28:00▫▫123"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "ZXCCursed",
+                "Text": "uhaha.mp4",
+                "Time": "2025-08-31 17:29:00",
+                "MessageType": "File",
+                "MessageString": "masya▫ZXCCursed▫File▫2025-08-31 14:29:00▫▫uhaha.mp4"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "ZXCCursed",
+                "Text": "LLBxAYY7XTMEwSPCV1RADA.png",
+                "Time": "2025-08-31 17:30:00",
+                "MessageType": "File",
+                "MessageString": "masya▫ZXCCursed▫File▫2025-08-31 14:30:00▫▫LLBxAYY7XTMEwSPCV1RADA.png"
+              },
+              {
+                "Sender": "ZXCCursed",
+                "Recipient": "masya",
+                "Text": "asdasd",
+                "Time": "2025-08-31 17:31:00",
+                "MessageType": "Text",
+                "MessageString": "ZXCCursed▫masya▫Text▫2025-08-31 14:31:00▫▫asdasd"
+              },
+              {
+                "Sender": "ZXCCursed",
+                "Recipient": "masya",
+                "Text": "asd",
+                "Time": "2025-08-31 17:31:00",
+                "MessageType": "Text",
+                "MessageString": "ZXCCursed▫masya▫Text▫2025-08-31 14:31:00▫▫asd"
+              },
+              {
+                "Sender": "ZXCCursed",
+                "Recipient": "masya",
+                "Text": "asd/nasd",
+                "Time": "2025-08-31 17:31:00",
+                "MessageType": "Text",
+                "MessageString": "ZXCCursed▫masya▫Text▫2025-08-31 14:31:00▫▫asd/nasd"
+              },
+              {
+                "Sender": "ZXCCursed",
+                "Recipient": "masya",
+                "Text": "asdasdasdasdasdasdas das das das da",
+                "Time": "2025-08-31 17:31:00",
+                "MessageType": "Text",
+                "MessageString": "ZXCCursed▫masya▫Text▫2025-08-31 14:31:00▫▫asdasdasdasdasdasdas das das das da"
+              }
+            ]
           }
         ],
         "Icon": "\uD83D\uDCAC",
@@ -96,6 +208,100 @@
             "Username": "ybeka",
             "Name": "убека",
             "Messages": []
+          }
+        ],
+        "Icon": "\uD83D\uDCAC",
+        "CanDelete": false
+      }
+    ]
+  },
+  {
+    "Id": 5,
+    "Login": "zxc123",
+    "Password": "123",
+    "Name": "zxc123",
+    "Username": "ZXCCursed",
+    "ChatsFolders": [
+      {
+        "Name": "Все чаты",
+        "Contacts": [
+          {
+            "Username": "masya",
+            "Name": "123",
+            "Messages": [
+              {
+                "Sender": "ZXCCursed",
+                "Recipient": "masya",
+                "Text": "123",
+                "Time": "2025-08-31 17:28:00",
+                "MessageType": "Text",
+                "MessageString": "ZXCCursed▫masya▫Text▫2025-08-31 14:28:00▫▫123"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "ZXCCursed",
+                "Text": "qq",
+                "Time": "2025-08-31 17:28:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫ZXCCursed▫Text▫2025-08-31 14:28:00▫▫qq"
+              },
+              {
+                "Sender": "ZXCCursed",
+                "Recipient": "masya",
+                "Text": "123",
+                "Time": "2025-08-31 17:28:00",
+                "MessageType": "Text",
+                "MessageString": "ZXCCursed▫masya▫Text▫2025-08-31 14:28:00▫▫123"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "ZXCCursed",
+                "Text": "uhaha.mp4",
+                "Time": "2025-08-31 17:29:00",
+                "MessageType": "File",
+                "MessageString": "masya▫ZXCCursed▫File▫2025-08-31 14:29:00▫▫uhaha.mp4"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "ZXCCursed",
+                "Text": "LLBxAYY7XTMEwSPCV1RADA.png",
+                "Time": "2025-08-31 17:30:00",
+                "MessageType": "File",
+                "MessageString": "masya▫ZXCCursed▫File▫2025-08-31 14:30:00▫▫LLBxAYY7XTMEwSPCV1RADA.png"
+              },
+              {
+                "Sender": "ZXCCursed",
+                "Recipient": "masya",
+                "Text": "asdasd",
+                "Time": "2025-08-31 17:31:00",
+                "MessageType": "Text",
+                "MessageString": "ZXCCursed▫masya▫Text▫2025-08-31 14:31:00▫▫asdasd"
+              },
+              {
+                "Sender": "ZXCCursed",
+                "Recipient": "masya",
+                "Text": "asd",
+                "Time": "2025-08-31 17:31:00",
+                "MessageType": "Text",
+                "MessageString": "ZXCCursed▫masya▫Text▫2025-08-31 14:31:00▫▫asd"
+              },
+              {
+                "Sender": "ZXCCursed",
+                "Recipient": "masya",
+                "Text": "asd/nasd",
+                "Time": "2025-08-31 17:31:00",
+                "MessageType": "Text",
+                "MessageString": "ZXCCursed▫masya▫Text▫2025-08-31 14:31:00▫▫asd/nasd"
+              },
+              {
+                "Sender": "ZXCCursed",
+                "Recipient": "masya",
+                "Text": "asdasdasdasdasdasdas das das das da",
+                "Time": "2025-08-31 17:31:00",
+                "MessageType": "Text",
+                "MessageString": "ZXCCursed▫masya▫Text▫2025-08-31 14:31:00▫▫asdasdasdasdasdasdas das das das da"
+              }
+            ]
           }
         ],
         "Icon": "\uD83D\uDCAC",

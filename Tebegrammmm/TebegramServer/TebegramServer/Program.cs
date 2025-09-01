@@ -16,6 +16,11 @@ Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Запуск сервера Tebegr
 UsersData.Initialize(); // Принудительно инициализируем данные
 Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Данные пользователей загружены, запускаем веб-сервер...");
 
+app.MapGet("/", async (HttpContext context) =>
+{
+    await context.Response.WriteAsync("HI!");
+});
+
 app.MapPost("/upload", async (HttpContext context) =>
 {
     IFormFileCollection files = context.Request.Form.Files;

@@ -2,7 +2,7 @@
 {
     public static class ServerData
     {
-        private static string _ServerAdress = "https://localhost:5000";
+        private static string _ServerAdress = "https://1nnf1f30-5000.euw.devtunnels.ms";
 
         public static string ServerAdress {  get { return _ServerAdress; } }
     }

@@ -89,11 +89,6 @@ C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServe
 C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\TebegramServer.sourcelink.json
 C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\staticwebassets.build.json
 C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\staticwebassets.development.json
-C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\staticwebassets\msbuild.TebegramServer.Microsoft.AspNetCore.StaticWebAssets.props
-C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\staticwebassets\msbuild.build.TebegramServer.props
-C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.TebegramServer.props
-C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.TebegramServer.props
-C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\staticwebassets.pack.json
 C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\scopedcss\bundle\TebegramServer.styles.css
 C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\TebegramServer.dll
 C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\refint\TebegramServer.dll
@@ -159,3 +154,11 @@ C:\Users\makar\OneDrive\Документы\GitHub\Tebegram\Tebegram\Tebegrammmm\
 C:\Users\makar\OneDrive\Документы\GitHub\Tebegram\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\TebegramServer.genruntimeconfig.cache
 C:\Users\makar\OneDrive\Документы\GitHub\Tebegram\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\ref\TebegramServer.dll
 C:\Users\makar\OneDrive\Документы\GitHub\Tebegram\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
+C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\bin\Debug\net8.0\TebegramServer.staticwebassets.endpoints.json
+C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\rpswa.dswa.cache.json
+C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\rjimswa.dswa.cache.json
+C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
+C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
+C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\staticwebassets.build.json.cache
+C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\staticwebassets.build.endpoints.json
+C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

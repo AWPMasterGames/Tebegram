@@ -1,0 +1,10 @@
+[01.09.2025 15:20:08]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[01.09.2025 15:20:08]  [MessengerWindow] Инициализация завершена
+[01.09.2025 15:20:08]  [AddMessageToUser] Получен файл от vasya: 
+[01.09.2025 15:20:08]  [AddMessageToUser] Получено сообщение от Masya: 123
+[01.09.2025 15:20:09]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[01.09.2025 15:20:09]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[01.09.2025 15:20:57]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[01.09.2025 15:20:57]  [MessengerWindow] Инициализация завершена
+[01.09.2025 15:20:58]  [AddMessageToUser] Получен файл от vasya: 
+[01.09.2025 15:20:58]  [AddMessageToUser] Получено сообщение от Masya: 123
