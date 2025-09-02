@@ -1,0 +1,149 @@
+[21.07.2025 14:23:24]  Пользователь aa авторизировался
+[21.07.2025 14:23:27]  [UserActivityStorage] Retrieved activity for user aa
+[21.07.2025 14:23:27]  [UserActivityStorage] User aa opened chat with Убека
+[21.07.2025 14:23:27]  Пользователь aa открыл чат с Убека
+[21.07.2025 15:06:52]  Пользователь aa авторизировался
+[21.07.2025 15:07:21]  Пользователь aa авторизировался
+[21.07.2025 15:08:12]  Пользователь aa авторизировался
+[21.07.2025 15:08:47]  Пользователь aa авторизировался
+[21.07.2025 15:18:29]  Пользователь aa авторизировался
+[21.07.2025 15:30:56]  Пользователь aa авторизировался
+[21.07.2025 15:30:59]  [UserActivityStorage] Retrieved activity for user aa
+[21.07.2025 15:30:59]  [UserActivityStorage] User aa opened chat with Убека
+[21.07.2025 15:30:59]  Пользователь aa открыл чат с Убека
+[21.07.2025 15:31:04]  [UserActivityStorage] Retrieved activity for user aa
+[21.07.2025 15:31:04]  [UserActivityStorage] User aa opened chat with 123
+[21.07.2025 15:31:04]  Пользователь aa открыл чат с 123
+[21.07.2025 15:31:16]  Пользователь aa авторизировался
+[21.07.2025 15:31:17]  [UserActivityStorage] Retrieved activity for user aa
+[21.07.2025 15:31:17]  [UserActivityStorage] User aa opened chat with 123
+[21.07.2025 15:31:17]  Пользователь aa открыл чат с 123
+[21.07.2025 15:59:21]  Пользователь aa авторизировался
+[21.07.2025 15:59:33]  Пользователь aa авторизировался
+[21.07.2025 15:59:34]  [UserActivityStorage] Retrieved activity for user aa
+[21.07.2025 15:59:34]  [UserActivityStorage] User aa opened chat with 13123123
+[21.07.2025 15:59:34]  Пользователь aa открыл чат с 13123123
+[21.07.2025 15:59:42]  Пользователь aa авторизировался
+[21.07.2025 16:24:15]  Пользователь aa авторизировался
+[21.07.2025 16:24:17]  [UserActivityStorage] Retrieved activity for user aa
+[21.07.2025 16:24:17]  [UserActivityStorage] User aa opened chat with Убека
+[21.07.2025 16:24:17]  Пользователь aa открыл чат с Убека
+[21.07.2025 16:24:26]  [UserActivityStorage] Retrieved activity for user aa
+[21.07.2025 16:24:26]  [UserActivityStorage] User aa opened chat with Убека1
+[21.07.2025 16:24:26]  Пользователь aa открыл чат с Убека1
+[21.07.2025 16:24:28]  [UserActivityStorage] Retrieved activity for user aa
+[21.07.2025 16:24:28]  [UserActivityStorage] User aa opened chat with Masya
+[21.07.2025 16:24:28]  Пользователь aa открыл чат с Masya
+[21.07.2025 16:24:29]  [UserActivityStorage] Retrieved activity for user aa
+[21.07.2025 16:24:29]  [UserActivityStorage] User aa opened chat with Убека1
+[21.07.2025 16:24:29]  Пользователь aa открыл чат с Убека1
+[21.07.2025 16:24:36]  Пользователь aa авторизировался
+[21.07.2025 16:24:38]  [UserActivityStorage] Retrieved activity for user aa
+[21.07.2025 16:24:38]  [UserActivityStorage] User aa opened chat with Masya
+[21.07.2025 16:24:38]  Пользователь aa открыл чат с Masya
+[21.07.2025 16:24:39]  [UserActivityStorage] Retrieved activity for user aa
+[21.07.2025 16:24:39]  [UserActivityStorage] User aa opened chat with Убека1
+[21.07.2025 16:24:39]  Пользователь aa открыл чат с Убека1
+[21.07.2025 16:25:40]  Пользователь aa авторизировался
+[21.07.2025 16:38:11]  Пользователь aa авторизировался
+[21.07.2025 16:38:13]  [UserActivityStorage] Retrieved activity for user aa
+[21.07.2025 16:38:13]  [UserActivityStorage] User aa opened chat with Masya
+[21.07.2025 16:38:13]  Пользователь aa открыл чат с Masya
+[21.07.2025 16:38:34]  Пользователь aa1 авторизировался
+[21.07.2025 16:38:36]  [UserActivityStorage] Retrieved activity for user aa1
+[21.07.2025 16:38:36]  [UserActivityStorage] User aa1 opened chat with Вася жопкин бамбук
+[21.07.2025 16:38:36]  Пользователь aa1 открыл чат с Вася жопкин бамбук
+[21.07.2025 16:38:37]  [UserActivityStorage] Retrieved activity for user aa
+[21.07.2025 16:38:37]  [UserActivityStorage] User aa opened chat with Убека
+[21.07.2025 16:38:37]  Пользователь aa открыл чат с Убека
+[21.07.2025 16:38:51]  [UserActivityStorage] Retrieved activity for user aa1
+[21.07.2025 16:38:51]  [UserActivityStorage] User aa1 opened chat with Masya
+[21.07.2025 16:38:51]  Пользователь aa1 открыл чат с Masya
+[21.07.2025 16:49:23]  Пользователь aa авторизировался
+[21.07.2025 16:49:26]  [UserActivityStorage] Retrieved activity for user aa
+[21.07.2025 16:49:26]  [UserActivityStorage] User aa opened chat with Убека
+[21.07.2025 16:49:26]  Пользователь aa открыл чат с Убека
+[21.07.2025 16:49:34]  Пользователь aa1 авторизировался
+[21.07.2025 16:49:38]  [UserActivityStorage] Retrieved activity for user aa1
+[21.07.2025 16:49:38]  [UserActivityStorage] User aa1 opened chat with Вася жопкин бамбук
+[21.07.2025 16:49:38]  Пользователь aa1 открыл чат с Вася жопкин бамбук
+[21.07.2025 16:50:24]  Пользователь aa авторизировался
+[21.07.2025 16:50:31]  Пользователь aa1 авторизировался
+[21.07.2025 16:50:35]  [UserActivityStorage] Retrieved activity for user aa1
+[21.07.2025 16:50:35]  [UserActivityStorage] User aa1 opened chat with Вася жопкин бамбук
+[21.07.2025 16:50:35]  Пользователь aa1 открыл чат с Вася жопкин бамбук
+[21.07.2025 16:50:38]  [UserActivityStorage] Retrieved activity for user aa
+[21.07.2025 16:50:38]  [UserActivityStorage] User aa opened chat with Убека
+[21.07.2025 16:50:38]  Пользователь aa открыл чат с Убека
+[21.07.2025 16:50:43]  [UserActivityStorage] Retrieved activity for user aa1
+[21.07.2025 16:50:43]  [UserActivityStorage] User aa1 opened chat with Вася жопкин бамбук
+[21.07.2025 16:50:43]  Пользователь aa1 открыл чат с Вася жопкин бамбук
+[21.07.2025 16:52:48]  Пользователь aa авторизировался
+[21.07.2025 16:52:50]  [UserActivityStorage] Retrieved activity for user aa
+[21.07.2025 16:52:50]  [UserActivityStorage] User aa opened chat with Убека
+[21.07.2025 16:52:50]  Пользователь aa открыл чат с Убека
+[21.07.2025 16:54:36]  Пользователь aa авторизировался
+[21.07.2025 16:54:37]  [UserActivityStorage] Retrieved activity for user aa
+[21.07.2025 16:54:37]  [UserActivityStorage] User aa opened chat with Убека
+[21.07.2025 16:54:37]  Пользователь aa открыл чат с Убека
+[21.07.2025 16:54:43]  [UserActivityStorage] Retrieved activity for user aa
+[21.07.2025 16:54:43]  [UserActivityStorage] User aa opened chat with Masya
+[21.07.2025 16:54:43]  Пользователь aa открыл чат с Masya
+[21.07.2025 16:55:51]  Пользователь aa авторизировался
+[21.07.2025 16:56:00]  Пользователь aa1 авторизировался
+[21.07.2025 16:56:02]  [UserActivityStorage] Retrieved activity for user aa1
+[21.07.2025 16:56:02]  [UserActivityStorage] User aa1 opened chat with Вася жопкин бамбук
+[21.07.2025 16:56:02]  Пользователь aa1 открыл чат с Вася жопкин бамбук
+[21.07.2025 16:56:04]  [UserActivityStorage] Retrieved activity for user aa
+[21.07.2025 16:56:04]  [UserActivityStorage] User aa opened chat with Убека
+[21.07.2025 16:56:04]  Пользователь aa открыл чат с Убека
+[21.07.2025 16:56:24]  [UserActivityStorage] Retrieved activity for user aa1
+[21.07.2025 16:56:24]  [UserActivityStorage] User aa1 opened chat with Вася жопкин бамбук
+[21.07.2025 16:56:24]  Пользователь aa1 открыл чат с Вася жопкин бамбук
+[21.07.2025 16:56:32]  Пользователь aa1 авторизировался
+[21.07.2025 16:56:49]  [UserActivityStorage] Retrieved activity for user aa1
+[21.07.2025 16:56:49]  [UserActivityStorage] User aa1 opened chat with убека
+[21.07.2025 16:56:49]  Пользователь aa1 открыл чат с убека
+[21.07.2025 16:56:54]  [UserActivityStorage] Retrieved activity for user aa1
+[21.07.2025 16:56:54]  [UserActivityStorage] User aa1 opened chat with Вася жопкин бамбук
+[21.07.2025 16:56:54]  Пользователь aa1 открыл чат с Вася жопкин бамбук
+[21.07.2025 16:57:02]  [UserActivityStorage] Retrieved activity for user aa1
+[21.07.2025 16:57:02]  [UserActivityStorage] User aa1 opened chat with убека
+[21.07.2025 16:57:02]  Пользователь aa1 открыл чат с убека
+[21.07.2025 16:58:03]  Пользователь aa авторизировался
+[21.07.2025 16:58:12]  Пользователь aa1 авторизировался
+[21.07.2025 16:58:14]  [UserActivityStorage] Retrieved activity for user aa1
+[21.07.2025 16:58:14]  [UserActivityStorage] User aa1 opened chat with Вася жопкин бамбук
+[21.07.2025 16:58:14]  Пользователь aa1 открыл чат с Вася жопкин бамбук
+[21.07.2025 17:00:22]  Пользователь aa авторизировался
+[21.07.2025 17:00:24]  [UserActivityStorage] Retrieved activity for user aa
+[21.07.2025 17:00:24]  [UserActivityStorage] User aa opened chat with Убека
+[21.07.2025 17:00:24]  Пользователь aa открыл чат с Убека
+[21.07.2025 17:00:31]  Пользователь aa1 авторизировался
+[21.07.2025 17:00:49]  [UserActivityStorage] Retrieved activity for user aa1
+[21.07.2025 17:00:49]  [UserActivityStorage] User aa1 opened chat with Вася жопкин бамбук
+[21.07.2025 17:00:49]  Пользователь aa1 открыл чат с Вася жопкин бамбук
+[21.07.2025 17:01:41]  [UserActivityStorage] Retrieved activity for user aa
+[21.07.2025 17:01:42]  [UserActivityStorage] User aa opened chat with убека
+[21.07.2025 17:01:42]  Пользователь aa открыл чат с убека
+[21.07.2025 17:01:52]  Пользователь aa авторизировался
+[21.07.2025 17:01:54]  [UserActivityStorage] Retrieved activity for user aa
+[21.07.2025 17:01:54]  [UserActivityStorage] User aa opened chat with убека
+[21.07.2025 17:01:54]  Пользователь aa открыл чат с убека
+[21.07.2025 17:02:10]  Пользователь aa1 авторизировался
+[21.07.2025 17:02:12]  [UserActivityStorage] Retrieved activity for user aa1
+[21.07.2025 17:02:12]  [UserActivityStorage] User aa1 opened chat with Вася жопкин бамбук
+[21.07.2025 17:02:12]  Пользователь aa1 открыл чат с Вася жопкин бамбук
+[21.07.2025 17:14:37]  Пользователь aa авторизировался
+[21.07.2025 17:15:52]  Пользователь aa авторизировался
+[21.07.2025 17:18:00]  Пользователь aa авторизировался
+[21.07.2025 17:18:09]  Пользователь aa авторизировался
+[21.07.2025 17:19:04]  Пользователь aa авторизировался
+[21.07.2025 17:19:51]  Пользователь aa авторизировался
+[21.07.2025 17:20:11]  Пользователь aa авторизировался
+[21.07.2025 17:21:16]  Пользователь aa авторизировался
+[21.07.2025 17:21:59]  Пользователь aa авторизировался
+[21.07.2025 17:22:18]  Пользователь aa авторизировался
+[21.07.2025 17:24:51]  Пользователь aa авторизировался
+[21.07.2025 17:25:07]  Пользователь aa авторизировался
+[21.07.2025 17:25:38]  Пользователь aa авторизировался

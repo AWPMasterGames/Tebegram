@@ -1,0 +1,84 @@
+[17.07.2025 15:51:00]  Пользователь aa авторизировался
+[17.07.2025 15:51:02]  [UserActivityStorage] User aa opened chat with Убека
+[17.07.2025 15:51:02]  Пользователь aa открыл чат с Убека
+[17.07.2025 15:51:04]  Сообщение сохранено: aa -> ybeka (Status: Sent)
+[17.07.2025 15:51:15]  Пользователь aa авторизировался
+[17.07.2025 15:51:17]  [UserActivityStorage] Retrieved activity for user aa
+[17.07.2025 15:51:17]  [UserActivityStorage] User aa opened chat with Убека
+[17.07.2025 15:51:17]  Пользователь aa открыл чат с Убека
+[17.07.2025 15:53:14]  Пользователь aa авторизировался
+[17.07.2025 15:53:16]  [UserActivityStorage] Retrieved activity for user aa
+[17.07.2025 15:53:16]  [UserActivityStorage] User aa opened chat with Убека
+[17.07.2025 15:53:16]  Пользователь aa открыл чат с Убека
+[17.07.2025 15:53:18]  Сообщение сохранено: aa -> ybeka (Status: Sent)
+[17.07.2025 15:53:37]  Пользователь aa1 авторизировался
+[17.07.2025 15:53:38]  [UserActivityStorage] User aa1 opened chat with Вася жопкин бамбук
+[17.07.2025 15:53:38]  Пользователь aa1 открыл чат с Вася жопкин бамбук
+[17.07.2025 15:54:24]  Пользователь aa авторизировался
+[17.07.2025 15:54:30]  [UserActivityStorage] Retrieved activity for user aa
+[17.07.2025 15:54:30]  [UserActivityStorage] User aa opened chat with Убека
+[17.07.2025 15:54:30]  Пользователь aa открыл чат с Убека
+[17.07.2025 15:54:38]  Сообщение сохранено: aa -> ybeka (Status: Sent)
+[17.07.2025 15:56:53]  Пользователь aa авторизировался
+[17.07.2025 15:56:55]  [UserActivityStorage] Retrieved activity for user aa
+[17.07.2025 15:56:55]  [UserActivityStorage] User aa opened chat with Убека
+[17.07.2025 15:56:55]  Пользователь aa открыл чат с Убека
+[17.07.2025 15:56:58]  Сообщение сохранено: aa -> ybeka (Status: Sent)
+[17.07.2025 15:57:30]  Пользователь aa авторизировался
+[17.07.2025 15:57:32]  [UserActivityStorage] Retrieved activity for user aa
+[17.07.2025 15:57:32]  [UserActivityStorage] User aa opened chat with Убека
+[17.07.2025 15:57:32]  Пользователь aa открыл чат с Убека
+[17.07.2025 15:57:35]  Сообщение сохранено: aa -> ybeka (Status: Sent)
+[17.07.2025 15:58:03]  Сообщение сохранено: aa -> ybeka (Status: Sent)
+[17.07.2025 16:00:14]  Пользователь aa авторизировался
+[17.07.2025 16:00:15]  [UserActivityStorage] Retrieved activity for user aa
+[17.07.2025 16:00:15]  [UserActivityStorage] User aa opened chat with Убека
+[17.07.2025 16:00:15]  Пользователь aa открыл чат с Убека
+[17.07.2025 16:02:11]  Пользователь aa авторизировался
+[17.07.2025 16:02:13]  [UserActivityStorage] Retrieved activity for user aa
+[17.07.2025 16:02:13]  [UserActivityStorage] User aa opened chat with Убека
+[17.07.2025 16:02:13]  Пользователь aa открыл чат с Убека
+[17.07.2025 16:03:04]  Пользователь aa авторизировался
+[17.07.2025 16:03:06]  [UserActivityStorage] Retrieved activity for user aa
+[17.07.2025 16:03:06]  [UserActivityStorage] User aa opened chat with Убека
+[17.07.2025 16:03:06]  Пользователь aa открыл чат с Убека
+[17.07.2025 16:06:58]  Пользователь aa авторизировался
+[17.07.2025 16:07:00]  [UserActivityStorage] Retrieved activity for user aa
+[17.07.2025 16:07:00]  [UserActivityStorage] User aa opened chat with Убека
+[17.07.2025 16:07:00]  Пользователь aa открыл чат с Убека
+[17.07.2025 16:07:23]  Пользователь aa авторизировался
+[17.07.2025 16:07:28]  [UserActivityStorage] Retrieved activity for user aa
+[17.07.2025 16:07:28]  [UserActivityStorage] User aa opened chat with Убека
+[17.07.2025 16:07:28]  Пользователь aa открыл чат с Убека
+[17.07.2025 16:08:32]  Пользователь aa авторизировался
+[17.07.2025 16:08:38]  [UserActivityStorage] Retrieved activity for user aa
+[17.07.2025 16:08:38]  [UserActivityStorage] User aa opened chat with Убека
+[17.07.2025 16:08:38]  Пользователь aa открыл чат с Убека
+[17.07.2025 16:09:16]  Пользователь aa авторизировался
+[17.07.2025 16:09:21]  [UserActivityStorage] Retrieved activity for user aa
+[17.07.2025 16:09:21]  [UserActivityStorage] User aa opened chat with Убека
+[17.07.2025 16:09:21]  Пользователь aa открыл чат с Убека
+[17.07.2025 16:09:50]  Пользователь aa авторизировался
+[17.07.2025 16:09:52]  [UserActivityStorage] Retrieved activity for user aa
+[17.07.2025 16:09:52]  [UserActivityStorage] User aa opened chat with Убека
+[17.07.2025 16:09:52]  Пользователь aa открыл чат с Убека
+[17.07.2025 16:10:25]  Пользователь aa авторизировался
+[17.07.2025 16:10:27]  [UserActivityStorage] Retrieved activity for user aa
+[17.07.2025 16:10:27]  [UserActivityStorage] User aa opened chat with Убека
+[17.07.2025 16:10:27]  Пользователь aa открыл чат с Убека
+[17.07.2025 16:11:01]  Пользователь aa авторизировался
+[17.07.2025 16:11:06]  [UserActivityStorage] Retrieved activity for user aa
+[17.07.2025 16:11:06]  [UserActivityStorage] User aa opened chat with Убека
+[17.07.2025 16:11:06]  Пользователь aa открыл чат с Убека
+[17.07.2025 16:11:38]  Пользователь aa авторизировался
+[17.07.2025 16:11:41]  [UserActivityStorage] Retrieved activity for user aa
+[17.07.2025 16:11:41]  [UserActivityStorage] User aa opened chat with Убека
+[17.07.2025 16:11:41]  Пользователь aa открыл чат с Убека
+[17.07.2025 16:13:12]  Пользователь aa авторизировался
+[17.07.2025 16:13:14]  [UserActivityStorage] Retrieved activity for user aa
+[17.07.2025 16:13:14]  [UserActivityStorage] User aa opened chat with Убека
+[17.07.2025 16:13:14]  Пользователь aa открыл чат с Убека
+[17.07.2025 16:17:08]  Пользователь aa авторизировался
+[17.07.2025 16:17:10]  [UserActivityStorage] Retrieved activity for user aa
+[17.07.2025 16:17:10]  [UserActivityStorage] User aa opened chat with Убека
+[17.07.2025 16:17:10]  Пользователь aa открыл чат с Убека

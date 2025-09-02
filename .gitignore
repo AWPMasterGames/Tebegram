@@ -10,4 +10,7 @@ Tebegrammmm/Tebegrammmm/bin/Debug/CrashLogs/
 Tebegrammmm/Tebegrammmm/bin/Debug/Data/
 Tebegrammmm/Tebegrammmm/bin/Debug/Settings/
 Tebegrammmm/TebegramServer/TebegramServer/Messages/
-Tebegrammmm/TebegramServer/TebegramServer/Logs/
+Tebegrammmm/TebegramServer/TebegramServer/Logs/bin/Debug/net8.0/Data/
+Tebegrammmm/TebegramServer/TebegramServer/Logs/bin/Debug/net8.0/Logs/
+Tebegrammmm/TebegramServer/TebegramServer/Logs/bin/Release/net8.0/Data/
+Tebegrammmm/TebegramServer/TebegramServer/Logs/bin/Release/net8.0/Logs/
