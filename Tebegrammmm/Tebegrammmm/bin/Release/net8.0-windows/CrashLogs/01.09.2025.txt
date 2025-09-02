@@ -1,10 +1,68 @@
-[01.09.2025 15:20:08]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
-[01.09.2025 15:20:08]  [MessengerWindow] Инициализация завершена
-[01.09.2025 15:20:08]  [AddMessageToUser] Получен файл от vasya: 
-[01.09.2025 15:20:08]  [AddMessageToUser] Получено сообщение от Masya: 123
-[01.09.2025 15:20:09]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
-[01.09.2025 15:20:09]  [LBChats_SelectionChanged] Restored draft for Убека: ''
-[01.09.2025 15:20:57]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
-[01.09.2025 15:20:57]  [MessengerWindow] Инициализация завершена
-[01.09.2025 15:20:58]  [AddMessageToUser] Получен файл от vasya: 
-[01.09.2025 15:20:58]  [AddMessageToUser] Получено сообщение от Masya: 123
+[01.09.2025 15:50:15]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[01.09.2025 15:50:15]  [MessengerWindow] Инициализация завершена
+[01.09.2025 15:50:15]  [AddMessageToUser] Получен файл от vasya: 
+[01.09.2025 15:50:15]  [AddMessageToUser] Получено сообщение от Masya: 123
+[01.09.2025 15:50:23]  [MessengerWindow] Инициализация для пользователя: убека (ybeka)
+[01.09.2025 15:50:23]  [MessengerWindow] Инициализация завершена
+[01.09.2025 15:50:25]  [LBChats_SelectionChanged] Selected contact: Вася жопкин бамбук (vasya)
+[01.09.2025 15:50:26]  [LBChats_SelectionChanged] Restored draft for Вася жопкин бамбук: ''
+[01.09.2025 15:50:32]  [SendMessage] Starting send message: 'qq' to contact: Вася жопкин бамбук
+[01.09.2025 15:50:32]  [SendMessage] Message added to local contact. Sending to user...
+[01.09.2025 15:50:34]  [AddMessageToUser] Получено сообщение от ybeka: qq
+[01.09.2025 17:04:38]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[01.09.2025 17:04:39]  [MessengerWindow] Инициализация завершена
+[01.09.2025 17:04:39]  [AddMessageToUser] Получен файл от Вася жопкин бамбук: 
+[01.09.2025 17:04:39]  [AddMessageToUser] Получено сообщение от masya: 123
+[01.09.2025 17:04:39]  [AddMessageToUser] Получено сообщение от zxc123: 123
+[01.09.2025 17:04:39]  [AddMessageToUser] Получено сообщение от masya: qq
+[01.09.2025 17:04:39]  [AddMessageToUser] Получено сообщение от zxc123: 123
+[01.09.2025 17:04:40]  [AddMessageToUser] Получен файл от masya: 
+[01.09.2025 17:04:40]  [AddMessageToUser] Получен файл от masya: 
+[01.09.2025 17:04:40]  [AddMessageToUser] Получено сообщение от zxc123: asdasd
+[01.09.2025 17:04:40]  [AddMessageToUser] Получено сообщение от zxc123: asd
+[01.09.2025 17:04:40]  [AddMessageToUser] Получено сообщение от zxc123: asd/nasd
+[01.09.2025 17:04:40]  [AddMessageToUser] Получено сообщение от zxc123: asdasdasdasdasdasdas das das das da
+[01.09.2025 17:05:17]  [AddMessageToUser] Получено сообщение от Служанка: 123
+[01.09.2025 17:05:18]  [LBChats_SelectionChanged] Selected contact: sluzanca (Служанка)
+[01.09.2025 17:05:18]  [LBChats_SelectionChanged] Restored draft for sluzanca: ''
+[01.09.2025 17:05:19]  [SendMessage] Starting send message: 'qq' to contact: sluzanca
+[01.09.2025 17:05:19]  [SendMessage] Message added to local contact. Sending to user...
+[01.09.2025 17:05:20]  [AddMessageToUser] Получено сообщение от masya: qq
+[01.09.2025 17:05:34]  [SendMessage] Starting send message: 'чо как ты?' to contact: sluzanca
+[01.09.2025 17:05:34]  [SendMessage] Message added to local contact. Sending to user...
+[01.09.2025 17:05:35]  [AddMessageToUser] Получено сообщение от masya: чо как ты?
+[01.09.2025 17:05:43]  [AddMessageToUser] Получено сообщение от sluzanca: падет
+[01.09.2025 17:06:26]  [AddMessageToUser] Получено сообщение от sluzanca: бр бр патапим
+[01.09.2025 17:06:38]  [SendMessage] Starting send message: 'image34543534543.png' to contact: sluzanca
+[01.09.2025 17:06:38]  [SendMessage] Message added to local contact. Sending to user...
+[01.09.2025 17:06:38]  [AddMessageToUser] Получен файл от masya: https://1nnf1f30-5000.euw.devtunnels.ms/upload/image34543534543.png
+[01.09.2025 17:07:28]  [AddMessageToUser] Получен файл от sluzanca: https://1nnf1f30-5000.euw.devtunnels.ms/upload/Desktop Screenshot 2024.09.22 - 18.59.29.10.png
+[01.09.2025 17:07:47]  [AddMessageToUser] Получен файл от sluzanca: https://1nnf1f30-5000.euw.devtunnels.ms/upload/Garrysmod Screenshot 2025.08.20 - 22.07.58.67.png
+[01.09.2025 17:08:02]  [AddMessageToUser] Получен файл от sluzanca: https://1nnf1f30-5000.euw.devtunnels.ms/upload/Garrysmod Screenshot 2025.08.20 - 22.05.27.97.png
+[01.09.2025 17:08:38]  [AddMessageToUser] Получено сообщение от sluzanca: бр бр патапим
+[01.09.2025 17:08:40]  [AddMessageToUser] Получено сообщение от sluzanca: бр бр патапимСлужанкаmasyaText09:08бр бр патапим
+[01.09.2025 17:08:42]  [AddMessageToUser] Получено сообщение от sluzanca: бр бр патапимбр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапимбр бр патапим
+[01.09.2025 17:08:43]  [AddMessageToUser] Получено сообщение от sluzanca: бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапим
+[01.09.2025 17:08:45]  [AddMessageToUser] Получено сообщение от sluzanca: бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапим
+[01.09.2025 17:08:47]  [AddMessageToUser] Получено сообщение от sluzanca: бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапим
+[01.09.2025 17:08:48]  [AddMessageToUser] Получено сообщение от sluzanca: бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапим
+[01.09.2025 17:08:50]  [AddMessageToUser] Получено сообщение от sluzanca: бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапим
+[01.09.2025 17:08:52]  [AddMessageToUser] Получено сообщение от sluzanca: бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапимСлужанкаmasyaText09:08бр бр патапим
+[01.09.2025 17:09:05]  [AddMessageToUser] Получено сообщение от sluzanca: бр бр патапимСлужанкаmasyaText09:09бр бр патапим
+[01.09.2025 17:09:06]  [AddMessageToUser] Получено сообщение от sluzanca: бр бр патапимСлужанкаmasyaText09:09бр бр патапимСлужанкаmasyaText09:09бр бр патапимСлужанкаmasyaText09:09бр бр патапим
+[01.09.2025 17:09:08]  [AddMessageToUser] Получено сообщение от sluzanca: бр бр патапим
+[01.09.2025 17:09:43]  [AddMessageToUser] Получено сообщение от sluzanca: sluzancaСлужанкаmasyaText09:09sluzancasluzancaСлужанкаmasyaText09:09sluzanca
+[01.09.2025 17:09:45]  [AddMessageToUser] Получено сообщение от sluzanca: sluzancaСлужанкаmasyaText09:09sluzancaСлужанкаmasyaText09:09sluzancaСлужанкаmasyaText09:09sluzancaСлужанкаmasyaText09:09sluzancaСлужанкаmasyaText09:09sluzancasluzanca
+[01.09.2025 17:09:46]  [AddMessageToUser] Получено сообщение от sluzanca: sluzancasluzancaСлужанкаmasyaText09:09sluzancasluzancaСлужанкаmasyaText09:09sluzancaСлужанкаmasyaText09:09мСлужанкаmasyaText09:09sluzancaСлужанкаmasyaText09:09sluzancaСлужанкаmasyaText09:09sluzancaСлужанкаmasyaText09:09sluzanca
+[01.09.2025 17:09:48]  [AddMessageToUser] Получено сообщение от sluzanca: sluzancaСлужанкаmasyaText09:09sluzancaСлужанкаmasyaText09:09sluzancaСлужанкаmasyaText09:09sluzancasluzancaСлужанкаmasyaText09:09sluzancaСлужанкаmasyaText09:09sluzancaСлужанкаmasyaText09:09sluzanca
+[01.09.2025 17:09:50]  [AddMessageToUser] Получено сообщение от sluzanca: sluzancaСлужанкаmasyaText09:09sluzancaСлужанкаmasyaText09:09sluzancaСлужанкаmasyaText09:09sluzancaСлужанкаmasyaText09:09sluzancaСлужанкаmasyaText09:09sluzancaСлужанкаmasyaText09:09sluzanca
+[01.09.2025 17:11:38]  [LBChats_SelectionChanged] Saved draft for sluzanca: ''
+[01.09.2025 17:11:38]  [LBChats_SelectionChanged] No item selected
+[01.09.2025 17:13:52]  [LBChats_SelectionChanged] Saved draft for sluzanca: ''
+[01.09.2025 17:13:52]  [LBChats_SelectionChanged] Selected contact: Убебка (ybeka)
+[01.09.2025 17:13:52]  [LBChats_SelectionChanged] Restored draft for Убебка: ''
+[01.09.2025 17:36:15]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[01.09.2025 17:36:15]  [MessengerWindow] Инициализация завершена
+[01.09.2025 17:36:16]  [AddMessageToUser] Получено сообщение от Убека: qq
+[01.09.2025 17:36:16]  [AddMessageToUser] Получен файл от vasya: 
+[01.09.2025 17:36:16]  [AddMessageToUser] Получено сообщение от Masya: 123

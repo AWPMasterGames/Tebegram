@@ -20,6 +20,15 @@ app.MapGet("/", async (HttpContext context) =>
 {
     await context.Response.WriteAsync("HI!");
 });
+app.MapGet("/download", async (HttpContext context) =>
+{
+    var fileProvider = new PhysicalFileProvider(Directory.GetCurrentDirectory());
+    var fieInfo = fileProvider.GetFileInfo($"uploads/1.zip");
+
+    context.Response.Headers.ContentEncoding = "Unicode";
+    context.Response.Headers.ContentDisposition = $"attachment; filename=1.zip";
+    await context.Response.SendFileAsync(fieInfo);
+});
 
 app.MapPost("/upload", async (HttpContext context) =>
 {
@@ -27,16 +36,19 @@ app.MapPost("/upload", async (HttpContext context) =>
     var uploadFiles = $"{Directory.GetCurrentDirectory()}/uploads";
     Directory.CreateDirectory(uploadFiles);
 
+    string FName = string.Empty;
+
     foreach (var file in files)
     {
-        string filePath = $"{uploadFiles}/{file.FileName}";
+        FName = file.FileName.Replace(" ", "_");
+        string filePath = $"{uploadFiles}/{FName}";
 
         using var fileStream = new FileStream(filePath, FileMode.Create);
         await file.CopyToAsync(fileStream);
-        Logs.Save($"Загружен файл {file.FileName}");
+        Logs.Save($"Загружен файл {FName}");
     }
 
-    await context.Response.WriteAsync("файл успешно отправлен");
+    await context.Response.WriteAsync(FName);
     
 });
 

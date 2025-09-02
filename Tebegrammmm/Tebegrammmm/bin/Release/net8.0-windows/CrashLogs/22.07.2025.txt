@@ -1,4 +1,0 @@
-[22.07.2025 18:15:31]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
-[22.07.2025 18:15:31]  [MessengerWindow] Инициализация завершена
-[22.07.2025 18:15:32]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
-[22.07.2025 18:15:32]  [LBChats_SelectionChanged] Restored draft for Убека: ''

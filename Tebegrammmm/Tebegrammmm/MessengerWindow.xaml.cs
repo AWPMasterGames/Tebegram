@@ -682,7 +682,7 @@ namespace Tebegrammmm
 
             using var response = await httpClient.PostAsync($"{ServerData.ServerAdress}/upload", multipar);
             var ResponseText = await response.Content.ReadAsStringAsync();
-            this.Dispatcher.Invoke(new Action(() => { SendMessage(Path.GetFileName(filePath), MessageType.File, $"{ServerData.ServerAdress}/upload/{Path.GetFileName(filePath)}"); }));
+            this.Dispatcher.Invoke(new Action(() => { SendMessage(Path.GetFileName(filePath).Replace(" ", "_"), MessageType.File, $"{ServerData.ServerAdress}/upload/{Path.GetFileName(filePath).Replace(" ", "_")}"); }));
             MessageBox.Show(ResponseText);
         }
 

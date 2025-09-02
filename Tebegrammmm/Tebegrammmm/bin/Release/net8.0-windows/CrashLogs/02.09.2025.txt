@@ -1,0 +1,22 @@
+[02.09.2025 16:00:01]  [Authorization] Error: Error while copying content to a stream.
+[02.09.2025 16:00:04]  [Authorization] Error: Error while copying content to a stream.
+[02.09.2025 16:00:23]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[02.09.2025 16:00:23]  [MessengerWindow] Инициализация завершена
+[02.09.2025 16:00:24]  [AddMessageToUser] Получено сообщение от Убека: qq
+[02.09.2025 16:00:24]  [AddMessageToUser] Получен файл от vasya: 
+[02.09.2025 16:00:24]  [AddMessageToUser] Получено сообщение от Masya: 123
+[02.09.2025 16:00:25]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[02.09.2025 16:00:25]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[02.09.2025 16:00:26]  [LBChats_SelectionChanged] Saved draft for Убека: ''
+[02.09.2025 16:00:26]  [LBChats_SelectionChanged] Selected contact: Masya (masya)
+[02.09.2025 16:00:26]  [LBChats_SelectionChanged] Restored draft for Masya: ''
+[02.09.2025 16:09:28]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[02.09.2025 16:09:28]  [MessengerWindow] Инициализация завершена
+[02.09.2025 16:09:29]  [AddMessageToUser] Получено сообщение от Убека: qq
+[02.09.2025 16:09:29]  [AddMessageToUser] Получен файл от vasya: 
+[02.09.2025 16:09:29]  [AddMessageToUser] Получено сообщение от Masya: 123
+[02.09.2025 16:09:30]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[02.09.2025 16:09:30]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[02.09.2025 16:10:19]  [SendMessage] Starting send message: 'image_(4).png' to contact: Убека
+[02.09.2025 16:10:19]  [SendMessage] Message added to local contact. Sending to user...
+[02.09.2025 16:10:20]  [AddMessageToUser] Получен файл от vasya: https://1nnf1f30-5000.euw.devtunnels.ms/upload/image_(4).png
