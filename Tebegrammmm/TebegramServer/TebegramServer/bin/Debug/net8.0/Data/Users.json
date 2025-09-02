@@ -1,0 +1,217 @@
+[
+  {
+    "Id": 1,
+    "Login": "aa",
+    "Password": "123",
+    "Name": "Вася жопкин бамбук",
+    "Username": "vasya",
+    "ChatsFolders": [
+      {
+        "Name": "Все чаты",
+        "Contacts": [
+          {
+            "Username": "ybeka",
+            "Name": "Убека",
+            "Messages": []
+          },
+          {
+            "Username": "masya",
+            "Name": "Masya",
+            "Messages": []
+          }
+        ],
+        "Icon": "\uD83D\uDCAC",
+        "CanDelete": false
+      }
+    ]
+  },
+  {
+    "Id": 2,
+    "Login": "aa1",
+    "Password": "123",
+    "Name": "убека",
+    "Username": "ybeka",
+    "ChatsFolders": [
+      {
+        "Name": "Все чаты",
+        "Contacts": [
+          {
+            "Username": "vasya",
+            "Name": "Вася жопкин бамбук",
+            "Messages": []
+          },
+          {
+            "Username": "masya",
+            "Name": "Masya",
+            "Messages": []
+          }
+        ],
+        "Icon": "\uD83D\uDCAC",
+        "CanDelete": false
+      }
+    ]
+  },
+  {
+    "Id": 3,
+    "Login": "masya",
+    "Password": "123",
+    "Name": "Мася",
+    "Username": "masya",
+    "ChatsFolders": [
+      {
+        "Name": "Все чаты",
+        "Contacts": [
+          {
+            "Username": "vasya",
+            "Name": "Вася жопкин бамбук",
+            "Messages": []
+          },
+          {
+            "Username": "ybeka",
+            "Name": "Убебка",
+            "Messages": []
+          },
+          {
+            "Username": "Ksyusha7650",
+            "Name": "Ксения",
+            "Messages": [
+              {
+                "Sender": "masya",
+                "Recipient": "Ksyusha7650",
+                "Text": "привет",
+                "Time": "2025-09-02 10:27:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫Ksyusha7650▫Text▫2025-09-02 07:27:00▫▫привет"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Ksyusha7650",
+                "Text": " случайно снёс всё данные",
+                "Time": "2025-09-02 10:27:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫Ksyusha7650▫Text▫2025-09-02 07:27:00▫▫ случайно снёс всё данные"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Ksyusha7650",
+                "Text": "и востановил пару аккаунтов",
+                "Time": "2025-09-02 10:27:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫Ksyusha7650▫Text▫2025-09-02 07:27:00▫▫и востановил пару аккаунтов"
+              }
+            ]
+          },
+          {
+            "Username": "IMcrafter",
+            "Name": "Imcrafter",
+            "Messages": []
+          }
+        ],
+        "Icon": "\uD83D\uDCAC",
+        "CanDelete": false
+      }
+    ]
+  },
+  {
+    "Id": 4,
+    "Login": "admin",
+    "Password": "123",
+    "Name": "Админ",
+    "Username": "admin_228",
+    "ChatsFolders": [
+      {
+        "Name": "Все чаты",
+        "Contacts": [
+          {
+            "Username": "vasya",
+            "Name": "Вася",
+            "Messages": []
+          },
+          {
+            "Username": "ybeka",
+            "Name": "убека",
+            "Messages": []
+          }
+        ],
+        "Icon": "\uD83D\uDCAC",
+        "CanDelete": false
+      }
+    ]
+  },
+  {
+    "Id": 5,
+    "Login": "Imcrafter",
+    "Password": "asda13s",
+    "Name": "Imcrafter",
+    "Username": "IMcrafter",
+    "ChatsFolders": [
+      {
+        "Name": "Все чаты",
+        "Contacts": [],
+        "Icon": "\uD83D\uDCAC",
+        "CanDelete": false
+      }
+    ]
+  },
+  {
+    "Id": 6,
+    "Login": "sluzanca",
+    "Password": "123",
+    "Name": "sluzanca",
+    "Username": "Sluzhanka",
+    "ChatsFolders": [
+      {
+        "Name": "Все чаты",
+        "Contacts": [],
+        "Icon": "\uD83D\uDCAC",
+        "CanDelete": false
+      }
+    ]
+  },
+  {
+    "Id": 7,
+    "Login": "ksenya",
+    "Password": "123",
+    "Name": "ksenya",
+    "Username": "Ksyusha7650",
+    "ChatsFolders": [
+      {
+        "Name": "Все чаты",
+        "Contacts": [
+          {
+            "Username": "masya",
+            "Name": "Мася",
+            "Messages": [
+              {
+                "Sender": "masya",
+                "Recipient": "Ksyusha7650",
+                "Text": "привет",
+                "Time": "2025-09-02 10:27:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫Ksyusha7650▫Text▫2025-09-02 07:27:00▫▫привет"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Ksyusha7650",
+                "Text": " случайно снёс всё данные",
+                "Time": "2025-09-02 10:27:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫Ksyusha7650▫Text▫2025-09-02 07:27:00▫▫ случайно снёс всё данные"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Ksyusha7650",
+                "Text": "и востановил пару аккаунтов",
+                "Time": "2025-09-02 10:27:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫Ksyusha7650▫Text▫2025-09-02 07:27:00▫▫и востановил пару аккаунтов"
+              }
+            ]
+          }
+        ],
+        "Icon": "\uD83D\uDCAC",
+        "CanDelete": false
+      }
+    ]
+  }
+]

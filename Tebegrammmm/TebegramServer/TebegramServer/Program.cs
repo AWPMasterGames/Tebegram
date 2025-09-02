@@ -92,7 +92,7 @@ app.MapGet("/register/{UserLogin}-{Username}-{UserPassword}", async (HttpContext
     }
     else if (!UsersData.IsExistUser(UserLogin))
     {
-        User NewUser = new User(UsersData.UsersCount+1, UserLogin, UserPassword, UserLogin, Username,
+        User NewUser = new User(UsersData.UsersCount+1, UserLogin, UserPassword, Username, Username,
                 new ObservableCollection<ChatFolder> {
                 new ChatFolder("Все чаты",
                         new ObservableCollection<Contact> {

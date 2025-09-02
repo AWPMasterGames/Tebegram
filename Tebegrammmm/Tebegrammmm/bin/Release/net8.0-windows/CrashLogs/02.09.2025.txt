@@ -20,3 +20,19 @@
 [02.09.2025 16:10:19]  [SendMessage] Starting send message: 'image_(4).png' to contact: Убека
 [02.09.2025 16:10:19]  [SendMessage] Message added to local contact. Sending to user...
 [02.09.2025 16:10:20]  [AddMessageToUser] Получен файл от vasya: https://1nnf1f30-5000.euw.devtunnels.ms/upload/image_(4).png
+[02.09.2025 16:26:51]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[02.09.2025 16:26:51]  [MessengerWindow] Инициализация завершена
+[02.09.2025 16:27:21]  [LBChats_SelectionChanged] Selected contact: Ксения (Ksyusha7650)
+[02.09.2025 16:27:21]  [LBChats_SelectionChanged] Restored draft for Ксения: ''
+[02.09.2025 16:27:24]  [SendMessage] Starting send message: 'привет' to contact: Ксения
+[02.09.2025 16:27:24]  [SendMessage] Message added to local contact. Sending to user...
+[02.09.2025 16:27:25]  [AddMessageToUser] Получено сообщение от masya: привет
+[02.09.2025 16:27:35]  [SendMessage] Starting send message: ' случайно снёс всё данные' to contact: Ксения
+[02.09.2025 16:27:35]  [SendMessage] Message added to local contact. Sending to user...
+[02.09.2025 16:27:36]  [AddMessageToUser] Получено сообщение от masya:  случайно снёс всё данные
+[02.09.2025 16:27:45]  [SendMessage] Starting send message: 'и востановил пару аккаунтов' to contact: Ксения
+[02.09.2025 16:27:45]  [SendMessage] Message added to local contact. Sending to user...
+[02.09.2025 16:27:46]  [AddMessageToUser] Получено сообщение от masya: и востановил пару аккаунтов
+[02.09.2025 16:28:03]  [LBChats_SelectionChanged] Saved draft for Ксения: ''
+[02.09.2025 16:28:03]  [LBChats_SelectionChanged] Selected contact: Imcrafter (IMcrafter)
+[02.09.2025 16:28:03]  [LBChats_SelectionChanged] Restored draft for Imcrafter: ''
