@@ -111,7 +111,7 @@
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition Width="auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text=" 🕻" FontSize="30" Margin="0,-10,0,0" Foreground="RoyalBlue"/>
+                                    <TextBlock Text=" 🕻" FontSize="30" Margin="0,-10,0,0" Foreground="RoyalBlue" HorizontalAlignment="Left" Width="21"/>
 
                                 </Grid>
                             </Border>

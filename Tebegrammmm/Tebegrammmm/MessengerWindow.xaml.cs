@@ -255,7 +255,6 @@ namespace Tebegrammmm
                 {
                     try
                     {
-
                         // запрос для получения сообщений с сервера
                         using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/NewMessages/{User.Id}");
                         using HttpResponseMessage response = await httpClient.SendAsync(request);

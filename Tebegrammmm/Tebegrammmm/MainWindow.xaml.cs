@@ -15,6 +15,7 @@ namespace Tebegrammmm
         public MainWindow()
         {
             ServerData.GetServerAdress();
+            ServerData.CheckAdressValid();
             InitializeComponent();
             TBUserLogin.Focus();
         }
