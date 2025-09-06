@@ -743,6 +743,11 @@ namespace Tebegrammmm
             SettingsPanelWindow SPW = new SettingsPanelWindow(User);
             SPW.ShowDialog();
         }
+
+        private void Button_Click_CallContact(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
 

@@ -79,32 +79,461 @@
                 "Sender": "masya",
                 "Recipient": "Ksyusha7650",
                 "Text": "привет",
-                "Time": "2025-09-02 10:27:00",
+                "Time": "2025-09-03 01:27:00",
                 "MessageType": "Text",
-                "MessageString": "masya▫Ksyusha7650▫Text▫2025-09-02 07:27:00▫▫привет"
+                "MessageString": "masya▫Ksyusha7650▫Text▫2025-09-02 22:27:00▫▫привет"
               },
               {
                 "Sender": "masya",
                 "Recipient": "Ksyusha7650",
                 "Text": " случайно снёс всё данные",
-                "Time": "2025-09-02 10:27:00",
+                "Time": "2025-09-03 01:27:00",
                 "MessageType": "Text",
-                "MessageString": "masya▫Ksyusha7650▫Text▫2025-09-02 07:27:00▫▫ случайно снёс всё данные"
+                "MessageString": "masya▫Ksyusha7650▫Text▫2025-09-02 22:27:00▫▫ случайно снёс всё данные"
               },
               {
                 "Sender": "masya",
                 "Recipient": "Ksyusha7650",
                 "Text": "и востановил пару аккаунтов",
-                "Time": "2025-09-02 10:27:00",
+                "Time": "2025-09-03 01:27:00",
                 "MessageType": "Text",
-                "MessageString": "masya▫Ksyusha7650▫Text▫2025-09-02 07:27:00▫▫и востановил пару аккаунтов"
+                "MessageString": "masya▫Ksyusha7650▫Text▫2025-09-02 22:27:00▫▫и востановил пару аккаунтов"
               }
             ]
           },
           {
             "Username": "IMcrafter",
             "Name": "Imcrafter",
-            "Messages": []
+            "Messages": [
+              {
+                "Sender": "masya",
+                "Recipient": "IMcrafter",
+                "Text": "qq",
+                "Time": "2025-09-04 16:39:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫IMcrafter▫Text▫2025-09-04 13:39:00▫▫qq"
+              }
+            ]
+          },
+          {
+            "Username": "Ryklafog",
+            "Name": "влад",
+            "Messages": [
+              {
+                "Sender": "masya",
+                "Recipient": "Ryklafog",
+                "Text": "чо ты негр",
+                "Time": "2025-09-04 16:40:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫Ryklafog▫Text▫2025-09-04 13:40:00▫▫чо ты негр"
+              },
+              {
+                "Sender": "Ryklafog",
+                "Recipient": "masya",
+                "Text": "пошел нахуй",
+                "Time": "2025-09-04 10:46:00",
+                "MessageType": "Text",
+                "MessageString": "Ryklafog▫masya▫Text▫2025-09-04 07:46:00▫▫пошел нахуй"
+              },
+              {
+                "Sender": "Ryklafog",
+                "Recipient": "masya",
+                "Text": "пидорас",
+                "Time": "2025-09-04 10:46:00",
+                "MessageType": "Text",
+                "MessageString": "Ryklafog▫masya▫Text▫2025-09-04 07:46:00▫▫пидорас"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Ryklafog",
+                "Text": "photo_2025-08-27_17-40-43.jpg",
+                "Time": "2025-09-04 15:46:00",
+                "MessageType": "File",
+                "MessageString": "masya▫Ryklafog▫File▫2025-09-04 12:46:00▫▫photo_2025-08-27_17-40-43.jpg"
+              },
+              {
+                "Sender": "Ryklafog",
+                "Recipient": "masya",
+                "Text": "сын миража ебучего",
+                "Time": "2025-09-04 10:46:00",
+                "MessageType": "Text",
+                "MessageString": "Ryklafog▫masya▫Text▫2025-09-04 07:46:00▫▫сын миража ебучего"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Ryklafog",
+                "Text": "image_(4).png",
+                "Time": "2025-09-04 15:46:00",
+                "MessageType": "File",
+                "MessageString": "masya▫Ryklafog▫File▫2025-09-04 12:46:00▫▫image_(4).png"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Ryklafog",
+                "Text": "w.jpg",
+                "Time": "2025-09-04 15:46:00",
+                "MessageType": "File",
+                "MessageString": "masya▫Ryklafog▫File▫2025-09-04 12:46:00▫▫w.jpg"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Ryklafog",
+                "Text": "ghbdtn",
+                "Time": "2025-09-04 15:46:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫Ryklafog▫Text▫2025-09-04 12:46:00▫▫ghbdtn"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Ryklafog",
+                "Text": "привет",
+                "Time": "2025-09-04 15:46:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫Ryklafog▫Text▫2025-09-04 12:46:00▫▫привет"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Ryklafog",
+                "Text": "сам ты мираж",
+                "Time": "2025-09-04 15:46:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫Ryklafog▫Text▫2025-09-04 12:46:00▫▫сам ты мираж"
+              },
+              {
+                "Sender": "Ryklafog",
+                "Recipient": "masya",
+                "Text": "пока блять",
+                "Time": "2025-09-04 10:47:00",
+                "MessageType": "Text",
+                "MessageString": "Ryklafog▫masya▫Text▫2025-09-04 07:47:00▫▫пока блять"
+              },
+              {
+                "Sender": "Ryklafog",
+                "Recipient": "masya",
+                "Text": "гондон",
+                "Time": "2025-09-04 10:47:00",
+                "MessageType": "Text",
+                "MessageString": "Ryklafog▫masya▫Text▫2025-09-04 07:47:00▫▫гондон"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Ryklafog",
+                "Text": "нэт",
+                "Time": "2025-09-04 15:47:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫Ryklafog▫Text▫2025-09-04 12:47:00▫▫нэт"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Ryklafog",
+                "Text": "ти гондон",
+                "Time": "2025-09-04 15:47:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫Ryklafog▫Text▫2025-09-04 12:47:00▫▫ти гондон"
+              },
+              {
+                "Sender": "Ryklafog",
+                "Recipient": "masya",
+                "Text": "да блять",
+                "Time": "2025-09-04 10:47:00",
+                "MessageType": "Text",
+                "MessageString": "Ryklafog▫masya▫Text▫2025-09-04 07:47:00▫▫да блять"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Ryklafog",
+                "Text": "ыы",
+                "Time": "2025-09-04 15:47:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫Ryklafog▫Text▫2025-09-04 12:47:00▫▫ыы"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Ryklafog",
+                "Text": "e25a188ae3944c330ad42f9c29e2bc17.jpg",
+                "Time": "2025-09-04 15:48:00",
+                "MessageType": "File",
+                "MessageString": "masya▫Ryklafog▫File▫2025-09-04 12:48:00▫▫e25a188ae3944c330ad42f9c29e2bc17.jpg"
+              }
+            ]
+          },
+          {
+            "Username": "Andrey_Chulau",
+            "Name": "Андрей",
+            "Messages": [
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "что нибудь",
+                "Time": "2025-09-05 10:01:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:01▫▫что нибудь"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Andrey_Chulau",
+                "Text": "вижу",
+                "Time": "2025-09-05 10:01:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫Andrey_Chulau▫Text▫07:01▫▫вижу"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "кого",
+                "Time": "2025-09-05 10:01:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:01▫▫кого"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "?",
+                "Time": "2025-09-05 10:01:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:01▫▫?"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Andrey_Chulau",
+                "Text": "вас",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫Andrey_Chulau▫Text▫07:02▫▫вас"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Andrey_Chulau",
+                "Text": ":D",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫Andrey_Chulau▫Text▫07:02▫▫:D"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "ыдавлэыжда",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫ыдавлэыжда"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "ыжвдалыэвад",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫ыжвдалыэвад"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "эжпла",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫эжпла"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "пэжлы",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫пэжлы"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "пэжлывад",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫пэжлывад"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "ывьоаэлыв",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫ывьоаэлыв"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "ад",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫ад"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "ылва",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫ылва"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "жлывэдалы",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫жлывэдалы"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "вда",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫вда"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "ыввьаэлы",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫ыввьаэлы"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "вэа",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫вэа"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "ыьваль",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫ыьваль"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "ывлпа",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫ывлпа"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "лы",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫лы"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "впа",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫впа"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "ылвп",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫ылвп"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "алыэ",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫алыэ"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "впол",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫впол"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "ывлп",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫ывлп"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "жыв",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫жыв"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "а",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫а"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "select *",
+                "Time": "2025-09-05 10:03:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:03▫▫select *"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Andrey_Chulau",
+                "Text": "897421c41a2ae20a2b0462366a78217a.png",
+                "Time": "2025-09-05 10:03:00",
+                "MessageType": "File",
+                "MessageString": "masya▫Andrey_Chulau▫File▫07:03▫https://1nnf1f30-5000.euw.devtunnels.ms/upload/897421c41a2ae20a2b0462366a78217a.png▫897421c41a2ae20a2b0462366a78217a.png"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "*",
+                "Time": "2025-09-05 10:04:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:04▫▫*"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "select url",
+                "Time": "2025-09-05 10:04:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:04▫▫select url"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "select *",
+                "Time": "2025-09-05 10:04:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:04▫▫select *"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "<b>sdfsdf</b>",
+                "Time": "2025-09-05 10:04:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:04▫▫<b>sdfsdf</b>"
+              }
+            ]
           }
         ],
         "Icon": "\uD83D\uDCAC",
@@ -147,7 +576,22 @@
     "ChatsFolders": [
       {
         "Name": "Все чаты",
-        "Contacts": [],
+        "Contacts": [
+          {
+            "Username": "masya",
+            "Name": "Мася",
+            "Messages": [
+              {
+                "Sender": "masya",
+                "Recipient": "IMcrafter",
+                "Text": "qq",
+                "Time": "2025-09-04 16:39:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫IMcrafter▫Text▫2025-09-04 13:39:00▫▫qq"
+              }
+            ]
+          }
+        ],
         "Icon": "\uD83D\uDCAC",
         "CanDelete": false
       }
@@ -186,25 +630,492 @@
                 "Sender": "masya",
                 "Recipient": "Ksyusha7650",
                 "Text": "привет",
-                "Time": "2025-09-02 10:27:00",
+                "Time": "2025-09-03 01:27:00",
                 "MessageType": "Text",
-                "MessageString": "masya▫Ksyusha7650▫Text▫2025-09-02 07:27:00▫▫привет"
+                "MessageString": "masya▫Ksyusha7650▫Text▫2025-09-02 22:27:00▫▫привет"
               },
               {
                 "Sender": "masya",
                 "Recipient": "Ksyusha7650",
                 "Text": " случайно снёс всё данные",
-                "Time": "2025-09-02 10:27:00",
+                "Time": "2025-09-03 01:27:00",
                 "MessageType": "Text",
-                "MessageString": "masya▫Ksyusha7650▫Text▫2025-09-02 07:27:00▫▫ случайно снёс всё данные"
+                "MessageString": "masya▫Ksyusha7650▫Text▫2025-09-02 22:27:00▫▫ случайно снёс всё данные"
               },
               {
                 "Sender": "masya",
                 "Recipient": "Ksyusha7650",
                 "Text": "и востановил пару аккаунтов",
-                "Time": "2025-09-02 10:27:00",
+                "Time": "2025-09-03 01:27:00",
                 "MessageType": "Text",
-                "MessageString": "masya▫Ksyusha7650▫Text▫2025-09-02 07:27:00▫▫и востановил пару аккаунтов"
+                "MessageString": "masya▫Ksyusha7650▫Text▫2025-09-02 22:27:00▫▫и востановил пару аккаунтов"
+              }
+            ]
+          }
+        ],
+        "Icon": "\uD83D\uDCAC",
+        "CanDelete": false
+      }
+    ]
+  },
+  {
+    "Id": 8,
+    "Login": "fohet",
+    "Password": "123",
+    "Name": "Ryklafog",
+    "Username": "Ryklafog",
+    "ChatsFolders": [
+      {
+        "Name": "Все чаты",
+        "Contacts": [
+          {
+            "Username": "masya",
+            "Name": "Мася",
+            "Messages": [
+              {
+                "Sender": "masya",
+                "Recipient": "Ryklafog",
+                "Text": "чо ты негр",
+                "Time": "2025-09-04 16:40:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫Ryklafog▫Text▫2025-09-04 13:40:00▫▫чо ты негр"
+              },
+              {
+                "Sender": "Ryklafog",
+                "Recipient": "masya",
+                "Text": "пошел нахуй",
+                "Time": "2025-09-04 10:46:00",
+                "MessageType": "Text",
+                "MessageString": "Ryklafog▫masya▫Text▫2025-09-04 07:46:00▫▫пошел нахуй"
+              },
+              {
+                "Sender": "Ryklafog",
+                "Recipient": "masya",
+                "Text": "пидорас",
+                "Time": "2025-09-04 10:46:00",
+                "MessageType": "Text",
+                "MessageString": "Ryklafog▫masya▫Text▫2025-09-04 07:46:00▫▫пидорас"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Ryklafog",
+                "Text": "photo_2025-08-27_17-40-43.jpg",
+                "Time": "2025-09-04 15:46:00",
+                "MessageType": "File",
+                "MessageString": "masya▫Ryklafog▫File▫2025-09-04 12:46:00▫▫photo_2025-08-27_17-40-43.jpg"
+              },
+              {
+                "Sender": "Ryklafog",
+                "Recipient": "masya",
+                "Text": "сын миража ебучего",
+                "Time": "2025-09-04 10:46:00",
+                "MessageType": "Text",
+                "MessageString": "Ryklafog▫masya▫Text▫2025-09-04 07:46:00▫▫сын миража ебучего"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Ryklafog",
+                "Text": "image_(4).png",
+                "Time": "2025-09-04 15:46:00",
+                "MessageType": "File",
+                "MessageString": "masya▫Ryklafog▫File▫2025-09-04 12:46:00▫▫image_(4).png"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Ryklafog",
+                "Text": "w.jpg",
+                "Time": "2025-09-04 15:46:00",
+                "MessageType": "File",
+                "MessageString": "masya▫Ryklafog▫File▫2025-09-04 12:46:00▫▫w.jpg"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Ryklafog",
+                "Text": "ghbdtn",
+                "Time": "2025-09-04 15:46:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫Ryklafog▫Text▫2025-09-04 12:46:00▫▫ghbdtn"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Ryklafog",
+                "Text": "привет",
+                "Time": "2025-09-04 15:46:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫Ryklafog▫Text▫2025-09-04 12:46:00▫▫привет"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Ryklafog",
+                "Text": "сам ты мираж",
+                "Time": "2025-09-04 15:46:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫Ryklafog▫Text▫2025-09-04 12:46:00▫▫сам ты мираж"
+              },
+              {
+                "Sender": "Ryklafog",
+                "Recipient": "masya",
+                "Text": "пока блять",
+                "Time": "2025-09-04 10:47:00",
+                "MessageType": "Text",
+                "MessageString": "Ryklafog▫masya▫Text▫2025-09-04 07:47:00▫▫пока блять"
+              },
+              {
+                "Sender": "Ryklafog",
+                "Recipient": "masya",
+                "Text": "гондон",
+                "Time": "2025-09-04 10:47:00",
+                "MessageType": "Text",
+                "MessageString": "Ryklafog▫masya▫Text▫2025-09-04 07:47:00▫▫гондон"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Ryklafog",
+                "Text": "нэт",
+                "Time": "2025-09-04 15:47:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫Ryklafog▫Text▫2025-09-04 12:47:00▫▫нэт"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Ryklafog",
+                "Text": "ти гондон",
+                "Time": "2025-09-04 15:47:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫Ryklafog▫Text▫2025-09-04 12:47:00▫▫ти гондон"
+              },
+              {
+                "Sender": "Ryklafog",
+                "Recipient": "masya",
+                "Text": "да блять",
+                "Time": "2025-09-04 10:47:00",
+                "MessageType": "Text",
+                "MessageString": "Ryklafog▫masya▫Text▫2025-09-04 07:47:00▫▫да блять"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Ryklafog",
+                "Text": "ыы",
+                "Time": "2025-09-04 15:47:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫Ryklafog▫Text▫2025-09-04 12:47:00▫▫ыы"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Ryklafog",
+                "Text": "e25a188ae3944c330ad42f9c29e2bc17.jpg",
+                "Time": "2025-09-04 15:48:00",
+                "MessageType": "File",
+                "MessageString": "masya▫Ryklafog▫File▫2025-09-04 12:48:00▫▫e25a188ae3944c330ad42f9c29e2bc17.jpg"
+              }
+            ]
+          }
+        ],
+        "Icon": "\uD83D\uDCAC",
+        "CanDelete": false
+      }
+    ]
+  },
+  {
+    "Id": 9,
+    "Login": "Toxa",
+    "Password": "123",
+    "Name": "shiva181",
+    "Username": "shiva181",
+    "ChatsFolders": [
+      {
+        "Name": "Все чаты",
+        "Contacts": [],
+        "Icon": "\uD83D\uDCAC",
+        "CanDelete": false
+      }
+    ]
+  },
+  {
+    "Id": 10,
+    "Login": "andrey4",
+    "Password": "123",
+    "Name": "Andrey_Chulau",
+    "Username": "Andrey_Chulau",
+    "ChatsFolders": [
+      {
+        "Name": "Все чаты",
+        "Contacts": [
+          {
+            "Username": "masya",
+            "Name": "Мася",
+            "Messages": [
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "что нибудь",
+                "Time": "2025-09-05 10:01:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:01▫▫что нибудь"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Andrey_Chulau",
+                "Text": "вижу",
+                "Time": "2025-09-05 10:01:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫Andrey_Chulau▫Text▫07:01▫▫вижу"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "кого",
+                "Time": "2025-09-05 10:01:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:01▫▫кого"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "?",
+                "Time": "2025-09-05 10:01:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:01▫▫?"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Andrey_Chulau",
+                "Text": "вас",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫Andrey_Chulau▫Text▫07:02▫▫вас"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Andrey_Chulau",
+                "Text": ":D",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫Andrey_Chulau▫Text▫07:02▫▫:D"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "ыдавлэыжда",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫ыдавлэыжда"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "ыжвдалыэвад",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫ыжвдалыэвад"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "эжпла",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫эжпла"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "пэжлы",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫пэжлы"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "пэжлывад",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫пэжлывад"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "ывьоаэлыв",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫ывьоаэлыв"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "ад",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫ад"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "ылва",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫ылва"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "жлывэдалы",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫жлывэдалы"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "вда",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫вда"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "ыввьаэлы",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫ыввьаэлы"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "вэа",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫вэа"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "ыьваль",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫ыьваль"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "ывлпа",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫ывлпа"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "лы",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫лы"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "впа",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫впа"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "ылвп",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫ылвп"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "алыэ",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫алыэ"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "впол",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫впол"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "ывлп",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫ывлп"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "жыв",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫жыв"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "а",
+                "Time": "2025-09-05 10:02:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:02▫▫а"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "select *",
+                "Time": "2025-09-05 10:03:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:03▫▫select *"
+              },
+              {
+                "Sender": "masya",
+                "Recipient": "Andrey_Chulau",
+                "Text": "897421c41a2ae20a2b0462366a78217a.png",
+                "Time": "2025-09-05 10:03:00",
+                "MessageType": "File",
+                "MessageString": "masya▫Andrey_Chulau▫File▫07:03▫https://1nnf1f30-5000.euw.devtunnels.ms/upload/897421c41a2ae20a2b0462366a78217a.png▫897421c41a2ae20a2b0462366a78217a.png"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "*",
+                "Time": "2025-09-05 10:04:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:04▫▫*"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "select url",
+                "Time": "2025-09-05 10:04:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:04▫▫select url"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "select *",
+                "Time": "2025-09-05 10:04:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:04▫▫select *"
+              },
+              {
+                "Sender": "Andrey_Chulau",
+                "Recipient": "masya",
+                "Text": "<b>sdfsdf</b>",
+                "Time": "2025-09-05 10:04:00",
+                "MessageType": "Text",
+                "MessageString": "Andrey_Chulau▫masya▫Text▫07:04▫▫<b>sdfsdf</b>"
               }
             ]
           }

@@ -104,6 +104,18 @@
                     <TextBlock Name="TBChat_Status" Grid.Row="1" Text="" FontSize="12" Margin="10,0" Foreground="Gray" Visibility="Collapsed"/>
                     
                     <StackPanel Grid.Column="1" Grid.RowSpan="2" Margin="5,-2,5,0" Orientation="Horizontal">
+                        <Button Background="Transparent" BorderBrush="Transparent" Click="Button_Click_CallContact">
+                            <Border BorderBrush="Transparent" BorderThickness="2" CornerRadius="20" Width="35" Height="35">
+                                <Grid HorizontalAlignment="Center">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text=" 🕻" FontSize="30" Margin="0,-10,0,0" Foreground="RoyalBlue"/>
+
+                                </Grid>
+                            </Border>
+                        </Button>
                         <Button Background="Transparent" BorderBrush="Transparent" Click="Button_Click_RemoveContact">
                             <Border BorderBrush="Transparent" BorderThickness="2" CornerRadius="20" Width="35" Height="35">
                                 <Grid HorizontalAlignment="Center">
