@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Collections.ObjectModel;
 using Tebegrammmm.Classes;
 using Tebegrammmm.Data;
+using System.Threading;
 
 
 namespace Tebegrammmm
@@ -13,6 +14,7 @@ namespace Tebegrammmm
         static HttpClient httpClient = new HttpClient();
         public MainWindow()
         {
+            ServerData.GetServerAdress();
             InitializeComponent();
             TBUserLogin.Focus();
         }
