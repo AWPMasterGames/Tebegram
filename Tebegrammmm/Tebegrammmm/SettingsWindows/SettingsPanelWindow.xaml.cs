@@ -17,5 +17,11 @@ namespace Tebegrammmm
             string displayAddress = User.Username;
             TBUsername.Text = displayAddress;
         }
+
+        private void Button_Exit_Click(object sender, RoutedEventArgs e)
+        {
+            this.DialogResult = true;
+            this.Close();
+        }
     }
 }

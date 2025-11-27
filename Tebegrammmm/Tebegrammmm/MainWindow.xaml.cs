@@ -1,10 +1,12 @@
-﻿using System.Windows;
-using System.Windows.Input;
-using System.Net.Http;
+﻿using System;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Net.Http;
+using System.Threading;
+using System.Windows;
+using System.Windows.Input;
 using Tebegrammmm.Classes;
 using Tebegrammmm.Data;
-using System.Threading;
 
 
 namespace Tebegrammmm
@@ -17,10 +19,31 @@ namespace Tebegrammmm
             ServerData.GetServerAdress();
             InitializeComponent();
             TBUserLogin.Focus();
-        }
+            if (File.Exists("user.data"))
+            {
+                string[] data;
+                if ((data = File.ReadAllText("user.data").Split('▫')).Length == 2)
+                {
+                    TBUserLogin.Text = data[0];
+                    PBUserPassord.Password = data[1];
+                    LoginButton.Focus();
+                    Thread thread = new Thread(() => { AutoAuth(); });
+                    thread.Start();
+                }
+            }
 
+        }
+        private async void AutoAuth()
+        {
+            Thread.Sleep(1000);
+            this.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                Authorization();
+            }));
+        }
         private async void Authorization()
         {
+
             if (string.IsNullOrWhiteSpace(PBUserPassord.Password) || string.IsNullOrWhiteSpace(TBUserLogin.Text))
             {
                 MessageBox.Show("Заполните все поля");
@@ -32,7 +55,6 @@ namespace Tebegrammmm
                 using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/login/{TBUserLogin.Text}-{PBUserPassord.Password}");
                 using HttpResponseMessage response = await httpClient.SendAsync(request);
                 string content = await response.Content.ReadAsStringAsync();
-
                 // Проверяем, не является ли ответ ошибкой
                 if (content.StartsWith("Пользователь с таким логином не существует") ||
                     content.StartsWith("Неверный пароль") ||
@@ -49,7 +71,6 @@ namespace Tebegrammmm
 
                     // Создаем пользователя на основе данных с сервера
 
-
                     User user = new User(int.Parse(userData[0]), userData[1],
                         PBUserPassord.Password, // Пароль не передается с сервера по безопасности
                         userData[2],
@@ -59,14 +80,21 @@ namespace Tebegrammmm
 
                     );
 
-                    for (int i = 8; i < userData.Length-1; i++)
+                    for (int i = 8; i < userData.Length - 1; i++)
                     {
                         string[] ContactData = userData[i].Split('&');
                         user.ChatsFolders[0].AddContact(new Contact(ContactData[0], ContactData[1]));
                     }
 
                     MessengerWindow mw = new MessengerWindow(user);
+                    this.Hide();
                     mw.Show();
+                    if (!File.Exists("user.data"))
+                    {
+                        File.Create("user.data").Close();
+                    }
+                    
+                    File.WriteAllText("user.data", $"{TBUserLogin.Text}▫{PBUserPassord.Password}");
                     this.Close();
                 }
                 catch (System.Text.Json.JsonException)

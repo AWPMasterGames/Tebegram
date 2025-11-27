@@ -1,4 +1,4 @@
-*.user
+*.data
 *.log
 *.cache
 *.tmp

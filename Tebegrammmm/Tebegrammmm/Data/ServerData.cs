@@ -6,7 +6,7 @@ namespace Tebegrammmm.Data
 {
     public static class ServerData
     {
-        private static string _ServerAdress = "https://1nnf1f30-5000.euw.devtunnels.ms";
+        private static string _ServerAdress = "https://djnkpzmq-5000.euw.devtunnels.ms";
         public static string ServerAdress { get { return _ServerAdress; } }
         private static HttpClient _httpClient = new HttpClient();
 

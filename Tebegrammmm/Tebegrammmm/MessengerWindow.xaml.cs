@@ -740,7 +740,13 @@ namespace Tebegrammmm
         private void Button_Click_Settings(object sender, RoutedEventArgs e)
         {
             SettingsPanelWindow SPW = new SettingsPanelWindow(User);
-            SPW.ShowDialog();
+            if (SPW.ShowDialog() == true)
+            {
+                File.WriteAllText("user.data", $"\0");
+                MainWindow mainWindow = new MainWindow();
+                mainWindow.Show();
+                this.Close();
+            }
         }
 
         private void Button_Click_CallContact(object sender, RoutedEventArgs e)

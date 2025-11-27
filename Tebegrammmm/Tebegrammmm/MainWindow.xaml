@@ -50,7 +50,7 @@
                              BorderBrush="#FF3C3C3C"
                              KeyDown="TBUserPassord_KeyDown"/>
 
-                <Button Content="Войти"
+                <Button x:Name="LoginButton" Content="Войти"
                         Height="40"
                         Background="#FF007ACC"
                         Foreground="White"
