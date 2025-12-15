@@ -14,6 +14,7 @@ namespace Tebegrammmm
     public partial class MainWindow : Window
     {
         static HttpClient httpClient = new HttpClient();
+        Thread AutoAuthThread;
         public MainWindow()
         {
             ServerData.GetServerAdress();
@@ -27,8 +28,8 @@ namespace Tebegrammmm
                     TBUserLogin.Text = data[0];
                     PBUserPassord.Password = data[1];
                     LoginButton.Focus();
-                    Thread thread = new Thread(() => { AutoAuth(); });
-                    thread.Start();
+                    AutoAuthThread = new Thread(() => { AutoAuth(); });
+                    AutoAuthThread.Start();
                 }
             }
 
@@ -76,14 +77,15 @@ namespace Tebegrammmm
                         userData[2],
                         userData[3],
                         new ObservableCollection<ChatFolder>{
-                            new ChatFolder(userData[4], new ObservableCollection<Contact> {},userData[5],bool.Parse(userData[6]))}
+                            new ChatFolder(userData[5], new ObservableCollection<Contact> {},userData[6],bool.Parse(userData[7]))},
+                        $"{ServerData.ServerAdress}/{userData[4]}"
 
                     );
 
-                    for (int i = 8; i < userData.Length - 1; i++)
+                    for (int i = 9; i < userData.Length - 1; i++)
                     {
                         string[] ContactData = userData[i].Split('&');
-                        user.ChatsFolders[0].AddContact(new Contact(ContactData[0], ContactData[1]));
+                        user.ChatsFolders[0].AddContact(new Contact(int.Parse(ContactData[0]), ContactData[1], ContactData[2]));
                     }
 
                     MessengerWindow mw = new MessengerWindow(user);
@@ -93,7 +95,7 @@ namespace Tebegrammmm
                     {
                         File.Create("user.data").Close();
                     }
-                    
+
                     File.WriteAllText("user.data", $"{TBUserLogin.Text}▫{PBUserPassord.Password}");
                     this.Close();
                 }
@@ -143,6 +145,11 @@ namespace Tebegrammmm
             {
                 this.DragMove();
             }
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+
         }
     }
 }

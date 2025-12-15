@@ -75,7 +75,7 @@
                                 <RowDefinition/>
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
-                            <local1:UserControl1 Grid.RowSpan="2"/>
+                            <local1:UserControl1 Avatar="https://djnkpzmq-5000.euw.devtunnels.ms/avatars/1008024429709774919.webp" Grid.RowSpan="2" />
                             <TextBlock Grid.Column="1" Grid.RowSpan="2" Text="{Binding Name}" Width="165" TextWrapping="Wrap" Height="50" FontSize="15" Margin="10,0"/>
                         </Grid>
                     </DataTemplate>

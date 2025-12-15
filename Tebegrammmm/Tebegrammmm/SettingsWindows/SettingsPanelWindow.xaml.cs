@@ -7,15 +7,19 @@ namespace Tebegrammmm
     /// </summary>
     public partial class SettingsPanelWindow : Window
     {
-        User User;
+        public User User;
         public SettingsPanelWindow(User user)
         {
             InitializeComponent();
             User = user;
-            TBLogin.Text = User.Login;          // Устанавливаем логин
+            //TBLogin.Text = User.Login;          // Устанавливаем логин
             // Показываем localhost вместо 127.0.0.1 для лучшего UX
             string displayAddress = User.Username;
             TBUsername.Text = displayAddress;
+
+
+            UserInfo.DataContext = User;
+
         }
 
         private void Button_Exit_Click(object sender, RoutedEventArgs e)

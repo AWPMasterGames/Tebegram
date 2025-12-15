@@ -16,6 +16,7 @@ namespace TebegramServer
         public string Password { get { return _Password; } }
         public string Name { get { return _Name; } }
 
+        public string Avatar { get; set; }
         public string Username { get; set; }
 
         public ObservableCollection<ChatFolder> ChatsFolders { get; set; }
@@ -23,7 +24,7 @@ namespace TebegramServer
 
         public ObservableCollection<Message> NewMessages = new ObservableCollection<Message>();
 
-        public User(int id, string login, string password, string name, string username, ObservableCollection<ChatFolder> chatsFolders)
+        public User(int id, string login, string password, string name, string username, ObservableCollection<ChatFolder> chatsFolders, string avatar)
         {
             _Id = id;
             _Login = login;
@@ -31,6 +32,7 @@ namespace TebegramServer
             _Name = name;
             Username = username;
             ChatsFolders = chatsFolders;
+            Avatar = avatar;
         }
 
         public bool Authorize(string login, string password)
@@ -47,6 +49,7 @@ namespace TebegramServer
             sb.Append($"{Login}▫");
             sb.Append($"{Name}▫");
             sb.Append($"{Username}▫");
+            sb.Append($"{Avatar}▫");
 
             // Добавляем количество чат-папок
             //sb.Append($"{ChatsFolders.Count}▫");
@@ -65,7 +68,7 @@ namespace TebegramServer
             // Для каждого контакта в папке
             foreach (var contact in folder.Contacts)
             {
-                sb.Append($"{contact.Username}&{contact.Name}▫");
+                sb.Append($"{contact.UserId}&{contact.Username}&{contact.Name}▫");
                 // Вместо IP и порта используем имя пользователя
                 // sb.Append($"{contact.IPAddress}▫{contact.Port}▫");
             }
@@ -107,14 +110,16 @@ namespace TebegramServer
                 Contact contact = FindContactByUsername(message.Reciver);
                 if (FindContactByUsername(message.Reciver) == null)
                 {
-                    contact = new Contact(UsersData.FindUserByUsername(message.Reciver).Username, UsersData.FindUserByUsername(message.Reciver).Name);
+                    User uConact = UsersData.FindUserByUsername(message.Reciver);
+                    contact = new Contact(uConact.Id, uConact.Username, uConact.Name);
                     Contacts.Add(contact);
                 }
                 FindContactByUsername(message.Reciver).Messages.Add(message);
             }
             else if (FindContactByUsername(message.Sender) == null)
             {
-                Contact contact = new Contact(UsersData.FindUserByUsername(message.Sender).Username, UsersData.FindUserByUsername(message.Sender).Name);
+                User uConact = UsersData.FindUserByUsername(message.Sender);
+                Contact contact = new Contact(uConact.Id, uConact.Username, uConact.Name);
                 contact.Messages.Add(message);
                 AddContact(contact);
             }

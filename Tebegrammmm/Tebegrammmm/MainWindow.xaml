@@ -8,7 +8,8 @@
         AllowsTransparency="True"
         WindowStyle="None"
         Opacity="1"
-        MouseDown="Window_MouseDown">
+        MouseDown="Window_MouseDown"
+        Closed="Window_Closed">
 
     <Border CornerRadius="20" Background="#FF1E1E1E" BorderBrush="#FF3C3C3C" BorderThickness="2" Padding="20">
         <Grid>

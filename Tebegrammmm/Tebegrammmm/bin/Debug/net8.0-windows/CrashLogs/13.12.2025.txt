@@ -1,0 +1,39 @@
+[13.12.2025 14:59:38]  [Authorization] Error: The SSL connection could not be established, see inner exception.
+[13.12.2025 14:59:56]  [Authorization] Error: The SSL connection could not be established, see inner exception.
+[13.12.2025 15:02:39]  [Authorization] Error: Подключение не установлено, т.к. конечный компьютер отверг запрос на подключение. (localhost:5000)
+[13.12.2025 15:04:57]  [Authorization] Error: Подключение не установлено, т.к. конечный компьютер отверг запрос на подключение. (localhost:5000)
+[13.12.2025 15:05:19]  [Authorization] Error: The SSL connection could not be established, see inner exception.
+[13.12.2025 15:05:24]  [Authorization] Error: The SSL connection could not be established, see inner exception.
+[13.12.2025 15:08:52]  [Authorization] Error: Error while copying content to a stream.
+[13.12.2025 15:08:55]  [Authorization] Error: Error while copying content to a stream.
+[13.12.2025 15:09:32]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[13.12.2025 15:09:32]  [MessengerWindow] Инициализация завершена
+[13.12.2025 15:23:52]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[13.12.2025 15:23:52]  [MessengerWindow] Инициализация завершена
+[13.12.2025 15:25:08]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[13.12.2025 15:25:08]  [MessengerWindow] Инициализация завершена
+[13.12.2025 15:30:57]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[13.12.2025 15:30:57]  [MessengerWindow] Инициализация завершена
+[13.12.2025 15:31:46]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[13.12.2025 15:32:17]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[13.12.2025 15:32:17]  [MessengerWindow] Инициализация завершена
+[13.12.2025 15:32:44]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[13.12.2025 15:32:44]  [MessengerWindow] Инициализация завершена
+[13.12.2025 15:36:44]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[13.12.2025 15:36:45]  [MessengerWindow] Инициализация завершена
+[13.12.2025 15:39:28]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[13.12.2025 15:39:28]  [MessengerWindow] Инициализация завершена
+[13.12.2025 15:41:00]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[13.12.2025 15:41:00]  [MessengerWindow] Инициализация завершена
+[13.12.2025 15:48:48]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[13.12.2025 15:48:49]  [MessengerWindow] Инициализация завершена
+[13.12.2025 15:51:20]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[13.12.2025 15:51:20]  [MessengerWindow] Инициализация завершена
+[13.12.2025 15:53:39]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[13.12.2025 15:53:39]  [MessengerWindow] Инициализация завершена
+[13.12.2025 15:54:43]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[13.12.2025 15:54:43]  [MessengerWindow] Инициализация завершена
+[13.12.2025 15:55:48]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[13.12.2025 15:55:49]  [MessengerWindow] Инициализация завершена
+[13.12.2025 16:00:05]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[13.12.2025 16:00:05]  [MessengerWindow] Инициализация завершена

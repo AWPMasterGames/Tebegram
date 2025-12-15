@@ -116,6 +116,7 @@ namespace TebegramServer.Data
                         Password = currentUser.Password,
                         Name = currentUser.Name,
                         Username = currentUser.Username,
+                        Avatart = currentUser.Avatar,
                         ChatsFolders = currentUser.ChatsFolders.Select(folder => new ChatFolderData
                         {
                             Name = folder.FolderName,
@@ -123,6 +124,7 @@ namespace TebegramServer.Data
                             CanDelete = folder.IsCanRedact,
                             Contacts = folder.Contacts.Select(contact => new ContactData
                             {
+                                Id = contact.UserId,
                                 Username = contact.Username,
                                 Name = contact.Name,
                                 Messages = contact.Messages.Select(message => new MessageData
@@ -181,6 +183,7 @@ namespace TebegramServer.Data
                     Password = user.Password,
                     Name = user.Name,
                     Username = user.Username,
+                    Avatart = user.Avatar,
                     ChatsFolders = user.ChatsFolders.Select(folder => new ChatFolderData
                     {
                         Name = folder.FolderName,
@@ -254,13 +257,13 @@ namespace TebegramServer.Data
                                     messages.Add(new Message(messageData.Sender, messageData.Recipient, messageData.Text, messageData.Time, messageType));
                                 }
                                 
-                                contacts.Add(new Contact(contactData.Username, contactData.Name, messages));
+                                contacts.Add(new Contact(contactData.Id,contactData.Username, contactData.Name, messages));
                             }
                             
                             chatsFolders.Add(new ChatFolder(folderData.Name, contacts, folderData.Icon, folderData.CanDelete));
                         }
                         
-                        Users.Add(new User(userData.Id, userData.Login, userData.Password, userData.Name, userData.Username, chatsFolders));
+                        Users.Add(new User(userData.Id, userData.Login, userData.Password, userData.Name, userData.Username, chatsFolders, userData.Avatart));
                     }
                 }
                 
@@ -280,6 +283,7 @@ namespace TebegramServer.Data
             public string Password { get; set; } = "";
             public string Name { get; set; } = "";
             public string Username { get; set; } = "";
+            public string Avatart { get; set; } = "";
             public List<ChatFolderData> ChatsFolders { get; set; } = new();
         }
 
@@ -293,6 +297,7 @@ namespace TebegramServer.Data
 
         private class ContactData
         {
+            public int Id { get; set; }
             public string Username { get; set; } = "";
             public string Name { get; set; } = "";
             public List<MessageData> Messages { get; set; } = new();

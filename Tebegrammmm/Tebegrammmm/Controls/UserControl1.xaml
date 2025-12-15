@@ -11,11 +11,11 @@
 HorizontalAlignment="Center" VerticalAlignment="Center">
             <Grid>
                 <Border Name="mask" Background="White" CornerRadius="60"/>
-                <StackPanel>
+                <StackPanel >
                     <StackPanel.OpacityMask>
                         <VisualBrush Visual="{Binding ElementName=mask}"/>
                     </StackPanel.OpacityMask>
-                    <Image Source="pack://application:,,,/Tebegrammmm;component/no_avatar.png" />
+                    <Image Name="ImgAvatar" Source="{Binding Avatar1}" />
 
                 </StackPanel>
             </Grid>

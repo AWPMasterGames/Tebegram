@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.FileProviders;
-using TebegramServer.Data;
-using TebegramServer.Classes;
 using System.Collections.ObjectModel;
+using System.Xml.Linq;
 using TebegramServer;
+using TebegramServer.Classes;
+using TebegramServer.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,10 @@ UsersData.Initialize(); // Принудительно инициализируе
 Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Данные пользователей загружены, запускаем веб-сервер...");
 
 app.MapGet("/", async (HttpContext context) =>
+{
+    await context.Response.WriteAsync("HI!");
+});
+app.MapGet("/Test", async (HttpContext context) =>
 {
     await context.Response.WriteAsync("HI!");
 });
@@ -49,13 +54,51 @@ app.MapPost("/upload", async (HttpContext context) =>
     }
 
     await context.Response.WriteAsync(FName);
-    
+
 });
 
 app.MapGet("/upload/{FileName}", async (HttpContext context, string FileName) =>
 {
     var fileProvider = new PhysicalFileProvider(Directory.GetCurrentDirectory());
     var fieInfo = fileProvider.GetFileInfo($"uploads/{FileName}");
+
+    context.Response.Headers.ContentEncoding = "Unicode";
+    context.Response.Headers.ContentDisposition = $"attachment; filename={FileName}";
+    await context.Response.SendFileAsync(fieInfo);
+});
+
+app.MapPost("/avatars/{UserId}", async (HttpContext context, int UserId) =>
+{
+    IFormFileCollection files = context.Request.Form.Files;
+    var uploadFiles = $"{Directory.GetCurrentDirectory()}/avatars";
+    Directory.CreateDirectory(uploadFiles);
+
+    string FName = string.Empty;
+
+    foreach (var file in files)
+    {
+        FName = file.FileName.Replace(" ", "_");
+        string filePath = $"{uploadFiles}/{FName}";
+
+        using var fileStream = new FileStream(filePath, FileMode.Create);
+        await file.CopyToAsync(fileStream);
+        Logs.Save($"Загружен файл {FName}");
+        UsersData.FindUserById(UserId).Avatar = FName;
+    }
+
+    await context.Response.WriteAsync(FName);
+
+});
+
+app.MapGet("/avatarsFileName/{UserId}", async (HttpContext context, int UserId) =>
+{
+    await context.Response.WriteAsync(UsersData.FindUserById(UserId).Avatar);
+});
+
+app.MapGet("/avatars/{FileName}", async (HttpContext context, string FileName) =>
+{
+    var fileProvider = new PhysicalFileProvider(Directory.GetCurrentDirectory());
+    var fieInfo = fileProvider.GetFileInfo($"avatars/{FileName}");
 
     context.Response.Headers.ContentEncoding = "Unicode";
     context.Response.Headers.ContentDisposition = $"attachment; filename={FileName}";
@@ -92,12 +135,12 @@ app.MapGet("/register/{UserLogin}-{Username}-{UserPassword}", async (HttpContext
     }
     else if (!UsersData.IsExistUser(UserLogin))
     {
-        User NewUser = new User(UsersData.UsersCount+1, UserLogin, UserPassword, Username, Username,
+        User NewUser = new User(UsersData.UsersCount + 1, UserLogin, UserPassword, Username, Username,
                 new ObservableCollection<ChatFolder> {
                 new ChatFolder("Все чаты",
                         new ObservableCollection<Contact> {
                         }, "💬", false)
-                });
+                }, "");
         UsersData.AddUser(NewUser);
         await Context.Response.WriteAsync(NewUser.ToClientSend());
         Logs.Save($"Пользователь {UserLogin} зарегрестрировался");
@@ -108,10 +151,10 @@ app.MapGet("/UserName/{username}", async (HttpContext Context, string username) 
 {
     User user = UsersData.FindUserByUsername(username);
 
-    await Context.Response.WriteAsync(user.Name);
+    await Context.Response.WriteAsync($"{user.Id}▫{user.Name}");
 });
 
-app.MapGet("/messages/{id}", async (HttpContext Context,int id) =>
+app.MapGet("/messages/{id}", async (HttpContext Context, int id) =>
 {
     User user = UsersData.FindUserById(id);
 
@@ -162,7 +205,7 @@ app.MapPost("/messages", async (HttpContext Context) =>
     return Context.Response.StatusCode = 200;
 });
 
-app.MapPost("/Contact",async (HttpContext Context) =>
+app.MapPost("/Contact", async (HttpContext Context) =>
 {
     using StreamReader reader = new StreamReader(Context.Request.Body);
     string Request = await reader.ReadToEndAsync();
@@ -173,8 +216,8 @@ app.MapPost("/Contact",async (HttpContext Context) =>
         return Context.Response.StatusCode = 404;
     }
     Contact contact;
-    if (Data[2].Trim().Length < 1) contact = new Contact(UContact.Username, UContact.Name);
-    else contact = new Contact(UContact.Username, Data[2]);
+    if (Data[2].Trim().Length < 1) contact = new Contact(UContact.Id, UContact.Username, UContact.Name);
+    else contact = new Contact(UContact.Id, UContact.Username, Data[2]);
     UsersData.FindUserById(int.Parse(Data[0]))?.AddContact(contact);
     return Context.Response.StatusCode = 200;
 });

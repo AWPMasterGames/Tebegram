@@ -10,6 +10,7 @@ namespace Tebegrammmm
         private string _Name;
 
         public int Id { get { return _Id; } }
+        public string Avatar { get; set; }
         public string Login { get { return _Login; } }
         public string Name { get { return _Name; } }
 
@@ -18,9 +19,10 @@ namespace Tebegrammmm
         public ObservableCollection<ChatFolder> ChatsFolders { get; set; }
         public ObservableCollection<Contact> Contacts { get { return ChatsFolders[0].Contacts; } }
 
-        public User(int id, string login, string password, string name, string username, ObservableCollection<ChatFolder> chatsFolders)
+        public User(int id, string login, string password, string name, string username, ObservableCollection<ChatFolder> chatsFolders, string avatar)
         {
             _Id = id;
+            Avatar = avatar;
             _Login = login;
             _Password = password;
             _Name = name;

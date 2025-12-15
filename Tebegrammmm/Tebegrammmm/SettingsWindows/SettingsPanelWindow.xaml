@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Tebegrammmm"
+        xmlns:local1="clr-namespace:Tebegrammmm.Controls"
         mc:Ignorable="d"
         Title="Tebegram - User info" Height="400" Width="400">
     <ScrollViewer>
@@ -15,14 +16,16 @@
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
             <TextBlock Text="Информация о пользователе" HorizontalAlignment="Center" FontSize="25" Margin="0,10"/>
-            <StackPanel Grid.Row="1" HorizontalAlignment="Center">
+            <StackPanel x:Name="UserInfo" Grid.Row="1" HorizontalAlignment="Center">
+                <local1:UserControl1 Avatar="https://cdn.discordapp.com/emojis/1429941917327687800.webp"/>
                 <Grid Margin="10,5">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
                     <TextBlock Text="Login" Foreground="Gray" FontSize="15"/>
-                    <TextBlock Name="TBLogin" Grid.Row="1" FontSize="20"/>
+                    <TextBlock Name="TBLogin" Text="{Binding Login}" Grid.Row="1" FontSize="20"/>
                 </Grid>
                 <Grid Margin="10,5">
                     <Grid.RowDefinitions>

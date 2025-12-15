@@ -29,7 +29,6 @@ namespace Tebegrammmm
         User User { get; set; }
         Contact Contact { get; set; }
         Thread Thread { get; set; }
-        private string lastSelectedContactName = "";
 
         public MessengerWindow(User user)
         {
@@ -139,8 +138,8 @@ namespace Tebegrammmm
             {
                 using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/UserName/{messageData[0]}");
                 using HttpResponseMessage response = await httpClient.SendAsync(request);
-                string content = await response.Content.ReadAsStringAsync();
-                Contact contact = new Contact(messageData[0], content);
+                string[] content = (await response.Content.ReadAsStringAsync()).Split("▫");
+                Contact contact = new Contact(int.Parse(content[0]),messageData[0], content[1]);
                 if (messageData[2] == "Text")
                 {
                     string text = messageData[5];
@@ -508,14 +507,15 @@ namespace Tebegrammmm
                 string[] temp = data.Split('▫');
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
+                    string[] Name = { };
                     if (temp[2].Trim().Length < 1)
                     {
                         using HttpRequestMessage GetNameRequest = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/UserName/{temp[1]}");
                         using HttpResponseMessage NameResponse = await httpClient.SendAsync(GetNameRequest);
-                        string Name = await NameResponse.Content.ReadAsStringAsync();
-                        temp[2] = Name;
+                        Name = (await NameResponse.Content.ReadAsStringAsync()).Split("▫");
+                        temp[2] = Name[1];
                     }
-                    User.AddContact(new Contact(temp[1], temp[2]));
+                    User.AddContact(new Contact(int.Parse(Name[0]),temp[1], temp[2]));
                     return true;
                 }
                 else if (response.StatusCode == HttpStatusCode.NotFound)
