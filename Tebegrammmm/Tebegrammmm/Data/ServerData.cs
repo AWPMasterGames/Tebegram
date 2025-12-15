@@ -15,7 +15,7 @@ namespace Tebegrammmm.Data
             string a = "?";
             try
             {
-                a = _wc.DownloadString($"{ServerAdress}/");
+                a = _wc.DownloadString($"{ServerAdress}/Test");
                 if (a == "Hi!") return;
             }
             catch

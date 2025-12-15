@@ -15,7 +15,7 @@ HorizontalAlignment="Center" VerticalAlignment="Center">
                     <StackPanel.OpacityMask>
                         <VisualBrush Visual="{Binding ElementName=mask}"/>
                     </StackPanel.OpacityMask>
-                    <Image Name="ImgAvatar" Source="{Binding Avatar1}" />
+                    <Image Name="ImgAvatar" Source="{Binding Avatar, Mode=OneWay}" />
 
                 </StackPanel>
             </Grid>

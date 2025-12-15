@@ -176,3 +176,77 @@
 [15.12.2025 20:42:36]  [MessengerWindow] Инициализация завершена
 [15.12.2025 20:42:36]  [AddMessageToUser] Получен файл от masya: 
 [15.12.2025 20:42:36]  [AddMessageToUser] Получен файл от masya: 
+[15.12.2025 20:52:51]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[15.12.2025 20:52:51]  [MessengerWindow] Инициализация завершена
+[15.12.2025 20:52:52]  [AddMessageToUser] Получен файл от masya: 
+[15.12.2025 20:52:52]  [AddMessageToUser] Получен файл от masya: 
+[15.12.2025 20:53:28]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[15.12.2025 20:53:28]  [MessengerWindow] Инициализация завершена
+[15.12.2025 20:53:28]  [AddMessageToUser] Получен файл от masya: 
+[15.12.2025 20:53:28]  [AddMessageToUser] Получен файл от masya: 
+[15.12.2025 21:00:29]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[15.12.2025 21:00:29]  [MessengerWindow] Инициализация завершена
+[15.12.2025 21:00:29]  [AddMessageToUser] Получен файл от masya: 
+[15.12.2025 21:00:29]  [AddMessageToUser] Получен файл от masya: 
+[15.12.2025 21:04:14]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[15.12.2025 21:04:14]  [MessengerWindow] Инициализация завершена
+[15.12.2025 21:04:14]  [AddMessageToUser] Получен файл от masya: 
+[15.12.2025 21:04:14]  [AddMessageToUser] Получен файл от masya: 
+[15.12.2025 21:04:57]  [LBChats_SelectionChanged] Selected contact: Вася жопкин бамбук (vasya)
+[15.12.2025 21:04:57]  [LBChats_SelectionChanged] Restored draft for Вася жопкин бамбук: ''
+[15.12.2025 21:08:12]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[15.12.2025 21:08:12]  [MessengerWindow] Инициализация завершена
+[15.12.2025 21:08:14]  [LBChats_SelectionChanged] Selected contact: Вася жопкин бамбук (vasya)
+[15.12.2025 21:08:14]  [LBChats_SelectionChanged] Restored draft for Вася жопкин бамбук: ''
+[15.12.2025 21:08:30]  [SendMessage] Starting send message: '1429941917327687800.png' to contact: Вася жопкин бамбук
+[15.12.2025 21:08:30]  [SendMessage] Message added to local contact. Sending to user...
+[15.12.2025 21:08:31]  [AddMessageToUser] Получен файл от masya: https://djnkpzmq-5000.euw.devtunnels.ms/upload/1429941917327687800.png
+[15.12.2025 21:08:39]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[15.12.2025 21:08:39]  [MessengerWindow] Инициализация завершена
+[15.12.2025 21:08:40]  [AddMessageToUser] Получен файл от masya: https://djnkpzmq-5000.euw.devtunnels.ms/upload/1429941917327687800.png
+[15.12.2025 21:08:40]  [LBChats_SelectionChanged] Selected contact: Вася жопкин бамбук (vasya)
+[15.12.2025 21:08:40]  [LBChats_SelectionChanged] Restored draft for Вася жопкин бамбук: ''
+[15.12.2025 21:08:59]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[15.12.2025 21:08:59]  [MessengerWindow] Инициализация завершена
+[15.12.2025 21:08:59]  [AddMessageToUser] Получен файл от masya: 
+[15.12.2025 21:09:00]  [LBChats_SelectionChanged] Selected contact: Вася жопкин бамбук (vasya)
+[15.12.2025 21:09:00]  [LBChats_SelectionChanged] Restored draft for Вася жопкин бамбук: ''
+[15.12.2025 21:11:09]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[15.12.2025 21:11:09]  [MessengerWindow] Инициализация завершена
+[15.12.2025 21:11:10]  [LBChats_SelectionChanged] Selected contact: Вася жопкин бамбук (vasya)
+[15.12.2025 21:11:11]  [LBChats_SelectionChanged] Restored draft for Вася жопкин бамбук: ''
+[15.12.2025 21:11:15]  [SendMessage] Starting send message: '1429941917327687800.png' to contact: Вася жопкин бамбук
+[15.12.2025 21:11:15]  [SendMessage] Message added to local contact. Sending to user...
+[15.12.2025 21:11:16]  [AddMessageToUser] Получен файл от masya: https://djnkpzmq-5000.euw.devtunnels.ms/upload/1429941917327687800.png
+[15.12.2025 21:14:49]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[15.12.2025 21:14:50]  [MessengerWindow] Инициализация завершена
+[15.12.2025 21:15:46]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[15.12.2025 21:15:46]  [MessengerWindow] Инициализация завершена
+[15.12.2025 21:20:10]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[15.12.2025 21:20:11]  [MessengerWindow] Инициализация завершена
+[15.12.2025 21:20:49]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[15.12.2025 21:20:49]  [MessengerWindow] Инициализация завершена
+[15.12.2025 21:21:35]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[15.12.2025 21:21:36]  [MessengerWindow] Инициализация завершена
+[15.12.2025 21:26:58]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[15.12.2025 21:26:58]  [MessengerWindow] Инициализация завершена
+[15.12.2025 21:27:26]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[15.12.2025 21:27:26]  [MessengerWindow] Инициализация завершена
+[15.12.2025 21:30:04]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[15.12.2025 21:30:04]  [MessengerWindow] Инициализация завершена
+[15.12.2025 21:36:25]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[15.12.2025 21:36:26]  [MessengerWindow] Инициализация завершена
+[15.12.2025 21:36:42]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[15.12.2025 21:36:42]  [MessengerWindow] Инициализация завершена
+[15.12.2025 21:42:33]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[15.12.2025 21:42:33]  [MessengerWindow] Инициализация завершена
+[15.12.2025 21:54:34]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[15.12.2025 21:54:34]  [MessengerWindow] Инициализация завершена
+[15.12.2025 21:55:52]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[15.12.2025 21:55:52]  [MessengerWindow] Инициализация завершена
+[15.12.2025 21:56:24]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[15.12.2025 21:56:24]  [MessengerWindow] Инициализация завершена
+[15.12.2025 22:00:45]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[15.12.2025 22:00:45]  [MessengerWindow] Инициализация завершена
+[15.12.2025 22:01:48]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[15.12.2025 22:01:48]  [MessengerWindow] Инициализация завершена

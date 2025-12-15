@@ -1,18 +1,20 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Xml.Linq;
 
 namespace Tebegrammmm.Controls
 {
     /// <summary>
     /// Логика взаимодействия для UserControl1.xaml
     /// </summary>
-    public partial class UserControl1 : UserControl
+    public partial class UserControl1 : UserControl, INotifyPropertyChanged
     {
-        public static readonly DependencyProperty Avatar_prop = DependencyProperty.Register(
+        /*public static readonly DependencyProperty Avatar_prop = DependencyProperty.Register(
             nameof(Avatar), typeof(string), typeof(UserControl1), new PropertyMetadata(default(string)));
 
         public string Avatar
@@ -21,24 +23,34 @@ namespace Tebegrammmm.Controls
             set
             {
                 SetValue(Avatar_prop, value);
-                /*BitmapImage bi3 = new BitmapImage();
+                *//*BitmapImage bi3 = new BitmapImage();
                 bi3.BeginInit();
                 bi3.UriSource = new Uri(value, UriKind.Relative);
                 bi3.EndInit();
                 ImgAvatar.Stretch = Stretch.Fill;
-                ImgAvatar.Source = bi3;*/
+                ImgAvatar.Source = bi3;*//*
             }
         }
-        public string Avatar1 = "https://djnkpzmq-5000.euw.devtunnels.ms/avatars/1429941917327687800.png";
+        public string Avatar1 = "https://djnkpzmq-5000.euw.devtunnels.ms/avatars/1429941917327687800.png";*/
+
+        private string _Avatar;
+        public string Avatar
+        {
+            get { return _Avatar; }
+            set
+            {
+                _Avatar = value;
+                if (PropertyChanged != null)
+                    PropertyChanged(this, new PropertyChangedEventArgs("Text"));
+            }
+        }
 
         public UserControl1()
         {
             InitializeComponent();
-
-            Binding binding = new Binding();
-            binding.Source = Avatar;
-            binding.Mode = BindingMode.OneWay;
-            ImgAvatar.SetBinding(Image.SourceProperty, binding);
+            DataContext = this;
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }
