@@ -36,7 +36,7 @@ namespace Tebegrammmm
         }
         private async void AutoAuth()
         {
-            Thread.Sleep(1000);
+            Thread.Sleep(100);
             this.Dispatcher.BeginInvoke(new Action(() =>
             {
                 Authorization();
