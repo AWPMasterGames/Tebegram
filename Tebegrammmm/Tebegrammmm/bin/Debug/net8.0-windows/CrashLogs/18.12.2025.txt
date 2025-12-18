@@ -1,0 +1,387 @@
+[18.12.2025 12:46:31]  [Authorization] Error: Error while copying content to a stream.
+[18.12.2025 12:46:47]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[18.12.2025 12:46:47]  [MessengerWindow] Инициализация завершена
+[18.12.2025 12:46:47]  [AddMessageToUser] Получено сообщение от masya: привет
+[18.12.2025 12:46:47]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 12:46:48]  [AddMessageToUser] Получено сообщение от masya: qq
+[18.12.2025 12:46:48]  [AddMessageToUser] Получено сообщение от masya: ты чо лысый?
+[18.12.2025 12:46:48]  [AddMessageToUser] Получено сообщение от masya: ахахахха
+[18.12.2025 12:46:48]  [AddMessageToUser] Получено сообщение от masya: ах
+[18.12.2025 12:46:48]  [AddMessageToUser] Получено сообщение от masya: ах
+[18.12.2025 12:46:48]  [AddMessageToUser] Получено сообщение от masya: ахх
+[18.12.2025 12:46:48]  [AddMessageToUser] Получено сообщение от masya: ах
+[18.12.2025 12:46:48]  [AddMessageToUser] Получено сообщение от masya: ах
+[18.12.2025 12:46:48]  [AddMessageToUser] Получено сообщение от masya: ах
+[18.12.2025 12:46:49]  [AddMessageToUser] Получено сообщение от masya: ах
+[18.12.2025 12:46:49]  [AddMessageToUser] Получено сообщение от masya: ахх
+[18.12.2025 12:46:49]  [AddMessageToUser] Получено сообщение от masya: ахха
+[18.12.2025 12:46:49]  [AddMessageToUser] Получено сообщение от masya: ахахах
+[18.12.2025 12:46:49]  [AddMessageToUser] Получено сообщение от masya: дурак
+[18.12.2025 12:46:49]  [AddMessageToUser] Получено сообщение от masya: ты шо
+[18.12.2025 12:46:49]  [AddMessageToUser] Получено сообщение от masya: дурной
+[18.12.2025 12:48:29]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[18.12.2025 12:48:30]  [MessengerWindow] Инициализация завершена
+[18.12.2025 12:48:30]  [AddMessageToUser] Получено сообщение от masya: привет
+[18.12.2025 12:48:30]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 12:48:30]  [AddMessageToUser] Получено сообщение от masya: qq
+[18.12.2025 12:48:30]  [AddMessageToUser] Получено сообщение от masya: ты чо лысый?
+[18.12.2025 12:48:30]  [AddMessageToUser] Получено сообщение от masya: ахахахха
+[18.12.2025 12:48:30]  [AddMessageToUser] Получено сообщение от masya: ах
+[18.12.2025 12:48:30]  [AddMessageToUser] Получено сообщение от masya: ах
+[18.12.2025 12:48:31]  [AddMessageToUser] Получено сообщение от masya: ахх
+[18.12.2025 12:48:31]  [AddMessageToUser] Получено сообщение от masya: ах
+[18.12.2025 12:48:31]  [AddMessageToUser] Получено сообщение от masya: ах
+[18.12.2025 12:48:31]  [AddMessageToUser] Получено сообщение от masya: ах
+[18.12.2025 12:48:31]  [AddMessageToUser] Получено сообщение от masya: ах
+[18.12.2025 12:48:31]  [AddMessageToUser] Получено сообщение от masya: ахх
+[18.12.2025 12:48:31]  [AddMessageToUser] Получено сообщение от masya: ахха
+[18.12.2025 12:48:31]  [AddMessageToUser] Получено сообщение от masya: ахахах
+[18.12.2025 12:48:31]  [AddMessageToUser] Получено сообщение от masya: дурак
+[18.12.2025 12:48:31]  [AddMessageToUser] Получено сообщение от masya: ты шо
+[18.12.2025 12:48:32]  [AddMessageToUser] Получено сообщение от masya: дурной
+[18.12.2025 12:48:52]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[18.12.2025 12:48:52]  [MessengerWindow] Инициализация завершена
+[18.12.2025 12:48:52]  [AddMessageToUser] Получено сообщение от masya: привет
+[18.12.2025 12:48:52]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 12:48:52]  [AddMessageToUser] Получено сообщение от masya: qq
+[18.12.2025 12:48:53]  [AddMessageToUser] Получено сообщение от masya: ты чо лысый?
+[18.12.2025 12:48:53]  [AddMessageToUser] Получено сообщение от masya: ахахахха
+[18.12.2025 12:48:53]  [AddMessageToUser] Получено сообщение от masya: ах
+[18.12.2025 12:48:53]  [AddMessageToUser] Получено сообщение от masya: ах
+[18.12.2025 12:48:53]  [AddMessageToUser] Получено сообщение от masya: ахх
+[18.12.2025 12:48:53]  [AddMessageToUser] Получено сообщение от masya: ах
+[18.12.2025 12:48:53]  [AddMessageToUser] Получено сообщение от masya: ах
+[18.12.2025 12:48:53]  [AddMessageToUser] Получено сообщение от masya: ах
+[18.12.2025 12:48:53]  [AddMessageToUser] Получено сообщение от masya: ах
+[18.12.2025 12:48:54]  [AddMessageToUser] Получено сообщение от masya: ахх
+[18.12.2025 12:48:54]  [AddMessageToUser] Получено сообщение от masya: ахха
+[18.12.2025 12:48:54]  [AddMessageToUser] Получено сообщение от masya: ахахах
+[18.12.2025 12:48:54]  [AddMessageToUser] Получено сообщение от masya: дурак
+[18.12.2025 12:48:54]  [AddMessageToUser] Получено сообщение от masya: ты шо
+[18.12.2025 12:48:54]  [AddMessageToUser] Получено сообщение от masya: дурной
+[18.12.2025 12:49:05]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[18.12.2025 12:49:05]  [MessengerWindow] Инициализация завершена
+[18.12.2025 12:49:05]  [AddMessageToUser] Получено сообщение от Мася: привет
+[18.12.2025 12:49:05]  [AddMessageToUser] Получено сообщение от Мася: 123
+[18.12.2025 12:49:06]  [AddMessageToUser] Получено сообщение от Мася: qq
+[18.12.2025 12:49:06]  [AddMessageToUser] Получено сообщение от Мася: ты чо лысый?
+[18.12.2025 12:49:06]  [AddMessageToUser] Получено сообщение от Мася: ахахахха
+[18.12.2025 12:49:06]  [AddMessageToUser] Получено сообщение от Мася: ах
+[18.12.2025 12:49:06]  [AddMessageToUser] Получено сообщение от Мася: ах
+[18.12.2025 12:49:06]  [AddMessageToUser] Получено сообщение от Мася: ахх
+[18.12.2025 12:49:06]  [AddMessageToUser] Получено сообщение от Мася: ах
+[18.12.2025 12:49:06]  [AddMessageToUser] Получено сообщение от Мася: ах
+[18.12.2025 12:49:06]  [AddMessageToUser] Получено сообщение от Мася: ах
+[18.12.2025 12:49:07]  [AddMessageToUser] Получено сообщение от Мася: ах
+[18.12.2025 12:49:07]  [AddMessageToUser] Получено сообщение от Мася: ахх
+[18.12.2025 12:49:07]  [AddMessageToUser] Получено сообщение от Мася: ахха
+[18.12.2025 12:49:07]  [AddMessageToUser] Получено сообщение от Мася: ахахах
+[18.12.2025 12:49:07]  [AddMessageToUser] Получено сообщение от Мася: дурак
+[18.12.2025 12:49:07]  [AddMessageToUser] Получено сообщение от Мася: ты шо
+[18.12.2025 12:49:07]  [AddMessageToUser] Получено сообщение от Мася: дурной
+[18.12.2025 12:49:16]  [LBChats_SelectionChanged] Selected contact: Мася (masya)
+[18.12.2025 12:49:16]  [LBChats_SelectionChanged] Restored draft for Мася: ''
+[18.12.2025 12:49:22]  [LBChats_SelectionChanged] Selected contact: Вася жопкин бамбук (vasya)
+[18.12.2025 12:49:22]  [LBChats_SelectionChanged] Restored draft for Вася жопкин бамбук: ''
+[18.12.2025 12:52:21]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[18.12.2025 12:52:21]  [MessengerWindow] Инициализация завершена
+[18.12.2025 12:52:27]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[18.12.2025 12:52:27]  [MessengerWindow] Инициализация завершена
+[18.12.2025 12:53:04]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[18.12.2025 12:53:04]  [MessengerWindow] Инициализация завершена
+[18.12.2025 12:53:06]  [LBChats_SelectionChanged] Selected contact: Вася жопкин бамбук (vasya)
+[18.12.2025 12:53:06]  [LBChats_SelectionChanged] Restored draft for Вася жопкин бамбук: ''
+[18.12.2025 12:53:10]  [LBChats_SelectionChanged] Saved draft for Вася жопкин бамбук: ''
+[18.12.2025 12:53:11]  [LBChats_SelectionChanged] No item selected
+[18.12.2025 12:53:12]  [LBChats_SelectionChanged] Saved draft for Вася жопкин бамбук: ''
+[18.12.2025 12:53:12]  [LBChats_SelectionChanged] Selected contact: Убебка (ybeka)
+[18.12.2025 12:53:13]  [LBChats_SelectionChanged] Restored draft for Убебка: ''
+[18.12.2025 12:53:22]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[18.12.2025 12:53:22]  [MessengerWindow] Инициализация завершена
+[18.12.2025 12:53:50]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[18.12.2025 12:53:50]  [MessengerWindow] Инициализация завершена
+[18.12.2025 12:54:09]  [LBChats_SelectionChanged] Selected contact: Вася жопкин бамбук (vasya)
+[18.12.2025 12:54:09]  [LBChats_SelectionChanged] Restored draft for Вася жопкин бамбук: ''
+[18.12.2025 12:54:13]  [SendMessage] Starting send message: '123' to contact: Вася жопкин бамбук
+[18.12.2025 12:54:13]  [SendMessage] Message added to local contact. Sending to user...
+[18.12.2025 12:54:14]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 12:54:14]  [AddMessageToUser] Получено сообщение от Мася: 123
+[18.12.2025 12:54:19]  [LBChats_SelectionChanged] Selected contact: Мася (masya)
+[18.12.2025 12:54:19]  [LBChats_SelectionChanged] Restored draft for Мася: ''
+[18.12.2025 12:54:24]  [SendMessage] Starting send message: '123' to contact: Мася
+[18.12.2025 12:54:25]  [SendMessage] Message added to local contact. Sending to user...
+[18.12.2025 12:54:25]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: 123
+[18.12.2025 12:54:25]  [AddMessageToUser] Получено сообщение от vasya: 123
+[18.12.2025 12:54:56]  [LBChats_SelectionChanged] Saved draft for Вася жопкин бамбук: ''
+[18.12.2025 12:54:57]  [LBChats_SelectionChanged] Selected contact: Убебка (ybeka)
+[18.12.2025 12:54:57]  [LBChats_SelectionChanged] Restored draft for Убебка: ''
+[18.12.2025 12:54:57]  [LBChats_SelectionChanged] Saved draft for Убебка: ''
+[18.12.2025 12:54:57]  [LBChats_SelectionChanged] Selected contact: Вася жопкин бамбук (vasya)
+[18.12.2025 12:54:57]  [LBChats_SelectionChanged] Restored draft for Вася жопкин бамбук: ''
+[18.12.2025 12:55:05]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[18.12.2025 12:55:05]  [MessengerWindow] Инициализация завершена
+[18.12.2025 12:55:06]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 12:55:06]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: 123
+[18.12.2025 12:55:20]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[18.12.2025 12:55:20]  [MessengerWindow] Инициализация завершена
+[18.12.2025 12:55:20]  [AddMessageToUser] Получено сообщение от Мася: 123
+[18.12.2025 12:55:20]  [AddMessageToUser] Получено сообщение от vasya: 123
+[18.12.2025 12:55:35]  [LBChats_SelectionChanged] Saved draft for Вася жопкин бамбук: ''
+[18.12.2025 12:55:35]  [LBChats_SelectionChanged] Selected contact: Убебка (ybeka)
+[18.12.2025 12:55:35]  [LBChats_SelectionChanged] Restored draft for Убебка: ''
+[18.12.2025 12:55:36]  [LBChats_SelectionChanged] Saved draft for Убебка: ''
+[18.12.2025 12:55:36]  [LBChats_SelectionChanged] Selected contact: Вася жопкин бамбук (vasya)
+[18.12.2025 12:55:36]  [LBChats_SelectionChanged] Restored draft for Вася жопкин бамбук: ''
+[18.12.2025 12:55:39]  [LBChats_SelectionChanged] Selected contact: Мася (masya)
+[18.12.2025 12:55:40]  [LBChats_SelectionChanged] Restored draft for Мася: ''
+[18.12.2025 12:56:24]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[18.12.2025 12:56:24]  [MessengerWindow] Инициализация завершена
+[18.12.2025 12:56:25]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 12:56:25]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: 123
+[18.12.2025 12:56:49]  [LBChats_SelectionChanged] Selected contact: Вася жопкин бамбук (vasya)
+[18.12.2025 12:56:49]  [LBChats_SelectionChanged] Restored draft for Вася жопкин бамбук: ''
+[18.12.2025 12:56:51]  [SendMessage] Starting send message: '123' to contact: Вася жопкин бамбук
+[18.12.2025 12:56:51]  [SendMessage] Message added to local contact. Sending to user...
+[18.12.2025 12:56:53]  [AddMessageToUser] Получено сообщение от Мася: 123
+[18.12.2025 12:56:53]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 12:57:00]  [SendMessage] Starting send message: 'qq' to contact: Мася
+[18.12.2025 12:57:00]  [SendMessage] Message added to local contact. Sending to user...
+[18.12.2025 12:57:01]  [AddMessageToUser] Получено сообщение от vasya: qq
+[18.12.2025 12:57:02]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: qq
+[18.12.2025 12:57:09]  [LBChats_SelectionChanged] Saved draft for Мася: ''
+[18.12.2025 12:57:09]  [LBChats_SelectionChanged] No item selected
+[18.12.2025 12:57:38]  [LBChats_SelectionChanged] Saved draft for Мася: ''
+[18.12.2025 12:57:38]  [LBChats_SelectionChanged] Selected contact: Мася (masya)
+[18.12.2025 12:57:38]  [LBChats_SelectionChanged] Restored draft for Мася: ''
+[18.12.2025 12:57:40]  [LBChats_SelectionChanged] Saved draft for Мася: ''
+[18.12.2025 12:57:41]  [LBChats_SelectionChanged] No item selected
+[18.12.2025 12:57:46]  [SendAddNewContactRequest] Error: Index was outside the bounds of the array.
+[18.12.2025 12:57:50]  [SendAddNewContactRequest] Error: Index was outside the bounds of the array.
+[18.12.2025 12:57:56]  [LBChats_SelectionChanged] Saved draft for Мася: ''
+[18.12.2025 12:57:56]  [LBChats_SelectionChanged] Selected contact: Мася (masya)
+[18.12.2025 12:57:56]  [LBChats_SelectionChanged] Restored draft for Мася: ''
+[18.12.2025 13:12:03]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[18.12.2025 13:12:03]  [MessengerWindow] Инициализация завершена
+[18.12.2025 13:12:03]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 13:12:03]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: 123
+[18.12.2025 13:12:03]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 13:12:04]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: qq
+[18.12.2025 13:14:43]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[18.12.2025 13:14:43]  [MessengerWindow] Инициализация завершена
+[18.12.2025 13:14:43]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 13:14:43]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: 123
+[18.12.2025 13:14:43]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 13:14:43]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: qq
+[18.12.2025 13:14:44]  [LBChats_SelectionChanged] Selected contact: 1 (admin_228)
+[18.12.2025 13:14:44]  [LBChats_SelectionChanged] Restored draft for 1: ''
+[18.12.2025 13:14:45]  [LBChats_SelectionChanged] Saved draft for 1: ''
+[18.12.2025 13:14:46]  [LBChats_SelectionChanged] No item selected
+[18.12.2025 13:16:08]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[18.12.2025 13:16:09]  [MessengerWindow] Инициализация завершена
+[18.12.2025 13:16:09]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 13:16:09]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: 123
+[18.12.2025 13:16:09]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 13:16:09]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: qq
+[18.12.2025 13:16:10]  [LBChats_SelectionChanged] Selected contact: admin333 (admin_228)
+[18.12.2025 13:16:10]  [LBChats_SelectionChanged] Restored draft for admin333: ''
+[18.12.2025 13:16:11]  [LBChats_SelectionChanged] Saved draft for admin333: ''
+[18.12.2025 13:16:11]  [LBChats_SelectionChanged] No item selected
+[18.12.2025 13:18:56]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[18.12.2025 13:18:56]  [MessengerWindow] Инициализация завершена
+[18.12.2025 13:18:56]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 13:18:56]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: 123
+[18.12.2025 13:18:56]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 13:18:57]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: qq
+[18.12.2025 13:18:57]  [LBChats_SelectionChanged] Selected contact: ad (admin_228)
+[18.12.2025 13:18:57]  [LBChats_SelectionChanged] Restored draft for ad: ''
+[18.12.2025 13:19:00]  [LBChats_SelectionChanged] Saved draft for ad: ''
+[18.12.2025 13:19:00]  [LBChats_SelectionChanged] No item selected
+[18.12.2025 13:19:16]  [SendAddNewContactRequest] Error: Index was outside the bounds of the array.
+[18.12.2025 13:20:00]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[18.12.2025 13:20:00]  [MessengerWindow] Инициализация завершена
+[18.12.2025 13:20:00]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 13:20:00]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: 123
+[18.12.2025 13:20:00]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 13:20:01]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: qq
+[18.12.2025 13:20:10]  [LBChats_SelectionChanged] Selected contact: Админ (admin_228)
+[18.12.2025 13:20:10]  [LBChats_SelectionChanged] Restored draft for Админ: ''
+[18.12.2025 13:20:11]  [LBChats_SelectionChanged] Saved draft for Админ: ''
+[18.12.2025 13:20:11]  [LBChats_SelectionChanged] No item selected
+[18.12.2025 13:20:12]  [LBChats_SelectionChanged] Saved draft for Админ: ''
+[18.12.2025 13:20:12]  [LBChats_SelectionChanged] Selected contact: ad (admin_228)
+[18.12.2025 13:20:12]  [LBChats_SelectionChanged] Restored draft for ad: ''
+[18.12.2025 13:20:13]  [LBChats_SelectionChanged] Saved draft for ad: ''
+[18.12.2025 13:20:13]  [LBChats_SelectionChanged] No item selected
+[18.12.2025 13:21:24]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[18.12.2025 13:21:24]  [MessengerWindow] Инициализация завершена
+[18.12.2025 13:21:25]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 13:21:25]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: 123
+[18.12.2025 13:21:25]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 13:21:25]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: qq
+[18.12.2025 13:21:26]  [LBChats_SelectionChanged] Selected contact: ad (admin_228)
+[18.12.2025 13:21:26]  [LBChats_SelectionChanged] Restored draft for ad: ''
+[18.12.2025 13:21:27]  [LBChats_SelectionChanged] Saved draft for ad: ''
+[18.12.2025 13:21:27]  [LBChats_SelectionChanged] No item selected
+[18.12.2025 13:22:44]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[18.12.2025 13:22:44]  [MessengerWindow] Инициализация завершена
+[18.12.2025 13:22:44]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 13:22:44]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: 123
+[18.12.2025 13:22:44]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 13:22:44]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: qq
+[18.12.2025 13:22:45]  [LBChats_SelectionChanged] Selected contact: ad (admin_228)
+[18.12.2025 13:22:45]  [LBChats_SelectionChanged] Restored draft for ad: ''
+[18.12.2025 13:22:46]  [LBChats_SelectionChanged] Saved draft for ad: ''
+[18.12.2025 13:22:46]  [LBChats_SelectionChanged] No item selected
+[18.12.2025 13:23:15]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[18.12.2025 13:23:15]  [MessengerWindow] Инициализация завершена
+[18.12.2025 13:23:15]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 13:23:15]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: 123
+[18.12.2025 13:23:15]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 13:23:15]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: qq
+[18.12.2025 13:23:16]  [LBChats_SelectionChanged] Selected contact: ad (admin_228)
+[18.12.2025 13:23:16]  [LBChats_SelectionChanged] Restored draft for ad: ''
+[18.12.2025 13:23:17]  [LBChats_SelectionChanged] Saved draft for ad: ''
+[18.12.2025 13:23:17]  [LBChats_SelectionChanged] No item selected
+[18.12.2025 13:25:12]  [Authorization] Error: Подключение не установлено, т.к. конечный компьютер отверг запрос на подключение. (localhost:5000)
+[18.12.2025 13:25:22]  [Authorization] Error: The SSL connection could not be established, see inner exception.
+[18.12.2025 13:25:31]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[18.12.2025 13:25:31]  [MessengerWindow] Инициализация завершена
+[18.12.2025 13:25:31]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 13:25:31]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: 123
+[18.12.2025 13:25:31]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 13:25:31]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: qq
+[18.12.2025 13:25:33]  [LBChats_SelectionChanged] Selected contact: Админ (admin_228)
+[18.12.2025 13:25:33]  [LBChats_SelectionChanged] Restored draft for Админ: ''
+[18.12.2025 13:25:34]  [LBChats_SelectionChanged] Saved draft for Админ: ''
+[18.12.2025 13:25:34]  [LBChats_SelectionChanged] No item selected
+[18.12.2025 13:27:58]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[18.12.2025 13:27:58]  [MessengerWindow] Инициализация завершена
+[18.12.2025 13:27:59]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 13:27:59]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: 123
+[18.12.2025 13:27:59]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 13:27:59]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: qq
+[18.12.2025 13:27:59]  [LBChats_SelectionChanged] Selected contact: Админ (admin_228)
+[18.12.2025 13:27:59]  [LBChats_SelectionChanged] Restored draft for Админ: ''
+[18.12.2025 13:28:00]  [LBChats_SelectionChanged] Saved draft for Админ: ''
+[18.12.2025 13:28:00]  [LBChats_SelectionChanged] No item selected
+[18.12.2025 13:30:36]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[18.12.2025 13:30:37]  [MessengerWindow] Инициализация завершена
+[18.12.2025 13:30:37]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 13:30:37]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: 123
+[18.12.2025 13:30:37]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 13:30:37]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: qq
+[18.12.2025 13:30:37]  [LBChats_SelectionChanged] Selected contact: ad (admin_228)
+[18.12.2025 13:30:38]  [LBChats_SelectionChanged] Restored draft for ad: ''
+[18.12.2025 13:30:39]  [LBChats_SelectionChanged] Saved draft for ad: ''
+[18.12.2025 13:30:39]  [LBChats_SelectionChanged] No item selected
+[18.12.2025 13:30:47]  [LBChats_SelectionChanged] Saved draft for ad: ''
+[18.12.2025 13:30:47]  [LBChats_SelectionChanged] Selected contact: ad (admin_228)
+[18.12.2025 13:30:48]  [LBChats_SelectionChanged] Restored draft for ad: ''
+[18.12.2025 13:31:00]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[18.12.2025 13:31:00]  [MessengerWindow] Инициализация завершена
+[18.12.2025 13:31:01]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 13:31:01]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: 123
+[18.12.2025 13:31:01]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 13:31:01]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: qq
+[18.12.2025 13:31:02]  [LBChats_SelectionChanged] Selected contact: ad (admin_228)
+[18.12.2025 13:31:02]  [LBChats_SelectionChanged] Restored draft for ad: ''
+[18.12.2025 13:32:10]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[18.12.2025 13:32:10]  [MessengerWindow] Инициализация завершена
+[18.12.2025 13:32:10]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 13:32:10]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: 123
+[18.12.2025 13:32:10]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 13:32:10]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: qq
+[18.12.2025 13:32:13]  [LBChats_SelectionChanged] Selected contact: ad (admin_228)
+[18.12.2025 13:32:13]  [LBChats_SelectionChanged] Restored draft for ad: ''
+[18.12.2025 13:32:37]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[18.12.2025 13:32:37]  [MessengerWindow] Инициализация завершена
+[18.12.2025 13:32:37]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 13:32:37]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: 123
+[18.12.2025 13:32:38]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 13:32:38]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: qq
+[18.12.2025 13:32:53]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[18.12.2025 13:32:53]  [MessengerWindow] Инициализация завершена
+[18.12.2025 13:32:55]  [LBChats_SelectionChanged] Selected contact: 123 (masya)
+[18.12.2025 13:32:55]  [LBChats_SelectionChanged] Restored draft for 123: ''
+[18.12.2025 13:32:56]  [LBChats_SelectionChanged] Saved draft for 123: ''
+[18.12.2025 13:32:56]  [LBChats_SelectionChanged] Selected contact: 123 (masya)
+[18.12.2025 13:32:56]  [LBChats_SelectionChanged] Restored draft for 123: ''
+[18.12.2025 13:33:02]  [LBChats_SelectionChanged] Saved draft for 123: ''
+[18.12.2025 13:33:02]  [LBChats_SelectionChanged] Selected contact: 123 (masya)
+[18.12.2025 13:33:02]  [LBChats_SelectionChanged] Restored draft for 123: ''
+[18.12.2025 13:33:03]  [LBChats_SelectionChanged] Saved draft for 123: ''
+[18.12.2025 13:33:03]  [LBChats_SelectionChanged] No item selected
+[18.12.2025 13:33:03]  [LBChats_SelectionChanged] Saved draft for 123: ''
+[18.12.2025 13:33:03]  [LBChats_SelectionChanged] Selected contact: 123 (masya)
+[18.12.2025 13:33:04]  [LBChats_SelectionChanged] Restored draft for 123: ''
+[18.12.2025 13:33:06]  [LBChats_SelectionChanged] Saved draft for 123: ''
+[18.12.2025 13:33:06]  [LBChats_SelectionChanged] No item selected
+[18.12.2025 13:33:07]  [LBChats_SelectionChanged] Saved draft for 123: ''
+[18.12.2025 13:33:07]  [LBChats_SelectionChanged] Selected contact: Мася (masya)
+[18.12.2025 13:33:07]  [LBChats_SelectionChanged] Restored draft for Мася: ''
+[18.12.2025 13:33:26]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[18.12.2025 13:33:26]  [MessengerWindow] Инициализация завершена
+[18.12.2025 13:33:47]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[18.12.2025 13:33:47]  [MessengerWindow] Инициализация завершена
+[18.12.2025 13:33:48]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 13:33:48]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: 123
+[18.12.2025 13:33:48]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 13:33:48]  [AddMessageToUser] Получено сообщение от Вася жопкин бамбук: qq
+[18.12.2025 13:33:51]  [LBChats_SelectionChanged] Selected contact: ad (admin_228)
+[18.12.2025 13:33:51]  [LBChats_SelectionChanged] Restored draft for ad: ''
+[18.12.2025 13:33:52]  [LBChats_SelectionChanged] Saved draft for ad: ''
+[18.12.2025 13:33:52]  [LBChats_SelectionChanged] No item selected
+[18.12.2025 13:33:54]  [LBChats_SelectionChanged] Saved draft for ad: ''
+[18.12.2025 13:33:54]  [LBChats_SelectionChanged] Selected contact: Вася жопкин бамбук (vasya)
+[18.12.2025 13:33:54]  [LBChats_SelectionChanged] Restored draft for Вася жопкин бамбук: ''
+[18.12.2025 13:33:56]  [LBChats_SelectionChanged] Saved draft for Вася жопкин бамбук: ''
+[18.12.2025 13:33:56]  [LBChats_SelectionChanged] No item selected
+[18.12.2025 13:34:25]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[18.12.2025 13:34:25]  [MessengerWindow] Инициализация завершена
+[18.12.2025 13:34:33]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[18.12.2025 13:34:33]  [MessengerWindow] Инициализация завершена
+[18.12.2025 13:34:50]  [LBChats_SelectionChanged] Selected contact:  (vasya)
+[18.12.2025 13:34:50]  [LBChats_SelectionChanged] Restored draft for : ''
+[18.12.2025 13:35:46]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[18.12.2025 13:35:46]  [MessengerWindow] Инициализация завершена
+[18.12.2025 13:35:49]  [LBChats_SelectionChanged] Selected contact: Вася жопкин бамбук (vasya)
+[18.12.2025 13:35:49]  [LBChats_SelectionChanged] Restored draft for Вася жопкин бамбук: ''
+[18.12.2025 13:35:50]  [LBChats_SelectionChanged] Saved draft for Вася жопкин бамбук: ''
+[18.12.2025 13:35:50]  [LBChats_SelectionChanged] No item selected
+[18.12.2025 13:35:54]  [LBChats_SelectionChanged] Saved draft for Вася жопкин бамбук: ''
+[18.12.2025 13:35:54]  [LBChats_SelectionChanged] Selected contact: Вася жопкин бамбук (vasya)
+[18.12.2025 13:35:54]  [LBChats_SelectionChanged] Restored draft for Вася жопкин бамбук: ''
+[18.12.2025 13:35:55]  [LBChats_SelectionChanged] Saved draft for Вася жопкин бамбук: ''
+[18.12.2025 13:35:55]  [LBChats_SelectionChanged] No item selected
+[18.12.2025 13:36:00]  [LBChats_SelectionChanged] Saved draft for Вася жопкин бамбук: ''
+[18.12.2025 13:36:00]  [LBChats_SelectionChanged] Selected contact: 123 (vasya)
+[18.12.2025 13:36:00]  [LBChats_SelectionChanged] Restored draft for 123: ''
+[18.12.2025 13:36:01]  [LBChats_SelectionChanged] Saved draft for 123: ''
+[18.12.2025 13:36:01]  [LBChats_SelectionChanged] No item selected
+[18.12.2025 13:36:16]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[18.12.2025 13:36:16]  [MessengerWindow] Инициализация завершена
+[18.12.2025 13:36:23]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[18.12.2025 13:36:23]  [MessengerWindow] Инициализация завершена
+[18.12.2025 13:36:47]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[18.12.2025 13:36:48]  [MessengerWindow] Инициализация завершена
+[18.12.2025 13:36:57]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[18.12.2025 13:36:57]  [MessengerWindow] Инициализация завершена
+[18.12.2025 13:37:15]  [LBChats_SelectionChanged] Selected contact: Вася жопкин бамбук (vasya)
+[18.12.2025 13:37:15]  [LBChats_SelectionChanged] Restored draft for Вася жопкин бамбук: ''
+[18.12.2025 13:37:16]  [LBChats_SelectionChanged] Saved draft for Вася жопкин бамбук: ''
+[18.12.2025 13:37:16]  [LBChats_SelectionChanged] No item selected
+[18.12.2025 13:37:24]  [LBChats_SelectionChanged] Saved draft for Вася жопкин бамбук: ''
+[18.12.2025 13:37:24]  [LBChats_SelectionChanged] Selected contact: ad (vasya)
+[18.12.2025 13:37:24]  [LBChats_SelectionChanged] Restored draft for ad: ''
+[18.12.2025 13:37:28]  [SendMessage] Starting send message: '123' to contact: ad
+[18.12.2025 13:37:29]  [SendMessage] Message added to local contact. Sending to user...
+[18.12.2025 13:37:29]  [AddMessageToUser] Получено сообщение от masya: 123
+[18.12.2025 13:37:30]  [AddMessageToUser] Получено сообщение от Мася: 123
+[18.12.2025 13:37:32]  [LBChats_SelectionChanged] Selected contact: Мася (masya)
+[18.12.2025 13:37:32]  [LBChats_SelectionChanged] Restored draft for Мася: ''
+[18.12.2025 13:37:40]  [SendMessage] Starting send message: '123' to contact: Мася
+[18.12.2025 13:37:40]  [SendMessage] Message added to local contact. Sending to user...
+[18.12.2025 13:37:41]  [AddMessageToUser] Получено сообщение от vasya: 123
+[18.12.2025 13:37:42]  [AddMessageToUser] Получено сообщение от ad: 123
+[18.12.2025 13:38:11]  [LBChats_SelectionChanged] Saved draft for ad: ''
+[18.12.2025 13:38:11]  [LBChats_SelectionChanged] No item selected

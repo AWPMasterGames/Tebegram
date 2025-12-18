@@ -517,23 +517,21 @@ namespace Tebegrammmm
                 using var request = new HttpRequestMessage(HttpMethod.Post, $"{ServerData.ServerAdress}/Contact");
                 request.Content = content;
                 using var response = await httpClient.SendAsync(request);
-                string[] temp = data.Split('▫');
+                string ResponseContent = await response.Content.ReadAsStringAsync();
+                string[] temp = ResponseContent.Split('▫');
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    string[] Name = { };
-                    if (temp[2].Trim().Length < 1)
+                    if (data.Split('▫')[2].Trim().Length < 1)
                     {
-                        using HttpRequestMessage GetNameRequest = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/UserName/{temp[1]}");
-                        using HttpResponseMessage NameResponse = await httpClient.SendAsync(GetNameRequest);
-                        Name = (await NameResponse.Content.ReadAsStringAsync()).Split("▫");
-                        temp[2] = Name[1];
+                        User.AddContact(new Contact(int.Parse(temp[0]), temp[2], temp[1]));
+                        return true;
                     }
-                    User.AddContact(new Contact(int.Parse(Name[0]), temp[1], temp[2]));
+                    User.AddContact(new Contact(int.Parse(temp[0]), temp[2], data.Split('▫')[2].Trim()));
                     return true;
                 }
                 else if (response.StatusCode == HttpStatusCode.NotFound)
                 {
-                    MessageBox.Show($"{temp[1]} не найден", "ошибка");
+                    MessageBox.Show($"{temp[2]} не найден", "ошибка");
                 }
             }
             catch (Exception ex)

@@ -213,13 +213,16 @@ app.MapPost("/Contact", async (HttpContext Context) =>
     User UContact = UsersData.FindUserByUsername(Data[1]);
     if (UContact == null)
     {
-        return Context.Response.StatusCode = 404;
+        Context.Response.StatusCode = 404;
+        await Context.Response.WriteAsync("Пользователь не найден");
+        return;
     }
     Contact contact;
     if (Data[2].Trim().Length < 1) contact = new Contact(UContact.Id, UContact.Username, UContact.Name);
     else contact = new Contact(UContact.Id, UContact.Username, Data[2]);
     UsersData.FindUserById(int.Parse(Data[0]))?.AddContact(contact);
-    return Context.Response.StatusCode = 200;
+    Context.Response.StatusCode = 200;
+    await Context.Response.WriteAsync(contact.ToString());
 });
 app.MapPut("/Contact", async (HttpContext Context) =>
 {

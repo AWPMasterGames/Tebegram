@@ -18,146 +18,18 @@
               {
                 "Sender": "masya",
                 "Recipient": "vasya",
-                "Text": "привет",
-                "Time": "2025-12-17 12:06:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:06▫▫привет"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
                 "Text": "123",
-                "Time": "2025-12-17 12:09:00",
+                "Time": "2025-12-18 04:37:00",
                 "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:09▫▫123"
+                "MessageString": "masya▫vasya▫Text▫01:37▫▫123"
               },
               {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "qq",
-                "Time": "2025-12-17 12:10:00",
+                "Sender": "vasya",
+                "Recipient": "masya",
+                "Text": "123",
+                "Time": "2025-12-18 04:37:00",
                 "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫qq"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "ты чо лысый?",
-                "Time": "2025-12-17 12:10:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫ты чо лысый?"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "ахахахха",
-                "Time": "2025-12-17 12:10:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫ахахахха"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "ах",
-                "Time": "2025-12-17 12:10:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫ах"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "ах",
-                "Time": "2025-12-17 12:10:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫ах"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "ахх",
-                "Time": "2025-12-17 12:10:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫ахх"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "ах",
-                "Time": "2025-12-17 12:10:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫ах"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "ах",
-                "Time": "2025-12-17 12:10:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫ах"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "ах",
-                "Time": "2025-12-17 12:10:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫ах"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "ах",
-                "Time": "2025-12-17 12:10:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫ах"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "ахх",
-                "Time": "2025-12-17 12:10:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫ахх"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "ахха",
-                "Time": "2025-12-17 12:10:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫ахха"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "ахахах",
-                "Time": "2025-12-17 12:10:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫ахахах"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "дурак",
-                "Time": "2025-12-17 12:10:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫дурак"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "ты шо",
-                "Time": "2025-12-17 12:10:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫ты шо"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "дурной",
-                "Time": "2025-12-17 12:10:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫дурной"
+                "MessageString": "vasya▫masya▫Text▫01:37▫▫123"
               }
             ]
           }
@@ -208,161 +80,33 @@
         "Name": "Все чаты",
         "Contacts": [
           {
-            "Id": 1,
-            "Username": "vasya",
-            "Name": "Вася жопкин бамбук",
-            "Messages": [
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "привет",
-                "Time": "2025-12-17 12:06:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:06▫▫привет"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "123",
-                "Time": "2025-12-17 12:09:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:09▫▫123"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "qq",
-                "Time": "2025-12-17 12:10:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫qq"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "ты чо лысый?",
-                "Time": "2025-12-17 12:10:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫ты чо лысый?"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "ахахахха",
-                "Time": "2025-12-17 12:10:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫ахахахха"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "ах",
-                "Time": "2025-12-17 12:10:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫ах"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "ах",
-                "Time": "2025-12-17 12:10:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫ах"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "ахх",
-                "Time": "2025-12-17 12:10:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫ахх"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "ах",
-                "Time": "2025-12-17 12:10:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫ах"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "ах",
-                "Time": "2025-12-17 12:10:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫ах"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "ах",
-                "Time": "2025-12-17 12:10:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫ах"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "ах",
-                "Time": "2025-12-17 12:10:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫ах"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "ахх",
-                "Time": "2025-12-17 12:10:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫ахх"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "ахха",
-                "Time": "2025-12-17 12:10:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫ахха"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "ахахах",
-                "Time": "2025-12-17 12:10:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫ахахах"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "дурак",
-                "Time": "2025-12-17 12:10:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫дурак"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "ты шо",
-                "Time": "2025-12-17 12:10:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫ты шо"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "дурной",
-                "Time": "2025-12-17 12:10:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫09:10▫▫дурной"
-              }
-            ]
-          },
-          {
             "Id": 2,
             "Username": "ybeka",
             "Name": "Убебка",
             "Messages": []
+          },
+          {
+            "Id": 1,
+            "Username": "vasya",
+            "Name": "ad",
+            "Messages": [
+              {
+                "Sender": "masya",
+                "Recipient": "vasya",
+                "Text": "123",
+                "Time": "2025-12-18 04:37:00",
+                "MessageType": "Text",
+                "MessageString": "masya▫vasya▫Text▫01:37▫▫123"
+              },
+              {
+                "Sender": "vasya",
+                "Recipient": "masya",
+                "Text": "123",
+                "Time": "2025-12-18 04:37:00",
+                "MessageType": "Text",
+                "MessageString": "vasya▫masya▫Text▫01:37▫▫123"
+              }
+            ]
           }
         ],
         "Icon": "\uD83D\uDCAC",
