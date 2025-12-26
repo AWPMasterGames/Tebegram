@@ -127,7 +127,7 @@ app.MapGet("/login/{UserLogin}-{UserPassword}", async (HttpContext Context, stri
     else await Context.Response.WriteAsync("Неверный пароль");
 });
 
-app.MapGet("/register/{UserLogin}-{Username}-{UserPassword}", async (HttpContext Context, string UserLogin, string Username, string UserPassword) =>
+app.MapGet("/register/{UserLogin}-{UserPassword}-{Username}-{Name}", async (HttpContext Context, string UserLogin, string UserPassword, string Username, string Name) =>
 {
     if (UsersData.IsExistUser(UserLogin))
     {
@@ -135,7 +135,7 @@ app.MapGet("/register/{UserLogin}-{Username}-{UserPassword}", async (HttpContext
     }
     else if (!UsersData.IsExistUser(UserLogin))
     {
-        User NewUser = new User(UsersData.UsersCount + 1, UserLogin, UserPassword, Username, Username,
+        User NewUser = new User(UsersData.UsersCount + 1, UserLogin, UserPassword, Name, Username,
                 new ObservableCollection<ChatFolder> {
                 new ChatFolder("Все чаты",
                         new ObservableCollection<Contact> {
