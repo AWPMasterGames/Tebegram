@@ -1,0 +1,43 @@
+[23.12.2025 21:10:59]  [Authorization] Error: Error while copying content to a stream.
+[23.12.2025 21:11:14]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[23.12.2025 21:11:14]  [MessengerWindow] Инициализация завершена
+[23.12.2025 21:11:15]  [AddMessageToUser] Получено сообщение от masya: 123
+[23.12.2025 21:11:15]  [AddMessageToUser] Получено сообщение от ad: 123
+[23.12.2025 21:11:16]  [LBChats_SelectionChanged] Selected contact: Убебка (ybeka)
+[23.12.2025 21:11:16]  [LBChats_SelectionChanged] Restored draft for Убебка: ''
+[23.12.2025 21:14:05]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[23.12.2025 21:14:05]  [MessengerWindow] Инициализация завершена
+[23.12.2025 21:14:06]  [AddMessageToUser] Получено сообщение от masya: 123
+[23.12.2025 21:14:06]  [AddMessageToUser] Получено сообщение от ad: 123
+[23.12.2025 21:17:28]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[23.12.2025 21:17:29]  [MessengerWindow] Инициализация завершена
+[23.12.2025 21:17:29]  [AddMessageToUser] Получено сообщение от masya: 123
+[23.12.2025 21:17:29]  [AddMessageToUser] Получено сообщение от ad: 123
+[23.12.2025 21:20:54]  [LBChats_SelectionChanged] Selected contact: somnia (somnia)
+[23.12.2025 21:20:54]  [LBChats_SelectionChanged] Restored draft for somnia: ''
+[23.12.2025 21:21:01]  [SendMessage] Starting send message: 'qq негр' to contact: somnia
+[23.12.2025 21:21:01]  [SendMessage] Message added to local contact. Sending to user...
+[23.12.2025 21:21:02]  [AddMessageToUser] Получено сообщение от masya: qq негр
+[23.12.2025 21:26:27]  [AddMessageToUser] Получено сообщение от somnia: q
+[23.12.2025 21:26:30]  [AddMessageToUser] Получено сообщение от somnia: qq раб.
+[23.12.2025 21:26:59]  [SendMessage] Starting send message: '123' to contact: somnia
+[23.12.2025 21:26:59]  [SendMessage] Message added to local contact. Sending to user...
+[23.12.2025 21:26:59]  [AddMessageToUser] Получено сообщение от masya: 123
+[23.12.2025 21:27:01]  [AddMessageToUser] Получено сообщение от somnia: передаю от сварки, бабок нету зато есть айфон.
+[23.12.2025 21:27:23]  [SendMessage] Starting send message: '1429941917327687800_(1).png' to contact: somnia
+[23.12.2025 21:27:23]  [SendMessage] Message added to local contact. Sending to user...
+[23.12.2025 21:27:24]  [AddMessageToUser] Получен файл от masya: https://z24cpghm-5000.euw.devtunnels.ms/upload/1429941917327687800_(1).png
+[23.12.2025 21:27:28]  [AddMessageToUser] Получен файл от somnia: https://z24cpghm-5000.euw.devtunnels.ms/upload/RobloxScreenShot20251221_232242055.png
+[23.12.2025 21:27:56]  [SendMessage] Starting send message: 'Screenshot_2025-11-13-23-42-26-373_app.revanced.android.youtube-edit.gif' to contact: somnia
+[23.12.2025 21:27:56]  [SendMessage] Message added to local contact. Sending to user...
+[23.12.2025 21:27:56]  [AddMessageToUser] Получен файл от masya: https://z24cpghm-5000.euw.devtunnels.ms/upload/Screenshot_2025-11-13-23-42-26-373_app.revanced.android.youtube-edit.gif
+[23.12.2025 21:28:07]  [SendMessage] Starting send message: 'Ariis_-_FUNK_DO_ROMA_(hitmos.fm).mp3' to contact: somnia
+[23.12.2025 21:28:08]  [SendMessage] Message added to local contact. Sending to user...
+[23.12.2025 21:28:09]  [AddMessageToUser] Получен файл от masya: https://z24cpghm-5000.euw.devtunnels.ms/upload/Ariis_-_FUNK_DO_ROMA_(hitmos.fm).mp3
+[23.12.2025 21:28:33]  [AddMessageToUser] Получен файл от somnia: https://z24cpghm-5000.euw.devtunnels.ms/upload/#рек_#рекомендации_#дискорд_#dnd_#игры_#shorts_#anime_#dnd5e_#мемы_#мем_#rpg_#настолки_#пчк_#dice.mp4
+[23.12.2025 21:29:16]  [LBMessages_SelectionChangeMessage] Error: Response status code does not indicate success: 405 (Method Not Allowed).
+[23.12.2025 21:29:30]  [LBMessages_SelectionChangeMessage] Error: Response status code does not indicate success: 405 (Method Not Allowed).
+[23.12.2025 21:31:50]  [SendMessage] Starting send message: 'uhaha.mp4' to contact: somnia
+[23.12.2025 21:31:50]  [SendMessage] Message added to local contact. Sending to user...
+[23.12.2025 21:31:52]  [AddMessageToUser] Получен файл от masya: https://z24cpghm-5000.euw.devtunnels.ms/upload/uhaha.mp4
+[23.12.2025 21:33:49]  [AddMessageToUser] Получено сообщение от somnia: ща если найду видос.

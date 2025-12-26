@@ -50,7 +50,7 @@
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions >
-                                    <local1:UserControl1/>
+                                    <local1:UserControl1 Avatar="https://djnkpzmq-5000.euw.devtunnels.ms/avatars/1429941917327687800.png"/>
                                     <TextBlock Text="{Binding Name}" Grid.Column="1"/>
                                 </Grid>
                             </DataTemplate>
@@ -71,7 +71,7 @@
                                         <ColumnDefinition Width="auto"/>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions >
-                                    <local1:UserControl1/>
+                                    <local1:UserControl1 Avatar="https://djnkpzmq-5000.euw.devtunnels.ms/avatars/1429941917327687800.png"/>
                                     <TextBlock Text="{Binding Name}" Grid.Column="1"/>
                                 </Grid>
                             </DataTemplate>

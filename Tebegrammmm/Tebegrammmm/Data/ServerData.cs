@@ -6,7 +6,7 @@ namespace Tebegrammmm.Data
 {
     public static class ServerData
     {
-        private static string _ServerAdress = "https://djnkpzmq-5000.euw.devtunnels.ms";
+        private static string _ServerAdress;
         public static string ServerAdress { get { return _ServerAdress; } }
 
         private static System.Net.WebClient _wc = new System.Net.WebClient();
@@ -30,7 +30,7 @@ namespace Tebegrammmm.Data
         {
             try
             {
-                string _ServerAdress = _wc.DownloadString("https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Tebegrammmm/Adress.txt");
+                _ServerAdress = _wc.DownloadString("https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Tebegrammmm/Adress.txt").Split("\n")[0].Trim();
                 CheckAdressValid();
             }
             catch

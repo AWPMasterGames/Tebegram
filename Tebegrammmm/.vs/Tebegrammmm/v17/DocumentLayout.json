@@ -7,11 +7,12 @@
       "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\messengerwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\\u041F\u041A\\AppData\\Local\\Temp\\.vsdbgsrc\\0f2d0695ed74c5d20967cd7c4f80fe6a5f94e707866ba4844788a36d4fa1146e\\String.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\data\\serverdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\data\\serverdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\addcontact.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\addcontact.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\messengerwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
@@ -22,12 +23,38 @@
       "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\settingswindows\\settingspanelwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\addcontact.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\addcontact.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\chatsfoldersredactswindows\\redactfoldercontatcswindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\chatsfoldersredactswindows\\redactfoldercontatcswindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\chatsfoldersredactswindows\\redactcionchatsfolderswindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\chatsfoldersredactswindows\\redactcionchatsfolderswindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\\u041F\u041A\\AppData\\Local\\Temp\\.vsdbgsrc\\df0469e962e227f2de8cb55ca89660b09860da1c260bae4c4cbe354c69ab5ed3\\Number.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\chatsfoldersredactswindows\\addfolderwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\chatsfoldersredactswindows\\addfolderwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\editcontactnamewindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\editcontactnamewindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\\u041F\u041A\\AppData\\Local\\Temp\\.vsdbgsrc\\0f2d0695ed74c5d20967cd7c4f80fe6a5f94e707866ba4844788a36d4fa1146e\\String.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\addcontact.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\addcontact.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\addcontact.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\addcontact.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\controls\\usercontrol1.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -38,16 +65,8 @@
       "RelativeMoniker": "D:0:0:{09EAC846-1528-4174-BB74-5950587A38A6}|TebegramServer\\TebegramServer\\TebegramServer.csproj|solutionrelative:tebegramserver\\tebegramserver\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\resourses\\searchtextbox.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\resourses\\searchtextbox.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\data\\serverdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\data\\serverdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\resourses\\messengertheme_base.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
@@ -64,10 +83,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\tebegrammmm.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
       "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\tebegrammmm.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\\u043F\u043A\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     }
   ],
   "DocumentGroupContainers": [
@@ -81,7 +96,7 @@
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 15,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\Program.cs",
               "RelativeDocumentMoniker": "TebegramServer\\TebegramServer\\Program.cs",
@@ -100,7 +115,7 @@
               "RelativeDocumentMoniker": "Tebegrammmm\\MessengerWindow.xaml.cs",
               "ToolTip": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\MessengerWindow.xaml.cs",
               "RelativeToolTip": "Tebegrammmm\\MessengerWindow.xaml.cs",
-              "ViewState": "AgIAAPoBAAAAAAAAAAAlwA0CAABXAAAAAAAAAA==",
+              "ViewState": "AgIAABoAAAAAAAAAAAA6wDIAAAAaAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-07-22T08:50:51.268Z",
               "IsPinned": true,
@@ -108,27 +123,49 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ServerData.cs",
+              "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Data\\ServerData.cs",
+              "RelativeDocumentMoniker": "Tebegrammmm\\Data\\ServerData.cs",
+              "ToolTip": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Data\\ServerData.cs",
+              "RelativeToolTip": "Tebegrammmm\\Data\\ServerData.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAgwCEAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-22T12:57:13.933Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "MainWindow.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\MainWindow.xaml.cs",
+              "RelativeDocumentMoniker": "Tebegrammmm\\MainWindow.xaml.cs",
+              "ToolTip": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\MainWindow.xaml.cs",
+              "RelativeToolTip": "Tebegrammmm\\MainWindow.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-06T09:58:32.698Z"
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 5,
-              "Title": "AddContact.xaml",
-              "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\AddContact.xaml",
-              "RelativeDocumentMoniker": "Tebegrammmm\\AddContact.xaml",
-              "ToolTip": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\AddContact.xaml",
-              "RelativeToolTip": "Tebegrammmm\\AddContact.xaml",
+              "Title": "RedactFolderContatcsWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\ChatsFoldersRedactsWindows\\RedactFolderContatcsWindow.xaml",
+              "RelativeDocumentMoniker": "Tebegrammmm\\ChatsFoldersRedactsWindows\\RedactFolderContatcsWindow.xaml",
+              "ToolTip": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\ChatsFoldersRedactsWindows\\RedactFolderContatcsWindow.xaml",
+              "RelativeToolTip": "Tebegrammmm\\ChatsFoldersRedactsWindows\\RedactFolderContatcsWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-12-18T09:58:27.432Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-23T18:12:14.101Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 6,
-              "Title": "EditContactNameWindow.xaml",
-              "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\EditContactNameWindow.xaml",
-              "RelativeDocumentMoniker": "Tebegrammmm\\EditContactNameWindow.xaml",
-              "ToolTip": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\EditContactNameWindow.xaml",
-              "RelativeToolTip": "Tebegrammmm\\EditContactNameWindow.xaml",
+              "Title": "RedactcionChatsFoldersWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\ChatsFoldersRedactsWindows\\RedactcionChatsFoldersWindow.xaml",
+              "RelativeDocumentMoniker": "Tebegrammmm\\ChatsFoldersRedactsWindows\\RedactcionChatsFoldersWindow.xaml",
+              "ToolTip": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\ChatsFoldersRedactsWindows\\RedactcionChatsFoldersWindow.xaml",
+              "RelativeToolTip": "Tebegrammmm\\ChatsFoldersRedactsWindows\\RedactcionChatsFoldersWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-12-18T09:58:18.196Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-22T16:55:11.446Z"
             },
             {
               "$type": "Document",
@@ -139,8 +176,7 @@
               "ToolTip": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\MessengerWindow.xaml",
               "RelativeToolTip": "Tebegrammmm\\MessengerWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-12-10T18:03:00.471Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-10T18:03:00.471Z"
             },
             {
               "$type": "Document",
@@ -151,24 +187,68 @@
               "ToolTip": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\SettingsWindows\\SettingsPanelWindow.xaml",
               "RelativeToolTip": "Tebegrammmm\\SettingsWindows\\SettingsPanelWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-12-10T18:54:38.699Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-10T18:54:38.699Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "MainWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\MainWindow.xaml",
+              "RelativeDocumentMoniker": "Tebegrammmm\\MainWindow.xaml",
+              "ToolTip": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\MainWindow.xaml",
+              "RelativeToolTip": "Tebegrammmm\\MainWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-12-10T18:05:01.227Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Number.cs",
+              "DocumentMoniker": "C:\\Users\\\u041F\u041A\\AppData\\Local\\Temp\\.vsdbgsrc\\df0469e962e227f2de8cb55ca89660b09860da1c260bae4c4cbe354c69ab5ed3\\Number.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\df0469e962e227f2de8cb55ca89660b09860da1c260bae4c4cbe354c69ab5ed3\\Number.cs",
+              "ToolTip": "C:\\Users\\\u041F\u041A\\AppData\\Local\\Temp\\.vsdbgsrc\\df0469e962e227f2de8cb55ca89660b09860da1c260bae4c4cbe354c69ab5ed3\\Number.cs [\u0422\u043E\u043B\u044C\u043A\u043E \u0447\u0442\u0435\u043D\u0438\u0435]",
+              "RelativeToolTip": "..\\..\\..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\df0469e962e227f2de8cb55ca89660b09860da1c260bae4c4cbe354c69ab5ed3\\Number.cs [\u0422\u043E\u043B\u044C\u043A\u043E \u0447\u0442\u0435\u043D\u0438\u0435]",
+              "ViewState": "AgIAAD8XAAAAAAAAAAAWwFIXAAACAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-23T18:11:32.006Z",
+              "EditorCaption": " [\u0422\u043E\u043B\u044C\u043A\u043E \u0447\u0442\u0435\u043D\u0438\u0435]"
             },
             {
               "$type": "Document",
               "DocumentIndex": 9,
-              "Title": "MainWindow.xaml.cs",
-              "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\MainWindow.xaml.cs",
-              "RelativeDocumentMoniker": "Tebegrammmm\\MainWindow.xaml.cs",
-              "ToolTip": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\MainWindow.xaml.cs",
-              "RelativeToolTip": "Tebegrammmm\\MainWindow.xaml.cs",
-              "ViewState": "AgIAAAwAAAAAAAAAAAAAACkAAAAgAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-06T09:58:32.698Z"
+              "Title": "AddFolderWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\ChatsFoldersRedactsWindows\\AddFolderWindow.xaml",
+              "RelativeDocumentMoniker": "Tebegrammmm\\ChatsFoldersRedactsWindows\\AddFolderWindow.xaml",
+              "ToolTip": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\ChatsFoldersRedactsWindows\\AddFolderWindow.xaml",
+              "RelativeToolTip": "Tebegrammmm\\ChatsFoldersRedactsWindows\\AddFolderWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-12-22T16:54:51.517Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 13,
+              "Title": "AddContact.xaml",
+              "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\AddContact.xaml",
+              "RelativeDocumentMoniker": "Tebegrammmm\\AddContact.xaml",
+              "ToolTip": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\AddContact.xaml",
+              "RelativeToolTip": "Tebegrammmm\\AddContact.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-12-18T09:58:27.432Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "EditContactNameWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\EditContactNameWindow.xaml",
+              "RelativeDocumentMoniker": "Tebegrammmm\\EditContactNameWindow.xaml",
+              "ToolTip": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\EditContactNameWindow.xaml",
+              "RelativeToolTip": "Tebegrammmm\\EditContactNameWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-12-18T09:58:18.196Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
               "Title": "String.cs",
               "DocumentMoniker": "C:\\Users\\\u041F\u041A\\AppData\\Local\\Temp\\.vsdbgsrc\\0f2d0695ed74c5d20967cd7c4f80fe6a5f94e707866ba4844788a36d4fa1146e\\String.cs",
               "RelativeDocumentMoniker": "..\\..\\..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\0f2d0695ed74c5d20967cd7c4f80fe6a5f94e707866ba4844788a36d4fa1146e\\String.cs",
@@ -176,12 +256,11 @@
               "RelativeToolTip": "..\\..\\..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\0f2d0695ed74c5d20967cd7c4f80fe6a5f94e707866ba4844788a36d4fa1146e\\String.cs",
               "ViewState": "AgIAABcKAAAAAAAAAAAowCoKAAACAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-17T17:46:22.837Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T17:46:22.837Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 12,
               "Title": "AddContact.xaml.cs",
               "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\AddContact.xaml.cs",
               "RelativeDocumentMoniker": "Tebegrammmm\\AddContact.xaml.cs",
@@ -189,12 +268,11 @@
               "RelativeToolTip": "Tebegrammmm\\AddContact.xaml.cs",
               "ViewState": "AgIAAAkAAAAAAAAAAAAAAAsAAAAPAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-18T09:58:32.481Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-18T09:58:32.481Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 14,
               "Title": "UserControl1.xaml.cs",
               "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Controls\\UserControl1.xaml.cs",
               "RelativeDocumentMoniker": "Tebegrammmm\\Controls\\UserControl1.xaml.cs",
@@ -206,31 +284,29 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 16,
               "Title": "SearchTextBox.xaml",
               "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Resourses\\SearchTextBox.xaml",
               "RelativeDocumentMoniker": "Tebegrammmm\\Resourses\\SearchTextBox.xaml",
               "ToolTip": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Resourses\\SearchTextBox.xaml",
               "RelativeToolTip": "Tebegrammmm\\Resourses\\SearchTextBox.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-12-17T17:16:02.844Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T17:16:02.844Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 17,
               "Title": "MessengerTheme_Base.xaml",
               "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Resourses\\MessengerTheme_Base.xaml",
               "RelativeDocumentMoniker": "Tebegrammmm\\Resourses\\MessengerTheme_Base.xaml",
               "ToolTip": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Resourses\\MessengerTheme_Base.xaml",
               "RelativeToolTip": "Tebegrammmm\\Resourses\\MessengerTheme_Base.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-12-17T17:15:05.372Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T17:15:05.372Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 19,
               "Title": "SettingsPanelWindow.xaml.cs",
               "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\SettingsWindows\\SettingsPanelWindow.xaml.cs",
               "RelativeDocumentMoniker": "Tebegrammmm\\SettingsWindows\\SettingsPanelWindow.xaml.cs",
@@ -242,31 +318,18 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "ServerData.cs",
-              "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Data\\ServerData.cs",
-              "RelativeDocumentMoniker": "Tebegrammmm\\Data\\ServerData.cs",
-              "ToolTip": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Data\\ServerData.cs",
-              "RelativeToolTip": "Tebegrammmm\\Data\\ServerData.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAASAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-22T12:57:13.933Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 18,
               "Title": "UserControl1.xaml",
               "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Controls\\UserControl1.xaml",
               "RelativeDocumentMoniker": "Tebegrammmm\\Controls\\UserControl1.xaml",
               "ToolTip": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Controls\\UserControl1.xaml",
               "RelativeToolTip": "Tebegrammmm\\Controls\\UserControl1.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-12-13T11:53:37.006Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-13T11:53:37.006Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 20,
               "Title": "Tebegrammmm",
               "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Tebegrammmm.csproj",
               "RelativeDocumentMoniker": "Tebegrammmm\\Tebegrammmm.csproj",
@@ -274,17 +337,6 @@
               "RelativeToolTip": "Tebegrammmm\\Tebegrammmm.csproj",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
               "WhenOpened": "2025-12-15T13:28:19.976Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 16,
-              "Title": "MainWindow.xaml",
-              "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\MainWindow.xaml",
-              "RelativeDocumentMoniker": "Tebegrammmm\\MainWindow.xaml",
-              "ToolTip": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\MainWindow.xaml",
-              "RelativeToolTip": "Tebegrammmm\\MainWindow.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-12-10T18:05:01.227Z"
             }
           ]
         }
