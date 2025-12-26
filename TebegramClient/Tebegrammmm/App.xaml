@@ -8,6 +8,7 @@
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Resourses/MessengerTheme_Base.xaml"/>
+                <ResourceDictionary Source="/Resourses/SearchTextBox.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

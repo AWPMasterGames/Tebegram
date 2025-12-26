@@ -1,0 +1,71 @@
+[26.12.2025 13:25:33]  [Authorization] Error: The SSL connection could not be established, see inner exception.
+[26.12.2025 13:25:41]  [Authorization] Error: The SSL connection could not be established, see inner exception.
+[26.12.2025 13:27:07]  [Authorization] Error: The SSL connection could not be established, see inner exception.
+[26.12.2025 13:29:10]  [Authorization] Error: The SSL connection could not be established, see inner exception.
+[26.12.2025 13:29:16]  [Authorization] Error: The SSL connection could not be established, see inner exception.
+[26.12.2025 13:37:03]  [Authorization] Error: Подключение не установлено, т.к. конечный компьютер отверг запрос на подключение. (localhost:5000)
+[26.12.2025 13:37:07]  [Authorization] Error: Подключение не установлено, т.к. конечный компьютер отверг запрос на подключение. (localhost:5000)
+[26.12.2025 13:37:32]  [Authorization] Error: Error while copying content to a stream.
+[26.12.2025 13:37:48]  [MessengerWindow] Инициализация для пользователя: Вася бамбук (vasya)
+[26.12.2025 13:37:48]  [MessengerWindow] Инициализация завершена
+[26.12.2025 13:37:48]  [AddMessageToUser] Получено сообщение от Мася: 123
+[26.12.2025 13:37:48]  [AddMessageToUser] Получено сообщение от vasya: 123
+[26.12.2025 13:37:49]  [LBChats_SelectionChanged] Selected contact: Мася (masya)
+[26.12.2025 13:37:49]  [LBChats_SelectionChanged] Restored draft for Мася: ''
+[26.12.2025 13:38:23]  [MessengerWindow] Инициализация для пользователя: Вася бамбук (vasya)
+[26.12.2025 13:38:23]  [MessengerWindow] Инициализация завершена
+[26.12.2025 13:38:23]  [AddMessageToUser] Получено сообщение от Мася: 123
+[26.12.2025 13:38:24]  [AddMessageToUser] Получено сообщение от vasya: 123
+[26.12.2025 13:40:37]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[26.12.2025 13:40:37]  [MessengerWindow] Инициализация завершена
+[26.12.2025 13:40:37]  [AddMessageToUser] Получено сообщение от masya: 123
+[26.12.2025 13:40:37]  [AddMessageToUser] Получено сообщение от ad: 123
+[26.12.2025 13:40:37]  [AddMessageToUser] Получено сообщение от masya: qq негр
+[26.12.2025 13:40:37]  [AddMessageToUser] Получено сообщение от somnia: q
+[26.12.2025 13:40:37]  [AddMessageToUser] Получено сообщение от somnia: qq раб.
+[26.12.2025 13:40:38]  [AddMessageToUser] Получено сообщение от masya: 123
+[26.12.2025 13:40:38]  [AddMessageToUser] Получено сообщение от somnia: передаю от сварки, бабок нету зато есть айфон.
+[26.12.2025 13:40:38]  [AddMessageToUser] Получен файл от masya: 
+[26.12.2025 13:40:38]  [AddMessageToUser] Получен файл от somnia: 
+[26.12.2025 13:40:38]  [AddMessageToUser] Получен файл от masya: 
+[26.12.2025 13:40:38]  [AddMessageToUser] Получен файл от masya: 
+[26.12.2025 13:40:38]  [AddMessageToUser] Получен файл от somnia: 
+[26.12.2025 13:40:38]  [AddMessageToUser] Получен файл от masya: 
+[26.12.2025 13:40:38]  [AddMessageToUser] Получено сообщение от somnia: ща если найду видос.
+[26.12.2025 13:41:00]  [LBChats_SelectionChanged] Selected contact: ad (vasya)
+[26.12.2025 13:41:00]  [LBChats_SelectionChanged] Restored draft for ad: ''
+[26.12.2025 13:41:14]  [SendMessage] Starting send message: '123' to contact: ad
+[26.12.2025 13:41:14]  [SendMessage] Message added to local contact. Sending to user...
+[26.12.2025 13:41:15]  [AddMessageToUser] Получено сообщение от masya: 123
+[26.12.2025 13:41:15]  [AddMessageToUser] Получено сообщение от Мася: 123
+[26.12.2025 13:41:25]  [SendMessage] Starting send message: '44' to contact: Мася
+[26.12.2025 13:41:26]  [SendMessage] Message added to local contact. Sending to user...
+[26.12.2025 13:41:26]  [AddMessageToUser] Получено сообщение от ad: 44
+[26.12.2025 13:41:26]  [AddMessageToUser] Получено сообщение от vasya: 44
+[26.12.2025 13:42:25]  [LBChats_SelectionChanged] Saved draft for ad: ''
+[26.12.2025 13:42:25]  [LBChats_SelectionChanged] Selected contact: somnia (somnia)
+[26.12.2025 13:42:25]  [LBChats_SelectionChanged] Restored draft for somnia: ''
+[26.12.2025 13:42:27]  [LBChats_SelectionChanged] Saved draft for somnia: ''
+[26.12.2025 13:42:27]  [LBChats_SelectionChanged] Selected contact: ad (vasya)
+[26.12.2025 13:42:27]  [LBChats_SelectionChanged] Restored draft for ad: ''
+[26.12.2025 13:42:29]  [LBChats_SelectionChanged] Saved draft for ad: ''
+[26.12.2025 13:42:30]  [LBChats_SelectionChanged] Selected contact: Убебка (ybeka)
+[26.12.2025 13:42:30]  [LBChats_SelectionChanged] Restored draft for Убебка: ''
+[26.12.2025 13:52:00]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[26.12.2025 13:52:00]  [MessengerWindow] Инициализация завершена
+[26.12.2025 13:52:00]  [AddMessageToUser] Получено сообщение от masya: 123
+[26.12.2025 13:52:00]  [AddMessageToUser] Получено сообщение от ad: 123
+[26.12.2025 13:52:00]  [AddMessageToUser] Получено сообщение от masya: 123
+[26.12.2025 13:52:00]  [AddMessageToUser] Получено сообщение от ad: 44
+[26.12.2025 13:52:01]  [AddMessageToUser] Получено сообщение от masya: qq негр
+[26.12.2025 13:52:01]  [AddMessageToUser] Получено сообщение от somnia: q
+[26.12.2025 13:52:01]  [AddMessageToUser] Получено сообщение от somnia: qq раб.
+[26.12.2025 13:52:01]  [AddMessageToUser] Получено сообщение от masya: 123
+[26.12.2025 13:52:01]  [AddMessageToUser] Получено сообщение от somnia: передаю от сварки, бабок нету зато есть айфон.
+[26.12.2025 13:52:01]  [AddMessageToUser] Получен файл от masya: 
+[26.12.2025 13:52:01]  [AddMessageToUser] Получен файл от somnia: 
+[26.12.2025 13:52:01]  [AddMessageToUser] Получен файл от masya: 
+[26.12.2025 13:52:01]  [AddMessageToUser] Получен файл от masya: 
+[26.12.2025 13:52:01]  [AddMessageToUser] Получен файл от somnia: 
+[26.12.2025 13:52:02]  [AddMessageToUser] Получен файл от masya: 
+[26.12.2025 13:52:02]  [AddMessageToUser] Получено сообщение от somnia: ща если найду видос.

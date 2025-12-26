@@ -14,7 +14,11 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TebegramServer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
+<<<<<<< HEAD:TebegramServer/TebegramServer/obj/Release/net8.0/TebegramServer.AssemblyInfo.cs
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+53043a41952513139160c00667ad806667a1adae")]
+=======
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3cb7f9bf1664cf5aaccc29b271ebf38680c19f3f")]
+>>>>>>> main:Tebegrammmm/TebegramServer/TebegramServer/obj/Debug/net8.0/TebegramServer.AssemblyInfo.cs
 [assembly: System.Reflection.AssemblyProductAttribute("TebegramServer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TebegramServer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

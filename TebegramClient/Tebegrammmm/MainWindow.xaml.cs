@@ -17,6 +17,18 @@ namespace Tebegrammmm
             TBUserLogin.Focus();
         }
 
+<<<<<<< HEAD:TebegramClient/Tebegrammmm/MainWindow.xaml.cs
+=======
+        }
+        private async void AutoAuth()
+        {
+            Thread.Sleep(100);
+            this.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                Authorization();
+            }));
+        }
+>>>>>>> main:Tebegrammmm/Tebegrammmm/MainWindow.xaml.cs
         private async void Authorization()
         {
             if (string.IsNullOrWhiteSpace(PBUserPassord.Password) || string.IsNullOrWhiteSpace(TBUserLogin.Text))

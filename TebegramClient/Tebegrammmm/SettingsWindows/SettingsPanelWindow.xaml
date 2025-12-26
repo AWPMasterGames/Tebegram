@@ -15,7 +15,12 @@
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
             <TextBlock Text="Информация о пользователе" HorizontalAlignment="Center" FontSize="25" Margin="0,10"/>
+<<<<<<< HEAD:TebegramClient/Tebegrammmm/SettingsWindows/SettingsPanelWindow.xaml
             <StackPanel Grid.Row="1" HorizontalAlignment="Center">
+=======
+            <StackPanel x:Name="UserInfo" Grid.Row="1" HorizontalAlignment="Center">
+                <local1:UserControl1 Avatar="https://djnkpzmq-5000.euw.devtunnels.ms/avatars/1429941917327687800.png"/>
+>>>>>>> main:Tebegrammmm/Tebegrammmm/SettingsWindows/SettingsPanelWindow.xaml
                 <Grid Margin="10,5">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto"/>

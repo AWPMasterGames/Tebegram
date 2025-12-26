@@ -49,6 +49,7 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,0" >
+                <TextBox Name="SearchContactBarTB" Template="{StaticResource TextBoxBaseControlTemplate}" FontSize="20" TextWrapping="Wrap" Height="35" Width="165" Margin="0,0,25,0" TextChanged="TextBox_TextChanged"/>
                 <Button Background="Transparent" BorderBrush="Transparent" Click="Button_Click_AddContact">
                     <Border BorderBrush="Gray" BorderThickness="2" CornerRadius="20" Width="35" Height="35">
                         <Grid HorizontalAlignment="Center">
