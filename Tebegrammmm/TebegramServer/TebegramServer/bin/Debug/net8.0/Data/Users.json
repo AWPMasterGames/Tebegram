@@ -19,33 +19,33 @@
                 "Sender": "masya",
                 "Recipient": "vasya",
                 "Text": "123",
-                "Time": "2025-12-19 01:37:00",
+                "Time": "2025-12-19 04:37:00",
                 "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫2025-12-18 22:37:00▫▫123"
+                "MessageString": "masya▫vasya▫Text▫2025-12-19 01:37:00▫▫123"
               },
               {
                 "Sender": "vasya",
                 "Recipient": "masya",
                 "Text": "123",
-                "Time": "2025-12-19 01:37:00",
+                "Time": "2025-12-19 04:37:00",
                 "MessageType": "Text",
-                "MessageString": "vasya▫masya▫Text▫2025-12-18 22:37:00▫▫123"
+                "MessageString": "vasya▫masya▫Text▫2025-12-19 01:37:00▫▫123"
               },
               {
                 "Sender": "masya",
                 "Recipient": "vasya",
                 "Text": "123",
-                "Time": "2025-12-26 07:41:00",
+                "Time": "2025-12-26 10:41:00",
                 "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫2025-12-26 04:41:00▫▫123"
+                "MessageString": "masya▫vasya▫Text▫2025-12-26 07:41:00▫▫123"
               },
               {
                 "Sender": "vasya",
                 "Recipient": "masya",
                 "Text": "44",
-                "Time": "2025-12-26 07:41:00",
+                "Time": "2025-12-26 10:41:00",
                 "MessageType": "Text",
-                "MessageString": "vasya▫masya▫Text▫2025-12-26 04:41:00▫▫44"
+                "MessageString": "vasya▫masya▫Text▫2025-12-26 07:41:00▫▫44"
               }
             ]
           }
@@ -110,33 +110,33 @@
                 "Sender": "masya",
                 "Recipient": "vasya",
                 "Text": "123",
-                "Time": "2025-12-19 01:37:00",
+                "Time": "2025-12-19 04:37:00",
                 "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫2025-12-18 22:37:00▫▫123"
+                "MessageString": "masya▫vasya▫Text▫2025-12-19 01:37:00▫▫123"
               },
               {
                 "Sender": "vasya",
                 "Recipient": "masya",
                 "Text": "123",
-                "Time": "2025-12-19 01:37:00",
+                "Time": "2025-12-19 04:37:00",
                 "MessageType": "Text",
-                "MessageString": "vasya▫masya▫Text▫2025-12-18 22:37:00▫▫123"
+                "MessageString": "vasya▫masya▫Text▫2025-12-19 01:37:00▫▫123"
               },
               {
                 "Sender": "masya",
                 "Recipient": "vasya",
                 "Text": "123",
-                "Time": "2025-12-26 07:41:00",
+                "Time": "2025-12-26 10:41:00",
                 "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫2025-12-26 04:41:00▫▫123"
+                "MessageString": "masya▫vasya▫Text▫2025-12-26 07:41:00▫▫123"
               },
               {
                 "Sender": "vasya",
                 "Recipient": "masya",
                 "Text": "44",
-                "Time": "2025-12-26 07:41:00",
+                "Time": "2025-12-26 10:41:00",
                 "MessageType": "Text",
-                "MessageString": "vasya▫masya▫Text▫2025-12-26 04:41:00▫▫44"
+                "MessageString": "vasya▫masya▫Text▫2025-12-26 07:41:00▫▫44"
               }
             ]
           },
@@ -149,97 +149,97 @@
                 "Sender": "masya",
                 "Recipient": "somnia",
                 "Text": "qq негр",
-                "Time": "2025-12-24 00:21:00",
+                "Time": "2025-12-24 03:21:00",
                 "MessageType": "Text",
-                "MessageString": "masya▫somnia▫Text▫2025-12-23 21:21:00▫▫qq негр"
+                "MessageString": "masya▫somnia▫Text▫2025-12-24 00:21:00▫▫qq негр"
               },
               {
                 "Sender": "somnia",
                 "Recipient": "masya",
                 "Text": "q",
-                "Time": "2025-12-24 00:26:00",
+                "Time": "2025-12-24 03:26:00",
                 "MessageType": "Text",
-                "MessageString": "somnia▫masya▫Text▫2025-12-23 21:26:00▫▫q"
+                "MessageString": "somnia▫masya▫Text▫2025-12-24 00:26:00▫▫q"
               },
               {
                 "Sender": "somnia",
                 "Recipient": "masya",
                 "Text": "qq раб.",
-                "Time": "2025-12-24 00:26:00",
+                "Time": "2025-12-24 03:26:00",
                 "MessageType": "Text",
-                "MessageString": "somnia▫masya▫Text▫2025-12-23 21:26:00▫▫qq раб."
+                "MessageString": "somnia▫masya▫Text▫2025-12-24 00:26:00▫▫qq раб."
               },
               {
                 "Sender": "masya",
                 "Recipient": "somnia",
                 "Text": "123",
-                "Time": "2025-12-24 00:26:00",
+                "Time": "2025-12-24 03:26:00",
                 "MessageType": "Text",
-                "MessageString": "masya▫somnia▫Text▫2025-12-23 21:26:00▫▫123"
+                "MessageString": "masya▫somnia▫Text▫2025-12-24 00:26:00▫▫123"
               },
               {
                 "Sender": "somnia",
                 "Recipient": "masya",
                 "Text": "передаю от сварки, бабок нету зато есть айфон.",
-                "Time": "2025-12-24 00:26:00",
+                "Time": "2025-12-24 03:26:00",
                 "MessageType": "Text",
-                "MessageString": "somnia▫masya▫Text▫2025-12-23 21:26:00▫▫передаю от сварки, бабок нету зато есть айфон."
+                "MessageString": "somnia▫masya▫Text▫2025-12-24 00:26:00▫▫передаю от сварки, бабок нету зато есть айфон."
               },
               {
                 "Sender": "masya",
                 "Recipient": "somnia",
                 "Text": "1429941917327687800_(1).png",
-                "Time": "2025-12-24 00:27:00",
+                "Time": "2025-12-24 03:27:00",
                 "MessageType": "File",
-                "MessageString": "masya▫somnia▫File▫2025-12-23 21:27:00▫▫1429941917327687800_(1).png"
+                "MessageString": "masya▫somnia▫File▫2025-12-24 00:27:00▫▫1429941917327687800_(1).png"
               },
               {
                 "Sender": "somnia",
                 "Recipient": "masya",
                 "Text": "RobloxScreenShot20251221_232242055.png",
-                "Time": "2025-12-24 00:27:00",
+                "Time": "2025-12-24 03:27:00",
                 "MessageType": "File",
-                "MessageString": "somnia▫masya▫File▫2025-12-23 21:27:00▫▫RobloxScreenShot20251221_232242055.png"
+                "MessageString": "somnia▫masya▫File▫2025-12-24 00:27:00▫▫RobloxScreenShot20251221_232242055.png"
               },
               {
                 "Sender": "masya",
                 "Recipient": "somnia",
                 "Text": "Screenshot_2025-11-13-23-42-26-373_app.revanced.android.youtube-edit.gif",
-                "Time": "2025-12-24 00:27:00",
+                "Time": "2025-12-24 03:27:00",
                 "MessageType": "File",
-                "MessageString": "masya▫somnia▫File▫2025-12-23 21:27:00▫▫Screenshot_2025-11-13-23-42-26-373_app.revanced.android.youtube-edit.gif"
+                "MessageString": "masya▫somnia▫File▫2025-12-24 00:27:00▫▫Screenshot_2025-11-13-23-42-26-373_app.revanced.android.youtube-edit.gif"
               },
               {
                 "Sender": "masya",
                 "Recipient": "somnia",
                 "Text": "Ariis_-_FUNK_DO_ROMA_(hitmos.fm).mp3",
-                "Time": "2025-12-24 00:28:00",
+                "Time": "2025-12-24 03:28:00",
                 "MessageType": "File",
-                "MessageString": "masya▫somnia▫File▫2025-12-23 21:28:00▫▫Ariis_-_FUNK_DO_ROMA_(hitmos.fm).mp3"
+                "MessageString": "masya▫somnia▫File▫2025-12-24 00:28:00▫▫Ariis_-_FUNK_DO_ROMA_(hitmos.fm).mp3"
               },
               {
                 "Sender": "somnia",
                 "Recipient": "masya",
                 "Text": "#рек_#рекомендации_#дискорд_#dnd_#игры_#shorts_#anime_#dnd5e_#мемы_#мем_#rpg_#настолки_#пчк_#dice.mp4",
-                "Time": "2025-12-24 00:28:00",
+                "Time": "2025-12-24 03:28:00",
                 "MessageType": "File",
-                "MessageString": "somnia▫masya▫File▫2025-12-23 21:28:00▫▫#рек_#рекомендации_#дискорд_#dnd_#игры_#shorts_#anime_#dnd5e_#мемы_#мем_#rpg_#настолки_#пчк_#dice.mp4"
+                "MessageString": "somnia▫masya▫File▫2025-12-24 00:28:00▫▫#рек_#рекомендации_#дискорд_#dnd_#игры_#shorts_#anime_#dnd5e_#мемы_#мем_#rpg_#настолки_#пчк_#dice.mp4"
               },
               {
                 "Sender": "masya",
                 "Recipient": "somnia",
                 "Text": "uhaha.mp4",
-                "Time": "2025-12-24 00:31:00",
+                "Time": "2025-12-24 03:31:00",
                 "MessageType": "File",
-                "MessageString": "masya▫somnia▫File▫2025-12-23 21:31:00▫▫uhaha.mp4"
+                "MessageString": "masya▫somnia▫File▫2025-12-24 00:31:00▫▫uhaha.mp4"
               },
               {
                 "Sender": "somnia",
                 "Recipient": "masya",
                 "Text": "ща если найду видос.",
-                "Time": "2025-12-24 00:33:00",
+                "Time": "2025-12-24 03:33:00",
                 "MessageType": "Text",
-                "MessageString": "somnia▫masya▫Text▫2025-12-23 21:33:00▫▫ща если найду видос."
+                "MessageString": "somnia▫masya▫Text▫2025-12-24 00:33:00▫▫ща если найду видос."
               }
             ]
           }
@@ -298,101 +298,117 @@
                 "Sender": "masya",
                 "Recipient": "somnia",
                 "Text": "qq негр",
-                "Time": "2025-12-24 00:21:00",
+                "Time": "2025-12-24 03:21:00",
                 "MessageType": "Text",
-                "MessageString": "masya▫somnia▫Text▫2025-12-23 21:21:00▫▫qq негр"
+                "MessageString": "masya▫somnia▫Text▫2025-12-24 00:21:00▫▫qq негр"
               },
               {
                 "Sender": "somnia",
                 "Recipient": "masya",
                 "Text": "q",
-                "Time": "2025-12-24 00:26:00",
+                "Time": "2025-12-24 03:26:00",
                 "MessageType": "Text",
-                "MessageString": "somnia▫masya▫Text▫2025-12-23 21:26:00▫▫q"
+                "MessageString": "somnia▫masya▫Text▫2025-12-24 00:26:00▫▫q"
               },
               {
                 "Sender": "somnia",
                 "Recipient": "masya",
                 "Text": "qq раб.",
-                "Time": "2025-12-24 00:26:00",
+                "Time": "2025-12-24 03:26:00",
                 "MessageType": "Text",
-                "MessageString": "somnia▫masya▫Text▫2025-12-23 21:26:00▫▫qq раб."
+                "MessageString": "somnia▫masya▫Text▫2025-12-24 00:26:00▫▫qq раб."
               },
               {
                 "Sender": "masya",
                 "Recipient": "somnia",
                 "Text": "123",
-                "Time": "2025-12-24 00:26:00",
+                "Time": "2025-12-24 03:26:00",
                 "MessageType": "Text",
-                "MessageString": "masya▫somnia▫Text▫2025-12-23 21:26:00▫▫123"
+                "MessageString": "masya▫somnia▫Text▫2025-12-24 00:26:00▫▫123"
               },
               {
                 "Sender": "somnia",
                 "Recipient": "masya",
                 "Text": "передаю от сварки, бабок нету зато есть айфон.",
-                "Time": "2025-12-24 00:26:00",
+                "Time": "2025-12-24 03:26:00",
                 "MessageType": "Text",
-                "MessageString": "somnia▫masya▫Text▫2025-12-23 21:26:00▫▫передаю от сварки, бабок нету зато есть айфон."
+                "MessageString": "somnia▫masya▫Text▫2025-12-24 00:26:00▫▫передаю от сварки, бабок нету зато есть айфон."
               },
               {
                 "Sender": "masya",
                 "Recipient": "somnia",
                 "Text": "1429941917327687800_(1).png",
-                "Time": "2025-12-24 00:27:00",
+                "Time": "2025-12-24 03:27:00",
                 "MessageType": "File",
-                "MessageString": "masya▫somnia▫File▫2025-12-23 21:27:00▫▫1429941917327687800_(1).png"
+                "MessageString": "masya▫somnia▫File▫2025-12-24 00:27:00▫▫1429941917327687800_(1).png"
               },
               {
                 "Sender": "somnia",
                 "Recipient": "masya",
                 "Text": "RobloxScreenShot20251221_232242055.png",
-                "Time": "2025-12-24 00:27:00",
+                "Time": "2025-12-24 03:27:00",
                 "MessageType": "File",
-                "MessageString": "somnia▫masya▫File▫2025-12-23 21:27:00▫▫RobloxScreenShot20251221_232242055.png"
+                "MessageString": "somnia▫masya▫File▫2025-12-24 00:27:00▫▫RobloxScreenShot20251221_232242055.png"
               },
               {
                 "Sender": "masya",
                 "Recipient": "somnia",
                 "Text": "Screenshot_2025-11-13-23-42-26-373_app.revanced.android.youtube-edit.gif",
-                "Time": "2025-12-24 00:27:00",
+                "Time": "2025-12-24 03:27:00",
                 "MessageType": "File",
-                "MessageString": "masya▫somnia▫File▫2025-12-23 21:27:00▫▫Screenshot_2025-11-13-23-42-26-373_app.revanced.android.youtube-edit.gif"
+                "MessageString": "masya▫somnia▫File▫2025-12-24 00:27:00▫▫Screenshot_2025-11-13-23-42-26-373_app.revanced.android.youtube-edit.gif"
               },
               {
                 "Sender": "masya",
                 "Recipient": "somnia",
                 "Text": "Ariis_-_FUNK_DO_ROMA_(hitmos.fm).mp3",
-                "Time": "2025-12-24 00:28:00",
+                "Time": "2025-12-24 03:28:00",
                 "MessageType": "File",
-                "MessageString": "masya▫somnia▫File▫2025-12-23 21:28:00▫▫Ariis_-_FUNK_DO_ROMA_(hitmos.fm).mp3"
+                "MessageString": "masya▫somnia▫File▫2025-12-24 00:28:00▫▫Ariis_-_FUNK_DO_ROMA_(hitmos.fm).mp3"
               },
               {
                 "Sender": "somnia",
                 "Recipient": "masya",
                 "Text": "#рек_#рекомендации_#дискорд_#dnd_#игры_#shorts_#anime_#dnd5e_#мемы_#мем_#rpg_#настолки_#пчк_#dice.mp4",
-                "Time": "2025-12-24 00:28:00",
+                "Time": "2025-12-24 03:28:00",
                 "MessageType": "File",
-                "MessageString": "somnia▫masya▫File▫2025-12-23 21:28:00▫▫#рек_#рекомендации_#дискорд_#dnd_#игры_#shorts_#anime_#dnd5e_#мемы_#мем_#rpg_#настолки_#пчк_#dice.mp4"
+                "MessageString": "somnia▫masya▫File▫2025-12-24 00:28:00▫▫#рек_#рекомендации_#дискорд_#dnd_#игры_#shorts_#anime_#dnd5e_#мемы_#мем_#rpg_#настолки_#пчк_#dice.mp4"
               },
               {
                 "Sender": "masya",
                 "Recipient": "somnia",
                 "Text": "uhaha.mp4",
-                "Time": "2025-12-24 00:31:00",
+                "Time": "2025-12-24 03:31:00",
                 "MessageType": "File",
-                "MessageString": "masya▫somnia▫File▫2025-12-23 21:31:00▫▫uhaha.mp4"
+                "MessageString": "masya▫somnia▫File▫2025-12-24 00:31:00▫▫uhaha.mp4"
               },
               {
                 "Sender": "somnia",
                 "Recipient": "masya",
                 "Text": "ща если найду видос.",
-                "Time": "2025-12-24 00:33:00",
+                "Time": "2025-12-24 03:33:00",
                 "MessageType": "Text",
-                "MessageString": "somnia▫masya▫Text▫2025-12-23 21:33:00▫▫ща если найду видос."
+                "MessageString": "somnia▫masya▫Text▫2025-12-24 00:33:00▫▫ща если найду видос."
               }
             ]
           }
         ],
+        "Icon": "\uD83D\uDCAC",
+        "CanDelete": false
+      }
+    ]
+  },
+  {
+    "Id": 6,
+    "Login": "andrey4",
+    "Password": "123",
+    "Name": "Андрей",
+    "Username": "AndreyC",
+    "Avatart": "",
+    "ChatsFolders": [
+      {
+        "Name": "Все чаты",
+        "Contacts": [],
         "Icon": "\uD83D\uDCAC",
         "CanDelete": false
       }
