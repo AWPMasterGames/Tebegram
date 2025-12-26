@@ -1,0 +1,106 @@
+[29.08.2025 17:17:53]  [Authorization] Error: Error while copying content to a stream.
+[29.08.2025 17:18:08]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[29.08.2025 17:18:08]  [MessengerWindow] Инициализация завершена
+[29.08.2025 17:18:11]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[29.08.2025 17:18:12]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[29.08.2025 17:18:19]  [LBChats_SelectionChanged] Saved draft for Убека: ''
+[29.08.2025 17:18:19]  [LBChats_SelectionChanged] Selected contact: Masya (masya)
+[29.08.2025 17:18:26]  [LBChats_SelectionChanged] Restored draft for Masya: ''
+[29.08.2025 17:18:35]  [SendMessage] Starting send message: 'hqdefault (1).jpg' to contact: Masya
+[29.08.2025 17:18:35]  [SendMessage] Message added to local contact. Sending to user...
+[29.08.2025 17:18:35]  [AddMessageToUser] Получен файл от vasya: https://localhost:5000/upload/hqdefault (1).jpg
+[29.08.2025 17:19:15]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[29.08.2025 17:19:15]  [MessengerWindow] Инициализация завершена
+[29.08.2025 17:19:15]  [AddMessageToUser] Получен файл от Вася жопкин бамбук: https://localhost:5000/upload/hqdefault (1).jpg
+[29.08.2025 17:19:17]  [LBChats_SelectionChanged] Selected contact: Убебка (ybeka)
+[29.08.2025 17:19:17]  [LBChats_SelectionChanged] Restored draft for Убебка: ''
+[29.08.2025 17:19:17]  [LBChats_SelectionChanged] Saved draft for Убебка: ''
+[29.08.2025 17:19:17]  [LBChats_SelectionChanged] Selected contact: Вася жопкин бамбук (vasya)
+[29.08.2025 17:19:18]  [LBChats_SelectionChanged] Restored draft for Вася жопкин бамбук: ''
+[29.08.2025 17:19:38]  [SendMessage] Starting send message: '123' to contact: Вася жопкин бамбук
+[29.08.2025 17:19:38]  [SendMessage] Message added to local contact. Sending to user...
+[29.08.2025 17:19:39]  [AddMessageToUser] Получено сообщение от Masya: 123
+[29.08.2025 17:19:39]  [AddMessageToUser] Получено сообщение от masya: 123
+[29.08.2025 17:20:12]  [LBChats_SelectionChanged] Saved draft for Masya: ''
+[29.08.2025 17:20:12]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[29.08.2025 17:20:13]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[29.08.2025 17:20:35]  [LBChats_SelectionChanged] Saved draft for Убека: ''
+[29.08.2025 17:20:35]  [LBChats_SelectionChanged] No item selected
+[29.08.2025 17:20:35]  [LBChats_SelectionChanged] Saved draft for Убека: ''
+[29.08.2025 17:20:35]  [LBChats_SelectionChanged] Selected contact: Masya (masya)
+[29.08.2025 17:20:36]  [LBChats_SelectionChanged] Restored draft for Masya: ''
+[29.08.2025 17:20:58]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[29.08.2025 17:20:59]  [MessengerWindow] Инициализация завершена
+[29.08.2025 17:20:59]  [AddMessageToUser] Получен файл от vasya: https://localhost:5000/upload/hqdefault (1).jpg
+[29.08.2025 17:20:59]  [AddMessageToUser] Получено сообщение от Masya: 123
+[29.08.2025 17:21:02]  [LBChats_SelectionChanged] Selected contact: Masya (masya)
+[29.08.2025 17:21:02]  [LBChats_SelectionChanged] Restored draft for Masya: ''
+[29.08.2025 17:21:04]  [LBChats_SelectionChanged] Saved draft for Masya: ''
+[29.08.2025 17:21:04]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[29.08.2025 17:21:04]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[29.08.2025 17:21:04]  [LBChats_SelectionChanged] Saved draft for Убека: ''
+[29.08.2025 17:21:05]  [LBChats_SelectionChanged] Selected contact: Masya (masya)
+[29.08.2025 17:21:05]  [LBChats_SelectionChanged] Restored draft for Masya: ''
+[29.08.2025 17:27:45]  [MessengerWindow] Инициализация для пользователя: zxc123 (ZXCCursed)
+[29.08.2025 17:27:45]  [MessengerWindow] Инициализация завершена
+[29.08.2025 17:28:05]  [LBChats_SelectionChanged] Selected contact: Мася (masya)
+[29.08.2025 17:28:05]  [LBChats_SelectionChanged] Restored draft for Мася: ''
+[29.08.2025 17:28:08]  [LBChats_SelectionChanged] Saved draft for Мася: ''
+[29.08.2025 17:28:09]  [LBChats_SelectionChanged] No item selected
+[29.08.2025 17:28:16]  [LBChats_SelectionChanged] Saved draft for Мася: ''
+[29.08.2025 17:28:16]  [LBChats_SelectionChanged] Selected contact: mas (masya)
+[29.08.2025 17:28:16]  [LBChats_SelectionChanged] Restored draft for mas: ''
+[29.08.2025 17:28:20]  [SendMessage] Starting send message: '123' to contact: mas
+[29.08.2025 17:28:20]  [SendMessage] Message added to local contact. Sending to user...
+[29.08.2025 17:28:20]  [AddMessageToUser] Получено сообщение от ZXCCursed: 123
+[29.08.2025 17:28:20]  [AddMessageToUser] Получено сообщение от ZXCCursed: 123
+[29.08.2025 17:28:32]  [LBChats_SelectionChanged] Saved draft for Вася жопкин бамбук: ''
+[29.08.2025 17:28:32]  [LBChats_SelectionChanged] Selected contact: zxc123 (ZXCCursed)
+[29.08.2025 17:28:32]  [LBChats_SelectionChanged] Restored draft for zxc123: ''
+[29.08.2025 17:28:35]  [SendMessage] Starting send message: 'qq' to contact: zxc123
+[29.08.2025 17:28:35]  [SendMessage] Message added to local contact. Sending to user...
+[29.08.2025 17:28:35]  [AddMessageToUser] Получено сообщение от mas: qq
+[29.08.2025 17:28:35]  [AddMessageToUser] Получено сообщение от masya: qq
+[29.08.2025 17:28:44]  [LBChats_SelectionChanged] Saved draft for 123: ''
+[29.08.2025 17:28:44]  [LBChats_SelectionChanged] No item selected
+[29.08.2025 17:28:44]  [LBChats_SelectionChanged] Saved draft for 123: ''
+[29.08.2025 17:28:45]  [LBChats_SelectionChanged] Selected contact: 123 (masya)
+[29.08.2025 17:28:45]  [LBChats_SelectionChanged] Restored draft for 123: ''
+[29.08.2025 17:28:48]  [ContactEdit] Контакт изменен: mas -> 123
+[29.08.2025 17:28:50]  [SendMessage] Starting send message: '123' to contact: 123
+[29.08.2025 17:28:50]  [SendMessage] Message added to local contact. Sending to user...
+[29.08.2025 17:28:50]  [AddMessageToUser] Получено сообщение от ZXCCursed: 123
+[29.08.2025 17:28:51]  [AddMessageToUser] Получено сообщение от zxc123: 123
+[29.08.2025 17:29:21]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[29.08.2025 17:29:21]  [MessengerWindow] Инициализация завершена
+[29.08.2025 17:29:21]  [AddMessageToUser] Получен файл от Вася жопкин бамбук: 
+[29.08.2025 17:29:21]  [AddMessageToUser] Получено сообщение от masya: 123
+[29.08.2025 17:29:21]  [AddMessageToUser] Получено сообщение от zxc123: 123
+[29.08.2025 17:29:21]  [AddMessageToUser] Получено сообщение от masya: qq
+[29.08.2025 17:29:21]  [AddMessageToUser] Получено сообщение от zxc123: 123
+[29.08.2025 17:29:22]  [LBChats_SelectionChanged] Selected contact: zxc123 (ZXCCursed)
+[29.08.2025 17:29:22]  [LBChats_SelectionChanged] Restored draft for zxc123: ''
+[29.08.2025 17:29:41]  [SendMessage] Starting send message: 'uhaha.mp4' to contact: zxc123
+[29.08.2025 17:29:41]  [SendMessage] Message added to local contact. Sending to user...
+[29.08.2025 17:29:42]  [AddMessageToUser] Получен файл от 123: https://localhost:5000/upload/uhaha.mp4
+[29.08.2025 17:29:42]  [AddMessageToUser] Получен файл от masya: https://localhost:5000/upload/uhaha.mp4
+[29.08.2025 17:30:07]  [SendMessage] Starting send message: 'LLBxAYY7XTMEwSPCV1RADA.png' to contact: zxc123
+[29.08.2025 17:30:07]  [SendMessage] Message added to local contact. Sending to user...
+[29.08.2025 17:30:07]  [AddMessageToUser] Получен файл от 123: https://localhost:5000/upload/LLBxAYY7XTMEwSPCV1RADA.png
+[29.08.2025 17:30:08]  [AddMessageToUser] Получен файл от masya: https://localhost:5000/upload/LLBxAYY7XTMEwSPCV1RADA.png
+[29.08.2025 17:31:03]  [SendMessage] Starting send message: 'asdasd' to contact: 123
+[29.08.2025 17:31:04]  [SendMessage] Message added to local contact. Sending to user...
+[29.08.2025 17:31:04]  [AddMessageToUser] Получено сообщение от zxc123: asdasd
+[29.08.2025 17:31:05]  [AddMessageToUser] Получено сообщение от ZXCCursed: asdasd
+[29.08.2025 17:31:05]  [SendMessage] Starting send message: 'asd' to contact: 123
+[29.08.2025 17:31:05]  [SendMessage] Message added to local contact. Sending to user...
+[29.08.2025 17:31:07]  [AddMessageToUser] Получено сообщение от ZXCCursed: asd
+[29.08.2025 17:31:07]  [AddMessageToUser] Получено сообщение от zxc123: asd
+[29.08.2025 17:31:22]  [SendMessage] Starting send message: 'asd/nasd' to contact: 123
+[29.08.2025 17:31:22]  [SendMessage] Message added to local contact. Sending to user...
+[29.08.2025 17:31:23]  [AddMessageToUser] Получено сообщение от ZXCCursed: asd/nasd
+[29.08.2025 17:31:23]  [AddMessageToUser] Получено сообщение от zxc123: asd/nasd
+[29.08.2025 17:31:35]  [SendMessage] Starting send message: 'asdasdasdasdasdasdas das das das da' to contact: 123
+[29.08.2025 17:31:35]  [SendMessage] Message added to local contact. Sending to user...
+[29.08.2025 17:31:36]  [AddMessageToUser] Получено сообщение от ZXCCursed: asdasdasdasdasdasdas das das das da
+[29.08.2025 17:31:36]  [AddMessageToUser] Получено сообщение от zxc123: asdasdasdasdasdasdas das das das da

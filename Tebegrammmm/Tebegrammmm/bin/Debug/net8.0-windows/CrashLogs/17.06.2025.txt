@@ -1,0 +1,4 @@
+[17.06.2025 12:01:41]  [Authorization] Error: Подключение не установлено, т.к. конечный компьютер отверг запрос на подключение. (localhost:7034)
+[17.06.2025 12:17:58]  [Authorization] Error: Error while copying content to a stream.
+[17.06.2025 12:18:45]  [Authorization] Error: Error while copying content to a stream.
+[17.06.2025 12:19:36]  [SendMessegeToUser] Sockets error: Подключение не установлено, т.к. конечный компьютер отверг запрос на подключение. [::ffff:127.0.0.1]:4005

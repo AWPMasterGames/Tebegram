@@ -1,0 +1,68 @@
+[04.09.2025 16:39:30]  [Authorization] Error: Error while copying content to a stream.
+[04.09.2025 16:39:34]  [Authorization] Error: Error while copying content to a stream.
+[04.09.2025 16:39:54]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[04.09.2025 16:39:54]  [MessengerWindow] Инициализация завершена
+[04.09.2025 16:39:54]  [AddMessageToUser] Получено сообщение от masya: привет
+[04.09.2025 16:39:54]  [AddMessageToUser] Получено сообщение от masya:  случайно снёс всё данные
+[04.09.2025 16:39:54]  [AddMessageToUser] Получено сообщение от masya: и востановил пару аккаунтов
+[04.09.2025 16:39:56]  [LBChats_SelectionChanged] Selected contact: Imcrafter (IMcrafter)
+[04.09.2025 16:39:56]  [LBChats_SelectionChanged] Restored draft for Imcrafter: ''
+[04.09.2025 16:39:59]  [SendMessage] Starting send message: 'qq' to contact: Imcrafter
+[04.09.2025 16:39:59]  [SendMessage] Message added to local contact. Sending to user...
+[04.09.2025 16:40:01]  [AddMessageToUser] Получено сообщение от masya: qq
+[04.09.2025 16:40:15]  [LBChats_SelectionChanged] Saved draft for Imcrafter: ''
+[04.09.2025 16:40:15]  [LBChats_SelectionChanged] Selected contact: Ryklafog (Ryklafog)
+[04.09.2025 16:40:15]  [LBChats_SelectionChanged] Restored draft for Ryklafog: ''
+[04.09.2025 16:40:35]  [LBChats_SelectionChanged] Saved draft for влад: ''
+[04.09.2025 16:40:35]  [LBChats_SelectionChanged] No item selected
+[04.09.2025 16:40:35]  [LBChats_SelectionChanged] Saved draft for влад: ''
+[04.09.2025 16:40:35]  [LBChats_SelectionChanged] Selected contact: влад (Ryklafog)
+[04.09.2025 16:40:36]  [LBChats_SelectionChanged] Restored draft for влад: ''
+[04.09.2025 16:40:37]  [ContactEdit] Контакт изменен: Ryklafog -> влад
+[04.09.2025 16:40:42]  [SendMessage] Starting send message: 'чо ты негр' to contact: влад
+[04.09.2025 16:40:42]  [SendMessage] Message added to local contact. Sending to user...
+[04.09.2025 16:40:43]  [AddMessageToUser] Получено сообщение от masya: чо ты негр
+[04.09.2025 18:43:25]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[04.09.2025 18:43:25]  [MessengerWindow] Инициализация завершена
+[04.09.2025 18:43:25]  [AddMessageToUser] Получено сообщение от masya: привет
+[04.09.2025 18:43:25]  [AddMessageToUser] Получено сообщение от masya:  случайно снёс всё данные
+[04.09.2025 18:43:25]  [AddMessageToUser] Получено сообщение от masya: и востановил пару аккаунтов
+[04.09.2025 18:43:25]  [AddMessageToUser] Получено сообщение от masya: qq
+[04.09.2025 18:43:26]  [AddMessageToUser] Получено сообщение от masya: чо ты негр
+[04.09.2025 18:45:56]  [LBChats_SelectionChanged] Selected contact: влад (Ryklafog)
+[04.09.2025 18:45:57]  [LBChats_SelectionChanged] Restored draft for влад: ''
+[04.09.2025 18:46:13]  [AddMessageToUser] Получено сообщение от влад: пошел нахуй
+[04.09.2025 18:46:15]  [SendMessage] Starting send message: 'photo_2025-08-27_17-40-43.jpg' to contact: влад
+[04.09.2025 18:46:15]  [SendMessage] Message added to local contact. Sending to user...
+[04.09.2025 18:46:16]  [AddMessageToUser] Получено сообщение от влад: пидорасmasyaRyklafogFile06:46https://1nnf1f30-5000.euw.devtunnels.ms/upload/photo_2025-08-27_17-40-43.jpgphoto_2025-08-27_17-40-43.jpg
+[04.09.2025 18:46:29]  [AddMessageToUser] Получено сообщение от влад: сын миража ебучего
+[04.09.2025 18:46:31]  [SendMessage] Starting send message: 'image_(4).png' to contact: влад
+[04.09.2025 18:46:32]  [SendMessage] Message added to local contact. Sending to user...
+[04.09.2025 18:46:32]  [AddMessageToUser] Получен файл от masya: https://1nnf1f30-5000.euw.devtunnels.ms/upload/image_(4).png
+[04.09.2025 18:46:37]  [SendMessage] Starting send message: 'w.jpg' to contact: влад
+[04.09.2025 18:46:37]  [SendMessage] Message added to local contact. Sending to user...
+[04.09.2025 18:46:37]  [AddMessageToUser] Получен файл от masya: https://1nnf1f30-5000.euw.devtunnels.ms/upload/w.jpg
+[04.09.2025 18:46:44]  [SendMessage] Starting send message: 'ghbdtn' to contact: влад
+[04.09.2025 18:46:44]  [SendMessage] Message added to local contact. Sending to user...
+[04.09.2025 18:46:45]  [AddMessageToUser] Получено сообщение от masya: ghbdtn
+[04.09.2025 18:46:55]  [SendMessage] Starting send message: 'привет' to contact: влад
+[04.09.2025 18:46:55]  [SendMessage] Message added to local contact. Sending to user...
+[04.09.2025 18:46:56]  [AddMessageToUser] Получено сообщение от masya: привет
+[04.09.2025 18:46:58]  [SendMessage] Starting send message: 'сам ты мираж' to contact: влад
+[04.09.2025 18:46:59]  [SendMessage] Message added to local contact. Sending to user...
+[04.09.2025 18:47:00]  [AddMessageToUser] Получено сообщение от masya: сам ты мираж
+[04.09.2025 18:47:05]  [AddMessageToUser] Получено сообщение от влад: пока блять
+[04.09.2025 18:47:14]  [AddMessageToUser] Получено сообщение от влад: гондон
+[04.09.2025 18:47:21]  [SendMessage] Starting send message: 'нэт' to contact: влад
+[04.09.2025 18:47:21]  [SendMessage] Message added to local contact. Sending to user...
+[04.09.2025 18:47:22]  [AddMessageToUser] Получено сообщение от masya: нэт
+[04.09.2025 18:47:26]  [SendMessage] Starting send message: 'ти гондон' to contact: влад
+[04.09.2025 18:47:26]  [SendMessage] Message added to local contact. Sending to user...
+[04.09.2025 18:47:28]  [AddMessageToUser] Получено сообщение от masya: ти гондон
+[04.09.2025 18:47:29]  [AddMessageToUser] Получено сообщение от влад: да блять
+[04.09.2025 18:47:36]  [SendMessage] Starting send message: 'ыы' to contact: влад
+[04.09.2025 18:47:37]  [SendMessage] Message added to local contact. Sending to user...
+[04.09.2025 18:47:37]  [AddMessageToUser] Получено сообщение от masya: ыы
+[04.09.2025 18:48:00]  [SendMessage] Starting send message: 'e25a188ae3944c330ad42f9c29e2bc17.jpg' to contact: влад
+[04.09.2025 18:48:00]  [SendMessage] Message added to local contact. Sending to user...
+[04.09.2025 18:48:01]  [AddMessageToUser] Получен файл от masya: https://1nnf1f30-5000.euw.devtunnels.ms/upload/e25a188ae3944c330ad42f9c29e2bc17.jpg

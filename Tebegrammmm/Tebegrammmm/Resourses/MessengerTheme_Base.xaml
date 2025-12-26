@@ -1,0 +1,8 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <LinearGradientBrush x:Key="ChatBackground">
+        <GradientStop Color="LightYellow" Offset="0.1"/>
+        <GradientStop Color="LightGreen" Offset="0.5"/>
+        <GradientStop Color="LightYellow" Offset="0.9"/>
+    </LinearGradientBrush>
+</ResourceDictionary>

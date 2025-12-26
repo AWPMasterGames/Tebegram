@@ -1,0 +1,18 @@
+[01.09.2025 11:56:33]  [Authorization] Error: Error while copying content to a stream.
+[01.09.2025 11:56:45]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[01.09.2025 11:56:46]  [MessengerWindow] Инициализация завершена
+[01.09.2025 11:56:46]  [AddMessageToUser] Получен файл от vasya: 
+[01.09.2025 11:56:46]  [AddMessageToUser] Получено сообщение от Masya: 123
+[01.09.2025 11:56:55]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[01.09.2025 11:56:55]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[01.09.2025 11:56:56]  [LBChats_SelectionChanged] Saved draft for Убека: ''
+[01.09.2025 11:56:56]  [LBChats_SelectionChanged] Selected contact: Masya (masya)
+[01.09.2025 11:56:56]  [LBChats_SelectionChanged] Restored draft for Masya: ''
+[01.09.2025 14:27:23]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[01.09.2025 14:27:23]  [MessengerWindow] Инициализация завершена
+[01.09.2025 14:27:23]  [AddMessageToUser] Получен файл от vasya: 
+[01.09.2025 14:27:23]  [AddMessageToUser] Получено сообщение от Masya: 123
+[01.09.2025 15:15:48]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[01.09.2025 15:15:48]  [MessengerWindow] Инициализация завершена
+[01.09.2025 15:15:48]  [AddMessageToUser] Получен файл от vasya: 
+[01.09.2025 15:15:48]  [AddMessageToUser] Получено сообщение от Masya: 123

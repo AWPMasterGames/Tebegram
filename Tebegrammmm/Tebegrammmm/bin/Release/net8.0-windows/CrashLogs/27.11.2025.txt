@@ -1,0 +1,28 @@
+[27.11.2025 15:26:16]  [Authorization] Error: Error while copying content to a stream.
+[27.11.2025 15:26:29]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[27.11.2025 15:26:29]  [MessengerWindow] Инициализация завершена
+[27.11.2025 15:27:11]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[27.11.2025 15:27:11]  [MessengerWindow] Инициализация завершена
+[27.11.2025 15:28:18]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[27.11.2025 15:28:18]  [MessengerWindow] Инициализация завершена
+[27.11.2025 15:28:49]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[27.11.2025 15:28:49]  [MessengerWindow] Инициализация завершена
+[27.11.2025 15:30:53]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[27.11.2025 15:30:53]  [MessengerWindow] Инициализация завершена
+[27.11.2025 15:31:21]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[27.11.2025 15:31:21]  [MessengerWindow] Инициализация завершена
+[27.11.2025 15:32:06]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[27.11.2025 15:32:06]  [MessengerWindow] Инициализация завершена
+[27.11.2025 15:32:34]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[27.11.2025 15:32:34]  [MessengerWindow] Инициализация завершена
+[27.11.2025 15:33:00]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[27.11.2025 15:33:00]  [MessengerWindow] Инициализация завершена
+[27.11.2025 15:33:01]  [LBChats_SelectionChanged] Selected contact: Убека (ybeka)
+[27.11.2025 15:33:01]  [LBChats_SelectionChanged] Restored draft for Убека: ''
+[27.11.2025 15:33:02]  [LBChats_SelectionChanged] Saved draft for Убека: ''
+[27.11.2025 15:33:03]  [LBChats_SelectionChanged] Selected contact: Masya (masya)
+[27.11.2025 15:33:03]  [LBChats_SelectionChanged] Restored draft for Masya: ''
+[27.11.2025 15:33:07]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[27.11.2025 15:33:07]  [MessengerWindow] Инициализация завершена
+[27.11.2025 15:33:41]  [MessengerWindow] Инициализация для пользователя: Вася жопкин бамбук (vasya)
+[27.11.2025 15:33:41]  [MessengerWindow] Инициализация завершена
