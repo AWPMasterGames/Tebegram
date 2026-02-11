@@ -425,3 +425,45 @@
 [11.02.2026 21:20:12]  [AddMessageToUser] Получен файл от masya: 
 [11.02.2026 21:20:12]  [LBChats_SelectionChanged] Selected contact: СвагаБро (Respect2077)
 [11.02.2026 21:20:12]  [LBChats_SelectionChanged] Restored draft for СвагаБро: ''
+[11.02.2026 21:28:15]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[11.02.2026 21:28:15]  [MessengerWindow] Инициализация завершена
+[11.02.2026 21:28:16]  [AddMessageToUser] Получено сообщение от masya: 123
+[11.02.2026 21:28:16]  [AddMessageToUser] Получено сообщение от ad: 123
+[11.02.2026 21:28:16]  [AddMessageToUser] Получено сообщение от masya: 123
+[11.02.2026 21:28:16]  [AddMessageToUser] Получено сообщение от ad: 44
+[11.02.2026 21:28:16]  [AddMessageToUser] Получено сообщение от masya: hi
+[11.02.2026 21:28:16]  [AddMessageToUser] Получено сообщение от ad: 123
+[11.02.2026 21:28:16]  [AddMessageToUser] Получено сообщение от masya: 33
+[11.02.2026 21:28:16]  [AddMessageToUser] Получен файл от masya: 
+[11.02.2026 21:28:16]  [AddMessageToUser] Получено сообщение от ad: Hola senor
+[11.02.2026 21:28:16]  [AddMessageToUser] Получено сообщение от masya: привет
+[11.02.2026 21:28:17]  [AddMessageToUser] Получен файл от masya: 
+[11.02.2026 21:28:17]  [AddMessageToUser] Получено сообщение от ad: Porque soy Vasya Bambuk? Que es eso?
+[11.02.2026 21:28:17]  [AddMessageToUser] Получен файл от masya: 
+[11.02.2026 21:28:17]  [AddMessageToUser] Получено сообщение от masya: 123
+[11.02.2026 21:28:17]  [AddMessageToUser] Получено сообщение от masya: qq негр
+[11.02.2026 21:28:17]  [AddMessageToUser] Получено сообщение от somnia: q
+[11.02.2026 21:28:17]  [AddMessageToUser] Получено сообщение от somnia: qq раб.
+[11.02.2026 21:28:17]  [AddMessageToUser] Получено сообщение от masya: 123
+[11.02.2026 21:28:17]  [AddMessageToUser] Получено сообщение от somnia: передаю от сварки, бабок нету зато есть айфон.
+[11.02.2026 21:28:17]  [AddMessageToUser] Получен файл от masya: 
+[11.02.2026 21:28:18]  [AddMessageToUser] Получен файл от somnia: 
+[11.02.2026 21:28:18]  [AddMessageToUser] Получен файл от masya: 
+[11.02.2026 21:28:18]  [AddMessageToUser] Получен файл от masya: 
+[11.02.2026 21:28:18]  [AddMessageToUser] Получен файл от somnia: 
+[11.02.2026 21:28:18]  [AddMessageToUser] Получен файл от masya: 
+[11.02.2026 21:28:18]  [AddMessageToUser] Получено сообщение от somnia: ща если найду видос.
+[11.02.2026 21:28:18]  [AddMessageToUser] Получено сообщение от masya: Привет
+[11.02.2026 21:28:18]  [AddMessageToUser] Получено сообщение от TURIST: ку
+[11.02.2026 21:28:18]  [AddMessageToUser] Получено сообщение от masya: это мой мессенджер
+[11.02.2026 21:28:18]  [AddMessageToUser] Получено сообщение от masya: 123
+[11.02.2026 21:28:19]  [AddMessageToUser] Получен файл от masya: 
+[11.02.2026 21:28:19]  [AddMessageToUser] Получен файл от TURIST: 
+[11.02.2026 21:28:19]  [AddMessageToUser] Получено сообщение от СвагаБро: 321
+[11.02.2026 21:28:19]  [AddMessageToUser] Получен файл от masya: 
+[11.02.2026 21:28:19]  [AddMessageToUser] Получен файл от masya: 
+[11.02.2026 21:28:19]  [AddMessageToUser] Получено сообщение от СвагаБро: 321
+[11.02.2026 21:28:19]  [AddMessageToUser] Получен файл от masya: 
+[11.02.2026 21:28:19]  [AddMessageToUser] Получен файл от masya: 
+[11.02.2026 21:28:20]  [LBChats_SelectionChanged] Selected contact: СвагаБро (Respect2077)
+[11.02.2026 21:28:20]  [LBChats_SelectionChanged] Restored draft for СвагаБро: ''

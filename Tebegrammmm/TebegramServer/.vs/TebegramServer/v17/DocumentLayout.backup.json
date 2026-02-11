@@ -75,7 +75,7 @@
               "RelativeDocumentMoniker": "TebegramServer\\Program.cs",
               "ToolTip": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\Program.cs",
               "RelativeToolTip": "TebegramServer\\Program.cs",
-              "ViewState": "AgIAAFkAAAAAAAAAAAAUwGsAAABNAAAAAAAAAA==",
+              "ViewState": "AgIAAOoAAAAAAAAAAAAAAP0AAAA8AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-06T10:55:27.137Z",
               "IsPinned": true,
@@ -92,8 +92,7 @@
               "ViewState": "AgIAAFgBAAAAAAAAAAAYwGoBAAALAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2025-12-15T12:26:21.146Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
@@ -105,8 +104,7 @@
               "RelativeToolTip": "..\\..\\..\\..\\..\\AppData\\Local\\SourceServer\\ce1c0ba0b6c510e3305e48b0debeb841553c3b9101c02ab91000926db5ad6d95\\src\\libraries\\System.Private.CoreLib\\src\\System\\Threading\\Tasks\\Task.cs",
               "ViewState": "AgIAAC4NAAAAAAAAAAAUwEMNAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-11T16:59:19.164Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-11T16:59:19.164Z"
             },
             {
               "$type": "Document",
@@ -118,8 +116,7 @@
               "RelativeToolTip": "TebegramServer\\Classes\\VoiceClasses\\VoiceRoom.cs",
               "ViewState": "AgIAAAkAAAAAAAAAAAAAAAsAAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-13T09:15:14.393Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-13T09:15:14.393Z"
             },
             {
               "$type": "Document",
@@ -131,8 +128,7 @@
               "RelativeToolTip": "TebegramServer\\Classes\\VoiceClasses\\RoomMember.cs",
               "ViewState": "AgIAAAMAAAAAAAAAAAAqwBEAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-13T09:19:56.564Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-13T09:19:56.564Z"
             },
             {
               "$type": "Document",
@@ -192,8 +188,7 @@
               "RelativeToolTip": "TebegramServer\\Controllers\\VoiceRoomsController.cs",
               "ViewState": "AgIAAAMAAAAAAAAAAAAhwAoAAAAyAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-13T09:43:33.473Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-13T09:43:33.473Z"
             },
             {
               "$type": "Document",
@@ -205,8 +200,7 @@
               "RelativeToolTip": "TebegramServer\\Data\\Users.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-02-11T17:46:18.381Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-11T17:46:18.381Z"
             },
             {
               "$type": "Document",
