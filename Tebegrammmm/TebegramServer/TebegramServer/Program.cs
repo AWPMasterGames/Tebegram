@@ -1,8 +1,11 @@
 ﻿using Microsoft.Extensions.FileProviders;
 using System.Collections.ObjectModel;
-using System.Xml.Linq;
+using System.Net;
+using System.Net.WebSockets;
+using System.Text;
 using TebegramServer;
 using TebegramServer.Classes;
+using TebegramServer.Controllers;
 using TebegramServer.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +14,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseUrls("https://localhost:5000");
 
 var app = builder.Build();
+
+/*var webSocketOptions = new WebSocketOptions
+{
+    KeepAliveInterval = TimeSpan.FromMinutes(2)
+};*/
+
+app.UseWebSockets();
+
+var connections = new List<WebSocket>();
+
 
 // ВАЖНО: Инициализируем данные пользователей ПЕРЕД запуском основной логики
 Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Запуск сервера TebegramServer...");
@@ -241,4 +254,83 @@ app.MapDelete("/Contact", async (HttpContext Context) =>
     user.RemoveContact(user.FindContactByUsername(Data[1]));
     return Context.Response.StatusCode = 200;
 });
+
+
+
+
+
+
+
+#region Voices
+// Голосовые каналы
+
+app.MapGet("/CreateRoom/{userId}", async (HttpContext Context, int userId) =>
+{
+    User user = UsersData.FindUserById(userId);
+    string token = VoiceRoomsController.CreateRoom(user.Username);
+    await Context.Response.WriteAsync(token);
+});
+
+app.Map("/ws", async context =>
+{
+    if (context.WebSockets.IsWebSocketRequest)
+    {
+        var userID = context.Request.Query["userId"];
+        var Token = context.Request.Query["roomToken"];
+
+        using var ws = await context.WebSockets.AcceptWebSocketAsync();
+
+        User user = UsersData.FindUserById(int.Parse(userID));
+
+        VoiceRoomsController.ConnectingToRoom(ws, Token, user);
+
+        Console.WriteLine($"Пользователь {user.Username} Подключился к комнате Id: {VoiceRoomsController.GetRoomId(Token)}");
+
+        await ReceiveMessage(ws,
+            async (result, buffer) =>
+            {
+                if (result.MessageType == WebSocketMessageType.Text)
+                {
+                    VoiceRoomsController.VoiceRooms[Token].SendVoiceToRoom(ws, buffer);
+                }
+                else if (result.MessageType == WebSocketMessageType.Close || ws.State == WebSocketState.Aborted)
+                {
+                    //VoiceRoomsController.DisconnectFromRoom(ws,Token);
+                    Console.WriteLine($"Пользователь {user.Username} отключился от комнаты Id: {VoiceRoomsController.GetRoomId(Token)}");
+                    await VoiceRoomsController.DisconnectFromRoom(ws, Token, result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
+                    //await ws.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
+                }
+            });
+    }
+    else
+    {
+        context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+    }
+});
+
+async Task ReceiveMessage(WebSocket socket, Action<WebSocketReceiveResult, byte[]> handleMessage)
+{
+    var buffer = new byte[1024 * 4];
+    while (socket.State == WebSocketState.Open)
+    {
+        var result = await socket.ReceiveAsync(new ArraySegment<byte>(buffer),
+            CancellationToken.None);
+        handleMessage(result, buffer);
+    }
+}
+
+async Task Broadcast(string message)
+{
+    var bytes = Encoding.UTF8.GetBytes(message);
+    foreach (var soket in connections)
+    {
+        if (soket.State == WebSocketState.Open)
+        {
+            var arraySegment = new ArraySegment<byte>(bytes, 0, bytes.Length);
+            await soket.SendAsync(arraySegment, WebSocketMessageType.Text, true, CancellationToken.None);
+        }
+    }
+}
+#endregion
+
 app.Run();

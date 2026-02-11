@@ -153,7 +153,7 @@ namespace TebegramServer.Data
                 string jsonContent = JsonSerializer.Serialize(usersData, options);
                 File.WriteAllText(filePath, jsonContent);
 
-                Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Автосохранение: {Users.Count} пользователей сохранено в файл");
+                //Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Автосохранение: {Users.Count} пользователей сохранено в файл");
             }
             catch (Exception ex)
             {

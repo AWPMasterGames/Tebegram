@@ -135,7 +135,7 @@ namespace Tebegrammmm
                 }
                 else if (messageData[2] == "File")
                 {
-                    Message message = new Message(User.Name, messageData[1], messageData[5], messageData[3], MessageType.File, messageData[4]);
+                    Message message = new Message(User.Name, messageData[1], messageData[5], messageData[3], MessageType.File, $"{ServerData.ServerAdress}/upload/{messageData[5]}");
                     message.Status = MessageStatus.Sent; // Файлы тоже просто сохраняются
 
                         Dispatcher.Invoke(new Action(() =>
