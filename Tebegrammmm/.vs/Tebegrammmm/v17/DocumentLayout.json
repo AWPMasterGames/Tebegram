@@ -125,8 +125,7 @@
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAIAAAAAZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-07-22T08:50:51.268Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
@@ -163,8 +162,7 @@
               "RelativeToolTip": "..\\..\\..\\..\\AppData\\Local\\SourceServer\\161c25ef967583267cba35e943d604ef010bb0558c4a442f31306117c9cc9fbc\\src\\libraries\\System.Private.CoreLib\\src\\System\\Number.Parsing.cs",
               "ViewState": "AgIAAFsFAAAAAAAAAIAwwG4FAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-11T18:12:14.783Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-11T18:12:14.783Z"
             },
             {
               "$type": "Document",

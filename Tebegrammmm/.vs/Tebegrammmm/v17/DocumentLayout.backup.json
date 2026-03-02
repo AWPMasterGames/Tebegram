@@ -99,7 +99,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 45,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Document",
@@ -125,21 +125,7 @@
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAIAAAAAZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-07-22T08:50:51.268Z",
-              "IsPinned": true,
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Number.Parsing.cs",
-              "DocumentMoniker": "C:\\Users\\\u041F\u041A\\AppData\\Local\\SourceServer\\161c25ef967583267cba35e943d604ef010bb0558c4a442f31306117c9cc9fbc\\src\\libraries\\System.Private.CoreLib\\src\\System\\Number.Parsing.cs",
-              "RelativeDocumentMoniker": "..\\..\\..\\..\\AppData\\Local\\SourceServer\\161c25ef967583267cba35e943d604ef010bb0558c4a442f31306117c9cc9fbc\\src\\libraries\\System.Private.CoreLib\\src\\System\\Number.Parsing.cs",
-              "ToolTip": "C:\\Users\\\u041F\u041A\\AppData\\Local\\SourceServer\\161c25ef967583267cba35e943d604ef010bb0558c4a442f31306117c9cc9fbc\\src\\libraries\\System.Private.CoreLib\\src\\System\\Number.Parsing.cs",
-              "RelativeToolTip": "..\\..\\..\\..\\AppData\\Local\\SourceServer\\161c25ef967583267cba35e943d604ef010bb0558c4a442f31306117c9cc9fbc\\src\\libraries\\System.Private.CoreLib\\src\\System\\Number.Parsing.cs",
-              "ViewState": "AgIAAFsFAAAAAAAAAIAwwG4FAAAMAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-11T18:12:14.783Z",
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
@@ -155,18 +141,6 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "Number.cs",
-              "DocumentMoniker": "C:\\Users\\\u041F\u041A\\AppData\\Local\\Temp\\.vsdbgsrc\\df0469e962e227f2de8cb55ca89660b09860da1c260bae4c4cbe354c69ab5ed3\\Number.cs",
-              "RelativeDocumentMoniker": "..\\..\\..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\df0469e962e227f2de8cb55ca89660b09860da1c260bae4c4cbe354c69ab5ed3\\Number.cs",
-              "ToolTip": "C:\\Users\\\u041F\u041A\\AppData\\Local\\Temp\\.vsdbgsrc\\df0469e962e227f2de8cb55ca89660b09860da1c260bae4c4cbe354c69ab5ed3\\Number.cs",
-              "RelativeToolTip": "..\\..\\..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\df0469e962e227f2de8cb55ca89660b09860da1c260bae4c4cbe354c69ab5ed3\\Number.cs",
-              "ViewState": "AgIAADMXAAAAAAAAAAAWwFIXAAACAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-23T18:11:32.006Z"
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 0,
               "Title": "ServerData.cs",
               "DocumentMoniker": "C:\\Users\\\u041F\u041A\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Data\\ServerData.cs",
@@ -177,6 +151,30 @@
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-07-22T12:57:13.933Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Number.Parsing.cs",
+              "DocumentMoniker": "C:\\Users\\\u041F\u041A\\AppData\\Local\\SourceServer\\161c25ef967583267cba35e943d604ef010bb0558c4a442f31306117c9cc9fbc\\src\\libraries\\System.Private.CoreLib\\src\\System\\Number.Parsing.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\..\\AppData\\Local\\SourceServer\\161c25ef967583267cba35e943d604ef010bb0558c4a442f31306117c9cc9fbc\\src\\libraries\\System.Private.CoreLib\\src\\System\\Number.Parsing.cs",
+              "ToolTip": "C:\\Users\\\u041F\u041A\\AppData\\Local\\SourceServer\\161c25ef967583267cba35e943d604ef010bb0558c4a442f31306117c9cc9fbc\\src\\libraries\\System.Private.CoreLib\\src\\System\\Number.Parsing.cs",
+              "RelativeToolTip": "..\\..\\..\\..\\AppData\\Local\\SourceServer\\161c25ef967583267cba35e943d604ef010bb0558c4a442f31306117c9cc9fbc\\src\\libraries\\System.Private.CoreLib\\src\\System\\Number.Parsing.cs",
+              "ViewState": "AgIAAFsFAAAAAAAAAIAwwG4FAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-11T18:12:14.783Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Number.cs",
+              "DocumentMoniker": "C:\\Users\\\u041F\u041A\\AppData\\Local\\Temp\\.vsdbgsrc\\df0469e962e227f2de8cb55ca89660b09860da1c260bae4c4cbe354c69ab5ed3\\Number.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\df0469e962e227f2de8cb55ca89660b09860da1c260bae4c4cbe354c69ab5ed3\\Number.cs",
+              "ToolTip": "C:\\Users\\\u041F\u041A\\AppData\\Local\\Temp\\.vsdbgsrc\\df0469e962e227f2de8cb55ca89660b09860da1c260bae4c4cbe354c69ab5ed3\\Number.cs",
+              "RelativeToolTip": "..\\..\\..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\df0469e962e227f2de8cb55ca89660b09860da1c260bae4c4cbe354c69ab5ed3\\Number.cs",
+              "ViewState": "AgIAADMXAAAAAAAAAAAWwFIXAAACAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-23T18:11:32.006Z"
             },
             {
               "$type": "Document",

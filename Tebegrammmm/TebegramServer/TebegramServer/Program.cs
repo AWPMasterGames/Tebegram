@@ -289,9 +289,10 @@ app.Map("/ws", async context =>
         await ReceiveMessage(ws,
             async (result, buffer) =>
             {
-                if (result.MessageType == WebSocketMessageType.Text)
+                if (result.MessageType == WebSocketMessageType.Binary)
                 {
                     VoiceRoomsController.VoiceRooms[Token].SendVoiceToRoom(ws, buffer);
+                    //Console.WriteLine($"user: {user.Username} Bytes: {buffer.Length}");
                 }
                 else if (result.MessageType == WebSocketMessageType.Close || ws.State == WebSocketState.Aborted)
                 {

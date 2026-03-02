@@ -1,0 +1,52 @@
+[01.03.2026 14:42:14]  [MessengerWindow] Инициализация для пользователя: Мася (masya)
+[01.03.2026 14:42:14]  [MessengerWindow] Инициализация завершена
+[01.03.2026 14:42:15]  [AddMessageToUser] Получено сообщение от masya: 123
+[01.03.2026 14:42:15]  [AddMessageToUser] Получено сообщение от ad: 123
+[01.03.2026 14:42:15]  [AddMessageToUser] Получено сообщение от masya: 123
+[01.03.2026 14:42:15]  [AddMessageToUser] Получено сообщение от ad: 44
+[01.03.2026 14:42:15]  [AddMessageToUser] Получено сообщение от masya: hi
+[01.03.2026 14:42:15]  [AddMessageToUser] Получено сообщение от ad: 123
+[01.03.2026 14:42:15]  [AddMessageToUser] Получено сообщение от masya: 33
+[01.03.2026 14:42:15]  [AddMessageToUser] Получен файл от masya: 
+[01.03.2026 14:42:15]  [AddMessageToUser] Получено сообщение от ad: Hola senor
+[01.03.2026 14:42:16]  [AddMessageToUser] Получено сообщение от masya: привет
+[01.03.2026 14:42:16]  [AddMessageToUser] Получен файл от masya: 
+[01.03.2026 14:42:16]  [AddMessageToUser] Получено сообщение от ad: Porque soy Vasya Bambuk? Que es eso?
+[01.03.2026 14:42:16]  [AddMessageToUser] Получен файл от masya: 
+[01.03.2026 14:42:16]  [AddMessageToUser] Получено сообщение от masya: 123
+[01.03.2026 14:42:16]  [AddMessageToUser] Получено сообщение от masya: qq негр
+[01.03.2026 14:42:16]  [AddMessageToUser] Получено сообщение от somnia: q
+[01.03.2026 14:42:16]  [AddMessageToUser] Получено сообщение от somnia: qq раб.
+[01.03.2026 14:42:16]  [AddMessageToUser] Получено сообщение от masya: 123
+[01.03.2026 14:42:17]  [AddMessageToUser] Получено сообщение от somnia: передаю от сварки, бабок нету зато есть айфон.
+[01.03.2026 14:42:17]  [AddMessageToUser] Получен файл от masya: 
+[01.03.2026 14:42:17]  [AddMessageToUser] Получен файл от somnia: 
+[01.03.2026 14:42:17]  [AddMessageToUser] Получен файл от masya: 
+[01.03.2026 14:42:17]  [AddMessageToUser] Получен файл от masya: 
+[01.03.2026 14:42:17]  [AddMessageToUser] Получен файл от somnia: 
+[01.03.2026 14:42:17]  [AddMessageToUser] Получен файл от masya: 
+[01.03.2026 14:42:17]  [AddMessageToUser] Получено сообщение от somnia: ща если найду видос.
+[01.03.2026 14:42:17]  [AddMessageToUser] Получено сообщение от masya: Привет
+[01.03.2026 14:42:17]  [AddMessageToUser] Получено сообщение от TURIST: ку
+[01.03.2026 14:42:18]  [AddMessageToUser] Получено сообщение от masya: это мой мессенджер
+[01.03.2026 14:42:18]  [AddMessageToUser] Получено сообщение от masya: 123
+[01.03.2026 14:42:18]  [AddMessageToUser] Получен файл от masya: 
+[01.03.2026 14:42:18]  [AddMessageToUser] Получен файл от TURIST: 
+[01.03.2026 14:42:18]  [AddMessageToUser] Получено сообщение от СвагаБро: 321
+[01.03.2026 14:42:18]  [AddMessageToUser] Получен файл от masya: 
+[01.03.2026 14:42:18]  [AddMessageToUser] Получен файл от masya: 
+[01.03.2026 14:42:18]  [AddMessageToUser] Получено сообщение от СвагаБро: 321
+[01.03.2026 14:42:18]  [AddMessageToUser] Получен файл от masya: 
+[01.03.2026 14:42:19]  [AddMessageToUser] Получен файл от masya: 
+[01.03.2026 14:42:31]  [LBChats_SelectionChanged] Selected contact: Till (till_its_over)
+[01.03.2026 14:42:32]  [LBChats_SelectionChanged] Restored draft for Till: ''
+[01.03.2026 14:42:33]  [SendMessage] Starting send message: 'хуй' to contact: Till
+[01.03.2026 14:42:33]  [SendMessage] Message added to local contact. Sending to user...
+[01.03.2026 14:42:33]  [AddMessageToUser] Получено сообщение от masya: хуй
+[01.03.2026 14:42:58]  [SendMessage] Starting send message: 'Screenshot_2025-11-13-23-42-26-373_app.revanced.android.youtube-edit.gif' to contact: Till
+[01.03.2026 14:42:58]  [SendMessage] Message added to local contact. Sending to user...
+[01.03.2026 14:42:59]  [AddMessageToUser] Получен файл от masya: https://djnkpzmq-5000.euw.devtunnels.ms/upload/Screenshot_2025-11-13-23-42-26-373_app.revanced.android.youtube-edit.gif
+[01.03.2026 14:43:23]  [AddMessageToUser] Получено сообщение от Till: 132
+[01.03.2026 14:43:58]  [SendMessage] Starting send message: 'zapret-discord-youtube-1.9.7.zip' to contact: Till
+[01.03.2026 14:43:58]  [SendMessage] Message added to local contact. Sending to user...
+[01.03.2026 14:43:59]  [AddMessageToUser] Получен файл от masya: https://djnkpzmq-5000.euw.devtunnels.ms/upload/zapret-discord-youtube-1.9.7.zip

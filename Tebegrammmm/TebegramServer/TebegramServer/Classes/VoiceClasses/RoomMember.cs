@@ -23,7 +23,7 @@ namespace TebegramServer.Classes.VoiceClasses
             if (_Member.State == WebSocketState.Open)
             {
                 var arraySegment = new ArraySegment<byte>(bytes, 0, bytes.Length);
-                await _Member.SendAsync(arraySegment, WebSocketMessageType.Text, true, CancellationToken.None);
+                await _Member.SendAsync(arraySegment, WebSocketMessageType.Binary, true, CancellationToken.None);
             }
         }
 
