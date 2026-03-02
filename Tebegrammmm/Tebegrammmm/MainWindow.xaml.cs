@@ -133,7 +133,12 @@ namespace Tebegrammmm
         {
             Authorization();
         }
-
+        private void RegisterButton_Click(object sender, RoutedEventArgs e)
+        {
+            RegistrationWindow registrationWindow = new RegistrationWindow();
+            registrationWindow.Show();
+            this.Close();
+        }
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
@@ -145,11 +150,6 @@ namespace Tebegrammmm
             {
                 this.DragMove();
             }
-        }
-
-        private void Window_Closed(object sender, EventArgs e)
-        {
-
         }
     }
 }

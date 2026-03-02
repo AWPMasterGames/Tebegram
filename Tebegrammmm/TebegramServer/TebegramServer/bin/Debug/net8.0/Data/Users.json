@@ -3,30 +3,24 @@
     "Id": 1,
     "Login": "aa",
     "Password": "123",
-    "Name": "Вася бамбук",
+    "Name": "Вася жопкин бамбук",
     "Username": "vasya",
-    "Avatart": "1008024429709774919.webp",
     "ChatsFolders": [
       {
         "Name": "Все чаты",
         "Contacts": [
           {
-            "Id": 3,
+            "Username": "ybeka",
+            "Name": "Убека",
+            "Messages": []
+          },
+          {
             "Username": "masya",
-            "Name": "Max",
-            "Messages": [
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "123",
-                "Time": "2026-01-27 00:08:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫2026-01-26 21:08:00▫▫123"
-              }
-            ]
+            "Name": "Masya",
+            "Messages": []
           }
         ],
-        "Icon": "\uD83D\uDCAC",
+        "Icon": "💬",
         "CanDelete": false
       }
     ]
@@ -37,25 +31,22 @@
     "Password": "123",
     "Name": "убека",
     "Username": "ybeka",
-    "Avatart": "1102621638559793255.webp",
     "ChatsFolders": [
       {
         "Name": "Все чаты",
         "Contacts": [
           {
-            "Id": 1,
             "Username": "vasya",
-            "Name": "Вася бамбук",
+            "Name": "Вася жопкин бамбук",
             "Messages": []
           },
           {
-            "Id": 3,
             "Username": "masya",
             "Name": "Masya",
             "Messages": []
           }
         ],
-        "Icon": "\uD83D\uDCAC",
+        "Icon": "💬",
         "CanDelete": false
       }
     ]
@@ -66,396 +57,22 @@
     "Password": "123",
     "Name": "Мася",
     "Username": "masya",
-    "Avatart": "1429941917327687800.png",
     "ChatsFolders": [
       {
         "Name": "Все чаты",
         "Contacts": [
           {
-            "Id": 2,
+            "Username": "vasya",
+            "Name": "Вася жопкин бамбук",
+            "Messages": []
+          },
+          {
             "Username": "ybeka",
             "Name": "Убебка",
             "Messages": []
-          },
-          {
-            "Id": 1,
-            "Username": "vasya",
-            "Name": "ad",
-            "Messages": [
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "123",
-                "Time": "2025-12-30 22:37:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫2025-12-30 19:37:00▫▫123"
-              },
-              {
-                "Sender": "vasya",
-                "Recipient": "masya",
-                "Text": "123",
-                "Time": "2025-12-30 22:37:00",
-                "MessageType": "Text",
-                "MessageString": "vasya▫masya▫Text▫2025-12-30 19:37:00▫▫123"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "123",
-                "Time": "2026-01-07 04:41:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫2026-01-07 01:41:00▫▫123"
-              },
-              {
-                "Sender": "vasya",
-                "Recipient": "masya",
-                "Text": "44",
-                "Time": "2026-01-07 04:41:00",
-                "MessageType": "Text",
-                "MessageString": "vasya▫masya▫Text▫2026-01-07 01:41:00▫▫44"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "hi",
-                "Time": "2026-01-23 18:13:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫2026-01-23 15:13:00▫▫hi"
-              },
-              {
-                "Sender": "vasya",
-                "Recipient": "masya",
-                "Text": "123",
-                "Time": "2026-01-23 18:13:00",
-                "MessageType": "Text",
-                "MessageString": "vasya▫masya▫Text▫2026-01-23 15:13:00▫▫123"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "33",
-                "Time": "2026-01-27 00:04:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫2026-01-26 21:04:00▫▫33"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "pngtree-red-speedometer-gauge-icon-design-element-png-image_16469673.png",
-                "Time": "2026-01-27 00:04:00",
-                "MessageType": "File",
-                "MessageString": "masya▫vasya▫File▫2026-01-26 21:04:00▫▫pngtree-red-speedometer-gauge-icon-design-element-png-image_16469673.png"
-              },
-              {
-                "Sender": "vasya",
-                "Recipient": "masya",
-                "Text": "Hola senor",
-                "Time": "2026-01-27 00:04:00",
-                "MessageType": "Text",
-                "MessageString": "vasya▫masya▫Text▫2026-01-26 21:04:00▫▫Hola senor"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "привет",
-                "Time": "2026-01-27 00:04:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫2026-01-26 21:04:00▫▫привет"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "Облочко.png",
-                "Time": "2026-01-27 00:05:00",
-                "MessageType": "File",
-                "MessageString": "masya▫vasya▫File▫2026-01-26 21:05:00▫▫Облочко.png"
-              },
-              {
-                "Sender": "vasya",
-                "Recipient": "masya",
-                "Text": "Porque soy Vasya Bambuk? Que es eso?",
-                "Time": "2026-01-27 00:05:00",
-                "MessageType": "Text",
-                "MessageString": "vasya▫masya▫Text▫2026-01-26 21:05:00▫▫Porque soy Vasya Bambuk? Que es eso?"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "png-klev-club-p-kaplya-png-35.png",
-                "Time": "2026-01-27 00:06:00",
-                "MessageType": "File",
-                "MessageString": "masya▫vasya▫File▫2026-01-26 21:06:00▫▫png-klev-club-p-kaplya-png-35.png"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "vasya",
-                "Text": "123",
-                "Time": "2026-01-27 00:08:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫vasya▫Text▫2026-01-26 21:08:00▫▫123"
-              }
-            ]
-          },
-          {
-            "Id": 5,
-            "Username": "somnia",
-            "Name": "somnia",
-            "Messages": [
-              {
-                "Sender": "masya",
-                "Recipient": "somnia",
-                "Text": "qq негр",
-                "Time": "2026-01-04 21:21:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫somnia▫Text▫2026-01-04 18:21:00▫▫qq негр"
-              },
-              {
-                "Sender": "somnia",
-                "Recipient": "masya",
-                "Text": "q",
-                "Time": "2026-01-04 21:26:00",
-                "MessageType": "Text",
-                "MessageString": "somnia▫masya▫Text▫2026-01-04 18:26:00▫▫q"
-              },
-              {
-                "Sender": "somnia",
-                "Recipient": "masya",
-                "Text": "qq раб.",
-                "Time": "2026-01-04 21:26:00",
-                "MessageType": "Text",
-                "MessageString": "somnia▫masya▫Text▫2026-01-04 18:26:00▫▫qq раб."
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "somnia",
-                "Text": "123",
-                "Time": "2026-01-04 21:26:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫somnia▫Text▫2026-01-04 18:26:00▫▫123"
-              },
-              {
-                "Sender": "somnia",
-                "Recipient": "masya",
-                "Text": "передаю от сварки, бабок нету зато есть айфон.",
-                "Time": "2026-01-04 21:26:00",
-                "MessageType": "Text",
-                "MessageString": "somnia▫masya▫Text▫2026-01-04 18:26:00▫▫передаю от сварки, бабок нету зато есть айфон."
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "somnia",
-                "Text": "1429941917327687800_(1).png",
-                "Time": "2026-01-04 21:27:00",
-                "MessageType": "File",
-                "MessageString": "masya▫somnia▫File▫2026-01-04 18:27:00▫▫1429941917327687800_(1).png"
-              },
-              {
-                "Sender": "somnia",
-                "Recipient": "masya",
-                "Text": "RobloxScreenShot20251221_232242055.png",
-                "Time": "2026-01-04 21:27:00",
-                "MessageType": "File",
-                "MessageString": "somnia▫masya▫File▫2026-01-04 18:27:00▫▫RobloxScreenShot20251221_232242055.png"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "somnia",
-                "Text": "Screenshot_2025-11-13-23-42-26-373_app.revanced.android.youtube-edit.gif",
-                "Time": "2026-01-04 21:27:00",
-                "MessageType": "File",
-                "MessageString": "masya▫somnia▫File▫2026-01-04 18:27:00▫▫Screenshot_2025-11-13-23-42-26-373_app.revanced.android.youtube-edit.gif"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "somnia",
-                "Text": "Ariis_-_FUNK_DO_ROMA_(hitmos.fm).mp3",
-                "Time": "2026-01-04 21:28:00",
-                "MessageType": "File",
-                "MessageString": "masya▫somnia▫File▫2026-01-04 18:28:00▫▫Ariis_-_FUNK_DO_ROMA_(hitmos.fm).mp3"
-              },
-              {
-                "Sender": "somnia",
-                "Recipient": "masya",
-                "Text": "#рек_#рекомендации_#дискорд_#dnd_#игры_#shorts_#anime_#dnd5e_#мемы_#мем_#rpg_#настолки_#пчк_#dice.mp4",
-                "Time": "2026-01-04 21:28:00",
-                "MessageType": "File",
-                "MessageString": "somnia▫masya▫File▫2026-01-04 18:28:00▫▫#рек_#рекомендации_#дискорд_#dnd_#игры_#shorts_#anime_#dnd5e_#мемы_#мем_#rpg_#настолки_#пчк_#dice.mp4"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "somnia",
-                "Text": "uhaha.mp4",
-                "Time": "2026-01-04 21:31:00",
-                "MessageType": "File",
-                "MessageString": "masya▫somnia▫File▫2026-01-04 18:31:00▫▫uhaha.mp4"
-              },
-              {
-                "Sender": "somnia",
-                "Recipient": "masya",
-                "Text": "ща если найду видос.",
-                "Time": "2026-01-04 21:33:00",
-                "MessageType": "Text",
-                "MessageString": "somnia▫masya▫Text▫2026-01-04 18:33:00▫▫ща если найду видос."
-              }
-            ]
-          },
-          {
-            "Id": 6,
-            "Username": "AndreyC",
-            "Name": "Андрей",
-            "Messages": []
-          },
-          {
-            "Id": 7,
-            "Username": "turist_fu",
-            "Name": "TURIST",
-            "Messages": [
-              {
-                "Sender": "masya",
-                "Recipient": "turist_fu",
-                "Text": "Привет",
-                "Time": "2026-01-11 14:02:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫turist_fu▫Text▫2026-01-11 11:02:00▫▫Привет"
-              },
-              {
-                "Sender": "turist_fu",
-                "Recipient": "masya",
-                "Text": "ку",
-                "Time": "2026-01-11 14:03:00",
-                "MessageType": "Text",
-                "MessageString": "turist_fu▫masya▫Text▫2026-01-11 11:03:00▫▫ку"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "turist_fu",
-                "Text": "это мой мессенджер",
-                "Time": "2026-01-11 14:03:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫turist_fu▫Text▫2026-01-11 11:03:00▫▫это мой мессенджер"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "turist_fu",
-                "Text": "123",
-                "Time": "2026-01-11 14:03:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫turist_fu▫Text▫2026-01-11 11:03:00▫▫123"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "turist_fu",
-                "Text": "fvto2q2agskg4a9ipd6c.jpeg",
-                "Time": "2026-01-11 14:04:00",
-                "MessageType": "File",
-                "MessageString": "masya▫turist_fu▫File▫2026-01-11 11:04:00▫▫fvto2q2agskg4a9ipd6c.jpeg"
-              },
-              {
-                "Sender": "turist_fu",
-                "Recipient": "masya",
-                "Text": "Screenshot_23.png",
-                "Time": "2026-01-11 14:04:00",
-                "MessageType": "File",
-                "MessageString": "turist_fu▫masya▫File▫2026-01-11 11:04:00▫▫Screenshot_23.png"
-              }
-            ]
-          },
-          {
-            "Id": 8,
-            "Username": "Respect2077",
-            "Name": "СвагаБро",
-            "Messages": [
-              {
-                "Sender": "Respect2077",
-                "Recipient": "masya",
-                "Text": "321",
-                "Time": "2026-02-16 21:00:00",
-                "MessageType": "Text",
-                "MessageString": "Respect2077▫masya▫Text▫2026-02-16 18:00:00▫▫321"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "Respect2077",
-                "Text": "tenor.gif",
-                "Time": "2026-02-16 21:01:00",
-                "MessageType": "File",
-                "MessageString": "masya▫Respect2077▫File▫2026-02-16 18:01:00▫▫tenor.gif"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "Respect2077",
-                "Text": "photo_2025-12-03_15-50-26.jpg",
-                "Time": "2026-02-16 21:01:00",
-                "MessageType": "File",
-                "MessageString": "masya▫Respect2077▫File▫2026-02-16 18:01:00▫▫photo_2025-12-03_15-50-26.jpg"
-              },
-              {
-                "Sender": "Respect2077",
-                "Recipient": "masya",
-                "Text": "321",
-                "Time": "2026-02-16 18:01:00",
-                "MessageType": "Text",
-                "MessageString": "Respect2077▫masya▫Text▫2026-02-16 15:01:00▫▫321"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "Respect2077",
-                "Text": "photo_2024-03-06_20-35-19.jpg",
-                "Time": "2026-02-16 09:15:00",
-                "MessageType": "File",
-                "MessageString": "masya▫Respect2077▫File▫2026-02-16 06:15:00▫▫photo_2024-03-06_20-35-19.jpg"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "Respect2077",
-                "Text": "fvto2q2agskg4a9ipd6c.jpeg",
-                "Time": "2026-02-16 06:19:00",
-                "MessageType": "File",
-                "MessageString": "masya▫Respect2077▫File▫2026-02-16 03:19:00▫▫fvto2q2agskg4a9ipd6c.jpeg"
-              }
-            ]
-          },
-          {
-            "Id": 9,
-            "Username": "till_its_over",
-            "Name": "Till",
-            "Messages": [
-              {
-                "Sender": "masya",
-                "Recipient": "till_its_over",
-                "Text": "хуй",
-                "Time": "2026-03-02 23:42:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫till_its_over▫Text▫2026-03-02 20:42:00▫▫хуй"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "till_its_over",
-                "Text": "Screenshot_2025-11-13-23-42-26-373_app.revanced.android.youtube-edit.gif",
-                "Time": "2026-03-02 23:42:00",
-                "MessageType": "File",
-                "MessageString": "masya▫till_its_over▫File▫2026-03-02 20:42:00▫▫Screenshot_2025-11-13-23-42-26-373_app.revanced.android.youtube-edit.gif"
-              },
-              {
-                "Sender": "till_its_over",
-                "Recipient": "masya",
-                "Text": "132",
-                "Time": "2026-03-03 03:43:00",
-                "MessageType": "Text",
-                "MessageString": "till_its_over▫masya▫Text▫2026-03-03 00:43:00▫▫132"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "till_its_over",
-                "Text": "zapret-discord-youtube-1.9.7.zip",
-                "Time": "2026-03-02 23:43:00",
-                "MessageType": "File",
-                "MessageString": "masya▫till_its_over▫File▫2026-03-02 20:43:00▫▫zapret-discord-youtube-1.9.7.zip"
-              }
-            ]
           }
         ],
-        "Icon": "\uD83D\uDCAC",
+        "Icon": "💬",
         "CanDelete": false
       }
     ]
@@ -466,361 +83,22 @@
     "Password": "123",
     "Name": "Админ",
     "Username": "admin_228",
-    "Avatart": "917500895128854658.webp",
     "ChatsFolders": [
       {
         "Name": "Все чаты",
         "Contacts": [
           {
-            "Id": 1,
             "Username": "vasya",
             "Name": "Вася",
             "Messages": []
           },
           {
-            "Id": 2,
             "Username": "ybeka",
             "Name": "убека",
             "Messages": []
           }
         ],
-        "Icon": "\uD83D\uDCAC",
-        "CanDelete": false
-      }
-    ]
-  },
-  {
-    "Id": 5,
-    "Login": "somnia",
-    "Password": "123",
-    "Name": "somnia",
-    "Username": "somnia",
-    "Avatart": "",
-    "ChatsFolders": [
-      {
-        "Name": "Все чаты",
-        "Contacts": [
-          {
-            "Id": 3,
-            "Username": "masya",
-            "Name": "Мася",
-            "Messages": [
-              {
-                "Sender": "masya",
-                "Recipient": "somnia",
-                "Text": "qq негр",
-                "Time": "2026-01-04 21:21:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫somnia▫Text▫2026-01-04 18:21:00▫▫qq негр"
-              },
-              {
-                "Sender": "somnia",
-                "Recipient": "masya",
-                "Text": "q",
-                "Time": "2026-01-04 21:26:00",
-                "MessageType": "Text",
-                "MessageString": "somnia▫masya▫Text▫2026-01-04 18:26:00▫▫q"
-              },
-              {
-                "Sender": "somnia",
-                "Recipient": "masya",
-                "Text": "qq раб.",
-                "Time": "2026-01-04 21:26:00",
-                "MessageType": "Text",
-                "MessageString": "somnia▫masya▫Text▫2026-01-04 18:26:00▫▫qq раб."
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "somnia",
-                "Text": "123",
-                "Time": "2026-01-04 21:26:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫somnia▫Text▫2026-01-04 18:26:00▫▫123"
-              },
-              {
-                "Sender": "somnia",
-                "Recipient": "masya",
-                "Text": "передаю от сварки, бабок нету зато есть айфон.",
-                "Time": "2026-01-04 21:26:00",
-                "MessageType": "Text",
-                "MessageString": "somnia▫masya▫Text▫2026-01-04 18:26:00▫▫передаю от сварки, бабок нету зато есть айфон."
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "somnia",
-                "Text": "1429941917327687800_(1).png",
-                "Time": "2026-01-04 21:27:00",
-                "MessageType": "File",
-                "MessageString": "masya▫somnia▫File▫2026-01-04 18:27:00▫▫1429941917327687800_(1).png"
-              },
-              {
-                "Sender": "somnia",
-                "Recipient": "masya",
-                "Text": "RobloxScreenShot20251221_232242055.png",
-                "Time": "2026-01-04 21:27:00",
-                "MessageType": "File",
-                "MessageString": "somnia▫masya▫File▫2026-01-04 18:27:00▫▫RobloxScreenShot20251221_232242055.png"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "somnia",
-                "Text": "Screenshot_2025-11-13-23-42-26-373_app.revanced.android.youtube-edit.gif",
-                "Time": "2026-01-04 21:27:00",
-                "MessageType": "File",
-                "MessageString": "masya▫somnia▫File▫2026-01-04 18:27:00▫▫Screenshot_2025-11-13-23-42-26-373_app.revanced.android.youtube-edit.gif"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "somnia",
-                "Text": "Ariis_-_FUNK_DO_ROMA_(hitmos.fm).mp3",
-                "Time": "2026-01-04 21:28:00",
-                "MessageType": "File",
-                "MessageString": "masya▫somnia▫File▫2026-01-04 18:28:00▫▫Ariis_-_FUNK_DO_ROMA_(hitmos.fm).mp3"
-              },
-              {
-                "Sender": "somnia",
-                "Recipient": "masya",
-                "Text": "#рек_#рекомендации_#дискорд_#dnd_#игры_#shorts_#anime_#dnd5e_#мемы_#мем_#rpg_#настолки_#пчк_#dice.mp4",
-                "Time": "2026-01-04 21:28:00",
-                "MessageType": "File",
-                "MessageString": "somnia▫masya▫File▫2026-01-04 18:28:00▫▫#рек_#рекомендации_#дискорд_#dnd_#игры_#shorts_#anime_#dnd5e_#мемы_#мем_#rpg_#настолки_#пчк_#dice.mp4"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "somnia",
-                "Text": "uhaha.mp4",
-                "Time": "2026-01-04 21:31:00",
-                "MessageType": "File",
-                "MessageString": "masya▫somnia▫File▫2026-01-04 18:31:00▫▫uhaha.mp4"
-              },
-              {
-                "Sender": "somnia",
-                "Recipient": "masya",
-                "Text": "ща если найду видос.",
-                "Time": "2026-01-04 21:33:00",
-                "MessageType": "Text",
-                "MessageString": "somnia▫masya▫Text▫2026-01-04 18:33:00▫▫ща если найду видос."
-              }
-            ]
-          }
-        ],
-        "Icon": "\uD83D\uDCAC",
-        "CanDelete": false
-      }
-    ]
-  },
-  {
-    "Id": 6,
-    "Login": "andrey4",
-    "Password": "123",
-    "Name": "Андрей",
-    "Username": "AndreyC",
-    "Avatart": "",
-    "ChatsFolders": [
-      {
-        "Name": "Все чаты",
-        "Contacts": [],
-        "Icon": "\uD83D\uDCAC",
-        "CanDelete": false
-      }
-    ]
-  },
-  {
-    "Id": 7,
-    "Login": "turist",
-    "Password": "123",
-    "Name": "TURIST",
-    "Username": "turist_fu",
-    "Avatart": "",
-    "ChatsFolders": [
-      {
-        "Name": "Все чаты",
-        "Contacts": [
-          {
-            "Id": 3,
-            "Username": "masya",
-            "Name": "Мася",
-            "Messages": [
-              {
-                "Sender": "masya",
-                "Recipient": "turist_fu",
-                "Text": "Привет",
-                "Time": "2026-01-11 14:02:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫turist_fu▫Text▫2026-01-11 11:02:00▫▫Привет"
-              },
-              {
-                "Sender": "turist_fu",
-                "Recipient": "masya",
-                "Text": "ку",
-                "Time": "2026-01-11 14:03:00",
-                "MessageType": "Text",
-                "MessageString": "turist_fu▫masya▫Text▫2026-01-11 11:03:00▫▫ку"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "turist_fu",
-                "Text": "это мой мессенджер",
-                "Time": "2026-01-11 14:03:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫turist_fu▫Text▫2026-01-11 11:03:00▫▫это мой мессенджер"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "turist_fu",
-                "Text": "123",
-                "Time": "2026-01-11 14:03:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫turist_fu▫Text▫2026-01-11 11:03:00▫▫123"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "turist_fu",
-                "Text": "fvto2q2agskg4a9ipd6c.jpeg",
-                "Time": "2026-01-11 14:04:00",
-                "MessageType": "File",
-                "MessageString": "masya▫turist_fu▫File▫2026-01-11 11:04:00▫▫fvto2q2agskg4a9ipd6c.jpeg"
-              },
-              {
-                "Sender": "turist_fu",
-                "Recipient": "masya",
-                "Text": "Screenshot_23.png",
-                "Time": "2026-01-11 14:04:00",
-                "MessageType": "File",
-                "MessageString": "turist_fu▫masya▫File▫2026-01-11 11:04:00▫▫Screenshot_23.png"
-              }
-            ]
-          }
-        ],
-        "Icon": "\uD83D\uDCAC",
-        "CanDelete": false
-      }
-    ]
-  },
-  {
-    "Id": 8,
-    "Login": "Respik",
-    "Password": "321",
-    "Name": "СвагаБро",
-    "Username": "Respect2077",
-    "Avatart": "",
-    "ChatsFolders": [
-      {
-        "Name": "Все чаты",
-        "Contacts": [
-          {
-            "Id": 3,
-            "Username": "masya",
-            "Name": "masya",
-            "Messages": [
-              {
-                "Sender": "Respect2077",
-                "Recipient": "masya",
-                "Text": "321",
-                "Time": "2026-02-16 21:00:00",
-                "MessageType": "Text",
-                "MessageString": "Respect2077▫masya▫Text▫2026-02-16 18:00:00▫▫321"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "Respect2077",
-                "Text": "tenor.gif",
-                "Time": "2026-02-16 21:01:00",
-                "MessageType": "File",
-                "MessageString": "masya▫Respect2077▫File▫2026-02-16 18:01:00▫▫tenor.gif"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "Respect2077",
-                "Text": "photo_2025-12-03_15-50-26.jpg",
-                "Time": "2026-02-16 21:01:00",
-                "MessageType": "File",
-                "MessageString": "masya▫Respect2077▫File▫2026-02-16 18:01:00▫▫photo_2025-12-03_15-50-26.jpg"
-              },
-              {
-                "Sender": "Respect2077",
-                "Recipient": "masya",
-                "Text": "321",
-                "Time": "2026-02-16 18:01:00",
-                "MessageType": "Text",
-                "MessageString": "Respect2077▫masya▫Text▫2026-02-16 15:01:00▫▫321"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "Respect2077",
-                "Text": "photo_2024-03-06_20-35-19.jpg",
-                "Time": "2026-02-16 09:15:00",
-                "MessageType": "File",
-                "MessageString": "masya▫Respect2077▫File▫2026-02-16 06:15:00▫▫photo_2024-03-06_20-35-19.jpg"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "Respect2077",
-                "Text": "fvto2q2agskg4a9ipd6c.jpeg",
-                "Time": "2026-02-16 06:19:00",
-                "MessageType": "File",
-                "MessageString": "masya▫Respect2077▫File▫2026-02-16 03:19:00▫▫fvto2q2agskg4a9ipd6c.jpeg"
-              }
-            ]
-          }
-        ],
-        "Icon": "\uD83D\uDCAC",
-        "CanDelete": false
-      }
-    ]
-  },
-  {
-    "Id": 9,
-    "Login": "falas3310",
-    "Password": "123",
-    "Name": "Till",
-    "Username": "till_its_over",
-    "Avatart": "",
-    "ChatsFolders": [
-      {
-        "Name": "Все чаты",
-        "Contacts": [
-          {
-            "Id": 3,
-            "Username": "masya",
-            "Name": "Мася",
-            "Messages": [
-              {
-                "Sender": "masya",
-                "Recipient": "till_its_over",
-                "Text": "хуй",
-                "Time": "2026-03-02 23:42:00",
-                "MessageType": "Text",
-                "MessageString": "masya▫till_its_over▫Text▫2026-03-02 20:42:00▫▫хуй"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "till_its_over",
-                "Text": "Screenshot_2025-11-13-23-42-26-373_app.revanced.android.youtube-edit.gif",
-                "Time": "2026-03-02 23:42:00",
-                "MessageType": "File",
-                "MessageString": "masya▫till_its_over▫File▫2026-03-02 20:42:00▫▫Screenshot_2025-11-13-23-42-26-373_app.revanced.android.youtube-edit.gif"
-              },
-              {
-                "Sender": "till_its_over",
-                "Recipient": "masya",
-                "Text": "132",
-                "Time": "2026-03-03 03:43:00",
-                "MessageType": "Text",
-                "MessageString": "till_its_over▫masya▫Text▫2026-03-03 00:43:00▫▫132"
-              },
-              {
-                "Sender": "masya",
-                "Recipient": "till_its_over",
-                "Text": "zapret-discord-youtube-1.9.7.zip",
-                "Time": "2026-03-02 23:43:00",
-                "MessageType": "File",
-                "MessageString": "masya▫till_its_over▫File▫2026-03-02 20:43:00▫▫zapret-discord-youtube-1.9.7.zip"
-              }
-            ]
-          }
-        ],
-        "Icon": "\uD83D\uDCAC",
+        "Icon": "💬",
         "CanDelete": false
       }
     ]

@@ -162,3 +162,6 @@ C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServe
 C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\staticwebassets.build.json.cache
 C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\staticwebassets.build.endpoints.json
 C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
+C:\Users\makar\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\bin\Debug\net8.0\Data\Users.json
+C:\Users\makar\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\swae.build.ex.cache
+C:\Users\makar\Documents\GitHub\Tebegram\Tebegrammmm\TebegramServer\TebegramServer\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

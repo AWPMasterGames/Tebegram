@@ -14,50 +14,59 @@
     <Border CornerRadius="20" Background="#FF1E1E1E" BorderBrush="#FF3C3C3C" BorderThickness="2" Padding="20">
         <Grid>
             <Button Content="X"
-                    Width="30" Height="30"
-                    HorizontalAlignment="Right" VerticalAlignment="Top"
-                    Margin="0,-13,-13,0"
-                    Background="#FF3C3C3C"
-                    Foreground="White"
-                    BorderBrush="{x:Null}"
-                    FontWeight="Bold"
-                    FontSize="14"
-                    Click="CloseButton_Click"/>
+                Width="30" Height="30"
+                HorizontalAlignment="Right" VerticalAlignment="Top"
+                Margin="0,-13,-13,0"
+                Background="#FF3C3C3C"
+                Foreground="White"
+                BorderBrush="{x:Null}"
+                FontWeight="Bold"
+                FontSize="14"
+                Click="CloseButton_Click"/>
 
             <StackPanel VerticalAlignment="Center">
-                <TextBlock Text="Авторизация"
-                           FontSize="28"
-                           Foreground="White"
-                           HorizontalAlignment="Center"
-                           Margin="0 0 0 30" />
+                <TextBlock Text="Login"
+                       FontSize="28"
+                       Foreground="White"
+                       HorizontalAlignment="Center"
+                       Margin="0 0 0 30" />
 
-                <TextBlock Text="Логин" Foreground="LightGray"/>
+                <TextBlock Text="Username" Foreground="LightGray"/>
                 <TextBox x:Name="TBUserLogin"
+                     Height="35"
+                     Margin="0 5 0 15"
+                     FontSize="15"
+                     Background="#FF2D2D30"
+                     Foreground="White"
+                     BorderBrush="#FF3C3C3C"
+                     KeyDown="TextBox_KeyDown"/>
+
+                <TextBlock Text="Password" Foreground="LightGray"/>
+                <PasswordBox x:Name="PBUserPassord"
                          Height="35"
-                         Margin="0 5 0 15"
-                         FontSize="15"
+                         Margin="0 5 0 25"
+                         FontSize="14"
                          Background="#FF2D2D30"
                          Foreground="White"
                          BorderBrush="#FF3C3C3C"
-                         KeyDown="TextBox_KeyDown"/>
+                         KeyDown="TBUserPassord_KeyDown"/>
 
-                <TextBlock Text="Пароль" Foreground="LightGray"/>
-                <PasswordBox x:Name="PBUserPassord"
-                             Height="35"
-                             Margin="0 5 0 25"
-                             FontSize="14"
-                             Background="#FF2D2D30"
-                             Foreground="White"
-                             BorderBrush="#FF3C3C3C"
-                             KeyDown="TBUserPassord_KeyDown"/>
+                <Button x:Name="LoginButton" Content="Login"
+                    Height="40"
+                    Background="#FF007ACC"
+                    Foreground="White"
+                    FontWeight="Bold"
+                    FontSize="16"
+                    Margin="0 0 0 10"
+                    Click="Button_Click"/>
 
-                <Button x:Name="LoginButton" Content="Войти"
-                        Height="40"
-                        Background="#FF007ACC"
-                        Foreground="White"
-                        FontWeight="Bold"
-                        FontSize="16"
-                        Click="Button_Click"/>
+                <Button x:Name="RegisterButton" Content="Register"
+                    Height="35"
+                    Background="Transparent"
+                    Foreground="LightGray"
+                    FontSize="14"
+                    BorderBrush="#FF3C3C3C"
+                    Click="RegisterButton_Click"/>
             </StackPanel>
         </Grid>
     </Border>
