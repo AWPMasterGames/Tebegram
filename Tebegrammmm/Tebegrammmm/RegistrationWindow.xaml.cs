@@ -159,7 +159,10 @@ namespace Tebegrammmm
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            try
+            MainWindow mainWindow = new MainWindow();
+            mainWindow.Show();
+            this.Close();
+            /*try
             {
                 MainWindow mainWindow = new MainWindow();
                 mainWindow.Show();
@@ -169,13 +172,11 @@ namespace Tebegrammmm
             {
                 Log.Save($"[RegistrationWindow] Error opening MainWindow: {ex.Message}");
                 MessageBox.Show($"Error opening login window: {ex.Message}");
-            }
+            }*/
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow mainWindow = new MainWindow();
-            mainWindow.Show();
             this.Close();
         }
 
