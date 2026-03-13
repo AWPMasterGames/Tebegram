@@ -7,141 +7,250 @@
         mc:Ignorable="d"
         Background="#303c4c"
         Height="500" Width="400">
+
     <Grid>
-        <!-- Верхняя панель с эмодзи и системными кнопками -->
-        <Grid Margin="0,0,0,0">
-            <!--Основная разметка-->
-            <Grid.RowDefinitions>
-                <RowDefinition Height="40"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="90"/>
-            </Grid.RowDefinitions>
 
-            <!-- Top bar -->
-            <!--<Grid Grid.Row="0">
-                --><!--<Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="67*"/>
-                    <ColumnDefinition Width="13*"/>
-                    <ColumnDefinition Width="80"/>
-                </Grid.ColumnDefinitions>-->
+        <Grid Name="DefoultVoiceRoom" Visibility="Visible">
+            <!-- Верхняя панель с эмодзи и системными кнопками -->
+            <Grid Margin="0,0,0,0">
+                <!--Основная разметка-->
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="90"/>
+                </Grid.RowDefinitions>
 
+                <!--Верхняя панель-->
+                <StackPanel VerticalAlignment="Bottom"
+                            HorizontalAlignment="Center">
+                    <TextBlock Text="Username"
+                               Foreground="#FFFFFF"
+                               FontSize="20"/>
+                </StackPanel>
 
-
-                <!-- Минимизировать / закрыть (условные кнопки) -->
-                <!--<StackPanel Grid.Column="2"
-                            Orientation="Horizontal"
-                            HorizontalAlignment="Left"
+                <!-- Центр -->
+                <StackPanel Grid.Row="1"
                             VerticalAlignment="Center"
-                            Margin="30,0,0,0">
-                    <Button Width="18" Height="18" Margin="0,0,6,0"
-                            Content="─"
-                            Background="Transparent"
-                            Foreground="White"
-                            BorderBrush="Black"/>
-                    <Button Width="18" Height="18"
-                            Content="×"
-                            Background="Transparent"
-                            Foreground="White"
-                            BorderBrush="Black"/>
-                </StackPanel>--><!--
-            </Grid>-->
+                            HorizontalAlignment="Center">
+                    <Grid Width="190" Height="190">
+                        <Ellipse Fill="#263241"/>
+                        <!-- Аватарка -->
+                        <Ellipse>
+                            <Ellipse.Fill>
+                                <ImageBrush ImageSource="https://djnkpzmq-5000.euw.devtunnels.ms/avatars/1008024429709774919.webp"
+                                            Stretch="UniformToFill"/>
+                            </Ellipse.Fill>
+                        </Ellipse>
+                    </Grid>
 
-            <!-- Центр -->
-            <StackPanel Grid.Row="1"
+                    <TextBlock Text="Если вы хотите начать видеозвонок, нажмите на значок камеры"
+                               Foreground="#B8C2CC"
+                               FontSize="12"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Нижняя панель с кнопками -->
+                <StackPanel Grid.Row="2"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center">
+
+                    <!-- Видеозвонок -->
+                    <Button Width="56" Height="56"
+                            Background="Transparent"
+                            BorderBrush="Transparent"
+                            ToolTip="Включить видеозвонок">
+                        <Border Height="50" Width="50" 
+                                Background="#263241"
+                                CornerRadius="28">
+                            <Viewbox Width="24" Height="24">
+                                <Path Data="{StaticResource IconCamera}"
+                              Fill="White"
+                              Stretch="Uniform"/>
+                            </Viewbox>
+                        </Border>
+                    </Button>
+
+                    <!-- Отмена -->
+                    <Button Width="64" Height="64"
+                            Background="Transparent"
+                            BorderBrush="Transparent"
+                            ToolTip="Завершить">
+                        <Border Height="50" Width="50" 
+                                Background="#263241"
+                                CornerRadius="28">
+                            <Viewbox Width="24" Height="24">
+                                <Path Data="{StaticResource IconClose}"
+                                      Fill="White"
+                                      Stretch="Uniform"/>
+                            </Viewbox>
+                        </Border>
+                    </Button>
+
+                    <!-- Завершить -->
+                    <Button Width="64" Height="64"
+                Background="Transparent"
+                BorderBrush="Transparent"
+                ToolTip="Завершить">
+                        <Border Height="50" Width="50" 
+                        Background="#263241"
+                        CornerRadius="28">
+                            <Viewbox Width="24" Height="24">
+                                <Path Data="{StaticResource IconPhone}"
+                              Fill="White"
+                              Stretch="Uniform"/>
+                            </Viewbox>
+                        </Border>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Grid>
+
+        <Grid Name="ActiveVoiceRoom" Visibility="Hidden">
+            <!-- Верхняя панель с эмодзи и системными кнопками -->
+            <Grid Margin="0,0,0,0">
+                <!--Основная разметка-->
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="90"/>
+                </Grid.RowDefinitions>
+
+                <!--Верхняя панель-->
+                <StackPanel VerticalAlignment="Bottom"
+                            HorizontalAlignment="Center">
+                    <TextBlock Text="Username"
+                           Foreground="#FFFFFF"
+                           FontSize="20"/>
+                </StackPanel>
+
+                <!-- Центр -->
+                <StackPanel Grid.Row="1"
                         VerticalAlignment="Center"
                         HorizontalAlignment="Center">
-                <Grid Width="190" Height="190">
-                    <Ellipse Fill="#FF222222"/>
-                    <!-- Аватарка -->
-                    <Ellipse>
-                        <Ellipse.Fill>
-                            <ImageBrush ImageSource="https://djnkpzmq-5000.euw.devtunnels.ms/avatars/1008024429709774919.webp"
-                                        Stretch="UniformToFill"/>
-                        </Ellipse.Fill>
-                    </Ellipse>
+                    <Grid Width="190" Height="190">
+                        <Ellipse Fill="#263241"/>
+                        <!-- Аватарка -->
+                        <Ellipse>
+                            <Ellipse.Fill>
+                                <ImageBrush ImageSource="https://djnkpzmq-5000.euw.devtunnels.ms/avatars/1008024429709774919.webp"
+                                            Stretch="UniformToFill"/>
+                            </Ellipse.Fill>
+                        </Ellipse>
 
-                    <!-- Иконка микрофона у аватарки -->
-                    <Label Width="40" Height="40"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Bottom"
-                            Margin="0,0,8,8"
-                            Background="#FFE23B3B"
-                            BorderBrush="Transparent"
-                            Content="🎙"
-                            FontSize="18"
-                            Foreground="White"
-                            Padding="0"/>
-                </Grid>
+                        <!-- Иконка микрофона у аватарки -->
+                        <Border VerticalAlignment="Bottom" 
+                                HorizontalAlignment="Right" 
+                                Height="50" Width="50" 
+                                Background="#303c4c"
+                                CornerRadius="28">
+                            <Border Background="#263241" Height="45" Width="45" CornerRadius="28">
+                                <Viewbox Width="18" Height="18">
+                                    <Path Data="{StaticResource IconMic}"
+                                          Fill="White"
+                                          Stretch="Uniform"/>
+                                </Viewbox>
+                            </Border>
+                        </Border>
+                    </Grid>
 
-                <TextBlock Text="Username"
-                           Foreground="Black"
-                           FontSize="20"
-                           Margin="0,16,0,4"
-                           HorizontalAlignment="Center"/>
+                    <TextBlock Text="CallTime"
 
-                <TextBlock Text="CallTime"
-                           Foreground="#FFBBBBBB"
-                           FontSize="14"
-                           HorizontalAlignment="Center"/>
-            </StackPanel>
+                           Foreground="#B8C2CC"
+                                         FontSize="14"
+           HorizontalAlignment="Center"/>
+                </StackPanel>
 
-            <!-- Нижняя панель с кнопками -->
-            <StackPanel Grid.Row="2"
+                <!-- Нижняя панель с кнопками -->
+                <StackPanel Grid.Row="2"
                         Orientation="Horizontal"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center">
 
-                <!-- Дэмка -->
-                <Button Width="56" Height="56"
-                        Background="#FF333333"
-                        BorderBrush="Transparent"
-                        ToolTip="Экран">
-                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock Text="🖥" FontSize="22" HorizontalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
+                    <!-- Дэмка -->
+                    <Button Width="56" Height="56"
+                            Background="Transparent"
+                            BorderBrush="Transparent"
+                            ToolTip="Демонстрация экрана">
+                        <Border Height="50" Width="50" 
+                                Background="#263241"
+                                CornerRadius="28">
+                            <Viewbox Width="24" Height="24">
+                                <Path Data="{StaticResource IconScreenShare}"
+                                      Fill="White"
+                                      Stretch="Uniform"/>
+                            </Viewbox>
+                        </Border>
+                    </Button>
 
-                <!-- Видеозвонок -->
-                <Button Width="56" Height="56"
-                        Background="#FF333333"
+                    <!-- Видеозвонок -->
+                    <Button Width="56" Height="56"
+                        Background="Transparent"
                         BorderBrush="Transparent"
-                        ToolTip="Вкл. видео">
-                    <TextBlock Text="📷" FontSize="22" HorizontalAlignment="Center"/>
-                </Button>
+                        ToolTip="Включить видеозвонок">
+                        <Border Height="50" Width="50" 
+                                Background="#263241"
+                                CornerRadius="28">
+                            <Viewbox Width="24" Height="24">
+                                <Path Data="{StaticResource IconCamera}"
+                                      Fill="White"
+                                      Stretch="Uniform"/>
+                            </Viewbox>
+                        </Border>
+                    </Button>
 
-                <!-- Завершить -->
-                <Button Width="64" Height="64"
-                        Background="#FFE23B3B"
+                    <!-- Завершить -->
+                    <Button Width="64" Height="64"
+                        Background="Transparent"
                         BorderBrush="Transparent"
                         ToolTip="Завершить">
-                    <TextBlock Text="📞" FontSize="24" HorizontalAlignment="Center"/>
-                </Button>
+                        <Border Height="50" Width="50" 
+                                Background="#FF4D4F"
+                                CornerRadius="28">
+                            <Viewbox Width="24" Height="24">
+                                <Path Data="{StaticResource IconPhone}"
+                                      Fill="White"
+                                      Stretch="Uniform"/>
+                            </Viewbox>
+                        </Border>
+                    </Button>
 
-                <!-- Микрофон -->
-                <Button Width="56" Height="56"
-            Background="Transparent"
-            BorderBrush="Transparent"
-            ToolTip="Микрофон">
-                    <Border Height="50" Width="50" Background="#FF333333"
-                CornerRadius="28">
-                            <TextBlock Text="🎤"
-                       FontSize="22"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"/>
-                    </Border>
-                </Button>
+                    <!-- Микрофон -->
+                    <Button Width="56" Height="56"
+                            Background="Transparent"
+                            BorderBrush="Transparent"
+                            ToolTip="Микрофон">
+                        <Border Height="50" Width="50" 
+                                Background="#263241"
+                                CornerRadius="28">
+                            <Viewbox Width="24" Height="24">
+                                <Path Data="{StaticResource IconMic}"
+                                      Fill="White"
+                                      Stretch="Uniform"/>
+                            </Viewbox>
+                        </Border>
+                    </Button>
 
 
-                <!-- Добавить пользователя в звонок -->
-                <Button Width="56" Height="56"
-                        Background="#FF333333"
+                    <!-- Добавить пользователя в звонок -->
+                    <Button Width="56" Height="56"
+                        Background="Transparent"
                         BorderBrush="Transparent"
-                        ToolTip="Добавить">
-                    <TextBlock Text="➕" FontSize="22"
-                               HorizontalAlignment="Center"
-                               Foreground="White"/>
-                </Button>
-            </StackPanel>
+                        ToolTip="Добавить нового пользователя">
+
+                        <Border Height="50" 
+                                Width="50" 
+                                Background="#263241"
+                                CornerRadius="28">
+                            <Viewbox Width="24" Height="24">
+                                <Path Data="{StaticResource IconPlus}"
+                                      Fill="White"
+                                      Stretch="Uniform"/>
+                            </Viewbox>
+                        </Border>
+                    </Button>
+                </StackPanel>
+            </Grid>
         </Grid>
     </Grid>
 </Window>
