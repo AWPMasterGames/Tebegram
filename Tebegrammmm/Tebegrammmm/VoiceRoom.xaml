@@ -1,0 +1,147 @@
+﻿<Window x:Class="Tebegrammmm.VoiceRoom"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Tebegrammmm"
+        mc:Ignorable="d"
+        Background="#303c4c"
+        Height="500" Width="400">
+    <Grid>
+        <!-- Верхняя панель с эмодзи и системными кнопками -->
+        <Grid Margin="0,0,0,0">
+            <!--Основная разметка-->
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="90"/>
+            </Grid.RowDefinitions>
+
+            <!-- Top bar -->
+            <!--<Grid Grid.Row="0">
+                --><!--<Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="67*"/>
+                    <ColumnDefinition Width="13*"/>
+                    <ColumnDefinition Width="80"/>
+                </Grid.ColumnDefinitions>-->
+
+
+
+                <!-- Минимизировать / закрыть (условные кнопки) -->
+                <!--<StackPanel Grid.Column="2"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Margin="30,0,0,0">
+                    <Button Width="18" Height="18" Margin="0,0,6,0"
+                            Content="─"
+                            Background="Transparent"
+                            Foreground="White"
+                            BorderBrush="Black"/>
+                    <Button Width="18" Height="18"
+                            Content="×"
+                            Background="Transparent"
+                            Foreground="White"
+                            BorderBrush="Black"/>
+                </StackPanel>--><!--
+            </Grid>-->
+
+            <!-- Центр -->
+            <StackPanel Grid.Row="1"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center">
+                <Grid Width="190" Height="190">
+                    <Ellipse Fill="#FF222222"/>
+                    <!-- Аватарка -->
+                    <Ellipse>
+                        <Ellipse.Fill>
+                            <ImageBrush ImageSource="https://djnkpzmq-5000.euw.devtunnels.ms/avatars/1008024429709774919.webp"
+                                        Stretch="UniformToFill"/>
+                        </Ellipse.Fill>
+                    </Ellipse>
+
+                    <!-- Иконка микрофона у аватарки -->
+                    <Label Width="40" Height="40"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Bottom"
+                            Margin="0,0,8,8"
+                            Background="#FFE23B3B"
+                            BorderBrush="Transparent"
+                            Content="🎙"
+                            FontSize="18"
+                            Foreground="White"
+                            Padding="0"/>
+                </Grid>
+
+                <TextBlock Text="Username"
+                           Foreground="Black"
+                           FontSize="20"
+                           Margin="0,16,0,4"
+                           HorizontalAlignment="Center"/>
+
+                <TextBlock Text="CallTime"
+                           Foreground="#FFBBBBBB"
+                           FontSize="14"
+                           HorizontalAlignment="Center"/>
+            </StackPanel>
+
+            <!-- Нижняя панель с кнопками -->
+            <StackPanel Grid.Row="2"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+
+                <!-- Дэмка -->
+                <Button Width="56" Height="56"
+                        Background="#FF333333"
+                        BorderBrush="Transparent"
+                        ToolTip="Экран">
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock Text="🖥" FontSize="22" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+                <!-- Видеозвонок -->
+                <Button Width="56" Height="56"
+                        Background="#FF333333"
+                        BorderBrush="Transparent"
+                        ToolTip="Вкл. видео">
+                    <TextBlock Text="📷" FontSize="22" HorizontalAlignment="Center"/>
+                </Button>
+
+                <!-- Завершить -->
+                <Button Width="64" Height="64"
+                        Background="#FFE23B3B"
+                        BorderBrush="Transparent"
+                        ToolTip="Завершить">
+                    <TextBlock Text="📞" FontSize="24" HorizontalAlignment="Center"/>
+                </Button>
+
+                <!-- Микрофон -->
+                <Button Width="56" Height="56"
+            Background="Transparent"
+            BorderBrush="Transparent"
+            ToolTip="Микрофон">
+                    <Border Height="50" Width="50" Background="#FF333333"
+                CornerRadius="28">
+                            <TextBlock Text="🎤"
+                       FontSize="22"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
+                    </Border>
+                </Button>
+
+
+                <!-- Добавить пользователя в звонок -->
+                <Button Width="56" Height="56"
+                        Background="#FF333333"
+                        BorderBrush="Transparent"
+                        ToolTip="Добавить">
+                    <TextBlock Text="➕" FontSize="22"
+                               HorizontalAlignment="Center"
+                               Foreground="White"/>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

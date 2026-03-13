@@ -5,6 +5,9 @@
     <Compile Update="SettingsWindows\SettingsPanelWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="VoiceRoom.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Resourses\MessengerTheme_Base.xaml">
