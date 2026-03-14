@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using Tebegrammmm.Data;
 
 namespace Tebegrammmm
 {
@@ -7,18 +8,16 @@ namespace Tebegrammmm
     /// </summary>
     public partial class SettingsPanelWindow : Window
     {
-        public User User;
-        public SettingsPanelWindow(User user)
+        public SettingsPanelWindow()
         {
             InitializeComponent();
-            User = user;
             //TBLogin.Text = User.Login;          // Устанавливаем логин
             // Показываем localhost вместо 127.0.0.1 для лучшего UX
-            string displayAddress = User.Username;
+            string displayAddress = UserData.User.Username;
             TBUsername.Text = displayAddress;
 
 
-            UserInfo.DataContext = User;
+            UserInfo.DataContext = UserData.User;
 
         }
 

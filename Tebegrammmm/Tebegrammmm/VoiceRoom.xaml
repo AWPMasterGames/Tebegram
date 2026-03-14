@@ -6,11 +6,12 @@
         xmlns:local="clr-namespace:Tebegrammmm"
         mc:Ignorable="d"
         Background="#303c4c"
-        Height="500" Width="400">
+        Height="500" Width="400"
+        Closing="Window_Closing">
 
     <Grid>
 
-        <Grid Name="DefoultVoiceRoom" Visibility="Hidden">
+        <Grid Name="DefoultVoiceRoom" Visibility="Visible">
             <!-- Верхняя панель с эмодзи и системными кнопками -->
             <Grid Margin="0,0,0,0">
                 <!--Основная разметка-->
@@ -89,6 +90,7 @@
 
                     <!-- Завершить -->
                     <Button Width="64" Height="64"
+                            Click="Button_Click_1"
                 Background="Transparent"
                 BorderBrush="Transparent"
                 ToolTip="Завершить">
@@ -106,7 +108,7 @@
             </Grid>
         </Grid>
 
-        <Grid Name="ActiveVoiceRoom" Visibility="Visible">
+        <Grid Name="ActiveVoiceRoom" Visibility="Hidden">
             <!-- Верхняя панель с эмодзи и системными кнопками -->
             <Grid Margin="0,0,0,0">
                 <!--Основная разметка-->
@@ -201,6 +203,7 @@
 
                     <!-- Завершить -->
                     <Button Width="64" Height="64"
+                            Click="Button_Click"
                         Background="Transparent"
                         BorderBrush="Transparent"
                         ToolTip="Завершить">

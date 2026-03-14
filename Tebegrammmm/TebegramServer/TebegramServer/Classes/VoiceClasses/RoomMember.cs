@@ -30,6 +30,7 @@ namespace TebegramServer.Classes.VoiceClasses
         public async Task Disconnect(WebSocketCloseStatus webSocketCloseStatus, string desciption,CancellationToken cancellationToken)
         {
             await Member.CloseAsync(webSocketCloseStatus, desciption, cancellationToken);
+            User.CallToken = "";
         }
     }
 }

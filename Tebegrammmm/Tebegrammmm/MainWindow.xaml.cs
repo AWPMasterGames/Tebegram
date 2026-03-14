@@ -92,8 +92,8 @@ namespace Tebegrammmm
                         string[] ContactData = userData[i].Split('&');
                         user.ChatsFolders[0].AddContact(new Contact(int.Parse(ContactData[0]), ContactData[1], ContactData[2]));
                     }
-
-                    MessengerWindow mw = new MessengerWindow(user);
+                    UserData.User = user;
+                    MessengerWindow mw = new MessengerWindow();
                     this.Hide();
                     mw.Show();
                     if (!File.Exists("user.data"))
