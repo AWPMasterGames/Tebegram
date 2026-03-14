@@ -7,7 +7,11 @@
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
   </PropertyGroup>
   <ItemGroup>
+    <Page Remove="Resourses\Icons.xaml" />
+  </ItemGroup>
+  <ItemGroup>
     <Resource Include="no_avatar.png" />
+    <Resource Include="Resourses\Icons.xaml" />
   </ItemGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
