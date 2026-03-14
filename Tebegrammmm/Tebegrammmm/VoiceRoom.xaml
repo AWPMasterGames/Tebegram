@@ -10,7 +10,7 @@
 
     <Grid>
 
-        <Grid Name="DefoultVoiceRoom" Visibility="Visible">
+        <Grid Name="DefoultVoiceRoom" Visibility="Hidden">
             <!-- Верхняя панель с эмодзи и системными кнопками -->
             <Grid Margin="0,0,0,0">
                 <!--Основная разметка-->
@@ -43,7 +43,7 @@
                         </Ellipse>
                     </Grid>
 
-                    <TextBlock Text="Если вы хотите начать видеозвонок, нажмите на значок камеры"
+                    <TextBlock Text=""
                                Foreground="#B8C2CC"
                                FontSize="12"
                                HorizontalAlignment="Center"/>
@@ -56,7 +56,7 @@
                             VerticalAlignment="Center">
 
                     <!-- Видеозвонок -->
-                    <Button Width="56" Height="56"
+                    <!--<Button Width="56" Height="56"
                             Background="Transparent"
                             BorderBrush="Transparent"
                             ToolTip="Включить видеозвонок">
@@ -69,7 +69,7 @@
                               Stretch="Uniform"/>
                             </Viewbox>
                         </Border>
-                    </Button>
+                    </Button>-->
 
                     <!-- Отмена -->
                     <Button Width="64" Height="64"
@@ -106,7 +106,7 @@
             </Grid>
         </Grid>
 
-        <Grid Name="ActiveVoiceRoom" Visibility="Hidden">
+        <Grid Name="ActiveVoiceRoom" Visibility="Visible">
             <!-- Верхняя панель с эмодзи и системными кнопками -->
             <Grid Margin="0,0,0,0">
                 <!--Основная разметка-->
