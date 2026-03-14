@@ -23,5 +23,26 @@ namespace Tebegrammmm
         {
             InitializeComponent();
         }
+        private bool _isEndAnim;
+        private void CallButton_Click(object sender, RoutedEventArgs e)
+        {
+            Button button = sender as Button;
+
+            if (button == null)
+            {
+                return;
+            }
+
+            if (this._isEndAnim)
+            {
+                VisualStateManager.GoToState(button, "CallState", true);
+            }
+            else
+            {
+                VisualStateManager.GoToState(button, "EndState", true);
+            }
+
+            this._isEndAnim = !this._isEndAnim;
+        }
     }
 }
