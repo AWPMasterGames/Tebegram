@@ -1,8 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "NlJXrrpl+04=",
+  "dgSpecHash": "N51ZjILJulc=",
   "success": true,
-  "projectFilePath": "C:\\Users\\ПК\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\TebegramServer.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "C:\\Users\\makar\\OneDrive\\Документы\\GitHub\\Tebegram\\Tebegrammmm\\TebegramServer\\TebegramServer\\TebegramServer.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\makar\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.25\\microsoft.windowsdesktop.app.ref.8.0.25.nupkg.sha512",
+    "C:\\Users\\makar\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.25\\microsoft.netcore.app.ref.8.0.25.nupkg.sha512",
+    "C:\\Users\\makar\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.25\\microsoft.aspnetcore.app.ref.8.0.25.nupkg.sha512",
+    "C:\\Users\\makar\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\8.0.25\\microsoft.netcore.app.host.win-x64.8.0.25.nupkg.sha512"
+  ],
   "logs": []
 }
