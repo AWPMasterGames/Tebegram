@@ -24,11 +24,17 @@ app.UseWebSockets();
 
 var connections = new List<WebSocket>();
 
+Thread thread = new Thread(() => {
+    Console.WriteLine("Запущен поток чистки голосых каналов.");
+    VoiceRoomsController.CheckEmptyVoices();
+});
 
 // ВАЖНО: Инициализируем данные пользователей ПЕРЕД запуском основной логики
 Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Запуск сервера TebegramServer...");
 UsersData.Initialize(); // Принудительно инициализируем данные
 Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Данные пользователей загружены, запускаем веб-сервер...");
+
+thread.Start();
 
 app.MapGet("/", async (HttpContext context) =>
 {
@@ -264,14 +270,36 @@ app.MapDelete("/Contact", async (HttpContext Context) =>
 #region Voices
 // Голосовые каналы
 
-app.MapGet("/CreateRoom/{userId}", async (HttpContext Context, int userId) =>
+app.MapGet("/Voice/CreateRoom/{userId}-{calledUserUsername}", async (HttpContext Context, int userId, string calledUserUsername) =>
 {
     User user = UsersData.FindUserById(userId);
-    string token = VoiceRoomsController.CreateRoom(user.Username);
+    User calledUser = UsersData.FindUserByUsername(calledUserUsername);
+    string token = VoiceRoomsController.CreateRoom(user.Username + calledUser.Username);
+
+    user.CallToken = token;
+    calledUser.CallToken =$"{user.Username}▫{token}";
+
     await Context.Response.WriteAsync(token);
 });
 
-app.Map("/ws", async context =>
+app.MapGet("/Voice/GetCallToken/{userId}", async (HttpContext Context, int userId) =>
+{
+    User user = UsersData.FindUserById(userId);
+
+    string response;
+
+    if (string.IsNullOrEmpty(user.CallToken))
+    {
+        response = "NotFound";
+    }
+    else {
+        response = user.CallToken;
+    }
+
+    await Context.Response.WriteAsync(response);
+});
+
+app.Map("/Voice/ws", async context =>
 {
     if (context.WebSockets.IsWebSocketRequest)
     {
@@ -320,7 +348,7 @@ async Task ReceiveMessage(WebSocket socket, Action<WebSocketReceiveResult, byte[
     }
 }
 
-async Task Broadcast(string message)
+/*async Task Broadcast(string message)
 {
     var bytes = Encoding.UTF8.GetBytes(message);
     foreach (var soket in connections)
@@ -331,7 +359,7 @@ async Task Broadcast(string message)
             await soket.SendAsync(arraySegment, WebSocketMessageType.Text, true, CancellationToken.None);
         }
     }
-}
+}*/
 #endregion
 
 app.Run();
