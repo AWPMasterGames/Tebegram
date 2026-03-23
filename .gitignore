@@ -7,11 +7,10 @@
 *.config
 Tebegrammmm/TebegramServer/TebegramServer/uploads/
 Tebegrammmm/TebegramServer/TebegramServer/avatars/
-Tebegrammmm/Tebegrammmm/bin/Debug/CrashLogs/
-Tebegrammmm/Tebegrammmm/bin/Debug/Data/
-Tebegrammmm/Tebegrammmm/bin/Release/net8/Data/
-Tebegrammmm/Tebegrammmm/bin/Debug/net8/Data/
-Tebegrammmm/Tebegrammmm/bin/Debug/Settings/
+Tebegrammmm/Tebegrammmm/bin/Debug/net8.0-windows/CrashLogs/
+Tebegrammmm/Tebegrammmm/bin/Release/net8.0-windows/Data/
+Tebegrammmm/Tebegrammmm/bin/Debug/net8.0-windows/Data/
+Tebegrammmm/Tebegrammmm/bin/Debug/net8.0-windows/Settings/
 Tebegrammmm/TebegramServer/TebegramServer/Messages/
 Tebegrammmm/TebegramServer/TebegramServer/Logs/
 Tebegrammmm/TebegramServer/TebegramServer/bin/Debug/net8.0/Data/
