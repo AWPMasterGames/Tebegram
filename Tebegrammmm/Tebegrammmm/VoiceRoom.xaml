@@ -76,7 +76,8 @@
                     <Button Width="64" Height="64"
                             Background="Transparent"
                             BorderBrush="Transparent"
-                            ToolTip="Завершить">
+                            ToolTip="Завершить"
+                            Click="Button_Click_2">
                         <Border Height="50" Width="50" 
                                 Background="#263241"
                                 CornerRadius="28">

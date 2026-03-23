@@ -58,5 +58,13 @@ namespace TebegramServer.Classes.VoiceClasses
                 }
             }
         }
+
+        public void SendTextToRoom(string text)
+        {
+            foreach (RoomMember roomMember in _RoomMembers)
+            {
+                    roomMember.SendMeText(text);
+            }
+        }
     }
 }

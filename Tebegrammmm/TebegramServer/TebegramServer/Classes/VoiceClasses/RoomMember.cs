@@ -26,6 +26,15 @@ namespace TebegramServer.Classes.VoiceClasses
                 await _Member.SendAsync(arraySegment, WebSocketMessageType.Binary, true, CancellationToken.None);
             }
         }
+        public async Task SendMeText(string text)
+        {
+
+            if (_Member.State == WebSocketState.Open)
+            {
+                var arraySegment = new ArraySegment<byte>(Encoding.UTF8.GetBytes(text));
+                await _Member.SendAsync(arraySegment, WebSocketMessageType.Text, true, CancellationToken.None);
+            }
+        }
 
         public async Task Disconnect(WebSocketCloseStatus webSocketCloseStatus, string desciption,CancellationToken cancellationToken)
         {

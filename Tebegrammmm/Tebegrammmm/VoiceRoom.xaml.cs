@@ -2,21 +2,15 @@
 using NAudio.CoreAudioApi;
 using NAudio.Wave;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Xml.Linq;
+using Tebegrammmm.Classes;
 using Tebegrammmm.Data;
 
 namespace Tebegrammmm
@@ -28,7 +22,7 @@ namespace Tebegrammmm
     }
     public partial class VoiceRoom : Window
     {
-        //IWaveIn waveIn;
+        static HttpClient httpClient = new HttpClient();
         private string Token { get; set; }
         private Contact Contact { get; set; }
         public VoiceRoom(Mode mode, Contact contact, string token)
@@ -66,6 +60,7 @@ namespace Tebegrammmm
 
             ws = new ClientWebSocket();
             waveIn = new WaveInEvent();
+            waveIn.DeviceNumber = UserData.User.SelectedDeviceNum;
             waveIn.WaveFormat = new WaveFormat(20480, 16, 1);
 
             waveProvider = new BufferedWaveProvider(new WaveFormat(20480, 16, 1));
@@ -80,7 +75,7 @@ namespace Tebegrammmm
                     try
                     {
                         await ws.SendAsync(new ArraySegment<byte>(e.Buffer, 0, e.BytesRecorded), WebSocketMessageType.Binary, true, CancellationToken.None);
-                        //Console.WriteLine($"Send {e.Buffer.Length} Bytes");
+                        //Console.WriteLine($"Send {} Bytes");
                     }
                     catch (Exception ex)
                     {
@@ -130,10 +125,23 @@ namespace Tebegrammmm
                     //Console.WriteLine(buffer[0]);
                     waveProvider.AddSamples(buffer, 0, result.Count);
                 }
+                if (result.MessageType == WebSocketMessageType.Text)
+                {
+                    string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                    switch (message)
+                    {
+                        case "CloseConnection":
+                            Dispatcher.Invoke(new Action(() =>
+                            {
+                                this.Close();
+                            }));
+                            break;
+                    }
+                }
             }
         }
 
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
         }
@@ -147,9 +155,19 @@ namespace Tebegrammmm
 
         private async void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
+            if(ws != null)
+                if(ws.State == WebSocketState.Open)
+                    await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
             UserData.User.InCall = false;
         }
 
+        private async void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/Voice/DeclineCall/{UserData.User.Id}-{Token}");
+            using HttpResponseMessage response = await httpClient.SendAsync(request);
+            string Content = await response.Content.ReadAsStringAsync();
+            
+            this.Close();
+        }
     }
 }

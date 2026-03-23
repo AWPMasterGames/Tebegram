@@ -265,7 +265,6 @@ namespace Tebegrammmm
             RegistrationGrid.Visibility = Visibility.Visible;
             TBUserName.Focus();
 
-
         }
 
         private void DoRegisterButton_Click(object sender, RoutedEventArgs e)

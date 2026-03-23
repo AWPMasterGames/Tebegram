@@ -21,6 +21,11 @@ namespace TebegramServer.Controllers
             return roomToken;
         }
 
+        public static async Task RemoveRoom(string token)
+        {
+            
+        }
+
         public static void ConnectingToRoom(WebSocket webSocket, string Token, User user)
         {
             VoiceRooms[Token].AddMember(new RoomMember(user, webSocket));
@@ -40,7 +45,14 @@ namespace TebegramServer.Controllers
 
         public static int GetRoomId(string Token)
         {
-            return VoiceRooms[Token].Id;
+            try
+            {
+                return VoiceRooms[Token].Id;
+            }
+            catch
+            {
+                return -1;
+            }
         }
 
         public static async void CheckEmptyVoices()
