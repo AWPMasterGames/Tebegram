@@ -1,1 +1,0 @@
-[20.06.2025 12:16:00]  [Authorization] Error: Error while copying content to a stream.

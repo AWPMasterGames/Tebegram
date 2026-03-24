@@ -1,5 +1,6 @@
 #nullable disable
 using Microsoft.Win32;
+using NAudio.CoreAudioApi;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -61,6 +62,14 @@ namespace Tebegrammmm
             CaltokenThread = new Thread(new ThreadStart(GetCallToken));
             CaltokenThread.Start();
             CaltokenThread.Join();
+
+            if (File.Exists("userDevice.data"))
+            {
+                int dvNum = int.Parse(File.ReadAllText("userDevice.data"));
+                if (dvNum > new MMDeviceEnumerator().EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active).Count - 1)
+                    UserData.User.SelectedDeviceNum = 0;
+                else UserData.User.SelectedDeviceNum = dvNum;
+            }
         }
 
         private void LoadStyle()
@@ -82,12 +91,11 @@ namespace Tebegrammmm
                         if (UserData.User.InCall)
                         {
                             Thread.Sleep(1000);
-                            return;
+                            continue;
                         }
                         using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/Voice/GetCallToken/{UserData.User.Id}");
                         using HttpResponseMessage response = await httpClient.SendAsync(request);
                         string Content = await response.Content.ReadAsStringAsync();
-
                         if (Content != "NotFound")
                         {
                             string[] data = Content.Split('▫');

@@ -167,7 +167,7 @@
                                 FontWeight="Bold"
                                 FontSize="16"
                                 Margin="0 0 0 10"
-                                Click="RegisterButton_Click"/>
+                                Click="DoRegisterButton_Click"/>
 
                         <Button x:Name="BackButton"
                                 Content="Back to Login"
