@@ -77,7 +77,7 @@
                             Background="Transparent"
                             BorderBrush="Transparent"
                             ToolTip="Завершить"
-                            Click="Button_Click_2">
+                            Click="Button_Click_Decline">
                         <Border Height="50" Width="50" 
                                 Background="#263241"
                                 CornerRadius="28">
@@ -91,7 +91,7 @@
 
                     <!-- Завершить -->
                     <Button Width="64" Height="64"
-                            Click="Button_Click_1"
+                            Click="Button_Click_Accept"
                 Background="Transparent"
                 BorderBrush="Transparent"
                 ToolTip="Завершить">
