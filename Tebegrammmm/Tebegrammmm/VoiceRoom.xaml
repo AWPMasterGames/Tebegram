@@ -223,7 +223,8 @@
                     <Button Width="56" Height="56"
                             Background="Transparent"
                             BorderBrush="Transparent"
-                            ToolTip="Микрофон">
+                            ToolTip="Микрофон"
+                            Click="Button_Click_3">
                         <Border Height="50" Width="50" 
                                 Background="#263241"
                                 CornerRadius="28">
