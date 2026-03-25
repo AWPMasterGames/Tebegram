@@ -8,15 +8,12 @@
     ".NETCoreApp,Version=v8.0": {
       "Tebegrammmm/1.0.0": {
         "dependencies": {
-          "Microsoft.CSharp": "4.7.0",
-          "NAudio": "2.3.0",
-          "System.Data.DataSetExtensions": "4.5.0"
+          "NAudio": "2.3.0"
         },
         "runtime": {
           "Tebegrammmm.dll": {}
         }
       },
-      "Microsoft.CSharp/4.7.0": {},
       "NAudio/2.3.0": {
         "dependencies": {
           "NAudio.Asio": "2.3.0",
@@ -95,8 +92,7 @@
             "fileVersion": "2.3.0.0"
           }
         }
-      },
-      "System.Data.DataSetExtensions/4.5.0": {}
+      }
     }
   },
   "libraries": {
@@ -104,13 +100,6 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
-    },
-    "Microsoft.CSharp/4.7.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-pTj+D3uJWyN3My70i2Hqo+OXixq3Os2D1nJ2x92FFo6sk8fYS1m1WLNTs0Dc1uPaViH0YvEEwvzddQ7y4rhXmA==",
-      "path": "microsoft.csharp/4.7.0",
-      "hashPath": "microsoft.csharp.4.7.0.nupkg.sha512"
     },
     "NAudio/2.3.0": {
       "type": "package",
@@ -160,13 +149,6 @@
       "sha512": "sha512-5G1dRjsZm50T3luyuqcmI2BSvj3K4ZJaD/x776/0Epj88qOsOryDZG40+MufwIk1UFJSFWhRobBqtJYFc8Ss4g==",
       "path": "naudio.winmm/2.3.0",
       "hashPath": "naudio.winmm.2.3.0.nupkg.sha512"
-    },
-    "System.Data.DataSetExtensions/4.5.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-221clPs1445HkTBZPL+K9sDBdJRB8UN8rgjO3ztB0CQ26z//fmJXtlsr6whGatscsKGBrhJl5bwJuKSA8mwFOw==",
-      "path": "system.data.datasetextensions/4.5.0",
-      "hashPath": "system.data.datasetextensions.4.5.0.nupkg.sha512"
     }
   }
 }

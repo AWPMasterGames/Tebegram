@@ -239,8 +239,6 @@ C:\Users\makar\OneDrive\Документы\GitHub\Tebegram\Tebegram\Tebegrammmm\
 C:\Users\makar\OneDrive\Документы\GitHub\Tebegram\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\ref\Tebegrammmm.dll
 C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\Resourses\SearchTextBox.baml
 C:\Users\makar\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\Resourses\SearchTextBox.baml
-C:\Users\makar\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\RegistrationWindow.baml
-C:\Users\makar\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\RegistrationWindow.g.cs
 C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\bin\Debug\net8.0-windows\NAudio.dll
 C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\bin\Debug\net8.0-windows\NAudio.Asio.dll
 C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\bin\Debug\net8.0-windows\NAudio.Core.dll
@@ -252,3 +250,14 @@ C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0
 C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\VoiceRoom.g.cs
 C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\VoiceRoom.baml
 C:\Users\ПК\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\Tebegram.6CF2F740.Up2Date
+C:\Users\makar\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\bin\Debug\net8.0-windows\NAudio.dll
+C:\Users\makar\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\bin\Debug\net8.0-windows\NAudio.Asio.dll
+C:\Users\makar\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\bin\Debug\net8.0-windows\NAudio.Core.dll
+C:\Users\makar\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\bin\Debug\net8.0-windows\NAudio.Midi.dll
+C:\Users\makar\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\bin\Debug\net8.0-windows\NAudio.Wasapi.dll
+C:\Users\makar\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\bin\Debug\net8.0-windows\NAudio.WinForms.dll
+C:\Users\makar\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\bin\Debug\net8.0-windows\NAudio.WinMM.dll
+C:\Users\makar\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\Tebegrammmm.csproj.AssemblyReference.cache
+C:\Users\makar\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\VoiceRoom.g.cs
+C:\Users\makar\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\VoiceRoom.baml
+C:\Users\makar\Documents\GitHub\Tebegram\Tebegrammmm\Tebegrammmm\obj\Debug\net8.0-windows\Tebegram.6CF2F740.Up2Date

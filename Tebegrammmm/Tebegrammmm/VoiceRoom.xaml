@@ -9,11 +9,11 @@
         Height="500" Width="400"
         Closing="Window_Closing">
 
-    <Grid>
+    <Grid >
 
         <Grid Name="DefoultVoiceRoom" Visibility="Visible">
             <!-- Верхняя панель с эмодзи и системными кнопками -->
-            <Grid Margin="0,0,0,0">
+            <Grid x:Name="MainGrid" Margin="0,0,0,0">
                 <!--Основная разметка-->
                 <Grid.RowDefinitions>
                     <RowDefinition Height="40"/>
@@ -24,7 +24,7 @@
                 <!--Верхняя панель-->
                 <StackPanel VerticalAlignment="Bottom"
                             HorizontalAlignment="Center">
-                    <TextBlock Text="Username"
+                    <TextBlock Text="{Binding Name}"
                                Foreground="#FFFFFF"
                                FontSize="20"/>
                 </StackPanel>
@@ -122,7 +122,7 @@
                 <!--Верхняя панель-->
                 <StackPanel VerticalAlignment="Bottom"
                             HorizontalAlignment="Center">
-                    <TextBlock Text="Username"
+                    <TextBlock Text="{Binding Name}"
                            Foreground="#FFFFFF"
                            FontSize="20"/>
                 </StackPanel>

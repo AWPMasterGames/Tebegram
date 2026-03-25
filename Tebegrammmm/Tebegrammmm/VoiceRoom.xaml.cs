@@ -45,6 +45,8 @@ namespace Tebegrammmm
                     ActiveVoiceRoom.Visibility = Visibility.Visible;
                     break;
             }
+
+            MainGrid.DataContext = contact;
         }
 
         Thread SendVoiceThread;
