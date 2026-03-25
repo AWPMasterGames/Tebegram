@@ -20,7 +20,7 @@ namespace Tebegrammmm.Data
             }
             catch
             {
-                _ServerAdress = "https://localhost:5000";
+                //_ServerAdress = "https://localhost:5000";
             }
             finally {
                 //MessageBox.Show(a + ServerAdress);
