@@ -1,5 +1,6 @@
 #nullable disable
 using Microsoft.Win32;
+using NAudio.CoreAudioApi;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -28,24 +29,23 @@ namespace Tebegrammmm
     {
         static HttpClient httpClient = new HttpClient();
         private static object thisLock = new();
-        User User { get; set; }
         Contact Contact { get; set; }
         Thread Thread { get; set; }
+        Thread CaltokenThread { get; set; }
 
-        public MessengerWindow(User user)
+        public MessengerWindow()
         {
             InitializeComponent();
             LoadStyle();
             GridMessege.Visibility = Visibility.Hidden;
             GridContactPanel.Visibility = Visibility.Hidden;
-            this.User = user;
 
-            Log.Save($"[MessengerWindow] Инициализация для пользователя: {user.Name} ({user.Username})");
+            Log.Save($"[MessengerWindow] Инициализация для пользователя: {UserData.User.Name} ({UserData.User.Username})");
 
-            LBChatsLoders.ItemsSource = User.ChatsFolders;
+            LBChatsLoders.ItemsSource = UserData.User.ChatsFolders;
             LBChatsLoders.SelectedIndex = 0;
 
-            TempContacts = User.Contacts;
+            TempContacts = UserData.User.Contacts;
 
             // Загружаем историю сообщений с сервера
             GetMessages();
@@ -54,9 +54,22 @@ namespace Tebegrammmm
             TBMessage.IsEnabled = false;
             Thread.Start();
             Thread.Join();
+
             TBMessage.IsEnabled = true;
+            //GetCallToken();
 
             Log.Save($"[MessengerWindow] Инициализация завершена");
+            CaltokenThread = new Thread(new ThreadStart(GetCallToken));
+            CaltokenThread.Start();
+            CaltokenThread.Join();
+
+            if (File.Exists("userDevice.data"))
+            {
+                int dvNum = int.Parse(File.ReadAllText("userDevice.data"));
+                if (dvNum > new MMDeviceEnumerator().EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active).Count - 1)
+                    UserData.User.SelectedDeviceNum = 0;
+                else UserData.User.SelectedDeviceNum = dvNum;
+            }
         }
 
         private void LoadStyle()
@@ -65,6 +78,63 @@ namespace Tebegrammmm
             ResourceDictionary resourceDictionary = new ResourceDictionary();
 
             LBMessages.Background = LGB;
+        }
+
+        private async void GetCallToken()
+        {
+            try
+            {
+                while (true)
+                {
+                    try
+                    {
+                        if (UserData.User.InCall)
+                        {
+                            Thread.Sleep(1000);
+                            continue;
+                        }
+                        using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/Voice/GetCallToken/{UserData.User.Id}");
+                        using HttpResponseMessage response = await httpClient.SendAsync(request);
+                        string Content = await response.Content.ReadAsStringAsync();
+                        if (Content != "NotFound")
+                        {
+                            string[] data = Content.Split('▫');
+
+                            string CallerUsername = data[0];
+                            string token = data[1];
+
+                            try
+                            {
+                                Contact contact = UserData.User.FindContactByUsername(CallerUsername);
+                                Dispatcher.Invoke(new Action(() =>
+                                {
+                                    VoiceRoom VR = new VoiceRoom(Mode.AcceptCall, Contact, token);
+                                    UserData.User.InCall = true;
+                                    VR.Show();
+                                }));
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Save($"[GetCallToken] Error: {ex.Message}");
+                                MessageBox.Show("Ошибка при попытке получения сообщений\nПодробнее от ошибке можно узнать в краш логах");
+                                continue;
+                            }
+                        }
+                    }
+                    catch (HttpRequestException ex)
+                    {
+                        continue;
+                    }
+                    // задержка перед новым запросом
+                    Thread.Sleep(1500);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Save($"[GetCallToken] Error: {ex.Message}");
+                MessageBox.Show("Ошибка при попытке авторизации\nПодробнее от ошибке можно узнать в краш логах");
+                return; // Добавляем return, чтобы прекратить выполнение
+            }
         }
 
         private void LBChatsLoders_SelectionChangeFolder(object sender, SelectionChangedEventArgs e)
@@ -112,9 +182,9 @@ namespace Tebegrammmm
         private async void AddMessageToUser(string MessageData)
         {
             string[] messageData = MessageData.Split('▫');
-            if (messageData[0] == User.Username)
+            if (messageData[0] == UserData.User.Username)
             {
-                Contact contact = User.FindContactByUsername(messageData[1]);
+                Contact contact = UserData.User.FindContactByUsername(messageData[1]);
                 if (messageData[2] == "Text")
                 {
                     string text = messageData[5];
@@ -122,32 +192,32 @@ namespace Tebegrammmm
                     {
                         text += messageData[i];
                     }
-                    Message message = new Message(User.Name, User.Username, text, messageData[3]);
+                    Message message = new Message(UserData.User.Name, UserData.User.Username, text, messageData[3]);
                     message.Status = MessageStatus.Sent; // Все сообщения просто сохраняются
 
-                        Dispatcher.Invoke(new Action(() =>
-                        {
-                            contact.Messages.Add(message);
-                        }));
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        contact.Messages.Add(message);
+                    }));
 
                     // НЕ сохраняем на сервер - это уже сделал отправитель!
                     Log.Save($"[AddMessageToUser] Получено сообщение от {messageData[0]}: {text}");
                 }
                 else if (messageData[2] == "File")
                 {
-                    Message message = new Message(User.Name, messageData[1], messageData[5], messageData[3], MessageType.File, $"{ServerData.ServerAdress}/upload/{messageData[5]}");
+                    Message message = new Message(UserData.User.Name, messageData[1], messageData[5], messageData[3], MessageType.File, $"{ServerData.ServerAdress}/upload/{messageData[5]}");
                     message.Status = MessageStatus.Sent; // Файлы тоже просто сохраняются
 
-                        Dispatcher.Invoke(new Action(() =>
-                        {
-                            contact.Messages.Add(message);
-                        }));
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        contact.Messages.Add(message);
+                    }));
 
                     // НЕ сохраняем на сервер - это уже сделал отправитель!
                     Log.Save($"[AddMessageToUser] Получен файл от {messageData[0]}: {messageData[4]}");
                 }
             }
-            else if (User.FindContactByUsername(messageData[0]) == null)
+            else if (UserData.User.FindContactByUsername(messageData[0]) == null)
             {
                 using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/UserName/{messageData[0]}");
                 using HttpResponseMessage response = await httpClient.SendAsync(request);
@@ -160,7 +230,7 @@ namespace Tebegrammmm
                     {
                         text += messageData[i];
                     }
-                    Message message = new Message(User.Name, User.Username, text, messageData[3]);
+                    Message message = new Message(UserData.User.Name, UserData.User.Username, text, messageData[3]);
                     message.Status = MessageStatus.Sent; // Все сообщения просто сохраняются
                     Dispatcher.Invoke(new Action(() =>
                     {
@@ -171,7 +241,7 @@ namespace Tebegrammmm
                 }
                 else if (messageData[2] == "File")
                 {
-                    Message message = new Message(User.Name, messageData[1], messageData[5], messageData[3], MessageType.File, messageData[4]);
+                    Message message = new Message(UserData.User.Name, messageData[1], messageData[5], messageData[3], MessageType.File, messageData[4]);
                     message.Status = MessageStatus.Sent; // Файлы тоже просто сохраняются
                     Dispatcher.Invoke(new Action(() =>
                     {
@@ -182,10 +252,10 @@ namespace Tebegrammmm
                 }
                 Dispatcher.Invoke(new Action(() =>
                 {
-                    User.AddContact(contact);
+                    UserData.User.AddContact(contact);
                 }));
             }
-            else foreach (Contact contact in User.ChatsFolders[0].Contacts)
+            else foreach (Contact contact in UserData.User.ChatsFolders[0].Contacts)
                 {
                     if (messageData[0] == contact.Username)
                     {
@@ -197,7 +267,7 @@ namespace Tebegrammmm
                                 text += messageData[i];
                             }
 
-                            Message message = new Message(contact.Name, User.Username, text, messageData[3]);
+                            Message message = new Message(contact.Name, UserData.User.Username, text, messageData[3]);
                             message.Status = MessageStatus.Sent; // Все сообщения просто сохраняются
 
                             Dispatcher.Invoke(new Action(() =>
@@ -232,7 +302,7 @@ namespace Tebegrammmm
             try
             {
                 // запрос для получения сообщений с сервера
-                using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/messages/{User.Id}");
+                using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/messages/{UserData.User.Id}");
                 using HttpResponseMessage response = await httpClient.SendAsync(request);
                 string content = await response.Content.ReadAsStringAsync();
 
@@ -256,7 +326,7 @@ namespace Tebegrammmm
             {
                 Log.Save($"[GetMessage] Error: {ex.Message}");
                 MessageBox.Show("Ошибка при попытке авторизации\nПодробнее от ошибке можно узнать в краш логах");
-                return; // Добавляем return, чтобы прекратить выполнение
+                return; //Добавляем return, чтобы прекратить выполнение
             }
         }
         async void GetNewMessages()
@@ -268,7 +338,7 @@ namespace Tebegrammmm
                     try
                     {
                         // запрос для получения сообщений с сервера
-                        using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/NewMessages/{User.Id}");
+                        using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/NewMessages/{UserData.User.Id}");
                         using HttpResponseMessage response = await httpClient.SendAsync(request);
                         string content = await response.Content.ReadAsStringAsync();
                         if (content != "NotFound")
@@ -372,7 +442,7 @@ namespace Tebegrammmm
                 string[] MessegeData = messageData.Split('▫');
                 string MessegeDataInFile = $"{MessegeData[0]}▫{ContactName}▫{MessegeData[1]}▫{MessegeData[2]}▫{MessegeData[3]}▫{MessegeData[4]}▫{MessegeData[4]}";
 
-                string userId = User.Id.ToString();
+                string userId = UserData.User.Id.ToString();
                 string dataFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
 
                 if (!Directory.Exists(dataFolder))
@@ -427,7 +497,7 @@ namespace Tebegrammmm
 
                 var messageData = new
                 {
-                    fromUser = User.Login,
+                    fromUser = UserData.User.Login,
                     toUser = toUserLogin,
                     message = message.Text,
                     timestamp = message.Time,
@@ -473,9 +543,9 @@ namespace Tebegrammmm
                 return;
             }
 
-            Message Message = new Message(User.Username, Contact.Username, message, DateTime.Now.ToString("hh:mm"), messageType, ServerFilePath);
+            Message Message = new Message(UserData.User.Username, Contact.Username, message, DateTime.Now.ToString("hh:mm"), messageType, ServerFilePath);
 
-            Log.Save($"[SendMessage] Message added to local contact. Sending to user...");
+            Log.Save($"[SendMessage] Message added to local contact. Sending to UserData.User...");
             await SendMessageToUserAsync(Message);
             TBMessage.Text = string.Empty;
             Contact.Draft = string.Empty; // Очищаем черновик после отправки
@@ -523,10 +593,10 @@ namespace Tebegrammmm
                 {
                     if (data.Split('▫')[2].Trim().Length < 1)
                     {
-                        User.AddContact(new Contact(int.Parse(temp[0]), temp[2], temp[1]));
+                        UserData.User.AddContact(new Contact(int.Parse(temp[0]), temp[2], temp[1]));
                         return true;
                     }
-                    User.AddContact(new Contact(int.Parse(temp[0]), temp[2], data.Split('▫')[2].Trim()));
+                    UserData.User.AddContact(new Contact(int.Parse(temp[0]), temp[2], data.Split('▫')[2].Trim()));
                     return true;
                 }
                 else if (response.StatusCode == HttpStatusCode.NotFound)
@@ -544,23 +614,23 @@ namespace Tebegrammmm
 
         private async void Button_Click_AddContact(object sender, RoutedEventArgs e)
         {
-            string data = $"{User.Id}";
+            string data = $"{UserData.User.Id}";
             Contact contact = new();
             while (true)
             {
                 AddContact addContact = new AddContact(contact);
                 if (addContact.ShowDialog() == true)
                 {
-                    if (User.FindContactByUsername(contact.Username) == null)
+                    if (UserData.User.FindContactByUsername(contact.Username) == null)
                     {
-                        bool result = await SendAddNewContactRequest($"{User.Id}▫{contact.Username}▫{contact.Name}");
+                        bool result = await SendAddNewContactRequest($"{UserData.User.Id}▫{contact.Username}▫{contact.Name}");
                         if (result) return;
                     }
                     else
                     {
-                        for (int i = 0; i < User.Contacts.Count; i++)
+                        for (int i = 0; i < UserData.User.Contacts.Count; i++)
                         {
-                            if (contact.Username == User.Contacts[i].Username)
+                            if (contact.Username == UserData.User.Contacts[i].Username)
                             {
                                 LBChats.SelectedIndex = i;
                                 return;
@@ -576,7 +646,7 @@ namespace Tebegrammmm
         {
             try
             {
-                StringContent content = new StringContent($"{User.Id}▫{contact.Username}");
+                StringContent content = new StringContent($"{UserData.User.Id}▫{contact.Username}");
                 using var request = new HttpRequestMessage(HttpMethod.Delete, $"{ServerData.ServerAdress}/Contact");
                 request.Content = content;
                 using var response = await httpClient.SendAsync(request);
@@ -584,14 +654,14 @@ namespace Tebegrammmm
                 {
                     ;
 
-                    for (int i = 0; i < User.ChatsFolders.Count; i++)
+                    for (int i = 0; i < UserData.User.ChatsFolders.Count; i++)
                     {
-                        for (int j = 0; j < User.ChatsFolders[i].Contacts.Count; j++)
+                        for (int j = 0; j < UserData.User.ChatsFolders[i].Contacts.Count; j++)
                         {
-                            if (User.ChatsFolders[i].Contacts[j].Name == contact.Name)
+                            if (UserData.User.ChatsFolders[i].Contacts[j].Name == contact.Name)
                             {
-                                User.ChatsFolders[i].Contacts[j].Messages.Clear();
-                                User.ChatsFolders[i].Contacts.RemoveAt(j);
+                                UserData.User.ChatsFolders[i].Contacts[j].Messages.Clear();
+                                UserData.User.ChatsFolders[i].Contacts.RemoveAt(j);
                             }
                         }
                     }
@@ -616,7 +686,7 @@ namespace Tebegrammmm
         {
             try
             {
-                StringContent content = new StringContent($"{User.Id}▫{Contact.Username}▫{newName}");
+                StringContent content = new StringContent($"{UserData.User.Id}▫{Contact.Username}▫{newName}");
                 using var request = new HttpRequestMessage(HttpMethod.Put, $"{ServerData.ServerAdress}/Contact");
                 request.Content = content;
                 using var response = await httpClient.SendAsync(request);
@@ -626,8 +696,8 @@ namespace Tebegrammmm
                     Contact.ChangeName(newName);
 
                     // Обновляем интерфейс
-                    User.ChatsFolders[0].RemoveContact(Contact);
-                    User.ChatsFolders[0].AddContact(Contact);
+                    UserData.User.ChatsFolders[0].RemoveContact(Contact);
+                    UserData.User.ChatsFolders[0].AddContact(Contact);
                     LBChats.SelectedIndex = LBChats.Items.Count - 1;
                     GridChat.DataContext = Contact;
                     TBChat_Name.Text = Contact.Name;
@@ -672,7 +742,7 @@ namespace Tebegrammmm
 
         private void Button_Click_FoldersMenu(object sender, RoutedEventArgs e)
         {
-            RedactcionChatsFoldersWindow RCFW = new RedactcionChatsFoldersWindow(User.ChatsFolders);
+            RedactcionChatsFoldersWindow RCFW = new RedactcionChatsFoldersWindow(UserData.User.ChatsFolders);
             RCFW.ShowDialog();
         }
 
@@ -750,7 +820,7 @@ namespace Tebegrammmm
 
         private void Button_Click_Settings(object sender, RoutedEventArgs e)
         {
-            SettingsPanelWindow SPW = new SettingsPanelWindow(User);
+            SettingsPanelWindow SPW = new SettingsPanelWindow();
             if (SPW.ShowDialog() == true)
             {
                 File.WriteAllText("user.data", $"\0");
@@ -760,9 +830,15 @@ namespace Tebegrammmm
             }
         }
 
-        private void Button_Click_CallContact(object sender, RoutedEventArgs e)
+        private async void Button_Click_CallContact(object sender, RoutedEventArgs e)
         {
+            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/Voice/CreateRoom/{UserData.User.Id}-{Contact.Username}");
+            using HttpResponseMessage response = await httpClient.SendAsync(request);
+            string token = await response.Content.ReadAsStringAsync();
 
+            VoiceRoom VR = new VoiceRoom(Mode.ActiveCall, Contact, token);
+            UserData.User.InCall = true;
+            VR.Show();
         }
 
         ObservableCollection<Contact> TempContacts;
@@ -785,7 +861,7 @@ namespace Tebegrammmm
 
                 FindedContacts = new ObservableCollection<Contact>();
 
-                foreach (Contact contact in User.Contacts)
+                foreach (Contact contact in UserData.User.Contacts)
                 {
                     if (contact.Name.ToLower().Contains(SearchContactBarTB.Text.ToLower()) || contact.Username.ToLower().Contains(SearchContactBarTB.Text.ToLower()))
                     {

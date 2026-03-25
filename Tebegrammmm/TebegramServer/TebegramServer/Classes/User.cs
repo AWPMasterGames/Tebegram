@@ -18,6 +18,7 @@ namespace TebegramServer
 
         public string Avatar { get; set; }
         public string Username { get; set; }
+        public string CallToken { get; set; }
 
         public ObservableCollection<ChatFolder> ChatsFolders { get; set; }
         public ObservableCollection<Contact> Contacts { get { return ChatsFolders[0].Contacts; } }

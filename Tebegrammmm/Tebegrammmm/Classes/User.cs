@@ -19,6 +19,9 @@ namespace Tebegrammmm
         public ObservableCollection<ChatFolder> ChatsFolders { get; set; }
         public ObservableCollection<Contact> Contacts { get { return ChatsFolders[0].Contacts; } set { ChatsFolders[0].Contacts = value; } }
 
+        public bool InCall { get; set; }
+        public int SelectedDeviceNum{ get; set; }
+
         public User(int id, string login, string password, string name, string username, ObservableCollection<ChatFolder> chatsFolders, string avatar)
         {
             _Id = id;

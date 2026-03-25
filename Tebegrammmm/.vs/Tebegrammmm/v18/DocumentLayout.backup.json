@@ -1,46 +1,26 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\",
+  "WorkspaceRootPath": "C:\\Users\\makar\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\Tebegram\\Tebegrammmm\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\makar\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\voiceroom.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\voiceroom.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\makar\\onedrive\\\u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\github\\tebegram\\tebegrammmm\\tebegrammmm\\addcontact.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\addcontact.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\makar\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\voiceroom.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\makar\\onedrive\\\u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\github\\tebegram\\tebegrammmm\\tebegrammmm\\editcontactnamewindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\editcontactnamewindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\makar\\onedrive\\\u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\github\\tebegram\\tebegrammmm\\tebegrammmm\\voiceroom.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\voiceroom.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\makar\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\messengerwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\makar\\onedrive\\\u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\github\\tebegram\\tebegrammmm\\tebegrammmm\\messengerwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\messengerwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\makar\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\makar\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\makar\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\resourses\\icons.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\resourses\\icons.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\makar\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\messengerwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\messengerwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\makar\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\resourses\\searchtextbox.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\resourses\\searchtextbox.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\makar\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\resourses\\messengertheme_base.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\resourses\\messengertheme_base.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\makar\\documents\\github\\tebegram\\tebegrammmm\\tebegrammmm\\addcontact.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\addcontact.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+      "AbsoluteMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|c:\\users\\makar\\onedrive\\\u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\github\\tebegram\\tebegrammmm\\tebegrammmm\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{12665B33-2E58-4457-AECB-8FB2B752F3C2}|Tebegrammmm\\Tebegrammmm.csproj|solutionrelative:tebegrammmm\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     }
   ],
   "DocumentGroupContainers": [
@@ -50,134 +30,71 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "MainWindow.xaml.cs",
-              "DocumentMoniker": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\MainWindow.xaml.cs",
-              "RelativeDocumentMoniker": "Tebegrammmm\\MainWindow.xaml.cs",
-              "ToolTip": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\MainWindow.xaml.cs",
-              "RelativeToolTip": "Tebegrammmm\\MainWindow.xaml.cs",
-              "ViewState": "AgIAAPEAAAAAAAAAAAAAAAQBAAAxAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-02T19:01:32.744Z",
-              "IsPinned": true,
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "VoiceRoom.xaml",
-              "DocumentMoniker": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\VoiceRoom.xaml",
-              "RelativeDocumentMoniker": "Tebegrammmm\\VoiceRoom.xaml",
-              "ToolTip": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\VoiceRoom.xaml",
-              "RelativeToolTip": "Tebegrammmm\\VoiceRoom.xaml",
+              "DocumentIndex": 4,
+              "Title": "MainWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\makar\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\MainWindow.xaml",
+              "RelativeDocumentMoniker": "Tebegrammmm\\MainWindow.xaml",
+              "ToolTip": "C:\\Users\\makar\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\MainWindow.xaml",
+              "RelativeToolTip": "Tebegrammmm\\MainWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-03-11T18:10:53.667Z",
+              "WhenOpened": "2026-03-17T19:45:51.526Z",
               "IsPinned": true,
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "VoiceRoom.xaml.cs",
-              "DocumentMoniker": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\VoiceRoom.xaml.cs",
-              "RelativeDocumentMoniker": "Tebegrammmm\\VoiceRoom.xaml.cs",
-              "ToolTip": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\VoiceRoom.xaml.cs",
-              "RelativeToolTip": "Tebegrammmm\\VoiceRoom.xaml.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACUAAABIAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-14T15:57:50.944Z",
+              "DocumentIndex": 3,
+              "Title": "MessengerWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\makar\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\MessengerWindow.xaml",
+              "RelativeDocumentMoniker": "Tebegrammmm\\MessengerWindow.xaml",
+              "ToolTip": "C:\\Users\\makar\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\MessengerWindow.xaml",
+              "RelativeToolTip": "Tebegrammmm\\MessengerWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-03-17T19:45:53.337Z",
               "IsPinned": true,
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "MessengerWindow.xaml",
-              "DocumentMoniker": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\MessengerWindow.xaml",
-              "RelativeDocumentMoniker": "Tebegrammmm\\MessengerWindow.xaml",
-              "ToolTip": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\MessengerWindow.xaml",
-              "RelativeToolTip": "Tebegrammmm\\MessengerWindow.xaml",
+              "Title": "VoiceRoom.xaml",
+              "DocumentMoniker": "C:\\Users\\makar\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\VoiceRoom.xaml",
+              "RelativeDocumentMoniker": "Tebegrammmm\\VoiceRoom.xaml",
+              "ToolTip": "C:\\Users\\makar\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\VoiceRoom.xaml",
+              "RelativeToolTip": "Tebegrammmm\\VoiceRoom.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-03-14T15:01:39.567Z",
+              "WhenOpened": "2026-03-17T19:45:56.04Z",
               "IsPinned": true,
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 1,
+              "Title": "EditContactNameWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\makar\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\EditContactNameWindow.xaml",
+              "RelativeDocumentMoniker": "Tebegrammmm\\EditContactNameWindow.xaml",
+              "ToolTip": "C:\\Users\\makar\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\EditContactNameWindow.xaml",
+              "RelativeToolTip": "Tebegrammmm\\EditContactNameWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-03-17T19:45:57.634Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
               "Title": "AddContact.xaml",
-              "DocumentMoniker": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\AddContact.xaml",
+              "DocumentMoniker": "C:\\Users\\makar\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\AddContact.xaml",
               "RelativeDocumentMoniker": "Tebegrammmm\\AddContact.xaml",
-              "ToolTip": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\AddContact.xaml",
+              "ToolTip": "C:\\Users\\makar\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\AddContact.xaml",
               "RelativeToolTip": "Tebegrammmm\\AddContact.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-03-14T15:01:32.833Z",
+              "WhenOpened": "2026-03-17T19:46:05.813Z",
               "IsPinned": true,
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "App.xaml",
-              "DocumentMoniker": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\App.xaml",
-              "RelativeDocumentMoniker": "Tebegrammmm\\App.xaml",
-              "ToolTip": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\App.xaml",
-              "RelativeToolTip": "Tebegrammmm\\App.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-03-14T15:20:48.237Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "Icons.xaml",
-              "DocumentMoniker": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Resourses\\Icons.xaml",
-              "RelativeDocumentMoniker": "Tebegrammmm\\Resourses\\Icons.xaml",
-              "ToolTip": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Resourses\\Icons.xaml",
-              "RelativeToolTip": "Tebegrammmm\\Resourses\\Icons.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-03-14T15:14:02.973Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "MessengerWindow.xaml.cs",
-              "DocumentMoniker": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\MessengerWindow.xaml.cs",
-              "RelativeDocumentMoniker": "Tebegrammmm\\MessengerWindow.xaml.cs",
-              "ToolTip": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\MessengerWindow.xaml.cs",
-              "RelativeToolTip": "Tebegrammmm\\MessengerWindow.xaml.cs",
-              "ViewState": "AgIAAAIDAAAAAAAAAAA4wBwDAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-14T15:11:25.869Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "SearchTextBox.xaml",
-              "DocumentMoniker": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Resourses\\SearchTextBox.xaml",
-              "RelativeDocumentMoniker": "Tebegrammmm\\Resourses\\SearchTextBox.xaml",
-              "ToolTip": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Resourses\\SearchTextBox.xaml",
-              "RelativeToolTip": "Tebegrammmm\\Resourses\\SearchTextBox.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-03-14T15:02:04.409Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "MessengerTheme_Base.xaml",
-              "DocumentMoniker": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Resourses\\MessengerTheme_Base.xaml",
-              "RelativeDocumentMoniker": "Tebegrammmm\\Resourses\\MessengerTheme_Base.xaml",
-              "ToolTip": "C:\\Users\\makar\\Documents\\GitHub\\Tebegram\\Tebegrammmm\\Tebegrammmm\\Resourses\\MessengerTheme_Base.xaml",
-              "RelativeToolTip": "Tebegrammmm\\Resourses\\MessengerTheme_Base.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-03-14T15:01:58.694Z",
               "EditorCaption": ""
             }
           ]

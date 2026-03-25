@@ -1,70 +1,67 @@
-﻿<Window
-    x:Class="Tebegrammmm.VoiceRoom"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:Tebegrammmm"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Width="400"
-    Height="500"
-    Background="#303c4c"
-    mc:Ignorable="d">
+﻿<Window x:Class="Tebegrammmm.VoiceRoom"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Tebegrammmm"
+        mc:Ignorable="d"
+        Background="#303c4c"
+        Height="500" Width="400"
+        Closing="Window_Closing">
 
     <Grid>
 
-        <Grid Name="DefoultVoiceRoom" Visibility="Hidden">
-            <!--  Верхняя панель с эмодзи и системными кнопками  -->
+        <Grid Name="DefoultVoiceRoom" Visibility="Visible">
+            <!-- Верхняя панель с эмодзи и системными кнопками -->
             <Grid Margin="0,0,0,0">
-                <!--  Основная разметка  -->
+                <!--Основная разметка-->
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="40" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="90" />
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="90"/>
                 </Grid.RowDefinitions>
 
-                <!--  Верхняя панель  -->
-                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Bottom">
-                    <TextBlock
-                        FontSize="20"
-                        Foreground="#FFFFFF"
-                        Text="Username" />
+                <!--Верхняя панель-->
+                <StackPanel VerticalAlignment="Bottom"
+                            HorizontalAlignment="Center">
+                    <TextBlock Text="Username"
+                               Foreground="#FFFFFF"
+                               FontSize="20"/>
                 </StackPanel>
 
-                <!--  Центр  -->
-                <StackPanel
-                    Grid.Row="1"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center">
+                <!-- Центр -->
+                <StackPanel Grid.Row="1"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center">
                     <Grid Width="190" Height="190">
-                        <Ellipse Fill="#263241" />
-                        <!--  Аватарка  -->
+                        <Ellipse Fill="#263241"/>
+                        <!-- Аватарка -->
                         <Ellipse>
                             <Ellipse.Fill>
-                                <ImageBrush ImageSource="https://djnkpzmq-5000.euw.devtunnels.ms/avatars/1008024429709774919.webp" Stretch="UniformToFill" />
+                                <ImageBrush ImageSource="https://djnkpzmq-5000.euw.devtunnels.ms/avatars/1008024429709774919.webp"
+                                            Stretch="UniformToFill"/>
                             </Ellipse.Fill>
                         </Ellipse>
                     </Grid>
 
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        FontSize="12"
-                        Foreground="#B8C2CC"
-                        Text="" />
+                    <TextBlock Text=""
+                               Foreground="#B8C2CC"
+                               FontSize="12"
+                               HorizontalAlignment="Center"/>
                 </StackPanel>
 
-                <!--  Нижняя панель с кнопками  -->
-                <StackPanel
-                    Grid.Row="2"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Orientation="Horizontal">
+                <!-- Нижняя панель с кнопками -->
+                <StackPanel Grid.Row="2"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center">
 
-                    <!--  Видеозвонок  -->
+                    <!-- Видеозвонок -->
                     <!--<Button Width="56" Height="56"
                             Background="Transparent"
                             BorderBrush="Transparent"
                             ToolTip="Включить видеозвонок">
-                        <Border Height="50" Width="50"
+                        <Border Height="50" Width="50" 
                                 Background="#263241"
                                 CornerRadius="28">
                             <Viewbox Width="24" Height="24">
@@ -75,473 +72,184 @@
                         </Border>
                     </Button>-->
 
-                    <!--  Отмена  -->
-                    <Button
-                        Width="64"
-                        Height="64"
-                        Background="Transparent"
-                        BorderBrush="Transparent"
-                        ToolTip="Завершить">
-                        <Border
-                            Width="50"
-                            Height="50"
-                            Background="#263241"
-                            CornerRadius="28">
+                    <!-- Отмена -->
+                    <Button Width="64" Height="64"
+                            Background="Transparent"
+                            BorderBrush="Transparent"
+                            ToolTip="Завершить"
+                            Click="Button_Click_2">
+                        <Border Height="50" Width="50" 
+                                Background="#263241"
+                                CornerRadius="28">
                             <Viewbox Width="24" Height="24">
-                                <Path
-                                    Data="{StaticResource IconClose}"
-                                    Fill="White"
-                                    Stretch="Uniform" />
+                                <Path Data="{StaticResource IconClose}"
+                                      Fill="White"
+                                      Stretch="Uniform"/>
                             </Viewbox>
                         </Border>
                     </Button>
 
-                    <!--  Завершить  -->
-                    <Button
-                        x:Name="CallButton"
-                        Width="56"
-                        Height="56"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Background="Transparent"
-                        BorderThickness="0"
-                        Click="CallButton_Click">
-
-                        <Button.Template>
-                            <ControlTemplate TargetType="Button">
-                                <Grid>
-                                    <Border
-                                        x:Name="Circle"
-                                        Width="56"
-                                        Height="56"
-                                        CornerRadius="80"
-                                        RenderTransformOrigin="0.5,0.5">
-                                        <Border.Background>
-                                            <SolidColorBrush x:Name="CircleBrush" Color="#263241" />
-                                        </Border.Background>
-
-                                        <Border.RenderTransform>
-                                            <TransformGroup>
-                                                <ScaleTransform x:Name="ButtonScale" ScaleX="1" ScaleY="1" />
-                                                <RotateTransform x:Name="ButtonRotate" Angle="0" />
-                                            </TransformGroup>
-                                        </Border.RenderTransform>
-                                    </Border>
-
-                                    <Viewbox
-                                        Width="56"
-                                        Height="56"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center">
-                                        <Grid
-                                            Width="56"
-                                            Height="30"
-                                            RenderTransformOrigin="0.5,0.5">
-                                            <Grid.RenderTransform>
-                                                <RotateTransform x:Name="IconRotate" Angle="0" />
-                                            </Grid.RenderTransform>
-
-                                            <Path
-                                                x:Name="CallIcon"
-                                                Data="{StaticResource IconPhone}"
-                                                Fill="White"
-                                                Stretch="Uniform" />
-                                        </Grid>
-                                    </Viewbox>
-
-                                    <VisualStateManager.VisualStateGroups>
-                                        <VisualStateGroup x:Name="CallStates">
-
-                                            <VisualState x:Name="CallState">
-                                                <Storyboard>
-
-                                                    <ColorAnimation
-                                                        Storyboard.TargetName="CircleBrush"
-                                                        Storyboard.TargetProperty="Color"
-                                                        To="#263241"
-                                                        Duration="0:0:0.3" />
-
-                                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ButtonScale" Storyboard.TargetProperty="ScaleX">
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0" Value="1" />
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0.10" Value="0.92" />
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0.22" Value="1.04" />
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0.32" Value="1" />
-                                                    </DoubleAnimationUsingKeyFrames>
-
-                                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ButtonScale" Storyboard.TargetProperty="ScaleY">
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0" Value="1" />
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0.10" Value="0.92" />
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0.22" Value="1.04" />
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0.32" Value="1" />
-                                                    </DoubleAnimationUsingKeyFrames>
-
-                                                    <DoubleAnimation
-                                                        Storyboard.TargetName="IconRotate"
-                                                        Storyboard.TargetProperty="Angle"
-                                                        To="0"
-                                                        Duration="0:0:0.35">
-                                                        <DoubleAnimation.EasingFunction>
-                                                            <BackEase Amplitude="0.4" EasingMode="EaseOut" />
-                                                        </DoubleAnimation.EasingFunction>
-                                                    </DoubleAnimation>
-
-                                                </Storyboard>
-                                            </VisualState>
-
-                                            <VisualState x:Name="EndState">
-                                                <Storyboard>
-
-                                                    <ColorAnimation
-                                                        Storyboard.TargetName="CircleBrush"
-                                                        Storyboard.TargetProperty="Color"
-                                                        To="#E04B5A"
-                                                        Duration="0:0:0.3" />
-
-                                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ButtonScale" Storyboard.TargetProperty="ScaleX">
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0" Value="1" />
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0.10" Value="0.90" />
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0.20" Value="1.08" />
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0.32" Value="1" />
-                                                    </DoubleAnimationUsingKeyFrames>
-
-                                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ButtonScale" Storyboard.TargetProperty="ScaleY">
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0" Value="1" />
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0.10" Value="0.90" />
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0.20" Value="1.08" />
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0.32" Value="1" />
-                                                    </DoubleAnimationUsingKeyFrames>
-
-                                                    <DoubleAnimation
-                                                        Storyboard.TargetName="IconRotate"
-                                                        Storyboard.TargetProperty="Angle"
-                                                        To="120"
-                                                        Duration="0:0:0.35">
-                                                        <DoubleAnimation.EasingFunction>
-                                                            <BackEase Amplitude="0.8" EasingMode="EaseOut" />
-                                                        </DoubleAnimation.EasingFunction>
-                                                    </DoubleAnimation>
-
-                                                </Storyboard>
-                                            </VisualState>
-
-                                        </VisualStateGroup>
-                                    </VisualStateManager.VisualStateGroups>
-                                </Grid>
-                            </ControlTemplate>
-                        </Button.Template>
+                    <!-- Завершить -->
+                    <Button Width="64" Height="64"
+                            Click="Button_Click_1"
+                Background="Transparent"
+                BorderBrush="Transparent"
+                ToolTip="Завершить">
+                        <Border Height="50" Width="50" 
+                        Background="#263241"
+                        CornerRadius="28">
+                            <Viewbox Width="24" Height="24">
+                                <Path Data="{StaticResource IconPhone}"
+                              Fill="White"
+                              Stretch="Uniform"/>
+                            </Viewbox>
+                        </Border>
                     </Button>
                 </StackPanel>
             </Grid>
         </Grid>
 
-        <Grid Name="ActiveVoiceRoom" Visibility="Visible">
-            <!--  Верхняя панель с эмодзи и системными кнопками  -->
+        <Grid Name="ActiveVoiceRoom" Visibility="Hidden">
+            <!-- Верхняя панель с эмодзи и системными кнопками -->
             <Grid Margin="0,0,0,0">
-                <!--  Основная разметка  -->
+                <!--Основная разметка-->
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="40" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="90" />
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="90"/>
                 </Grid.RowDefinitions>
 
-                <!--  Верхняя панель  -->
-                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Bottom">
-                    <TextBlock
-                        FontSize="20"
-                        Foreground="#FFFFFF"
-                        Text="Username" />
+                <!--Верхняя панель-->
+                <StackPanel VerticalAlignment="Bottom"
+                            HorizontalAlignment="Center">
+                    <TextBlock Text="Username"
+                           Foreground="#FFFFFF"
+                           FontSize="20"/>
                 </StackPanel>
 
-                <!--  Центр  -->
-                <StackPanel
-                    Grid.Row="1"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center">
+                <!-- Центр -->
+                <StackPanel Grid.Row="1"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center">
                     <Grid Width="190" Height="190">
-                        <Ellipse Fill="#263241" />
-                        <!--  Аватарка  -->
+                        <Ellipse Fill="#263241"/>
+                        <!-- Аватарка -->
                         <Ellipse>
                             <Ellipse.Fill>
-                                <ImageBrush ImageSource="https://djnkpzmq-5000.euw.devtunnels.ms/avatars/1008024429709774919.webp" Stretch="UniformToFill" />
+                                <ImageBrush ImageSource="https://djnkpzmq-5000.euw.devtunnels.ms/avatars/1008024429709774919.webp"
+                                            Stretch="UniformToFill"/>
                             </Ellipse.Fill>
                         </Ellipse>
 
-                        <!--  Иконка микрофона у аватарки  -->
-                        <Border
-                            Width="50"
-                            Height="50"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Bottom"
-                            Background="#303c4c"
-                            CornerRadius="28">
-                            <Border
-                                Width="45"
-                                Height="45"
-                                Background="#263241"
+                        <!-- Иконка микрофона у аватарки -->
+                        <Border VerticalAlignment="Bottom" 
+                                HorizontalAlignment="Right" 
+                                Height="50" Width="50" 
+                                Background="#303c4c"
                                 CornerRadius="28">
+                            <Border Background="#263241" Height="45" Width="45" CornerRadius="28">
                                 <Viewbox Width="18" Height="18">
-                                    <Path
-                                        Data="{StaticResource IconMic}"
-                                        Fill="White"
-                                        Stretch="Uniform" />
+                                    <Path Data="{StaticResource IconMic}"
+                                          Fill="White"
+                                          Stretch="Uniform"/>
                                 </Viewbox>
                             </Border>
                         </Border>
                     </Grid>
 
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        FontSize="14"
-                        Foreground="#B8C2CC"
-                        Text="CallTime" />
+                    <TextBlock Text="CallTime"
+
+                           Foreground="#B8C2CC"
+                                         FontSize="14"
+           HorizontalAlignment="Center"/>
                 </StackPanel>
 
-                <!--  Нижняя панель с кнопками  -->
-                <StackPanel
-                    Grid.Row="2"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Orientation="Horizontal">
+                <!-- Нижняя панель с кнопками -->
+                <StackPanel Grid.Row="2"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
 
-                    <!--  Дэмка  -->
-                    <Button
-                        Width="56"
-                        Height="56"
-                        Background="Transparent"
-                        BorderBrush="Transparent"
-                        ToolTip="Демонстрация экрана">
-                        <Border
-                            Width="50"
-                            Height="50"
-                            Background="#263241"
-                            CornerRadius="28">
+                    <!-- Дэмка -->
+                    <Button Width="56" Height="56"
+                            Background="Transparent"
+                            BorderBrush="Transparent"
+                            ToolTip="Демонстрация экрана">
+                        <Border Height="50" Width="50" 
+                                Background="#263241"
+                                CornerRadius="28">
                             <Viewbox Width="24" Height="24">
-                                <Path
-                                    Data="{StaticResource IconScreenShare}"
-                                    Fill="White"
-                                    Stretch="Uniform" />
+                                <Path Data="{StaticResource IconScreenShare}"
+                                      Fill="White"
+                                      Stretch="Uniform"/>
                             </Viewbox>
                         </Border>
                     </Button>
 
-                    <!--  Видеозвонок  -->
-                    <Button
-                        Width="56"
-                        Height="56"
+                    <!-- Видеозвонок -->
+                    <Button Width="56" Height="56"
                         Background="Transparent"
                         BorderBrush="Transparent"
                         ToolTip="Включить видеозвонок">
-                        <Border
-                            Width="50"
-                            Height="50"
-                            Background="#263241"
-                            CornerRadius="28">
+                        <Border Height="50" Width="50" 
+                                Background="#263241"
+                                CornerRadius="28">
                             <Viewbox Width="24" Height="24">
-                                <Path
-                                    Data="{StaticResource IconCamera}"
-                                    Fill="White"
-                                    Stretch="Uniform" />
+                                <Path Data="{StaticResource IconCamera}"
+                                      Fill="White"
+                                      Stretch="Uniform"/>
                             </Viewbox>
                         </Border>
                     </Button>
 
-                    <!--  Завершить  -->
-
-                    <Button
-                        Width="64"
-                        Height="64"
+                    <!-- Завершить -->
+                    <Button Width="64" Height="64"
+                            Click="Button_Click"
                         Background="Transparent"
                         BorderBrush="Transparent"
                         ToolTip="Завершить">
-                        <Border
-                            Width="50"
-                            Height="50"
-                            Background="#FF4D4F"
-                            CornerRadius="28">
+                        <Border Height="50" Width="50" 
+                                Background="#FF4D4F"
+                                CornerRadius="28">
                             <Viewbox Width="24" Height="24">
-                                <Path
-                                    Data="{StaticResource IconPhone}"
-                                    Fill="White"
-                                    Stretch="Uniform" />
+                                <Path Data="{StaticResource IconPhone}"
+                                      Fill="White"
+                                      Stretch="Uniform"/>
                             </Viewbox>
                         </Border>
                     </Button>
 
-                    <!--<Button
-                        x:Name="CallButton"
-                        Width="64"
-                        Height="64"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Background="Transparent"
-                        BorderThickness="0"
-                        Click="CallButton_Click">
-
-                        <Button.Template>
-                            <ControlTemplate TargetType="Button">
-                                <Grid>
-                                    <Border
-                                        x:Name="Circle"
-                                        Width="56"
-                                        Height="56"
-                                        CornerRadius="80"
-                                        RenderTransformOrigin="0.5,0.5">
-                                        <Border.Background>
-                                            <SolidColorBrush x:Name="CircleBrush" Color="#263241" />
-                                        </Border.Background>
-
-                                        <Border.RenderTransform>
-                                            <TransformGroup>
-                                                <ScaleTransform x:Name="ButtonScale" ScaleX="1" ScaleY="1" />
-                                                <RotateTransform x:Name="ButtonRotate" Angle="0" />
-                                            </TransformGroup>
-                                        </Border.RenderTransform>
-
-                                    </Border>
-
-                                    <Viewbox
-                                        Width="30"
-                                        Height="30"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center">
-                                        <Grid
-                                            Width="24"
-                                            Height="24"
-                                            RenderTransformOrigin="0.5,0.5">
-                                            <Grid.RenderTransform>
-                                                <RotateTransform x:Name="IconRotate" Angle="0" />
-                                            </Grid.RenderTransform>
-
-                                            <Path
-                                                x:Name="CallIcon"
-                                                Data="{StaticResource IconPhone}"
-                                                Fill="White"
-                                                Stretch="Uniform" />
-                                        </Grid>
-                                    </Viewbox>
-
-                                    <VisualStateManager.VisualStateGroups>
-                                        <VisualStateGroup x:Name="CallStates">
-
-                                            <VisualState x:Name="CallState">
-                                                <Storyboard>
-
-                                                    <ColorAnimation
-                                                        Storyboard.TargetName="CircleBrush"
-                                                        Storyboard.TargetProperty="Color"
-                                                        To="#2FCB71"
-                                                        Duration="0:0:0.3" />
-
-                                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ButtonScale" Storyboard.TargetProperty="ScaleX">
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0" Value="1" />
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0.10" Value="0.92" />
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0.22" Value="1.04" />
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0.32" Value="1" />
-                                                    </DoubleAnimationUsingKeyFrames>
-
-                                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ButtonScale" Storyboard.TargetProperty="ScaleY">
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0" Value="1" />
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0.10" Value="0.92" />
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0.22" Value="1.04" />
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0.32" Value="1" />
-                                                    </DoubleAnimationUsingKeyFrames>
-
-                                                    <DoubleAnimation
-                                                        Storyboard.TargetName="IconRotate"
-                                                        Storyboard.TargetProperty="Angle"
-                                                        To="0"
-                                                        Duration="0:0:0.35">
-                                                        <DoubleAnimation.EasingFunction>
-                                                            <BackEase Amplitude="0.4" EasingMode="EaseOut" />
-                                                        </DoubleAnimation.EasingFunction>
-                                                    </DoubleAnimation>
-
-                                                </Storyboard>
-                                            </VisualState>
-
-                                            <VisualState x:Name="EndState">
-                                                <Storyboard>
-
-                                                    <ColorAnimation
-                                                        Storyboard.TargetName="CircleBrush"
-                                                        Storyboard.TargetProperty="Color"
-                                                        To="#E04B5A"
-                                                        Duration="0:0:0.3" />
-
-                                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ButtonScale" Storyboard.TargetProperty="ScaleX">
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0" Value="1" />
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0.10" Value="0.90" />
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0.20" Value="1.08" />
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0.32" Value="1" />
-                                                    </DoubleAnimationUsingKeyFrames>
-
-                                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ButtonScale" Storyboard.TargetProperty="ScaleY">
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0" Value="1" />
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0.10" Value="0.90" />
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0.20" Value="1.08" />
-                                                        <EasingDoubleKeyFrame KeyTime="0:0:0.32" Value="1" />
-                                                    </DoubleAnimationUsingKeyFrames>
-
-                                                    <DoubleAnimation
-                                                        Storyboard.TargetName="IconRotate"
-                                                        Storyboard.TargetProperty="Angle"
-                                                        To="120"
-                                                        Duration="0:0:0.35">
-                                                        <DoubleAnimation.EasingFunction>
-                                                            <BackEase Amplitude="0.8" EasingMode="EaseOut" />
-                                                        </DoubleAnimation.EasingFunction>
-                                                    </DoubleAnimation>
-
-                                                </Storyboard>
-                                            </VisualState>
-
-                                        </VisualStateGroup>
-                                    </VisualStateManager.VisualStateGroups>
-                                </Grid>
-                            </ControlTemplate>
-                        </Button.Template>
-                    </Button>-->
-
-                    <!--  Микрофон  -->
-                    <Button
-                        Width="56"
-                        Height="56"
-                        Background="Transparent"
-                        BorderBrush="Transparent"
-                        ToolTip="Микрофон">
-                        <Border
-                            Width="50"
-                            Height="50"
-                            Background="#263241"
-                            CornerRadius="28">
+                    <!-- Микрофон -->
+                    <Button Width="56" Height="56"
+                            Background="Transparent"
+                            BorderBrush="Transparent"
+                            ToolTip="Микрофон">
+                        <Border Height="50" Width="50" 
+                                Background="#263241"
+                                CornerRadius="28">
                             <Viewbox Width="24" Height="24">
-                                <Path
-                                    Data="{StaticResource IconMic}"
-                                    Fill="White"
-                                    Stretch="Uniform" />
+                                <Path Data="{StaticResource IconMic}"
+                                      Fill="White"
+                                      Stretch="Uniform"/>
                             </Viewbox>
                         </Border>
                     </Button>
 
 
-                    <!--  Добавить пользователя в звонок  -->
-                    <Button
-                        Width="56"
-                        Height="56"
+                    <!-- Добавить пользователя в звонок -->
+                    <Button Width="56" Height="56"
                         Background="Transparent"
                         BorderBrush="Transparent"
                         ToolTip="Добавить нового пользователя">
 
-                        <Border
-                            Width="50"
-                            Height="50"
-                            Background="#263241"
-                            CornerRadius="28">
+                        <Border Height="50" 
+                                Width="50" 
+                                Background="#263241"
+                                CornerRadius="28">
                             <Viewbox Width="24" Height="24">
-                                <Path
-                                    Data="{StaticResource IconPlus}"
-                                    Fill="White"
-                                    Stretch="Uniform" />
+                                <Path Data="{StaticResource IconPlus}"
+                                      Fill="White"
+                                      Stretch="Uniform"/>
                             </Viewbox>
                         </Border>
                     </Button>

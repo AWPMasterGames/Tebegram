@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.FileProviders;
+using System;
 using System.Collections.ObjectModel;
 using System.Net;
 using System.Net.WebSockets;
@@ -24,11 +25,17 @@ app.UseWebSockets();
 
 var connections = new List<WebSocket>();
 
+Thread thread = new Thread(() => {
+    Console.WriteLine("Запущен поток чистки голосых каналов.");
+    VoiceRoomsController.CheckEmptyVoices();
+});
 
 // ВАЖНО: Инициализируем данные пользователей ПЕРЕД запуском основной логики
 Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Запуск сервера TebegramServer...");
 UsersData.Initialize(); // Принудительно инициализируем данные
 Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Данные пользователей загружены, запускаем веб-сервер...");
+
+thread.Start();
 
 app.MapGet("/", async (HttpContext context) =>
 {
@@ -264,14 +271,58 @@ app.MapDelete("/Contact", async (HttpContext Context) =>
 #region Voices
 // Голосовые каналы
 
-app.MapGet("/CreateRoom/{userId}", async (HttpContext Context, int userId) =>
+app.MapGet("/Voice/CreateRoom/{userId}-{calledUserUsername}", async (HttpContext Context, int userId, string calledUserUsername) =>
 {
     User user = UsersData.FindUserById(userId);
-    string token = VoiceRoomsController.CreateRoom(user.Username);
+    User calledUser = UsersData.FindUserByUsername(calledUserUsername);
+    string token = VoiceRoomsController.CreateRoom(user.Username + calledUser.Username);
+
+    user.CallToken = token;
+    calledUser.CallToken =$"{user.Username}▫{token}";
+
     await Context.Response.WriteAsync(token);
 });
 
-app.Map("/ws", async context =>
+app.MapGet("/Voice/GetCallToken/{userId}", async (HttpContext Context, int userId) =>
+{
+    User user = UsersData.FindUserById(userId);
+
+    string response;
+
+    if (string.IsNullOrEmpty(user.CallToken))
+    {
+        response = "NotFound";
+    }
+    else {
+        response = user.CallToken;
+    }
+
+    await Context.Response.WriteAsync(response);
+});
+
+app.MapGet("/Voice/DeclineCall/{userId}-{token}", async (HttpContext Context, int userId, string token) =>
+{
+    User user = UsersData.FindUserById(userId);
+
+    user.CallToken = "";
+
+    VoiceRoomsController.VoiceRooms[token].SendTextToRoom("CloseConnection");
+
+    string response;
+
+    if (string.IsNullOrEmpty(user.CallToken))
+    {
+        response = "NotFound";
+    }
+    else
+    {
+        response = "ok";
+    }
+
+    await Context.Response.WriteAsync(response);
+});
+
+app.Map("/Voice/ws", async context =>
 {
     if (context.WebSockets.IsWebSocketRequest)
     {
@@ -283,7 +334,7 @@ app.Map("/ws", async context =>
         User user = UsersData.FindUserById(int.Parse(userID));
 
         VoiceRoomsController.ConnectingToRoom(ws, Token, user);
-
+        if (VoiceRoomsController.GetRoomId(Token) == -1) return;
         Console.WriteLine($"Пользователь {user.Username} Подключился к комнате Id: {VoiceRoomsController.GetRoomId(Token)}");
 
         await ReceiveMessage(ws,
@@ -311,7 +362,7 @@ app.Map("/ws", async context =>
 
 async Task ReceiveMessage(WebSocket socket, Action<WebSocketReceiveResult, byte[]> handleMessage)
 {
-    var buffer = new byte[1024 * 4];
+    var buffer = new byte[4096];
     while (socket.State == WebSocketState.Open)
     {
         var result = await socket.ReceiveAsync(new ArraySegment<byte>(buffer),
@@ -320,7 +371,7 @@ async Task ReceiveMessage(WebSocket socket, Action<WebSocketReceiveResult, byte[
     }
 }
 
-async Task Broadcast(string message)
+/*async Task Broadcast(string message)
 {
     var bytes = Encoding.UTF8.GetBytes(message);
     foreach (var soket in connections)
@@ -331,7 +382,7 @@ async Task Broadcast(string message)
             await soket.SendAsync(arraySegment, WebSocketMessageType.Text, true, CancellationToken.None);
         }
     }
-}
+}*/
 #endregion
 
 app.Run();
