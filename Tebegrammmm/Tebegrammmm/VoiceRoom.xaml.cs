@@ -25,6 +25,8 @@ namespace Tebegrammmm
         static HttpClient httpClient = new HttpClient();
         private string Token { get; set; }
         private Contact Contact { get; set; }
+        private bool IsMicrophoneOn { get; set; }
+
         public VoiceRoom(Mode mode, Contact contact, string token)
         {
             InitializeComponent();
@@ -89,6 +91,8 @@ namespace Tebegrammmm
 
             await ws.ConnectAsync(new Uri($"{ServerData.ServerAdress.Replace("https:", "ws:")}/Voice/ws?userId={UserData.User.Id}&roomToken={Token}"),
     CancellationToken.None);
+
+            IsMicrophoneOn = true;
 
             StartSVT();
             StartRVT();
@@ -168,6 +172,11 @@ namespace Tebegrammmm
             string Content = await response.Content.ReadAsStringAsync();
             
             this.Close();
+        }
+
+        private void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
