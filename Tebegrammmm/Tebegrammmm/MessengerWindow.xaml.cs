@@ -40,6 +40,9 @@ namespace Tebegrammmm
             GridMessege.Visibility = Visibility.Hidden;
             GridContactPanel.Visibility = Visibility.Hidden;
 
+
+            //LBMessages.DataContext = 
+
             Log.Save($"[MessengerWindow] Инициализация для пользователя: {UserData.User.Name} ({UserData.User.Username})");
 
             LBChatsLoders.ItemsSource = UserData.User.ChatsFolders;
