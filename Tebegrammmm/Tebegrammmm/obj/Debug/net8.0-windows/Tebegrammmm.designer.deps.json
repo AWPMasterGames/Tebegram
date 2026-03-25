@@ -6,7 +6,6 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v8.0": {
-      "Microsoft.CSharp/4.7.0": {},
       "NAudio/2.3.0": {
         "dependencies": {
           "NAudio.Asio": "2.3.0",
@@ -97,13 +96,6 @@
     }
   },
   "libraries": {
-    "Microsoft.CSharp/4.7.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-pTj+D3uJWyN3My70i2Hqo+OXixq3Os2D1nJ2x92FFo6sk8fYS1m1WLNTs0Dc1uPaViH0YvEEwvzddQ7y4rhXmA==",
-      "path": "microsoft.csharp/4.7.0",
-      "hashPath": "microsoft.csharp.4.7.0.nupkg.sha512"
-    },
     "NAudio/2.3.0": {
       "type": "package",
       "serviceable": true,
