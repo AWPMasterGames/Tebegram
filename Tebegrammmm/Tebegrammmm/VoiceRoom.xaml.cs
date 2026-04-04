@@ -105,7 +105,30 @@ namespace Tebegrammmm
         {
             SendVoiceThread = new Thread(() =>
             {
-                waveIn.StartRecording();
+                bool isOn = true;
+                while (true)
+                {
+                    if (IsMicrophoneOn)
+                    {
+                        if (isOn)
+                        {
+                            continue;
+                        }
+                        waveIn.StartRecording();
+                        isOn = true;
+                        //MessageBox.Show("Микрофон включен");
+                    }
+                    else
+                    {
+                        if (!isOn)
+                        {
+                            continue;
+                        }
+                        waveIn.StopRecording();
+                        isOn = false;
+                        //MessageBox.Show("Микрофон выключен");
+                    }
+                }
             });
 
             SendVoiceThread.Start();
@@ -161,8 +184,8 @@ namespace Tebegrammmm
 
         private async void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if(ws != null)
-                if(ws.State == WebSocketState.Open)
+            if (ws != null)
+                if (ws.State == WebSocketState.Open)
                     await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
             UserData.User.InCall = false;
         }
@@ -172,13 +195,13 @@ namespace Tebegrammmm
             using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/Voice/DeclineCall/{UserData.User.Id}-{Token}");
             using HttpResponseMessage response = await httpClient.SendAsync(request);
             string Content = await response.Content.ReadAsStringAsync();
-            
+
             this.Close();
         }
 
-        private void Button_Click_3(object sender, RoutedEventArgs e)
+        private void Button_Click_OffOnMicrofon(object sender, RoutedEventArgs e)
         {
-
+            IsMicrophoneOn = !IsMicrophoneOn;
         }
     }
 }
