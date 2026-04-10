@@ -170,6 +170,7 @@
                                 CornerRadius="28">
                                 <Viewbox Width="18" Height="18">
                                     <Path
+                                        x:Name="MicAvatarPath"
                                         Data="{StaticResource IconMic}"
                                         Fill="White"
                                         Stretch="Uniform" />
@@ -187,10 +188,14 @@
 
                 <!--  Нижняя панель с кнопками  -->
                 <StackPanel
+                    x:Name="ActiveButtonsPanel"
                     Grid.Row="2"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Orientation="Horizontal">
+                    <StackPanel.RenderTransform>
+                        <TranslateTransform x:Name="ButtonsPanelTransform" />
+                    </StackPanel.RenderTransform>
 
                     <!--  Дэмка  -->
                     <Button
@@ -265,12 +270,14 @@
                         Click="Button_Click_OffOnMicrofon"
                         ToolTip="Микрофон">
                         <Border
+                            x:Name="MicButtonBorder"
                             Width="50"
                             Height="50"
                             Background="#263241"
                             CornerRadius="28">
                             <Viewbox Width="24" Height="24">
                                 <Path
+                                    x:Name="MicIconPath"
                                     Data="{StaticResource IconMic}"
                                     Fill="White"
                                     Stretch="Uniform" />
