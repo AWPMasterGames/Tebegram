@@ -1,0 +1,57 @@
+﻿<Window x:Class="Tebegrammmm.SettingsPanelWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Tebegrammmm"
+        xmlns:local1="clr-namespace:Tebegrammmm.Controls"
+        mc:Ignorable="d"
+        Title="Tebegram - User info" Height="400" Width="400">
+    <ScrollViewer>
+
+        <Grid Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="Информация о пользователе" HorizontalAlignment="Center" FontSize="25" Margin="0,10"/>
+            <StackPanel x:Name="UserInfo" Grid.Row="1" HorizontalAlignment="Center">
+                <local1:UserControl1 Avatar="https://djnkpzmq-5000.euw.devtunnels.ms/avatars/1429941917327687800.png"/>
+                <Grid Margin="10,5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Login" Foreground="Gray" FontSize="15"/>
+                    <TextBlock Name="TBLogin" Text="{Binding Login}" Grid.Row="1" FontSize="20"/>
+                </Grid>
+                <Grid Margin="10,5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Username" Foreground="Gray" FontSize="15"/>
+                    <TextBlock Name="TBUsername" Grid.Row="1" FontSize="20"/>
+                </Grid>
+
+            </StackPanel>
+            <StackPanel Grid.Row="2">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="Устройство ввода: "/>
+                    <ComboBox x:Name="InputDeviceCB" Grid.Column="1" Width="150" SelectionChanged="InputDeviceCB_SelectionChanged"/>
+                </Grid>
+            </StackPanel>
+            <StackPanel Grid.Row="3" Margin="0,10" Orientation="Horizontal">
+                <!--<Button Content="Тема" Width="100" Height="25"/>-->
+                <Button Content="Выйти" Width="50" Height="25" FontSize="15" Click="Button_Exit_Click"/>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Window>
