@@ -152,7 +152,7 @@ namespace Tebegrammmm
             this.Close();
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void Button_Click_Accept(object sender, RoutedEventArgs e)
         {
             DefoultVoiceRoom.Visibility = Visibility.Hidden;
             ActiveVoiceRoom.Visibility = Visibility.Visible;
@@ -167,7 +167,7 @@ namespace Tebegrammmm
             UserData.User.InCall = false;
         }
 
-        private async void Button_Click_2(object sender, RoutedEventArgs e)
+        private async void Button_Click_Decline(object sender, RoutedEventArgs e)
         {
             using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/Voice/DeclineCall/{UserData.User.Id}-{Token}");
             using HttpResponseMessage response = await httpClient.SendAsync(request);
