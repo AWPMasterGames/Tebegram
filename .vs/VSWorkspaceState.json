@@ -2,10 +2,8 @@
   "ExpandedNodes": [
     "",
     "\\Tebegrammmm",
-    "\\Tebegrammmm\\Tebegrammmm",
-    "\\Tebegrammmm\\TebegramServer\\TebegramServer",
-    "\\Tebegrammmm\\TebegramServer\\TebegramServer\\Data"
+    "\\Tebegrammmm\\Tebegrammmm"
   ],
-  "SelectedNode": "\\Tebegrammmm\\Tebegrammmm\\MessengerWindow.xaml",
+  "SelectedNode": "\\Tebegrammmm",
   "PreviewInSolutionExplorer": false
 }
