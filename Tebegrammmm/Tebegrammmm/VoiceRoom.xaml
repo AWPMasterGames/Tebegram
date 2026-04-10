@@ -13,7 +13,7 @@
 
     <Grid>
 
-        <Grid Name="DefoultVoiceRoom" Visibility="Visible">
+        <Grid Name="DefoultVoiceRoom" Visibility="Hidden">
             <!--  Верхняя панель с эмодзи и системными кнопками  -->
             <Grid x:Name="MainGrid" Margin="0,0,0,0">
                 <!--  Основная разметка  -->
@@ -82,7 +82,7 @@
                         Height="64"
                         Background="Transparent"
                         BorderBrush="Transparent"
-                        Click="Button_Click_2"
+                        Click="Button_Click_Decline"
                         ToolTip="Завершить">
                         <Border
                             Width="50"
@@ -104,7 +104,7 @@
                         Height="64"
                         Background="Transparent"
                         BorderBrush="Transparent"
-                        Click="Button_Click_1"
+                        Click="Button_Click_Accept"
                         ToolTip="Завершить">
                         <Border
                             Width="50"
@@ -123,7 +123,7 @@
             </Grid>
         </Grid>
 
-        <Grid Name="ActiveVoiceRoom" Visibility="Hidden">
+        <Grid Name="ActiveVoiceRoom" Visibility="Visible">
             <!--  Верхняя панель с эмодзи и системными кнопками  -->
             <Grid Margin="0,0,0,0">
                 <!--  Основная разметка  -->
@@ -262,7 +262,7 @@
                         Height="56"
                         Background="Transparent"
                         BorderBrush="Transparent"
-                        Click="Button_Click_3"
+                        Click="Button_Click_OffOnMicrofon"
                         ToolTip="Микрофон">
                         <Border
                             Width="50"
