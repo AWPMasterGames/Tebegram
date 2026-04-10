@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Xml.Linq;
 using Tebegrammmm.Classes;
 using Tebegrammmm.Data;
@@ -170,16 +172,53 @@ namespace Tebegrammmm
             }
         }
 
+        private void AnimateToActive()
+        {
+            var ease = new CubicEase { EasingMode = EasingMode.EaseOut };
+            var duration = new Duration(TimeSpan.FromMilliseconds(350));
+
+            ActiveVoiceRoom.Opacity = 0;
+            ActiveVoiceRoom.Visibility = Visibility.Visible;
+            ButtonsPanelTransform.Y = 70;
+            ActiveButtonsPanel.Opacity = 0;
+
+            ActiveVoiceRoom.BeginAnimation(OpacityProperty,
+                new DoubleAnimation(0, 1, duration));
+
+            ButtonsPanelTransform.BeginAnimation(TranslateTransform.YProperty,
+                new DoubleAnimation(70, 0, duration) { EasingFunction = ease });
+
+            ActiveButtonsPanel.BeginAnimation(OpacityProperty,
+                new DoubleAnimation(0, 1, duration));
+
+            DefoultVoiceRoom.Visibility = Visibility.Hidden;
+        }
+
+        private void AnimateClose()
+        {
+            var ease = new CubicEase { EasingMode = EasingMode.EaseIn };
+            var duration = new Duration(TimeSpan.FromMilliseconds(250));
+
+            var slideDown = new DoubleAnimation(0, 70, duration) { EasingFunction = ease };
+            ButtonsPanelTransform.BeginAnimation(TranslateTransform.YProperty, slideDown);
+
+            ActiveButtonsPanel.BeginAnimation(OpacityProperty,
+                new DoubleAnimation(1, 0, duration));
+
+            var fadeOut = new DoubleAnimation(1, 0, duration);
+            fadeOut.Completed += (s, e) => this.Close();
+            ActiveVoiceRoom.BeginAnimation(OpacityProperty, fadeOut);
+        }
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            AnimateClose();
         }
 
         private void Button_Click_Accept(object sender, RoutedEventArgs e)
         {
-            DefoultVoiceRoom.Visibility = Visibility.Hidden;
-            ActiveVoiceRoom.Visibility = Visibility.Visible;
             Init();
+            AnimateToActive();
         }
 
         private async void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
