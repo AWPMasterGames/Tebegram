@@ -17,7 +17,8 @@
     <Grid Name="MainGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="80" />
-            <ColumnDefinition Width="250" />
+            <ColumnDefinition Width="250" /> 
+            <!--  Тест  -->
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <!--  Левая панель  -->
