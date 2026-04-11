@@ -9,6 +9,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
+using System.Windows.Threading;
 using System.Xml.Linq;
 using Tebegrammmm.Classes;
 using Tebegrammmm.Data;
@@ -27,11 +30,16 @@ namespace Tebegrammmm
         private Contact Contact { get; set; }
         private bool IsMicrophoneOn { get; set; }
 
+        private DispatcherTimer _callTimer;
+        private TimeSpan _callDuration;
+
         public VoiceRoom(Mode mode, Contact contact, string token)
         {
             InitializeComponent();
             Contact = contact;
             Token = token;
+            this.DataContext = contact;
+
             switch (mode)
             {
                 case Mode.AcceptCall:
@@ -39,14 +47,11 @@ namespace Tebegrammmm
                     ActiveVoiceRoom.Visibility = Visibility.Hidden;
                     break;
                 case Mode.ActiveCall:
-
                     Init();
                     DefoultVoiceRoom.Visibility = Visibility.Hidden;
                     ActiveVoiceRoom.Visibility = Visibility.Visible;
                     break;
             }
-
-            MainGrid.DataContext = contact;
         }
 
         Thread SendVoiceThread;
@@ -96,8 +101,33 @@ namespace Tebegrammmm
 
             IsMicrophoneOn = true;
 
+            StartCallTimer();
             StartSVT();
             StartRVT();
+        }
+
+        private void StartCallTimer()
+        {
+            _callDuration = TimeSpan.Zero;
+            CallTimeText.Text = "00:00";
+
+            _callTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+            _callTimer.Tick += (s, e) =>
+            {
+                _callDuration = _callDuration.Add(TimeSpan.FromSeconds(1));
+                CallTimeText.Text = _callDuration.Hours > 0
+                    ? _callDuration.ToString(@"h\:mm\:ss")
+                    : _callDuration.ToString(@"mm\:ss");
+            };
+            _callTimer.Start();
+        }
+
+        private void StopCallTimer()
+        {
+            _callTimer?.Stop();
+            _callTimer = null;
+            _callDuration = TimeSpan.Zero;
+            CallTimeText.Text = "00:00";
         }
 
 
@@ -170,20 +200,88 @@ namespace Tebegrammmm
             }
         }
 
+        private void AnimateToActive()
+        {
+            var easeIn  = new CubicEase { EasingMode = EasingMode.EaseIn };
+            var easeOut = new CubicEase { EasingMode = EasingMode.EaseOut };
+            var exitDuration  = new Duration(TimeSpan.FromMilliseconds(220));
+            var enterDuration = new Duration(TimeSpan.FromMilliseconds(320));
+
+            // --- Выход: кнопки DefaultVoiceRoom уезжают вниз + весь блок гаснет ---
+            DefaultButtonsPanelTransform.Y = 0;
+            DefaultButtonsPanel.BeginAnimation(OpacityProperty,
+                new DoubleAnimation(1, 0, exitDuration));
+            DefaultButtonsPanelTransform.BeginAnimation(TranslateTransform.YProperty,
+                new DoubleAnimation(0, 60, exitDuration) { EasingFunction = easeIn });
+
+            var fadeOutRoom = new DoubleAnimation(1, 0, exitDuration);
+            fadeOutRoom.Completed += (s, e) =>
+            {
+                DefoultVoiceRoom.Visibility = Visibility.Hidden;
+                DefoultVoiceRoom.Opacity    = 1; // сброс на случай повторного показа
+
+                // Сброс панельного трансформа (используется в AnimateClose)
+                ButtonsPanelTransform.Y = 0;
+
+                // --- Вход: ActiveVoiceRoom появляется ---
+                ActiveVoiceRoom.Opacity = 0;
+                ActiveVoiceRoom.Visibility = Visibility.Visible;
+                ActiveVoiceRoom.BeginAnimation(OpacityProperty,
+                    new DoubleAnimation(0, 1, enterDuration));
+
+                // --- Поочерёдное выплывание каждой кнопки снизу ---
+                var buttons = new[] { BtnScreenShare, BtnCamera, BtnHangup, BtnMic, BtnAddUser };
+                for (int i = 0; i < buttons.Length; i++)
+                {
+                    var btn   = buttons[i];
+                    var delay = TimeSpan.FromMilliseconds(i * 50);
+                    var tf    = new TranslateTransform { Y = 60 };
+                    btn.RenderTransform = tf;
+                    btn.Opacity = 0;
+
+                    tf.BeginAnimation(TranslateTransform.YProperty,
+                        new DoubleAnimation(60, 0, enterDuration)
+                        {
+                            EasingFunction = easeOut,
+                            BeginTime      = delay
+                        });
+                    btn.BeginAnimation(OpacityProperty,
+                        new DoubleAnimation(0, 1, enterDuration) { BeginTime = delay });
+                }
+            };
+            DefoultVoiceRoom.BeginAnimation(OpacityProperty, fadeOutRoom);
+        }
+
+        private void AnimateClose()
+        {
+            var ease = new CubicEase { EasingMode = EasingMode.EaseIn };
+            var duration = new Duration(TimeSpan.FromMilliseconds(250));
+
+            var slideDown = new DoubleAnimation(0, 70, duration) { EasingFunction = ease };
+            ButtonsPanelTransform.BeginAnimation(TranslateTransform.YProperty, slideDown);
+
+            ActiveButtonsPanel.BeginAnimation(OpacityProperty,
+                new DoubleAnimation(1, 0, duration));
+
+            var fadeOut = new DoubleAnimation(1, 0, duration);
+            fadeOut.Completed += (s, e) => this.Close();
+            ActiveVoiceRoom.BeginAnimation(OpacityProperty, fadeOut);
+        }
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            AnimateClose();
         }
 
         private void Button_Click_Accept(object sender, RoutedEventArgs e)
         {
-            DefoultVoiceRoom.Visibility = Visibility.Hidden;
-            ActiveVoiceRoom.Visibility = Visibility.Visible;
             Init();
+            AnimateToActive();
         }
 
         private async void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            StopCallTimer();
             if (ws != null)
                 if (ws.State == WebSocketState.Open)
                     await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
