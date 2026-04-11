@@ -55,10 +55,14 @@
 
                 <!--  Нижняя панель с кнопками  -->
                 <StackPanel
+                    x:Name="DefaultButtonsPanel"
                     Grid.Row="2"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Orientation="Horizontal">
+                    <StackPanel.RenderTransform>
+                        <TranslateTransform x:Name="DefaultButtonsPanelTransform" />
+                    </StackPanel.RenderTransform>
 
                     <!--  Видеозвонок  -->
                     <!--<Button Width="56" Height="56"
@@ -180,10 +184,11 @@
                     </Grid>
 
                     <TextBlock
+                        x:Name="CallTimeText"
                         HorizontalAlignment="Center"
                         FontSize="14"
                         Foreground="#B8C2CC"
-                        Text="CallTime" />
+                        Text="00:00" />
                 </StackPanel>
 
                 <!--  Нижняя панель с кнопками  -->
@@ -199,6 +204,7 @@
 
                     <!--  Дэмка  -->
                     <Button
+                        x:Name="BtnScreenShare"
                         Width="56"
                         Height="56"
                         Background="Transparent"
@@ -220,6 +226,7 @@
 
                     <!--  Видеозвонок  -->
                     <Button
+                        x:Name="BtnCamera"
                         Width="56"
                         Height="56"
                         Background="Transparent"
@@ -241,6 +248,7 @@
 
                     <!--  Завершить  -->
                     <Button
+                        x:Name="BtnHangup"
                         Width="64"
                         Height="64"
                         Background="Transparent"
@@ -263,6 +271,7 @@
 
                     <!--  Микрофон  -->
                     <Button
+                        x:Name="BtnMic"
                         Width="56"
                         Height="56"
                         Background="Transparent"
@@ -288,6 +297,7 @@
 
                     <!--  Добавить пользователя в звонок  -->
                     <Button
+                        x:Name="BtnAddUser"
                         Width="56"
                         Height="56"
                         Background="Transparent"
