@@ -16,11 +16,11 @@ namespace Tebegrammmm.Data
             try
             {
                 a = _wc.DownloadString($"{ServerAdress}/Test");
-                if (a == "Hi!") return;
+                if (a == "HI!") return;
             }
             catch
             {
-                //_ServerAdress = "https://localhost:5000";
+                _ServerAdress = "https://localhost:5000";
             }
             finally {
                 //MessageBox.Show(a + ServerAdress);
