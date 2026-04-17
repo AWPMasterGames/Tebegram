@@ -25,7 +25,10 @@ namespace Tebegrammmm
     }
     public partial class VoiceRoom : Window
     {
-        static HttpClient httpClient = new HttpClient();
+        static HttpClient httpClient = new HttpClient(new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback = (m, c, ch, e) => true
+        });
         private string Token { get; set; }
         private Contact Contact { get; set; }
         private bool IsMicrophoneOn { get; set; }
