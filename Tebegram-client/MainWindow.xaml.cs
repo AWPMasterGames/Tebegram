@@ -63,9 +63,18 @@ namespace Tebegrammmm
             }
             try
             {
-                using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/login/{TBUserLogin.Text}-{PBUserPassord.Password}");
+                string loginEnc = Uri.EscapeDataString(TBUserLogin.Text);
+                string passEnc = Uri.EscapeDataString(PBUserPassord.Password);
+                using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/login/{loginEnc}-{passEnc}");
                 using HttpResponseMessage response = await httpClient.SendAsync(request);
                 string content = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode || string.IsNullOrEmpty(content))
+                {
+                    Log.Save($"[Authorization] Bad response: status={(int)response.StatusCode} len={content.Length}");
+                    MessageBox.Show($"Сервер вернул ошибку ({(int)response.StatusCode}). Проверьте логин/пароль и соединение.");
+                    return;
+                }
 
                 if (content.StartsWith("Пользователь с таким логином не существует") ||
                     content.StartsWith("Неверный пароль") ||
@@ -170,7 +179,7 @@ namespace Tebegrammmm
                 string password = PBUserPassword.Password;
                 string name = TBUserName.Text.Trim();
 
-                string url = $"{ServerData.ServerAdress}/register/{username}-{password}-{username}-{name}";
+                string url = $"{ServerData.ServerAdress}/register/{Uri.EscapeDataString(username)}-{Uri.EscapeDataString(password)}-{Uri.EscapeDataString(username)}-{Uri.EscapeDataString(name)}";
 
                 using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, url);
                 using HttpResponseMessage response = await httpClient.SendAsync(request);
