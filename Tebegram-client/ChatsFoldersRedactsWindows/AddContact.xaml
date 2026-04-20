@@ -1,0 +1,15 @@
+<Window x:Class="Tebegrammmm.ChatsFoldersRedactsWindows.AddContact"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="AddContact" Height="300" Width="400">
+    <Grid>
+        <StackPanel Margin="10">
+            <TextBox x:Name="TB_Name" Text="" Margin="0,0,0,10"/>
+            <TextBox x:Name="TB_IP" Text="" Margin="0,0,0,10"/>
+            <TextBox x:Name="TB_Port" Text="" Margin="0,0,0,10"/>
+            <CheckBox x:Name="CB_SearchByName" Content="Search by username" Margin="0,0,0,10"/>
+            <Button Content="Save" Click="Button_Click_Save" Margin="0,0,0,10"/>
+            <Button Content="Cancel" Click="Button_Click_Cancel"/>
+        </StackPanel>
+    </Grid>
+</Window>
