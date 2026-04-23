@@ -155,11 +155,7 @@
                         <!--  Аватарка  -->
                         <Ellipse>
                             <Ellipse.Fill>
-                                <ImageBrush Stretch="UniformToFill">
-                                    <ImageBrush.ImageSource>
-                                        <Binding Path="Avatar" StringFormat="https://djnkpzmq-5000.euw.devtunnels.ms/avatars/{0}.webp" />
-                                    </ImageBrush.ImageSource>
-                                </ImageBrush>
+                                <ImageBrush ImageSource="{Binding Avatar}" Stretch="UniformToFill" />
                             </Ellipse.Fill>
                         </Ellipse>
 
