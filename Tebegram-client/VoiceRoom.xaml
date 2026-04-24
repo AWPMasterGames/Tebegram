@@ -41,7 +41,7 @@
                         <!--  Аватарка  -->
                         <Ellipse>
                             <Ellipse.Fill>
-                                <ImageBrush ImageSource="https://djnkpzmq-5000.euw.devtunnels.ms/avatars/1008024429709774919.webp" Stretch="UniformToFill" />
+                                <ImageBrush ImageSource="{Binding Avatar}" Stretch="UniformToFill" />
                             </Ellipse.Fill>
                         </Ellipse>
                     </Grid>
