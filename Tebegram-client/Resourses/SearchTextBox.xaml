@@ -5,8 +5,9 @@
             Background="{TemplateBinding Background}"
             BorderBrush="{StaticResource Light.BorderDefaultBrush}"
             BorderThickness="{TemplateBinding BorderThickness}"
-            CornerRadius="10">
-            <ScrollViewer x:Name="PART_ContentHost" />
+            CornerRadius="10"
+            Padding="8,6">
+            <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center" />
         </Border>
         <ControlTemplate.Triggers>
             <Trigger Property="IsEnabled" Value="False">

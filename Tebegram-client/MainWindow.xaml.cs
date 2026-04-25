@@ -5,6 +5,8 @@ using System.Net.Http;
 using System.Threading;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
 using Tebegrammmm.Classes;
 using Tebegrammmm.Data;
 
@@ -192,7 +194,7 @@ namespace Tebegrammmm
 
                     // Переключаемся на экран логина
                     LoginGrid.Visibility = Visibility.Visible;
-                    RegistrationGrid.Visibility = Visibility.Hidden;
+                    RegistrationGrid.Visibility = Visibility.Collapsed;
                     TBUserLogin.Text = username;
                     TBUserLogin.Focus();
                 }
@@ -231,12 +233,21 @@ namespace Tebegrammmm
             {
                 if (LoginGrid.Visibility == Visibility.Visible)
                 {
-                    PBUserPassord.Focus();
+                    if (PBUserPassord.Visibility == Visibility.Visible)
+                        PBUserPassord.Focus();
+                    else
+                        TBLoginPassShow.Focus();
                 }
                 else
                 {
                     if (sender == TBUserName) TBUserNameLogin.Focus();
-                    else if (sender == TBUserNameLogin) PBUserPassword.Focus();
+                    else if (sender == TBUserNameLogin)
+                    {
+                        if (PBUserPassword.Visibility == Visibility.Visible)
+                            PBUserPassword.Focus();
+                        else
+                            TBRegPassShow.Focus();
+                    }
                 }
             }
         }
@@ -276,13 +287,10 @@ namespace Tebegrammmm
 
         private void RegisterButton_Click(object sender, RoutedEventArgs e)
         {
-            // Переключаемся на экран регистрации
-            LoginGrid.Visibility = Visibility.Hidden;
-            this.Width = 400;
-            this.Height = 500;
+            LoginGrid.Visibility = Visibility.Collapsed;
             RegistrationGrid.Visibility = Visibility.Visible;
             TBUserName.Focus();
-
+            AnimateFormEntrance(RegFormPanel);
         }
 
         private void DoRegisterButton_Click(object sender, RoutedEventArgs e)
@@ -292,12 +300,10 @@ namespace Tebegrammmm
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            // Возвращаемся на экран логина
             LoginGrid.Visibility = Visibility.Visible;
-            this.Width = 400;
-            this.Height = 400;
-            RegistrationGrid.Visibility = Visibility.Hidden;
+            RegistrationGrid.Visibility = Visibility.Collapsed;
             TBUserLogin.Focus();
+            AnimateFormEntrance(LoginFormPanel);
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
@@ -311,6 +317,128 @@ namespace Tebegrammmm
             {
                 this.DragMove();
             }
+        }
+
+        // ── Анимация появления формы (fade + slide up) ──────────────────────
+        private void AnimateFormEntrance(System.Windows.Controls.StackPanel panel)
+        {
+            var ease = new CubicEase { EasingMode = EasingMode.EaseOut };
+            var dur = new Duration(TimeSpan.FromMilliseconds(380));
+
+            ((TranslateTransform)panel.RenderTransform).Y = 12;
+            panel.Opacity = 0;
+
+            var opAnim = new DoubleAnimation(0, 1, dur) { EasingFunction = ease };
+            var trAnim = new DoubleAnimation(12, 0, dur) { EasingFunction = ease };
+
+            panel.BeginAnimation(UIElement.OpacityProperty, opAnim);
+            ((TranslateTransform)panel.RenderTransform).BeginAnimation(TranslateTransform.YProperty, trAnim);
+        }
+
+        // ── Анимация появления элемента (fade in) ───────────────────────────
+        private void AnimateFadeIn(UIElement element)
+        {
+            var anim = new DoubleAnimation(0, 1, new Duration(TimeSpan.FromMilliseconds(150)))
+            {
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+            };
+            element.BeginAnimation(UIElement.OpacityProperty, anim);
+        }
+
+        // ── Кнопка показа пароля — логин ─────────────────────────────────────
+        private void LoginEyeBtn_Click(object sender, RoutedEventArgs e)
+        {
+            bool isShowing = TBLoginPassShow.Visibility == Visibility.Visible;
+            if (isShowing)
+            {
+                PBUserPassord.Password = TBLoginPassShow.Text;
+                PBUserPassord.Visibility = Visibility.Visible;
+                AnimateFadeIn(PBUserPassord);
+                TBLoginPassShow.Visibility = Visibility.Collapsed;
+                LoginEyePath.Data = (Geometry)FindResource("IconEye");
+            }
+            else
+            {
+                TBLoginPassShow.Text = PBUserPassord.Password;
+                TBLoginPassShow.Visibility = Visibility.Visible;
+                AnimateFadeIn(TBLoginPassShow);
+                PBUserPassord.Visibility = Visibility.Collapsed;
+                LoginEyePath.Data = (Geometry)FindResource("IconEyeOff");
+            }
+        }
+
+        private void TBLoginPassShow_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+            => PBUserPassord.Password = TBLoginPassShow.Text;
+
+        private void TBLoginPassShow_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter) Authorization();
+        }
+
+        // ── Кнопка показа пароля — регистрация ───────────────────────────────
+        private void RegEyeBtn_Click(object sender, RoutedEventArgs e)
+        {
+            bool isShowing = TBRegPassShow.Visibility == Visibility.Visible;
+            if (isShowing)
+            {
+                PBUserPassword.Password = TBRegPassShow.Text;
+                PBUserPassword.Visibility = Visibility.Visible;
+                AnimateFadeIn(PBUserPassword);
+                TBRegPassShow.Visibility = Visibility.Collapsed;
+                RegEyePath.Data = (Geometry)FindResource("IconEye");
+            }
+            else
+            {
+                TBRegPassShow.Text = PBUserPassword.Password;
+                TBRegPassShow.Visibility = Visibility.Visible;
+                AnimateFadeIn(TBRegPassShow);
+                PBUserPassword.Visibility = Visibility.Collapsed;
+                RegEyePath.Data = (Geometry)FindResource("IconEyeOff");
+            }
+        }
+
+        private void TBRegPassShow_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+            => PBUserPassword.Password = TBRegPassShow.Text;
+
+        private void TBRegPassShow_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                if (PBUserPasswordConfirm.Visibility == Visibility.Visible)
+                    PBUserPasswordConfirm.Focus();
+                else
+                    TBRegConfirmPassShow.Focus();
+            }
+        }
+
+        // ── Кнопка показа пароля — подтверждение ─────────────────────────────
+        private void RegConfirmEyeBtn_Click(object sender, RoutedEventArgs e)
+        {
+            bool isShowing = TBRegConfirmPassShow.Visibility == Visibility.Visible;
+            if (isShowing)
+            {
+                PBUserPasswordConfirm.Password = TBRegConfirmPassShow.Text;
+                PBUserPasswordConfirm.Visibility = Visibility.Visible;
+                AnimateFadeIn(PBUserPasswordConfirm);
+                TBRegConfirmPassShow.Visibility = Visibility.Collapsed;
+                RegConfirmEyePath.Data = (Geometry)FindResource("IconEye");
+            }
+            else
+            {
+                TBRegConfirmPassShow.Text = PBUserPasswordConfirm.Password;
+                TBRegConfirmPassShow.Visibility = Visibility.Visible;
+                AnimateFadeIn(TBRegConfirmPassShow);
+                PBUserPasswordConfirm.Visibility = Visibility.Collapsed;
+                RegConfirmEyePath.Data = (Geometry)FindResource("IconEyeOff");
+            }
+        }
+
+        private void TBRegConfirmPassShow_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+            => PBUserPasswordConfirm.Password = TBRegConfirmPassShow.Text;
+
+        private void TBRegConfirmPassShow_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter) Registration();
         }
     }
 }
