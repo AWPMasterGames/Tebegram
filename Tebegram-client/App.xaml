@@ -7,6 +7,14 @@
     <Application.Resources>
         <ResourceDictionary>
 
+            <!-- Единый шрифт приложения: Segoe UI Variable (Win11), Segoe UI (Win10) -->
+            <Style TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="Segoe UI Variable, Segoe UI" />
+            </Style>
+            <Style TargetType="Control">
+                <Setter Property="FontFamily" Value="Segoe UI Variable, Segoe UI" />
+            </Style>
+
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Resourses/ColorSystem.xaml" />
                 <ResourceDictionary Source="/Resourses/MessengerTheme_Base.xaml" />
