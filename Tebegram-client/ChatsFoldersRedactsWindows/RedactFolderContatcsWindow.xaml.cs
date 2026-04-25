@@ -1,28 +1,39 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 
 namespace Tebegrammmm.ChatsFoldersRedactsWindows
 {
-    /// <summary>
-    /// Логика взаимодействия для RedactFolderContatcsWindow.xaml
-    /// </summary>
     public partial class RedactFolderContatcsWindow : Window
     {
         private ObservableCollection<Contact> AllConatcs;
         private ObservableCollection<Contact> FolderContacts;
-
         private ChatFolder Folder;
+
         public RedactFolderContatcsWindow(ObservableCollection<ChatFolder> chatsFolder, ChatFolder folder)
         {
             InitializeComponent();
-
             Folder = folder;
             AllConatcs = chatsFolder[0].Contacts;
             FolderContacts = Folder.Contacts;
-
             LBMyContacts.ItemsSource = AllConatcs;
             LBFolderContacts.ItemsSource = FolderContacts;
+        }
+
+        private void Window_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == System.Windows.Input.MouseButton.Left)
+                this.DragMove();
+        }
+
+        private void MinimizeBtn_Click(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
+        }
+
+        private void CloseBtn_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
 
         private void LBFolderContacts_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -46,9 +57,7 @@ namespace Tebegrammmm.ChatsFoldersRedactsWindows
             for (int i = 0; i < FolderContacts.Count; i++)
             {
                 if (LBMyContacts.SelectedItem as Contact == FolderContacts[i])
-                {
                     return;
-                }
             }
             FolderContacts.Add(LBMyContacts.SelectedItem as Contact);
             LBMyContacts.SelectedIndex = -1;

@@ -22,7 +22,7 @@ namespace Tebegrammmm.Controls
             {
                 _Avatar = value;
                 if (PropertyChanged != null)
-                    PropertyChanged(this, new PropertyChangedEventArgs("Text"));
+                    PropertyChanged(this, new PropertyChangedEventArgs(nameof(Avatar)));
             }
         }
 

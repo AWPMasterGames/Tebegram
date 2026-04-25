@@ -15,6 +15,81 @@
     Closing="Window_Closing"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
+
+    <Window.Resources>
+
+        <!--  Тонкий скроллбар для всего окна  -->
+        <Style TargetType="ScrollBar">
+            <Setter Property="Width" Value="5" />
+            <Setter Property="MinWidth" Value="5" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Grid x:Name="Root" Width="5">
+                            <Track
+                                x:Name="PART_Track"
+                                IsDirectionReversed="True"
+                                Margin="0,4">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="ScrollBar.PageUpCommand" Focusable="False" Opacity="0" />
+                                </Track.DecreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb>
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Border
+                                                    Margin="1,0"
+                                                    Background="{StaticResource Light.BorderStrongBrush}"
+                                                    CornerRadius="3" />
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="ScrollBar.PageDownCommand" Focusable="False" Opacity="0" />
+                                </Track.IncreaseRepeatButton>
+                            </Track>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Orientation" Value="Horizontal">
+                                <Setter TargetName="Root" Property="Width" Value="Auto" />
+                                <Setter TargetName="Root" Property="Height" Value="5" />
+                                <Setter TargetName="PART_Track" Property="IsDirectionReversed" Value="False" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="Orientation" Value="Horizontal">
+                    <Setter Property="Height" Value="5" />
+                    <Setter Property="Width" Value="Auto" />
+                    <Setter Property="MinWidth" Value="0" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <ControlTemplate x:Key="RoundIconButtonTemplate" TargetType="Button">
+            <Border
+                x:Name="Bd"
+                Width="{TemplateBinding Width}"
+                Height="{TemplateBinding Height}"
+                Background="{TemplateBinding Background}"
+                CornerRadius="999">
+                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="Bd" Property="Opacity" Value="0.82" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter TargetName="Bd" Property="Opacity" Value="0.62" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+    </Window.Resources>
+
     <Grid Name="MainGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="80" />
@@ -123,7 +198,7 @@
                         Width="35"
                         Height="35"
                         BorderBrush="{StaticResource Light.BorderDefaultBrush}"
-                        BorderThickness="2"
+                        BorderThickness="0"
                         CornerRadius="20">
                         <Viewbox Width="18" Height="18">
                             <Path Data="{StaticResource IconAddUser}" Fill="{StaticResource Light.AccentTextBrush}" />
@@ -167,13 +242,13 @@
                             <TextBlock
                                 Grid.RowSpan="2"
                                 Grid.Column="1"
-                                Width="165"
                                 Height="50"
                                 Margin="10,0"
                                 FontSize="15"
                                 Foreground="{StaticResource Light.TextPrimaryBrush}"
                                 Text="{Binding Name}"
-                                TextWrapping="Wrap" />
+                                TextTrimming="CharacterEllipsis"
+                                TextWrapping="NoWrap" />
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
@@ -212,14 +287,6 @@
                             FontSize="15"
                             Foreground="{StaticResource Light.TextPrimaryBrush}"
                             Text="{Binding Name}" />
-                        <TextBlock
-                            Name="TBChat_Status"
-                            Grid.Row="1"
-                            Margin="10,0"
-                            FontSize="12"
-                            Foreground="{StaticResource Light.TextSecondaryBrush}"
-                            Text=""
-                            Visibility="Collapsed" />
                         <StackPanel
                             Grid.RowSpan="2"
                             Grid.Column="1"
@@ -273,7 +340,12 @@
                     x:Name="LBMessages"
                     Grid.Row="1"
                     BorderThickness="0"
-                    SelectionChanged="LBMessages_SelectionChangeMessage" d:ItemsSource="{d:SampleData ItemCount=5}">
+                    Padding="12,8"
+                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                    SelectionChanged="LBMessages_SelectionChangeMessage"
+                    VirtualizingPanel.ScrollUnit="Pixel"
+                    d:ItemsSource="{d:SampleData ItemCount=5}">
                     <ListBox.Background>
                         <StaticResource ResourceKey="ChatBackgroundLight" />
                     </ListBox.Background>
@@ -281,13 +353,18 @@
                         <Style TargetType="ListBoxItem">
                             <Setter Property="Background" Value="Transparent" />
                             <Setter Property="BorderThickness" Value="0" />
+                            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                            <Setter Property="Padding" Value="8,4" />
+                            <Setter Property="Padding" Value="0,3" />
                         </Style>
                     </ListBox.ItemContainerStyle>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <Border CornerRadius="16">
+                            <!--  Пузырь сообщения  -->
+                            <Border
+                                MaxWidth="400"
+                                HorizontalAlignment="Left"
+                                CornerRadius="4,14,14,14">
                                 <Border.Style>
                                     <Style TargetType="Border">
                                         <Setter Property="Background" Value="{StaticResource Light.MsgIncomingBrush}" />
@@ -301,34 +378,42 @@
                                         </Style.Triggers>
                                     </Style>
                                 </Border.Style>
-                                <Grid Width="250" Margin="10,10">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition />
-                                        <RowDefinition />
-                                        <RowDefinition />
-                                        <RowDefinition />
-                                    </Grid.RowDefinitions>
+                                <Border.Effect>
+                                    <DropShadowEffect
+                                        BlurRadius="6"
+                                        Opacity="0.08"
+                                        ShadowDepth="1"
+                                        Color="#000000" />
+                                </Border.Effect>
+
+                                <StackPanel Margin="12,8">
+                                    <!--  Имя отправителя  -->
                                     <TextBlock
-                                        Margin="5,0"
-                                        FontSize="13"
+                                        Margin="0,0,0,3"
+                                        FontSize="12"
+                                        FontWeight="SemiBold"
                                         Foreground="{StaticResource Light.AccentTextBrush}"
                                         Text="{Binding Sender}" />
-                                    <Image Grid.Row="1" Source="{Binding ServerAdress}" />
+                                    <!--  Вложение (файл/изображение)  -->
+                                    <Image
+                                        MaxHeight="200"
+                                        Margin="0,0,0,4"
+                                        Source="{Binding ServerAdress}"
+                                        Stretch="UniformToFill" />
+                                    <!--  Текст сообщения  -->
                                     <TextBlock
-                                        Grid.Row="2"
-                                        Margin="5,0"
-                                        FontSize="15"
+                                        FontSize="14"
                                         Foreground="{StaticResource Light.TextPrimaryBrush}"
                                         Text="{Binding Text}"
                                         TextWrapping="Wrap" />
+                                    <!--  Время  -->
                                     <TextBlock
-                                        Grid.Row="3"
+                                        Margin="0,5,0,0"
                                         HorizontalAlignment="Right"
-                                        VerticalAlignment="Bottom"
                                         FontSize="10"
                                         Foreground="{StaticResource Light.TextMutedBrush}"
                                         Text="{Binding Time}" />
-                                </Grid>
+                                </StackPanel>
                             </Border>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
@@ -339,37 +424,73 @@
                     Grid.Row="2"
                     Background="{StaticResource Light.BgSurfaceBrush}"
                     BorderBrush="{StaticResource Light.BorderSubtleBrush}"
-                    BorderThickness="0,1,0,0">
-                    <Grid x:Name="GridMessege">
+                    BorderThickness="0,1,0,0"
+                    Padding="10,8">
+                    <Grid x:Name="GridMessege" VerticalAlignment="Center">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition />
-                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
+
+                        <!--  Прикрепить файл  -->
                         <Button
-                            Width="40"
-                            Background="Transparent"
-                            BorderBrush="Transparent"
+                            Width="34"
+                            Height="34"
+                            Margin="0,0,8,0"
+                            Background="{StaticResource Light.BgElevatedBrush}"
                             Click="Button_Click_SelectFile"
-                            Content="📄"
-                            FontSize="20" />
-                        <ScrollViewer Grid.Column="1" Margin="10">
-                            <TextBox
-                                x:Name="TBMessage"
-                                Background="{StaticResource Light.BgInputBrush}"
-                                FontSize="15"
-                                Foreground="{StaticResource Light.TextPrimaryBrush}"
-                                KeyDown="TBMessage_KeyDown_SendMessage"
-                                TextWrapping="Wrap" />
-                        </ScrollViewer>
+                            Template="{StaticResource RoundIconButtonTemplate}"
+                            ToolTip="Прикрепить файл">
+                            <Viewbox Width="16" Height="16">
+                                <Path
+                                    Data="{StaticResource IconAttach}"
+                                    Fill="{StaticResource Light.TextSecondaryBrush}"
+                                    Stretch="Uniform" />
+                            </Viewbox>
+                        </Button>
+
+                        <!--  Поле ввода текста  -->
+                        <Border
+                            Grid.Column="1"
+                            Background="{StaticResource Light.BgInputBrush}"
+                            BorderBrush="{StaticResource Light.BorderDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="12"
+                            Padding="12,6">
+                            <ScrollViewer
+                                MaxHeight="72"
+                                VerticalAlignment="Center"
+                                VerticalScrollBarVisibility="Auto">
+                                <TextBox
+                                    x:Name="TBMessage"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    FontSize="14"
+                                    Foreground="{StaticResource Light.TextPrimaryBrush}"
+                                    KeyDown="TBMessage_KeyDown_SendMessage"
+                                    TextWrapping="Wrap" />
+                            </ScrollViewer>
+                        </Border>
+
+                        <!--  Отправить  -->
                         <Button
                             Grid.Column="2"
-                            Width="40"
-                            Margin="10"
-                            Background="Transparent"
+                            Width="34"
+                            Height="34"
+                            Margin="8,0,0,0"
+                            Background="{StaticResource Light.AccentPrimaryBrush}"
                             Click="Button_Click_SendMessage"
-                            Content="⌯⌲"
-                            Foreground="{StaticResource Light.AccentTextBrush}" />
+                            Template="{StaticResource RoundIconButtonTemplate}"
+                            ToolTip="Отправить">
+                            <Viewbox Width="15" Height="15">
+                                <Path
+                                    Data="{StaticResource IconSend}"
+                                    Fill="White"
+                                    Stretch="Uniform" />
+                            </Viewbox>
+                        </Button>
+
                     </Grid>
                 </Border>
 
