@@ -33,10 +33,11 @@
                 Height="50"
                 Background="Transparent"
                 BorderBrush="Transparent"
-                Click="Button_Click_Settings"
-                Content="☰"
-                FontSize="30"
-                Foreground="{StaticResource Light.TextSecondaryBrush}" />
+                Click="Button_Click_Settings">
+                <Viewbox Width="22" Height="22">
+                    <Path Data="{StaticResource IconSettings}" Fill="{StaticResource Light.TextSecondaryBrush}" />
+                </Viewbox>
+            </Button>
             <ListBox
                 x:Name="LBChatsLoders"
                 Grid.Row="1"
@@ -76,18 +77,13 @@
                 </ListBox.ItemTemplate>
             </ListBox>
             <Grid Grid.Row="2">
-                <StackPanel VerticalAlignment="Center">
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        FontSize="20"
-                        Foreground="{StaticResource Light.TextSecondaryBrush}"
-                        Text="⚒" />
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        FontSize="15"
-                        Foreground="{StaticResource Light.TextSecondaryBrush}"
-                        Text="Ред." />
-                </StackPanel>
+                <Viewbox
+                    Width="22"
+                    Height="22"
+                    VerticalAlignment="Center"
+                    IsHitTestVisible="False">
+                    <Path Data="{StaticResource IconInfo}" Fill="{StaticResource Light.TextSecondaryBrush}" />
+                </Viewbox>
                 <Button
                     Height="50"
                     Background="Transparent"
@@ -129,22 +125,9 @@
                         BorderBrush="{StaticResource Light.BorderDefaultBrush}"
                         BorderThickness="2"
                         CornerRadius="20">
-                        <Grid HorizontalAlignment="Center">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="auto" />
-                                <ColumnDefinition Width="auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock
-                                Margin="0,-2,0,0"
-                                FontSize="20"
-                                Foreground="{StaticResource Light.AccentTextBrush}"
-                                Text="⁺" />
-                            <TextBlock
-                                Margin="3,3,0,0"
-                                FontSize="17"
-                                Foreground="{StaticResource Light.AccentTextBrush}"
-                                Text="👤" />
-                        </Grid>
+                        <Viewbox Width="18" Height="18">
+                            <Path Data="{StaticResource IconAddUser}" Fill="{StaticResource Light.AccentTextBrush}" />
+                        </Viewbox>
                     </Border>
                 </Button>
             </StackPanel>
@@ -252,13 +235,9 @@
                                     BorderBrush="Transparent"
                                     BorderThickness="2"
                                     CornerRadius="20">
-                                    <TextBlock
-                                        Width="21"
-                                        Margin="0,-10,0,0"
-                                        HorizontalAlignment="Left"
-                                        FontSize="30"
-                                        Foreground="{StaticResource Light.AccentTextBrush}"
-                                        Text=" 🕻" />
+                                    <Viewbox Width="20" Height="20">
+                                        <Path Data="{StaticResource IconPhone}" Fill="{StaticResource Light.AccentTextBrush}" />
+                                    </Viewbox>
                                 </Border>
                             </Button>
                             <Button
@@ -271,22 +250,9 @@
                                     BorderBrush="Transparent"
                                     BorderThickness="2"
                                     CornerRadius="20">
-                                    <Grid HorizontalAlignment="Center">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="auto" />
-                                            <ColumnDefinition Width="auto" />
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock
-                                            Margin="-5,-2,0,0"
-                                            FontSize="10"
-                                            Foreground="{StaticResource Light.DangerBrush}"
-                                            Text="🗑" />
-                                        <TextBlock
-                                            Margin="3,3,0,0"
-                                            FontSize="17"
-                                            Foreground="{StaticResource Light.AccentTextBrush}"
-                                            Text="👤" />
-                                    </Grid>
+                                    <Viewbox Width="18" Height="18">
+                                        <Path Data="{StaticResource IconRemoveUser}" Fill="{StaticResource Light.DangerBrush}" />
+                                    </Viewbox>
                                 </Border>
                             </Button>
                             <Button
@@ -294,12 +260,9 @@
                                 Background="Transparent"
                                 BorderBrush="Transparent"
                                 Click="Button_Click_ContactRedact">
-                                <TextBlock
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    FontSize="30"
-                                    Foreground="{StaticResource Light.TextSecondaryBrush}"
-                                    Text="⋮" />
+                                <Viewbox Width="20" Height="20">
+                                    <Path Data="{StaticResource IconList}" Fill="{StaticResource Light.TextSecondaryBrush}" />
+                                </Viewbox>
                             </Button>
                         </StackPanel>
                     </Grid>
