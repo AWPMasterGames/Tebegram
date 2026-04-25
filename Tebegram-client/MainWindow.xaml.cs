@@ -63,9 +63,18 @@ namespace Tebegrammmm
             }
             try
             {
-                using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/login/{TBUserLogin.Text}-{PBUserPassord.Password}");
+                string loginEnc = Uri.EscapeDataString(TBUserLogin.Text);
+                string passEnc = Uri.EscapeDataString(PBUserPassord.Password);
+                using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/login/{loginEnc}-{passEnc}");
                 using HttpResponseMessage response = await httpClient.SendAsync(request);
                 string content = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode || string.IsNullOrEmpty(content))
+                {
+                    Log.Save($"[Authorization] Bad response: status={(int)response.StatusCode} len={content.Length}");
+                    MessageBox.Show($"Сервер вернул ошибку ({(int)response.StatusCode}). Проверьте логин/пароль и соединение.");
+                    return;
+                }
 
                 if (content.StartsWith("Пользователь с таким логином не существует") ||
                     content.StartsWith("Неверный пароль") ||
@@ -77,7 +86,9 @@ namespace Tebegrammmm
 
                 try
                 {
+                    Log.Save($"[Authorization] Server response received, length={content.Length}");
                     string[] userData = content.Split('▫');
+                    Log.Save($"[Authorization] Parsed userData parts: {userData.Length}");
                     User user = new User(int.Parse(userData[0]), userData[1],
                         PBUserPassord.Password,
                         userData[2],
@@ -93,6 +104,7 @@ namespace Tebegrammmm
                         user.ChatsFolders[0].AddContact(new Contact(int.Parse(ContactData[0]), ContactData[1], ContactData[2]));
                     }
                     UserData.User = user;
+                    Log.Save($"[Authorization] User object created, opening MessengerWindow");
                     MessengerWindow mw = new MessengerWindow();
                     this.Hide();
                     mw.Show();
@@ -106,6 +118,12 @@ namespace Tebegrammmm
                 catch (System.Text.Json.JsonException)
                 {
                     MessageBox.Show("Ошибка обработки данных сервера");
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    Log.Save($"[Authorization] Exception while handling server response: {ex.GetType().Name}: {ex.Message}\n{ex.StackTrace}");
+                    MessageBox.Show($"Ошибка при входе: {ex.Message}\nПодробности в CrashLogs.");
                     return;
                 }
             }
@@ -161,7 +179,7 @@ namespace Tebegrammmm
                 string password = PBUserPassword.Password;
                 string name = TBUserName.Text.Trim();
 
-                string url = $"{ServerData.ServerAdress}/register/{username}-{password}-{username}-{name}";
+                string url = $"{ServerData.ServerAdress}/register/{Uri.EscapeDataString(username)}-{Uri.EscapeDataString(password)}-{Uri.EscapeDataString(username)}-{Uri.EscapeDataString(name)}";
 
                 using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, url);
                 using HttpResponseMessage response = await httpClient.SendAsync(request);

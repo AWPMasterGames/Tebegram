@@ -27,7 +27,10 @@ namespace Tebegrammmm
     /// </summary>
     public partial class MessengerWindow : Window
     {
-        static HttpClient httpClient = new HttpClient();
+        static HttpClient httpClient = new HttpClient(new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback = (m, c, ch, e) => true
+        });
         private static object thisLock = new();
         Contact Contact { get; set; }
         Thread Thread { get; set; }
@@ -50,18 +53,15 @@ namespace Tebegrammmm
             // Загружаем историю сообщений с сервера
             GetMessages();
 
-            Thread = new Thread(new ThreadStart(GetNewMessages));
-            TBMessage.IsEnabled = false;
+            Thread = new Thread(new ThreadStart(GetNewMessages)) { IsBackground = true };
             Thread.Start();
-            Thread.Join();
 
             TBMessage.IsEnabled = true;
             //GetCallToken();
 
             Log.Save($"[MessengerWindow] Инициализация завершена");
-            CaltokenThread = new Thread(new ThreadStart(GetCallToken));
+            CaltokenThread = new Thread(new ThreadStart(GetCallToken)) { IsBackground = true };
             CaltokenThread.Start();
-            CaltokenThread.Join();
 
             if (File.Exists("userDevice.data"))
             {

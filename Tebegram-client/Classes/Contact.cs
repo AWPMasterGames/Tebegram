@@ -6,13 +6,17 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Tebegrammmm.Classes;
 using Tebegrammmm.Data;
 
 namespace Tebegrammmm
 {
     public class Contact
     {
-        static HttpClient httpClient = new HttpClient();
+        static HttpClient httpClient = new HttpClient(new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback = (m, c, ch, e) => true
+        });
 
         private int _UserId;
         private string _Name = string.Empty;
@@ -57,10 +61,17 @@ namespace Tebegrammmm
 
         private async void GetUserAvatar()
         {
-            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/avatarsFileName/{UserId}");
-            using HttpResponseMessage response = await httpClient.SendAsync(request);
-            string content = await response.Content.ReadAsStringAsync();
-            Avatar = $"{ServerData.ServerAdress}/avatars/{content}";
+            try
+            {
+                using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/avatarsFileName/{UserId}");
+                using HttpResponseMessage response = await httpClient.SendAsync(request);
+                string content = await response.Content.ReadAsStringAsync();
+                Avatar = $"{ServerData.ServerAdress}/avatars/{content}";
+            }
+            catch (Exception ex)
+            {
+                Log.Save($"[Contact.GetUserAvatar] {ex.GetType().Name}: {ex.Message}");
+            }
         }
     }
 }
