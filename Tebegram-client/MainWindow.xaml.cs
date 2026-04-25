@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -63,6 +64,7 @@ namespace Tebegrammmm
                 MessageBox.Show("Заполните все поля");
                 return;
             }
+            SetLoginLoading(true);
             try
             {
                 string loginEnc = Uri.EscapeDataString(TBUserLogin.Text);
@@ -120,20 +122,21 @@ namespace Tebegrammmm
                 catch (System.Text.Json.JsonException)
                 {
                     MessageBox.Show("Ошибка обработки данных сервера");
-                    return;
                 }
                 catch (Exception ex)
                 {
                     Log.Save($"[Authorization] Exception while handling server response: {ex.GetType().Name}: {ex.Message}\n{ex.StackTrace}");
                     MessageBox.Show($"Ошибка при входе: {ex.Message}\nПодробности в CrashLogs.");
-                    return;
                 }
             }
             catch (HttpRequestException ex)
             {
                 Log.Save($"[Authorization] Error: {ex.Message}");
                 MessageBox.Show("Ошибка при попытке авторизации\nПодробнее от ошибке можно узнать в краш логах");
-                return;
+            }
+            finally
+            {
+                SetLoginLoading(false);
             }
         }
 
@@ -175,6 +178,7 @@ namespace Tebegrammmm
                 return;
             }
 
+            SetRegLoading(true);
             try
             {
                 string username = TBUserNameLogin.Text.Trim();
@@ -189,29 +193,47 @@ namespace Tebegrammmm
 
                 if (response.IsSuccessStatusCode)
                 {
-                    MessageBox.Show("Регистрация успешна! Теперь можно войти.");
                     Log.Save($"[Registration] User registered successfully: {username}");
 
-                    // Переключаемся на экран логина
+                    // Останавливаем состояние загрузки перед анимацией баннера
+                    SetRegLoading(false);
+
+                    // Плавно скрываем форму
+                    RegFormPanel.BeginAnimation(UIElement.OpacityProperty,
+                        new DoubleAnimation(1, 0, new Duration(TimeSpan.FromMilliseconds(200))));
+
+                    // Показываем баннер успеха
+                    RegSuccessBanner.Visibility = Visibility.Visible;
+                    var bannerFadeIn = new DoubleAnimation(0, 1, new Duration(TimeSpan.FromMilliseconds(350)))
+                    {
+                        EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+                    };
+                    RegSuccessBanner.BeginAnimation(UIElement.OpacityProperty, bannerFadeIn);
+
+                    // Ждём, затем переходим на экран входа
+                    await Task.Delay(1800);
+
+                    RegSuccessBanner.Visibility = Visibility.Collapsed;
+                    RegSuccessBanner.BeginAnimation(UIElement.OpacityProperty, null);
+                    RegFormPanel.BeginAnimation(UIElement.OpacityProperty, null);
+                    RegFormPanel.Opacity = 0;
+
                     LoginGrid.Visibility = Visibility.Visible;
                     RegistrationGrid.Visibility = Visibility.Collapsed;
                     TBUserLogin.Text = username;
+                    PBUserPassord.Password = "";
+                    TBLoginPassShow.Text = "";
                     TBUserLogin.Focus();
+                    AnimateFormEntrance(LoginFormPanel);
                 }
                 else
                 {
                     if (content.Contains("already exists") || content.Contains("уже существует"))
-                    {
                         MessageBox.Show("Пользователь с таким логином уже существует");
-                    }
                     else if (content.Contains("должны быть заполнены"))
-                    {
                         MessageBox.Show("Все поля должны быть заполнены");
-                    }
                     else
-                    {
                         MessageBox.Show($"Ошибка регистрации: {content}");
-                    }
                     Log.Save($"[Registration] Registration error: {content}");
                 }
             }
@@ -224,6 +246,10 @@ namespace Tebegrammmm
             {
                 Log.Save($"[Registration] Unexpected error: {ex.Message}");
                 MessageBox.Show("Произошла неожиданная ошибка\nСмотрите краш-логи");
+            }
+            finally
+            {
+                SetRegLoading(false);
             }
         }
 
@@ -302,8 +328,15 @@ namespace Tebegrammmm
         {
             LoginGrid.Visibility = Visibility.Visible;
             RegistrationGrid.Visibility = Visibility.Collapsed;
+            PBUserPassord.Password = "";
+            TBLoginPassShow.Text = "";
             TBUserLogin.Focus();
             AnimateFormEntrance(LoginFormPanel);
+        }
+
+        private void MinimizeBtn_Click(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
@@ -316,6 +349,66 @@ namespace Tebegrammmm
             if (e.ChangedButton == MouseButton.Left)
             {
                 this.DragMove();
+            }
+        }
+
+        // ── Состояние загрузки — логин ───────────────────────────────────────
+        private void SetLoginLoading(bool loading)
+        {
+            LoginButton.Content   = loading ? "Входим…" : "Войти";
+            LoginButton.IsEnabled = !loading;
+            RegisterButton.IsEnabled = !loading;
+            TBUserLogin.IsEnabled     = !loading;
+            PBUserPassord.IsEnabled   = !loading;
+            TBLoginPassShow.IsEnabled = !loading;
+            LoginEyeBtn.IsEnabled     = !loading;
+
+            if (loading)
+            {
+                var pulse = new DoubleAnimation(1.0, 0.5, new Duration(TimeSpan.FromMilliseconds(650)))
+                {
+                    AutoReverse = true,
+                    RepeatBehavior = RepeatBehavior.Forever,
+                    EasingFunction = new SineEase { EasingMode = EasingMode.EaseInOut }
+                };
+                LoginButton.BeginAnimation(UIElement.OpacityProperty, pulse);
+            }
+            else
+            {
+                LoginButton.BeginAnimation(UIElement.OpacityProperty, null);
+                LoginButton.Opacity = 1.0;
+            }
+        }
+
+        // ── Состояние загрузки — регистрация ─────────────────────────────────
+        private void SetRegLoading(bool loading)
+        {
+            DoRegisterButton.Content   = loading ? "Создаём аккаунт…" : "Зарегистрироваться";
+            DoRegisterButton.IsEnabled = !loading;
+            BackButton.IsEnabled           = !loading;
+            TBUserName.IsEnabled           = !loading;
+            TBUserNameLogin.IsEnabled      = !loading;
+            PBUserPassword.IsEnabled       = !loading;
+            TBRegPassShow.IsEnabled        = !loading;
+            RegEyeBtn.IsEnabled            = !loading;
+            PBUserPasswordConfirm.IsEnabled   = !loading;
+            TBRegConfirmPassShow.IsEnabled    = !loading;
+            RegConfirmEyeBtn.IsEnabled        = !loading;
+
+            if (loading)
+            {
+                var pulse = new DoubleAnimation(1.0, 0.5, new Duration(TimeSpan.FromMilliseconds(650)))
+                {
+                    AutoReverse = true,
+                    RepeatBehavior = RepeatBehavior.Forever,
+                    EasingFunction = new SineEase { EasingMode = EasingMode.EaseInOut }
+                };
+                DoRegisterButton.BeginAnimation(UIElement.OpacityProperty, pulse);
+            }
+            else
+            {
+                DoRegisterButton.BeginAnimation(UIElement.OpacityProperty, null);
+                DoRegisterButton.Opacity = 1.0;
             }
         }
 

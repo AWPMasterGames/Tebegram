@@ -25,6 +25,8 @@ namespace Tebegrammmm
     }
     public partial class VoiceRoom : Window
     {
+        private static VoiceRoom _instance;
+
         static HttpClient httpClient = new HttpClient(new HttpClientHandler
         {
             ServerCertificateCustomValidationCallback = (m, c, ch, e) => true
@@ -39,6 +41,18 @@ namespace Tebegrammmm
         public VoiceRoom(Mode mode, Contact contact, string token)
         {
             InitializeComponent();
+
+            // Если окно уже открыто — вывести его на передний план
+            if (_instance != null)
+            {
+                _instance.Activate();
+                if (_instance.WindowState == WindowState.Minimized)
+                    _instance.WindowState = WindowState.Normal;
+                this.Loaded += (_, __) => this.Close();
+                return;
+            }
+
+            _instance = this;
             Contact = contact;
             Token = token;
             this.DataContext = contact;
@@ -47,11 +61,11 @@ namespace Tebegrammmm
             {
                 case Mode.AcceptCall:
                     DefoultVoiceRoom.Visibility = Visibility.Visible;
-                    ActiveVoiceRoom.Visibility = Visibility.Hidden;
+                    ActiveVoiceRoom.Visibility = Visibility.Collapsed;
                     break;
                 case Mode.ActiveCall:
                     Init();
-                    DefoultVoiceRoom.Visibility = Visibility.Hidden;
+                    DefoultVoiceRoom.Visibility = Visibility.Collapsed;
                     ActiveVoiceRoom.Visibility = Visibility.Visible;
                     break;
             }
@@ -220,7 +234,7 @@ namespace Tebegrammmm
             var fadeOutRoom = new DoubleAnimation(1, 0, exitDuration);
             fadeOutRoom.Completed += (s, e) =>
             {
-                DefoultVoiceRoom.Visibility = Visibility.Hidden;
+                DefoultVoiceRoom.Visibility = Visibility.Collapsed;
                 DefoultVoiceRoom.Opacity    = 1; // сброс на случай повторного показа
 
                 // Сброс панельного трансформа (используется в AnimateClose)
@@ -269,6 +283,28 @@ namespace Tebegrammmm
             var fadeOut = new DoubleAnimation(1, 0, duration);
             fadeOut.Completed += (s, e) => this.Close();
             ActiveVoiceRoom.BeginAnimation(OpacityProperty, fadeOut);
+        }
+
+        protected override void OnClosed(System.EventArgs e)
+        {
+            if (_instance == this) _instance = null;
+            base.OnClosed(e);
+        }
+
+        private void Window_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == System.Windows.Input.MouseButton.Left)
+                this.DragMove();
+        }
+
+        private void MinimizeBtn_Click(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
+        }
+
+        private void CloseBtn_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
