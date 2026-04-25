@@ -1,4 +1,4 @@
-﻿<Window
+<Window
     x:Class="Tebegrammmm.MessengerWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -11,6 +11,7 @@
     Height="550"
     MinWidth="600"
     MinHeight="350"
+    Background="{StaticResource Light.BgDeepBrush}"
     Closing="Window_Closing"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
@@ -20,8 +21,9 @@
             <ColumnDefinition Width="250" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
+
         <!--  Левая панель  -->
-        <Grid Background="#303c4c">
+        <Grid Background="{StaticResource Light.BgSurfaceBrush}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="50" />
                 <RowDefinition Height="auto" />
@@ -34,29 +36,42 @@
                 Click="Button_Click_Settings"
                 Content="☰"
                 FontSize="30"
-                Foreground="Gray" />
+                Foreground="{StaticResource Light.TextSecondaryBrush}" />
             <ListBox
                 x:Name="LBChatsLoders"
                 Grid.Row="1"
                 Background="Transparent"
                 BorderBrush="Transparent"
                 SelectionChanged="LBChatsLoders_SelectionChangeFolder">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="BorderThickness" Value="0" />
+                        <Setter Property="Padding" Value="4" />
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{StaticResource Light.BgElevatedBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="{StaticResource Light.AccentMutedBrush}" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListBox.ItemContainerStyle>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Grid>
-                            <StackPanel VerticalAlignment="Center">
-                                <TextBlock
-                                    HorizontalAlignment="Center"
-                                    FontSize="25"
-                                    Foreground="Gray"
-                                    Text="{Binding Icon}" />
-                                <TextBlock
-                                    HorizontalAlignment="Center"
-                                    FontSize="15"
-                                    Foreground="Gray"
-                                    Text="{Binding FolderName}" />
-                            </StackPanel>
-                        </Grid>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                FontSize="25"
+                                Foreground="{StaticResource Light.TextSecondaryBrush}"
+                                Text="{Binding Icon}" />
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                FontSize="15"
+                                Foreground="{StaticResource Light.TextSecondaryBrush}"
+                                Text="{Binding FolderName}" />
+                        </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
@@ -65,12 +80,12 @@
                     <TextBlock
                         HorizontalAlignment="Center"
                         FontSize="20"
-                        Foreground="Gray"
+                        Foreground="{StaticResource Light.TextSecondaryBrush}"
                         Text="⚒" />
                     <TextBlock
                         HorizontalAlignment="Center"
                         FontSize="15"
-                        Foreground="Gray"
+                        Foreground="{StaticResource Light.TextSecondaryBrush}"
                         Text="Ред." />
                 </StackPanel>
                 <Button
@@ -82,8 +97,9 @@
                     FontSize="15" />
             </Grid>
         </Grid>
-        <!--  Чаты  -->
-        <Grid Grid.Column="1">
+
+        <!--  Список чатов  -->
+        <Grid Grid.Column="1" Background="{StaticResource Light.BgPrimaryBrush}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="50" />
                 <RowDefinition />
@@ -97,7 +113,9 @@
                     Width="165"
                     Height="35"
                     Margin="0,0,25,0"
+                    Background="{StaticResource Light.BgInputBrush}"
                     FontSize="20"
+                    Foreground="{StaticResource Light.TextPrimaryBrush}"
                     Template="{StaticResource TextBoxBaseControlTemplate}"
                     TextChanged="TextBox_TextChanged"
                     TextWrapping="Wrap" />
@@ -108,7 +126,7 @@
                     <Border
                         Width="35"
                         Height="35"
-                        BorderBrush="Gray"
+                        BorderBrush="{StaticResource Light.BorderDefaultBrush}"
                         BorderThickness="2"
                         CornerRadius="20">
                         <Grid HorizontalAlignment="Center">
@@ -119,22 +137,38 @@
                             <TextBlock
                                 Margin="0,-2,0,0"
                                 FontSize="20"
-                                Foreground="RoyalBlue"
+                                Foreground="{StaticResource Light.AccentTextBrush}"
                                 Text="⁺" />
                             <TextBlock
                                 Margin="3,3,0,0"
                                 FontSize="17"
-                                Foreground="RoyalBlue"
+                                Foreground="{StaticResource Light.AccentTextBrush}"
                                 Text="👤" />
-
                         </Grid>
                     </Border>
                 </Button>
             </StackPanel>
             <ListBox
                 x:Name="LBChats"
-                Grid.Row="2"
-                SelectionChanged="LBChats_SelectionChangedChat">
+                Grid.Row="1"
+                Background="Transparent"
+                BorderBrush="Transparent"
+                SelectionChanged="LBChats_SelectionChangedChat" d:ItemsSource="{d:SampleData ItemCount=5}">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="BorderThickness" Value="0" />
+                        <Setter Property="Padding" Value="6,4" />
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{StaticResource Light.BgElevatedBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="{StaticResource Light.AccentMutedBrush}" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListBox.ItemContainerStyle>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid Height="50">
@@ -154,6 +188,7 @@
                                 Height="50"
                                 Margin="10,0"
                                 FontSize="15"
+                                Foreground="{StaticResource Light.TextPrimaryBrush}"
                                 Text="{Binding Name}"
                                 TextWrapping="Wrap" />
                         </Grid>
@@ -161,133 +196,144 @@
                 </ListBox.ItemTemplate>
             </ListBox>
         </Grid>
-        <!--  Чат  -->
+
+        <!--  Область чата  -->
         <Border
             Grid.Column="2"
-            BorderBrush="Black"
-            BorderThickness="0.2">
-
+            BorderBrush="{StaticResource Light.BorderSubtleBrush}"
+            BorderThickness="1,0,0,0">
             <Grid x:Name="GridChat">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50" />
                     <RowDefinition />
                     <RowDefinition Height="65" />
                 </Grid.RowDefinitions>
-                <Grid Name="GridContactPanel" Margin="10,5,0,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition Width="auto" />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-                    <TextBlock
-                        Name="TBChat_Name"
-                        Margin="10,0"
-                        FontSize="15"
-                        Text="{Binding Name}" />
-                    <TextBlock
-                        Name="TBChat_Status"
-                        Grid.Row="1"
-                        Margin="10,0"
-                        FontSize="12"
-                        Foreground="Gray"
-                        Text=""
-                        Visibility="Collapsed" />
 
-                    <StackPanel
-                        Grid.RowSpan="2"
-                        Grid.Column="1"
-                        Margin="5,-2,5,0"
-                        Orientation="Horizontal">
-                        <Button
-                            Background="Transparent"
-                            BorderBrush="Transparent"
-                            Click="Button_Click_CallContact">
-                            <Border
-                                Width="35"
-                                Height="35"
+                <!--  Шапка чата  -->
+                <Border
+                    Background="{StaticResource Light.BgSurfaceBrush}"
+                    BorderBrush="{StaticResource Light.BorderSubtleBrush}"
+                    BorderThickness="0,0,0,1">
+                    <Grid Name="GridContactPanel" Margin="10,5,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <TextBlock
+                            Name="TBChat_Name"
+                            Margin="10,0"
+                            FontSize="15"
+                            Foreground="{StaticResource Light.TextPrimaryBrush}"
+                            Text="{Binding Name}" />
+                        <TextBlock
+                            Name="TBChat_Status"
+                            Grid.Row="1"
+                            Margin="10,0"
+                            FontSize="12"
+                            Foreground="{StaticResource Light.TextSecondaryBrush}"
+                            Text=""
+                            Visibility="Collapsed" />
+                        <StackPanel
+                            Grid.RowSpan="2"
+                            Grid.Column="1"
+                            Margin="5,-2,5,0"
+                            Orientation="Horizontal">
+                            <Button
+                                Background="Transparent"
                                 BorderBrush="Transparent"
-                                BorderThickness="2"
-                                CornerRadius="20">
-                                <Grid HorizontalAlignment="Center">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="auto" />
-                                        <ColumnDefinition Width="auto" />
-                                    </Grid.ColumnDefinitions>
+                                Click="Button_Click_CallContact">
+                                <Border
+                                    Width="35"
+                                    Height="35"
+                                    BorderBrush="Transparent"
+                                    BorderThickness="2"
+                                    CornerRadius="20">
                                     <TextBlock
                                         Width="21"
                                         Margin="0,-10,0,0"
                                         HorizontalAlignment="Left"
                                         FontSize="30"
-                                        Foreground="RoyalBlue"
+                                        Foreground="{StaticResource Light.AccentTextBrush}"
                                         Text=" 🕻" />
-
-                                </Grid>
-                            </Border>
-                        </Button>
-                        <Button
-                            Background="Transparent"
-                            BorderBrush="Transparent"
-                            Click="Button_Click_RemoveContact">
-                            <Border
-                                Width="35"
-                                Height="35"
+                                </Border>
+                            </Button>
+                            <Button
+                                Background="Transparent"
                                 BorderBrush="Transparent"
-                                BorderThickness="2"
-                                CornerRadius="20">
-                                <Grid HorizontalAlignment="Center">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="auto" />
-                                        <ColumnDefinition Width="auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock
-                                        Margin="-5,-2,0,0"
-                                        FontSize="10"
-                                        Foreground="red"
-                                        Text="🗑" />
-                                    <TextBlock
-                                        Margin="3,3,0,0"
-                                        FontSize="17"
-                                        Foreground="RoyalBlue"
-                                        Text="👤" />
+                                Click="Button_Click_RemoveContact">
+                                <Border
+                                    Width="35"
+                                    Height="35"
+                                    BorderBrush="Transparent"
+                                    BorderThickness="2"
+                                    CornerRadius="20">
+                                    <Grid HorizontalAlignment="Center">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="auto" />
+                                            <ColumnDefinition Width="auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock
+                                            Margin="-5,-2,0,0"
+                                            FontSize="10"
+                                            Foreground="{StaticResource Light.DangerBrush}"
+                                            Text="🗑" />
+                                        <TextBlock
+                                            Margin="3,3,0,0"
+                                            FontSize="17"
+                                            Foreground="{StaticResource Light.AccentTextBrush}"
+                                            Text="👤" />
+                                    </Grid>
+                                </Border>
+                            </Button>
+                            <Button
+                                Width="40"
+                                Background="Transparent"
+                                BorderBrush="Transparent"
+                                Click="Button_Click_ContactRedact">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="30"
+                                    Foreground="{StaticResource Light.TextSecondaryBrush}"
+                                    Text="⋮" />
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </Border>
 
-                                </Grid>
-                            </Border>
-                        </Button>
-                        <Button
-                            Width="40"
-                            Background="Transparent"
-                            BorderBrush="Transparent"
-                            Click="Button_Click_ContactRedact">
-                            <TextBlock
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                FontSize="30"
-                                Text="⋮" />
-                        </Button>
-                    </StackPanel>
-                </Grid>
+                <!--  Сообщения  -->
                 <ListBox
                     x:Name="LBMessages"
                     Grid.Row="1"
-                    SelectionChanged="LBMessages_SelectionChangeMessage">
+                    BorderThickness="0"
+                    SelectionChanged="LBMessages_SelectionChangeMessage" d:ItemsSource="{d:SampleData ItemCount=5}">
                     <ListBox.Background>
-                        <StaticResource ResourceKey="ChatBackground" />
+                        <StaticResource ResourceKey="ChatBackgroundLight" />
                     </ListBox.Background>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="BorderThickness" Value="0" />
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            <Setter Property="Padding" Value="8,4" />
+                        </Style>
+                    </ListBox.ItemContainerStyle>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <Border CornerRadius="25">
+                            <Border CornerRadius="16">
                                 <Border.Style>
                                     <Style TargetType="Border">
-                                        <Setter Property="Background" Value="White" />
+                                        <Setter Property="Background" Value="{StaticResource Light.MsgIncomingBrush}" />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding Status}" Value="Pending">
-                                                <Setter Property="Background" Value="LightGray" />
+                                                <Setter Property="Background" Value="{StaticResource Light.MsgPendingBrush}" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding Status}" Value="Failed">
-                                                <Setter Property="Background" Value="LightCoral" />
+                                                <Setter Property="Background" Value="{StaticResource Light.MsgFailedBrush}" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -301,13 +347,15 @@
                                     </Grid.RowDefinitions>
                                     <TextBlock
                                         Margin="5,0"
-                                        Foreground="#FF4200FF"
+                                        FontSize="13"
+                                        Foreground="{StaticResource Light.AccentTextBrush}"
                                         Text="{Binding Sender}" />
                                     <Image Grid.Row="1" Source="{Binding ServerAdress}" />
                                     <TextBlock
                                         Grid.Row="2"
                                         Margin="5,0"
                                         FontSize="15"
+                                        Foreground="{StaticResource Light.TextPrimaryBrush}"
                                         Text="{Binding Text}"
                                         TextWrapping="Wrap" />
                                     <TextBlock
@@ -315,42 +363,53 @@
                                         HorizontalAlignment="Right"
                                         VerticalAlignment="Bottom"
                                         FontSize="10"
-                                        Foreground="#FF7D7D7D"
+                                        Foreground="{StaticResource Light.TextMutedBrush}"
                                         Text="{Binding Time}" />
                                 </Grid>
                             </Border>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
-
                 </ListBox>
-                <Grid x:Name="GridMessege" Grid.Row="2">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto" />
-                        <ColumnDefinition />
-                        <ColumnDefinition Width="auto" />
-                    </Grid.ColumnDefinitions>
-                    <Button
-                        Width="40"
-                        Background="Transparent"
-                        BorderBrush="Transparent"
-                        Click="Button_Click_SelectFile"
-                        Content="📄"
-                        FontSize="20" />
-                    <ScrollViewer Grid.Column="1" Margin="10">
-                        <TextBox
-                            x:Name="TBMessage"
-                            FontSize="15"
-                            KeyDown="TBMessage_KeyDown_SendMessage"
-                            TextWrapping="Wrap" />
-                    </ScrollViewer>
-                    <Button
-                        Grid.Column="2"
-                        Width="40"
-                        Margin="10"
-                        Background="Transparent"
-                        Click="Button_Click_SendMessage"
-                        Content="⌯⌲" />
-                </Grid>
+
+                <!--  Поле ввода  -->
+                <Border
+                    Grid.Row="2"
+                    Background="{StaticResource Light.BgSurfaceBrush}"
+                    BorderBrush="{StaticResource Light.BorderSubtleBrush}"
+                    BorderThickness="0,1,0,0">
+                    <Grid x:Name="GridMessege">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+                        <Button
+                            Width="40"
+                            Background="Transparent"
+                            BorderBrush="Transparent"
+                            Click="Button_Click_SelectFile"
+                            Content="📄"
+                            FontSize="20" />
+                        <ScrollViewer Grid.Column="1" Margin="10">
+                            <TextBox
+                                x:Name="TBMessage"
+                                Background="{StaticResource Light.BgInputBrush}"
+                                FontSize="15"
+                                Foreground="{StaticResource Light.TextPrimaryBrush}"
+                                KeyDown="TBMessage_KeyDown_SendMessage"
+                                TextWrapping="Wrap" />
+                        </ScrollViewer>
+                        <Button
+                            Grid.Column="2"
+                            Width="40"
+                            Margin="10"
+                            Background="Transparent"
+                            Click="Button_Click_SendMessage"
+                            Content="⌯⌲"
+                            Foreground="{StaticResource Light.AccentTextBrush}" />
+                    </Grid>
+                </Border>
+
             </Grid>
         </Border>
     </Grid>

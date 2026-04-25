@@ -3,7 +3,7 @@
         <Border
             x:Name="Bd"
             Background="{TemplateBinding Background}"
-            BorderBrush="Black"
+            BorderBrush="{StaticResource Light.BorderDefaultBrush}"
             BorderThickness="{TemplateBinding BorderThickness}"
             CornerRadius="10">
             <ScrollViewer x:Name="PART_ContentHost" />
