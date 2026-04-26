@@ -5,6 +5,8 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWPF>true</UseWPF>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <TieredCompilation>true</TieredCompilation>
   </PropertyGroup>
   <ItemGroup>
     <Page Remove="Resourses\Icons.xaml" />
@@ -13,7 +15,6 @@
     <Resource Include="Resourses\Icons.xaml" />
   </ItemGroup>
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="NAudio" Version="2.3.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
