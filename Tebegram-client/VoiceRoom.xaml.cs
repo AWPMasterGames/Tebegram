@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Shapes;
 using System.Windows.Threading;
 using System.Xml.Linq;
 using Tebegrammmm.Classes;
@@ -339,6 +340,38 @@ namespace Tebegrammmm
         private void Button_Click_OffOnMicrofon(object sender, RoutedEventArgs e)
         {
             IsMicrophoneOn = !IsMicrophoneOn;
+            AnimateMicToggle(muting: !IsMicrophoneOn);
+        }
+
+        private void AnimateMicToggle(bool muting)
+        {
+            const double SlashLength = 26.0;
+            var duration = new Duration(TimeSpan.FromMilliseconds(220));
+            var ease = new CubicEase { EasingMode = EasingMode.EaseOut };
+
+            // Черта: рисуем при мьюте (offset 26→0), стираем при разблокировке (0→26)
+            var fromOffset = muting ? SlashLength : 0.0;
+            var toOffset   = muting ? 0.0 : SlashLength;
+
+            MicSlashLine.BeginAnimation(Shape.StrokeDashOffsetProperty,
+                new DoubleAnimation(fromOffset, toOffset, duration) { EasingFunction = ease });
+            MicAvatarSlashLine.BeginAnimation(Shape.StrokeDashOffsetProperty,
+                new DoubleAnimation(fromOffset, toOffset, duration) { EasingFunction = ease });
+
+            // Фон кнопки и бейджа: серый ↔ мягко-красный
+            var mutedBg  = (Brush)FindResource("Light.DangerMutedBrush");
+            var normalBg = (Brush)FindResource("Light.BgElevatedBrush");
+            BtnMic.Background          = muting ? mutedBg : normalBg;
+            MicButtonBorder.Background = muting ? mutedBg : normalBg;
+
+            // Цвет иконки и черты: обычный ↔ красный
+            var iconColor = muting
+                ? (Brush)FindResource("Light.DangerBrush")
+                : (Brush)FindResource("Light.TextPrimaryBrush");
+            MicIconPath.Fill          = iconColor;
+            MicAvatarPath.Fill        = iconColor;
+            MicSlashLine.Stroke       = iconColor;
+            MicAvatarSlashLine.Stroke = iconColor;
         }
     }
 }
