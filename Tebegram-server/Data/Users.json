@@ -1,0 +1,159 @@
+[
+  {
+    "Id": 1,
+    "Login": "aa",
+    "Password": "123",
+    "Name": "Вася бамбук",
+    "Username": "vasya",
+    "Avatart": "1221735141815357460.webp",
+    "ChatsFolders": [
+      {
+        "Name": "Все чаты",
+        "Contacts": [
+          {
+            "Id": 3,
+            "Username": "masya",
+            "Name": "Max",
+            "Messages": []
+          },
+          {
+            "Id": 5,
+            "Username": "Respect2077",
+            "Name": "СвагаБро",
+            "Messages": []
+          },
+          {
+            "Id": 2,
+            "Username": "ybeka",
+            "Name": "убека",
+            "Messages": []
+          }
+        ],
+        "Icon": "\uD83D\uDCAC",
+        "CanDelete": false
+      }
+    ]
+  },
+  {
+    "Id": 2,
+    "Login": "aa1",
+    "Password": "123",
+    "Name": "убека",
+    "Username": "ybeka",
+    "Avatart": "1091121193572118620.webp",
+    "ChatsFolders": [
+      {
+        "Name": "Все чаты",
+        "Contacts": [
+          {
+            "Id": 1,
+            "Username": "vasya",
+            "Name": "Вася бамбук",
+            "Messages": []
+          },
+          {
+            "Id": 3,
+            "Username": "masya",
+            "Name": "Masya",
+            "Messages": []
+          }
+        ],
+        "Icon": "\uD83D\uDCAC",
+        "CanDelete": false
+      }
+    ]
+  },
+  {
+    "Id": 3,
+    "Login": "masya",
+    "Password": "123",
+    "Name": "Мася",
+    "Username": "masya",
+    "Avatart": "1429941917327687800.png",
+    "ChatsFolders": [
+      {
+        "Name": "Все чаты",
+        "Contacts": [
+          {
+            "Id": 2,
+            "Username": "ybeka",
+            "Name": "Убебка",
+            "Messages": []
+          },
+          {
+            "Id": 1,
+            "Username": "vasya",
+            "Name": "ad",
+            "Messages": []
+          },
+          {
+            "Id": 5,
+            "Username": "Respect2077",
+            "Name": "СвагаБро",
+            "Messages": []
+          }
+        ],
+        "Icon": "\uD83D\uDCAC",
+        "CanDelete": false
+      }
+    ]
+  },
+  {
+    "Id": 4,
+    "Login": "admin",
+    "Password": "123",
+    "Name": "Админ",
+    "Username": "admin_228",
+    "Avatart": "917500895128854658.webp",
+    "ChatsFolders": [
+      {
+        "Name": "Все чаты",
+        "Contacts": [
+          {
+            "Id": 1,
+            "Username": "vasya",
+            "Name": "Вася",
+            "Messages": []
+          },
+          {
+            "Id": 2,
+            "Username": "ybeka",
+            "Name": "убека",
+            "Messages": []
+          }
+        ],
+        "Icon": "\uD83D\uDCAC",
+        "CanDelete": false
+      }
+    ]
+  },
+  {
+    "Id": 5,
+    "Login": "Respik",
+    "Password": "321",
+    "Name": "СвагаБро",
+    "Username": "Respect2077",
+    "Avatart": "",
+    "ChatsFolders": [
+      {
+        "Name": "Все чаты",
+        "Contacts": [
+          {
+            "Id": 3,
+            "Username": "masya",
+            "Name": "masya",
+            "Messages": []
+          },
+          {
+            "Id": 1,
+            "Username": "vasya",
+            "Name": "Вася бамбук",
+            "Messages": []
+          }
+        ],
+        "Icon": "\uD83D\uDCAC",
+        "CanDelete": false
+      }
+    ]
+  }
+]
