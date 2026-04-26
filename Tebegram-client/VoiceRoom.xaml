@@ -309,11 +309,22 @@
                                             Background="{StaticResource Light.BgElevatedBrush}"
                                             CornerRadius="18">
                                             <Viewbox Width="16" Height="16">
-                                                <Path
-                                                    x:Name="MicAvatarPath"
-                                                    Data="{StaticResource IconMic}"
-                                                    Fill="{StaticResource Light.TextPrimaryBrush}"
-                                                    Stretch="Uniform" />
+                                                <Grid Width="24" Height="24">
+                                                    <Path
+                                                        x:Name="MicAvatarPath"
+                                                        Data="{StaticResource IconMic}"
+                                                        Fill="{StaticResource Light.TextPrimaryBrush}"
+                                                        Stretch="Uniform" />
+                                                    <Line
+                                                        x:Name="MicAvatarSlashLine"
+                                                        IsHitTestVisible="False"
+                                                        Stroke="{StaticResource Light.TextPrimaryBrush}"
+                                                        StrokeDashArray="26"
+                                                        StrokeDashOffset="26"
+                                                        StrokeThickness="2"
+                                                        X1="21" Y1="3"
+                                                        X2="3" Y2="21" />
+                                                </Grid>
                                             </Viewbox>
                                         </Border>
                                     </Border>
@@ -402,11 +413,23 @@
                                     Template="{StaticResource CircleActionButton}"
                                     ToolTip="Микрофон">
                                     <Viewbox Width="20" Height="20">
-                                        <Path
-                                            x:Name="MicIconPath"
-                                            Data="{StaticResource IconMic}"
-                                            Fill="{StaticResource Light.TextPrimaryBrush}"
-                                            Stretch="Uniform" />
+                                        <Grid Width="24" Height="24">
+                                            <Path
+                                                x:Name="MicIconPath"
+                                                Data="{StaticResource IconMic}"
+                                                Fill="{StaticResource Light.TextPrimaryBrush}"
+                                                Stretch="Uniform" />
+                                            <!--  Перечёркивающая линия (рисуется при мьюте)  -->
+                                            <Line
+                                                x:Name="MicSlashLine"
+                                                IsHitTestVisible="False"
+                                                Stroke="{StaticResource Light.TextPrimaryBrush}"
+                                                StrokeDashArray="26"
+                                                StrokeDashOffset="26"
+                                                StrokeThickness="2"
+                                                X1="21" Y1="3"
+                                                X2="3" Y2="21" />
+                                        </Grid>
                                     </Viewbox>
                                 </Button>
 
