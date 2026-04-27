@@ -4,12 +4,12 @@
         создаёт ощущение глубины и «источника света сверху».
         Так делают Telegram и большинство тёмных мессенджеров.
     -->
-    <RadialGradientBrush x:Key="ChatBackground" GradientOrigin="0.5,0.2" Center="0.5,0.2" RadiusX="1.1" RadiusY="0.95">
+    <RadialGradientBrush x:Key="ChatBackground" Center="0.5,0.2" GradientOrigin="0.5,0.2" RadiusX="1.1" RadiusY="0.95">
         <GradientStop Offset="0.0" Color="#1E2845" />
         <GradientStop Offset="1.0" Color="#0D1117" />
     </RadialGradientBrush>
 
-    <!-- Светлая тема: очень тихий тёплый градиент, как в Telegram Light -->
+    <!--  Светлая тема: очень тихий тёплый градиент, как в Telegram Light  -->
     <LinearGradientBrush x:Key="ChatBackgroundLight" StartPoint="0,0" EndPoint="1,1">
         <GradientStop Offset="0.0" Color="#F0F4FF" />
         <GradientStop Offset="1.0" Color="#EAECF5" />

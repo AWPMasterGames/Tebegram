@@ -1,10 +1,10 @@
-<ResourceDictionary
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <!-- ══════════════════════════════════════════════
-         ФОНЫ (от тёмного к светлому)
-    ══════════════════════════════════════════════ -->
+    <!--
+        ══════════════════════════════════════════════
+        ФОНЫ (от тёмного к светлому)
+        ══════════════════════════════════════════════
+    -->
     <Color x:Key="ColorBgDeep">#0D1117</Color>
     <Color x:Key="ColorBgPrimary">#161B27</Color>
     <Color x:Key="ColorBgSurface">#1E2438</Color>
@@ -18,9 +18,11 @@
     <SolidColorBrush x:Key="BgElevatedBrush" Color="{StaticResource ColorBgElevated}" />
     <SolidColorBrush x:Key="BgInputBrush" Color="{StaticResource ColorBgInput}" />
 
-    <!-- ══════════════════════════════════════════════
-         АКЦЕНТНЫЙ ЦВЕТ 
-    ══════════════════════════════════════════════ -->
+    <!--
+        ══════════════════════════════════════════════
+        АКЦЕНТНЫЙ ЦВЕТ
+        ══════════════════════════════════════════════
+    -->
     <Color x:Key="ColorAccentPrimary">#5B6BF5</Color>
     <Color x:Key="ColorAccentHover">#6B7BFF</Color>
     <Color x:Key="ColorAccentPressed">#4A5AE0</Color>
@@ -33,9 +35,11 @@
     <SolidColorBrush x:Key="AccentMutedBrush" Color="{StaticResource ColorAccentMuted}" />
     <SolidColorBrush x:Key="AccentTextBrush" Color="{StaticResource ColorAccentText}" />
 
-    <!-- ══════════════════════════════════════════════
-         СЕМАНТИЧЕСКИЕ ЦВЕТА
-    ══════════════════════════════════════════════ -->
+    <!--
+        ══════════════════════════════════════════════
+        СЕМАНТИЧЕСКИЕ ЦВЕТА
+        ══════════════════════════════════════════════
+    -->
     <Color x:Key="ColorDanger">#F04F4F</Color>
     <Color x:Key="ColorDangerHover">#FF6060</Color>
     <Color x:Key="ColorDangerMuted">#3A1515</Color>
@@ -51,9 +55,11 @@
     <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource ColorSuccess}" />
     <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource ColorWarning}" />
 
-    <!-- ══════════════════════════════════════════════
-         ТЕКСТ
-    ══════════════════════════════════════════════ -->
+    <!--
+        ══════════════════════════════════════════════
+        ТЕКСТ
+        ══════════════════════════════════════════════
+    -->
     <Color x:Key="ColorTextPrimary">#E8EAED</Color>
     <Color x:Key="ColorTextSecondary">#8B91A8</Color>
     <Color x:Key="ColorTextMuted">#4A5068</Color>
@@ -66,9 +72,11 @@
     <SolidColorBrush x:Key="TextDisabledBrush" Color="{StaticResource ColorTextDisabled}" />
     <SolidColorBrush x:Key="TextInverseBrush" Color="{StaticResource ColorTextInverse}" />
 
-    <!-- ══════════════════════════════════════════════
-         ГРАНИЦЫ
-    ══════════════════════════════════════════════ -->
+    <!--
+        ══════════════════════════════════════════════
+        ГРАНИЦЫ
+        ══════════════════════════════════════════════
+    -->
     <Color x:Key="ColorBorderSubtle">#1E2438</Color>
     <Color x:Key="ColorBorderDefault">#2E3550</Color>
     <Color x:Key="ColorBorderStrong">#3E4868</Color>
@@ -79,9 +87,11 @@
     <SolidColorBrush x:Key="BorderStrongBrush" Color="{StaticResource ColorBorderStrong}" />
     <SolidColorBrush x:Key="BorderFocusBrush" Color="{StaticResource ColorBorderFocus}" />
 
-    <!-- ══════════════════════════════════════════════
-         СООБЩЕНИЯ
-    ══════════════════════════════════════════════ -->
+    <!--
+        ══════════════════════════════════════════════
+        СООБЩЕНИЯ
+        ══════════════════════════════════════════════
+    -->
     <Color x:Key="ColorMsgOutgoing">#2D3F9E</Color>
     <Color x:Key="ColorMsgIncoming">#262D47</Color>
     <Color x:Key="ColorMsgFailed">#3A1515</Color>
@@ -92,9 +102,11 @@
     <SolidColorBrush x:Key="MsgFailedBrush" Color="{StaticResource ColorMsgFailed}" />
     <SolidColorBrush x:Key="MsgPendingBrush" Color="{StaticResource ColorMsgPending}" />
 
-    <!-- ══════════════════════════════════════════════
-         СПЕЦИАЛЬНЫЕ ГРАДИЕНТЫ
-    ══════════════════════════════════════════════ -->
+    <!--
+        ══════════════════════════════════════════════
+        СПЕЦИАЛЬНЫЕ ГРАДИЕНТЫ
+        ══════════════════════════════════════════════
+    -->
     <LinearGradientBrush x:Key="AccentGradientBrush" StartPoint="0,0" EndPoint="1,1">
         <GradientStop Offset="0.0" Color="#5B6BF5" />
         <GradientStop Offset="1.0" Color="#7B4FE0" />
@@ -105,18 +117,28 @@
         <GradientStop Offset="1.0" Color="#0D1117" />
     </LinearGradientBrush>
 
-    <!-- ══════════════════════════════════════════════
-         ПРОЗРАЧНОСТЬ (для hover/overlay эффектов)
-    ══════════════════════════════════════════════ -->
-    <SolidColorBrush x:Key="HoverOverlayBrush" Color="#FFFFFF" Opacity="0.05" />
-    <SolidColorBrush x:Key="PressedOverlayBrush" Color="#000000" Opacity="0.1" />
+    <!--
+        ══════════════════════════════════════════════
+        ПРОЗРАЧНОСТЬ (для hover/overlay эффектов)
+        ══════════════════════════════════════════════
+    -->
+    <SolidColorBrush
+        x:Key="HoverOverlayBrush"
+        Opacity="0.05"
+        Color="#FFFFFF" />
+    <SolidColorBrush
+        x:Key="PressedOverlayBrush"
+        Opacity="0.1"
+        Color="#000000" />
     <SolidColorBrush x:Key="TransparentBrush" Color="Transparent" />
 
-    <!-- ══════════════════════════════════════════════
-         СВЕТЛАЯ ТЕМА — ФОНЫ
-         Белые и светло-серые поверхности с чуть-чуть
-         голубоватым оттенком (как Telegram Light / iOS)
-    ══════════════════════════════════════════════ -->
+    <!--
+        ══════════════════════════════════════════════
+        СВЕТЛАЯ ТЕМА — ФОНЫ
+        Белые и светло-серые поверхности с чуть-чуть
+        голубоватым оттенком (как Telegram Light / iOS)
+        ══════════════════════════════════════════════
+    -->
     <Color x:Key="Light.ColorBgDeep">#E8ECF5</Color>
     <Color x:Key="Light.ColorBgPrimary">#FFFFFF</Color>
     <Color x:Key="Light.ColorBgSurface">#F2F4FA</Color>
@@ -129,11 +151,13 @@
     <SolidColorBrush x:Key="Light.BgElevatedBrush" Color="{StaticResource Light.ColorBgElevated}" />
     <SolidColorBrush x:Key="Light.BgInputBrush" Color="{StaticResource Light.ColorBgInput}" />
 
-    <!-- ══════════════════════════════════════════════
-         СВЕТЛАЯ ТЕМА — АКЦЕНТ
-         Тот же синий, но чуть насыщеннее — на белом
-         фоне #5B6BF5 воспринимается ярче, чем на тёмном
-    ══════════════════════════════════════════════ -->
+    <!--
+        ══════════════════════════════════════════════
+        СВЕТЛАЯ ТЕМА — АКЦЕНТ
+        Тот же синий, но чуть насыщеннее — на белом
+        фоне #5B6BF5 воспринимается ярче, чем на тёмном
+        ══════════════════════════════════════════════
+    -->
     <Color x:Key="Light.ColorAccentPrimary">#4A5AE8</Color>
     <Color x:Key="Light.ColorAccentHover">#5B6BF5</Color>
     <Color x:Key="Light.ColorAccentPressed">#3A4AD0</Color>
@@ -146,9 +170,11 @@
     <SolidColorBrush x:Key="Light.AccentMutedBrush" Color="{StaticResource Light.ColorAccentMuted}" />
     <SolidColorBrush x:Key="Light.AccentTextBrush" Color="{StaticResource Light.ColorAccentText}" />
 
-    <!-- ══════════════════════════════════════════════
-         СВЕТЛАЯ ТЕМА — СЕМАНТИЧЕСКИЕ
-    ══════════════════════════════════════════════ -->
+    <!--
+        ══════════════════════════════════════════════
+        СВЕТЛАЯ ТЕМА — СЕМАНТИЧЕСКИЕ
+        ══════════════════════════════════════════════
+    -->
     <Color x:Key="Light.ColorDanger">#D93025</Color>
     <Color x:Key="Light.ColorDangerHover">#E84030</Color>
     <Color x:Key="Light.ColorDangerMuted">#FDECEA</Color>
@@ -164,11 +190,13 @@
     <SolidColorBrush x:Key="Light.SuccessBrush" Color="{StaticResource Light.ColorSuccess}" />
     <SolidColorBrush x:Key="Light.WarningBrush" Color="{StaticResource Light.ColorWarning}" />
 
-    <!-- ══════════════════════════════════════════════
-         СВЕТЛАЯ ТЕМА — ТЕКСТ
-         Почти чёрный текст на белом — стандарт для
-         читаемости. Мутный — тёплый серый, не холодный.
-    ══════════════════════════════════════════════ -->
+    <!--
+        ══════════════════════════════════════════════
+        СВЕТЛАЯ ТЕМА — ТЕКСТ
+        Почти чёрный текст на белом — стандарт для
+        читаемости. Мутный — тёплый серый, не холодный.
+        ══════════════════════════════════════════════
+    -->
     <Color x:Key="Light.ColorTextPrimary">#0D1117</Color>
     <Color x:Key="Light.ColorTextSecondary">#505870</Color>
     <Color x:Key="Light.ColorTextMuted">#909AAF</Color>
@@ -181,9 +209,11 @@
     <SolidColorBrush x:Key="Light.TextDisabledBrush" Color="{StaticResource Light.ColorTextDisabled}" />
     <SolidColorBrush x:Key="Light.TextInverseBrush" Color="{StaticResource Light.ColorTextInverse}" />
 
-    <!-- ══════════════════════════════════════════════
-         СВЕТЛАЯ ТЕМА — ГРАНИЦЫ
-    ══════════════════════════════════════════════ -->
+    <!--
+        ══════════════════════════════════════════════
+        СВЕТЛАЯ ТЕМА — ГРАНИЦЫ
+        ══════════════════════════════════════════════
+    -->
     <Color x:Key="Light.ColorBorderSubtle">#EAECF5</Color>
     <Color x:Key="Light.ColorBorderDefault">#D4D8E8</Color>
     <Color x:Key="Light.ColorBorderStrong">#B0B8D0</Color>
@@ -194,11 +224,13 @@
     <SolidColorBrush x:Key="Light.BorderStrongBrush" Color="{StaticResource Light.ColorBorderStrong}" />
     <SolidColorBrush x:Key="Light.BorderFocusBrush" Color="{StaticResource Light.ColorBorderFocus}" />
 
-    <!-- ══════════════════════════════════════════════
-         СВЕТЛАЯ ТЕМА — СООБЩЕНИЯ
-         Исходящие — акцентный синий с белым текстом.
-         Входящие — белая карточка с лёгкой тенью.
-    ══════════════════════════════════════════════ -->
+    <!--
+        ══════════════════════════════════════════════
+        СВЕТЛАЯ ТЕМА — СООБЩЕНИЯ
+        Исходящие — акцентный синий с белым текстом.
+        Входящие — белая карточка с лёгкой тенью.
+        ══════════════════════════════════════════════
+    -->
     <Color x:Key="Light.ColorMsgOutgoing">#4A5AE8</Color>
     <Color x:Key="Light.ColorMsgIncoming">#FFFFFF</Color>
     <Color x:Key="Light.ColorMsgFailed">#FDECEA</Color>
@@ -209,10 +241,18 @@
     <SolidColorBrush x:Key="Light.MsgFailedBrush" Color="{StaticResource Light.ColorMsgFailed}" />
     <SolidColorBrush x:Key="Light.MsgPendingBrush" Color="{StaticResource Light.ColorMsgPending}" />
 
-    <!-- ══════════════════════════════════════════════
-         СВЕТЛАЯ ТЕМА — ПРОЗРАЧНОСТЬ
-    ══════════════════════════════════════════════ -->
-    <SolidColorBrush x:Key="Light.HoverOverlayBrush" Color="#000000" Opacity="0.04" />
-    <SolidColorBrush x:Key="Light.PressedOverlayBrush" Color="#000000" Opacity="0.08" />
+    <!--
+        ══════════════════════════════════════════════
+        СВЕТЛАЯ ТЕМА — ПРОЗРАЧНОСТЬ
+        ══════════════════════════════════════════════
+    -->
+    <SolidColorBrush
+        x:Key="Light.HoverOverlayBrush"
+        Opacity="0.04"
+        Color="#000000" />
+    <SolidColorBrush
+        x:Key="Light.PressedOverlayBrush"
+        Opacity="0.08"
+        Color="#000000" />
 
 </ResourceDictionary>

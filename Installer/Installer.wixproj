@@ -1,0 +1,19 @@
+<Project Sdk="WixToolset.Sdk/5.0.2">
+  <PropertyGroup>
+    <OutputName>TebegramSetup</OutputName>
+    <OutputType>Package</OutputType>
+    <InstallerPlatform>x64</InstallerPlatform>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WixToolset.UI.wixext" Version="5.0.2" />
+    <PackageReference Include="WixToolset.Util.wixext" Version="5.0.2" />
+  </ItemGroup>
+
+  <!-- Тянем сборку клиента, её содержимое попадёт в MSI -->
+  <ItemGroup>
+    <ProjectReference Include="..\Tebegram-client\Tebegrammmm.csproj">
+      <Properties>Configuration=Release</Properties>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

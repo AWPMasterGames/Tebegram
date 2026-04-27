@@ -7,7 +7,7 @@
     <Application.Resources>
         <ResourceDictionary>
 
-            <!-- Единый шрифт приложения: Segoe UI Variable (Win11), Segoe UI (Win10) -->
+            <!--  Единый шрифт приложения: Segoe UI Variable (Win11), Segoe UI (Win10)  -->
             <Style TargetType="TextBlock">
                 <Setter Property="FontFamily" Value="Segoe UI Variable, Segoe UI" />
             </Style>
