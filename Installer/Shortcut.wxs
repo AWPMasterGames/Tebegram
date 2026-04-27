@@ -1,0 +1,29 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Fragment>
+    <!--
+      Ярлык на рабочем столе. Создаётся только если свойство
+      INSTALLDESKTOPSHORTCUT = 1 (галочка в OptionsDlg отмечена).
+    -->
+    <ComponentGroup Id="DesktopShortcutGroup" Directory="DesktopFolder">
+      <Component Id="DesktopShortcutComponent" Guid="8B5C9F2A-1D3E-4F5B-9A7C-3E8F1B2D4A6C"
+                 Condition="INSTALLDESKTOPSHORTCUT=&quot;1&quot;">
+
+        <Shortcut Id="AppDesktopShortcut"
+                  Name="Tebegram"
+                  Description="Tebegram — мессенджер"
+                  Target="[INSTALLFOLDER]Tebegrammmm.exe"
+                  WorkingDirectory="INSTALLFOLDER"
+                  Icon="AppIcon.exe"
+                  IconIndex="0" />
+
+        <RemoveFolder Id="RemoveDesktopFolder" Directory="DesktopFolder" On="uninstall" />
+
+        <RegistryValue Root="HKCU"
+                       Key="Software\Tebegrammmm\Installer"
+                       Name="DesktopShortcut"
+                       Type="integer" Value="1"
+                       KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>
