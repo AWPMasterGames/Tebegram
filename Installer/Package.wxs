@@ -1,0 +1,59 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+
+  <Package Name="Tebegram"
+           Manufacturer="Tebegram"
+           Version="1.0.3"
+           UpgradeCode="4F2B1C8E-A3F5-4F8B-9D1A-7E4B2C6A5F3D"
+           Scope="perMachine"
+           Codepage="1251"
+           Language="1049">
+
+    <MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeError)" />
+    <MediaTemplate EmbedCab="yes" />
+
+    <!-- Иконка приложения, используется для ярлыка и записи в "Программы и компоненты" -->
+    <Icon Id="AppIcon.exe" SourceFile="..\Tebegram-client\Icon.ico" />
+    <Property Id="ARPPRODUCTICON" Value="AppIcon.exe" />
+
+    <!-- ─── Состав установки ──────────────────────────────────────────── -->
+    <Feature Id="Main" Title="Tebegram" Level="1">
+      <ComponentGroupRef Id="MainAppFiles" />
+      <ComponentGroupRef Id="DesktopShortcutGroup" />
+    </Feature>
+
+    <!-- ─── Свойства, читаемые галочками в OptionsDlg ─────────────────── -->
+    <!-- По умолчанию ОБЕ галочки проставлены (Value="1"). -->
+    <Property Id="INSTALLDESKTOPSHORTCUT" Value="1" Secure="yes" />
+    <Property Id="LAUNCHAFTERINSTALL"     Value="1" Secure="yes" />
+
+    <!-- ─── UI ────────────────────────────────────────────────────────── -->
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+    <ui:WixUI Id="WixUI_InstallDir" />
+    <UIRef Id="OptionsDlg_UI" />
+
+    <!-- Уберём диалог лицензии — лишний шаг для простого инсталлятора -->
+    <UI>
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="InstallDirDlg" Order="2"
+               Condition="NOT Installed" />
+      <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" Order="2" />
+    </UI>
+
+    <!-- ─── Запуск приложения после установки ─────────────────────────── -->
+    <CustomAction Id="LaunchApplication"
+                  Directory="INSTALLFOLDER"
+                  ExeCommand="[INSTALLFOLDER]Tebegrammmm.exe"
+                  Impersonate="yes"
+                  Return="asyncNoWait" />
+
+    <!--
+      Кнопка Finish на ExitDialog: если LAUNCHAFTERINSTALL=1
+      и это была установка (а не удаление) — запускаем приложение.
+    -->
+    <UI>
+      <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchApplication"
+               Condition="LAUNCHAFTERINSTALL=&quot;1&quot; AND NOT Installed" />
+    </UI>
+
+  </Package>
+</Wix>
