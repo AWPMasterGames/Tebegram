@@ -40,8 +40,8 @@ namespace Tebegrammmm
         {
             InitializeComponent();
             LoadStyle();
-            GridMessege.Visibility = Visibility.Hidden;
-            GridContactPanel.Visibility = Visibility.Hidden;
+            GridMessege.Visibility = Visibility.Collapsed;
+            GridContactPanel.Visibility = Visibility.Collapsed;
 
             Log.Save($"[MessengerWindow] Инициализация для пользователя: {UserData.User.Name} ({UserData.User.Username})");
 
@@ -108,7 +108,7 @@ namespace Tebegrammmm
                                 Contact contact = UserData.User.FindContactByUsername(CallerUsername);
                                 Dispatcher.Invoke(new Action(() =>
                                 {
-                                    VoiceRoom VR = new VoiceRoom(Mode.AcceptCall, Contact, token);
+                                    VoiceRoom VR = new VoiceRoom(Mode.AcceptCall, contact, token);
                                     UserData.User.InCall = true;
                                     VR.Show();
                                 }));
@@ -377,48 +377,6 @@ namespace Tebegrammmm
                 return; // Добавляем return, чтобы прекратить выполнение
             }
         }
-        /*
-
-                private async Task<bool> CheckUserOnlineAsync(string Username)
-                {
-                    try
-                    {
-                        // Пробуем сначала через localhost, затем через IP
-                        string[] checkUrls = { 
-                            *//*$"http://localhost:{port}/", 
-                            $"http://127.0.0.1:{port}/",
-                            $"http://{ip}:{port}/" *//*
-                        };
-
-                        using (var client = new HttpClient())
-                        {
-                            client.Timeout = TimeSpan.FromMilliseconds(800); // Очень быстрый таймаут для проверки
-
-                            foreach (string url in checkUrls)
-                            {
-                                try
-                                {
-                                    HttpResponseMessage response = await client.GetAsync(url);
-                                    if (response.IsSuccessStatusCode)
-                                    {
-                                        Log.Save($"[CheckUserOnline] User online at {url}");
-                                        return true;
-                                    }
-                                }
-                                catch
-                                {
-                                    // Пробуем следующий URL
-                                    continue;
-                                }
-                            }
-                        }
-                        return false;
-                    }
-                    catch
-                    {
-                        return false;
-                    }
-                }*/
         private async Task SendMessageToUserAsync(Message message)
         {
             try
@@ -485,44 +443,6 @@ namespace Tebegrammmm
             {
                 Log.Save($"[SaveMessageToFile] Error: {ex.Message}");
                 MessageBox.Show("Ошибка при сохранении сообщения\nПодробнее об ошибке можно узнать в краш логах");
-            }
-        }
-
-        private async Task SaveMessageToServer(Message message)
-        {
-            try
-            {
-                // Используем Username вместо Name для корректной идентификации пользователя
-                string toUserLogin = !string.IsNullOrEmpty(Contact.Username) ? Contact.Username : Contact.Name;
-
-                var messageData = new
-                {
-                    fromUser = UserData.User.Login,
-                    toUser = toUserLogin,
-                    message = message.Text,
-                    timestamp = message.Time,
-                    messageType = message.MessageType.ToString(),
-                    status = message.Status.ToString()
-                };
-
-                string json = System.Text.Json.JsonSerializer.Serialize(messageData);
-                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                using (HttpResponseMessage response = await httpClient.PostAsync($"{ServerData.ServerAdress}/messages/save", content))
-                {
-                    if (response.IsSuccessStatusCode)
-                    {
-                        Log.Save($"[SaveMessageToServer] Сообщение сохранено на сервере для {toUserLogin}");
-                    }
-                    else
-                    {
-                        Log.Save($"[SaveMessageToServer] Ошибка сохранения на сервере: {response.StatusCode}");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Save($"[SaveMessageToServer] Error: {ex.Message}");
             }
         }
 
@@ -675,8 +595,8 @@ namespace Tebegrammmm
         }
         private void Button_Click_RemoveContact(object sender, RoutedEventArgs e)
         {
-            GridContactPanel.Visibility = Visibility.Hidden;
-            GridMessege.Visibility = Visibility.Hidden;
+            GridContactPanel.Visibility = Visibility.Collapsed;
+            GridMessege.Visibility = Visibility.Collapsed;
 
             Contact contact = (LBChats.SelectedItem as Contact);
             SendRemoveContactRequest(contact);

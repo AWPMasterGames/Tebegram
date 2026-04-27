@@ -1,4 +1,4 @@
-﻿using NAudio.CoreAudioApi;
+using NAudio.CoreAudioApi;
 using System.IO;
 using System.Threading;
 using System.Windows;
@@ -6,23 +6,30 @@ using Tebegrammmm.Data;
 
 namespace Tebegrammmm
 {
-    /// <summary>
-    /// Логика взаимодействия для SettingsPanelWindow.xaml
-    /// </summary>
     public partial class SettingsPanelWindow : Window
     {
         public SettingsPanelWindow()
         {
             InitializeComponent();
-            //TBLogin.Text = User.Login;          // Устанавливаем логин
-            // Показываем localhost вместо 127.0.0.1 для лучшего UX
-            string displayAddress = UserData.User.Username;
-            TBUsername.Text = displayAddress;
-
-
+            TBUsername.Text = UserData.User.Username;
             UserInfo.DataContext = UserData.User;
-
             CheckInputDevices();
+        }
+
+        private void Window_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == System.Windows.Input.MouseButton.Left)
+                this.DragMove();
+        }
+
+        private void MinimizeBtn_Click(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
+        }
+
+        private void CloseBtn_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
 
         private void Button_Exit_Click(object sender, RoutedEventArgs e)
@@ -43,9 +50,7 @@ namespace Tebegrammmm
         {
             UserData.User.SelectedDeviceNum = InputDeviceCB.SelectedIndex;
             if (!File.Exists("userDevice.data"))
-            {
                 File.Create("userDevice.data").Close();
-            }
             File.WriteAllText("userDevice.data", $"{UserData.User.SelectedDeviceNum}");
         }
     }

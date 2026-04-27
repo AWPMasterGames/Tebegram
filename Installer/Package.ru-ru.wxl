@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization xmlns="http://wixtoolset.org/schemas/v4/wxl" Culture="ru-RU" Codepage="1251">
+
+  <String Id="DowngradeError" Value="Уже установлена более новая версия [ProductName]." />
+  <String Id="SetupTitle"     Value="Установка Tebegram" />
+
+  <String Id="OptionsDlgTitle"       Value="Параметры установки" />
+  <String Id="OptionsDlgDescription" Value="Выберите дополнительные действия." />
+  <String Id="OptionsDlgShortcut"    Value="Создать ярлык на рабочем столе" />
+  <String Id="OptionsDlgLaunch"      Value="Запустить приложение после установки" />
+
+</WixLocalization>
