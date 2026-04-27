@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Shapes;
 using System.Windows.Threading;
 using System.Xml.Linq;
 using Tebegrammmm.Classes;
@@ -25,6 +26,8 @@ namespace Tebegrammmm
     }
     public partial class VoiceRoom : Window
     {
+        private static VoiceRoom _instance;
+
         static HttpClient httpClient = new HttpClient(new HttpClientHandler
         {
             ServerCertificateCustomValidationCallback = (m, c, ch, e) => true
@@ -39,6 +42,18 @@ namespace Tebegrammmm
         public VoiceRoom(Mode mode, Contact contact, string token)
         {
             InitializeComponent();
+
+            // Если окно уже открыто — вывести его на передний план
+            if (_instance != null)
+            {
+                _instance.Activate();
+                if (_instance.WindowState == WindowState.Minimized)
+                    _instance.WindowState = WindowState.Normal;
+                this.Loaded += (_, __) => this.Close();
+                return;
+            }
+
+            _instance = this;
             Contact = contact;
             Token = token;
             this.DataContext = contact;
@@ -47,11 +62,11 @@ namespace Tebegrammmm
             {
                 case Mode.AcceptCall:
                     DefoultVoiceRoom.Visibility = Visibility.Visible;
-                    ActiveVoiceRoom.Visibility = Visibility.Hidden;
+                    ActiveVoiceRoom.Visibility = Visibility.Collapsed;
                     break;
                 case Mode.ActiveCall:
                     Init();
-                    DefoultVoiceRoom.Visibility = Visibility.Hidden;
+                    DefoultVoiceRoom.Visibility = Visibility.Collapsed;
                     ActiveVoiceRoom.Visibility = Visibility.Visible;
                     break;
             }
@@ -220,7 +235,7 @@ namespace Tebegrammmm
             var fadeOutRoom = new DoubleAnimation(1, 0, exitDuration);
             fadeOutRoom.Completed += (s, e) =>
             {
-                DefoultVoiceRoom.Visibility = Visibility.Hidden;
+                DefoultVoiceRoom.Visibility = Visibility.Collapsed;
                 DefoultVoiceRoom.Opacity    = 1; // сброс на случай повторного показа
 
                 // Сброс панельного трансформа (используется в AnimateClose)
@@ -271,6 +286,28 @@ namespace Tebegrammmm
             ActiveVoiceRoom.BeginAnimation(OpacityProperty, fadeOut);
         }
 
+        protected override void OnClosed(System.EventArgs e)
+        {
+            if (_instance == this) _instance = null;
+            base.OnClosed(e);
+        }
+
+        private void Window_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == System.Windows.Input.MouseButton.Left)
+                this.DragMove();
+        }
+
+        private void MinimizeBtn_Click(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
+        }
+
+        private void CloseBtn_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             AnimateClose();
@@ -303,6 +340,38 @@ namespace Tebegrammmm
         private void Button_Click_OffOnMicrofon(object sender, RoutedEventArgs e)
         {
             IsMicrophoneOn = !IsMicrophoneOn;
+            AnimateMicToggle(muting: !IsMicrophoneOn);
+        }
+
+        private void AnimateMicToggle(bool muting)
+        {
+            const double SlashLength = 26.0;
+            var duration = new Duration(TimeSpan.FromMilliseconds(220));
+            var ease = new CubicEase { EasingMode = EasingMode.EaseOut };
+
+            // Черта: рисуем при мьюте (offset 26→0), стираем при разблокировке (0→26)
+            var fromOffset = muting ? SlashLength : 0.0;
+            var toOffset   = muting ? 0.0 : SlashLength;
+
+            MicSlashLine.BeginAnimation(Shape.StrokeDashOffsetProperty,
+                new DoubleAnimation(fromOffset, toOffset, duration) { EasingFunction = ease });
+            MicAvatarSlashLine.BeginAnimation(Shape.StrokeDashOffsetProperty,
+                new DoubleAnimation(fromOffset, toOffset, duration) { EasingFunction = ease });
+
+            // Фон кнопки и бейджа: серый ↔ мягко-красный
+            var mutedBg  = (Brush)FindResource("Light.DangerMutedBrush");
+            var normalBg = (Brush)FindResource("Light.BgElevatedBrush");
+            BtnMic.Background          = muting ? mutedBg : normalBg;
+            MicButtonBorder.Background = muting ? mutedBg : normalBg;
+
+            // Цвет иконки и черты: обычный ↔ красный
+            var iconColor = muting
+                ? (Brush)FindResource("Light.DangerBrush")
+                : (Brush)FindResource("Light.TextPrimaryBrush");
+            MicIconPath.Fill          = iconColor;
+            MicAvatarPath.Fill        = iconColor;
+            MicSlashLine.Stroke       = iconColor;
+            MicAvatarSlashLine.Stroke = iconColor;
         }
     }
 }

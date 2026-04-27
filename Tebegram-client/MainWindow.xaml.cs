@@ -3,8 +3,11 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
 using Tebegrammmm.Classes;
 using Tebegrammmm.Data;
 
@@ -24,8 +27,6 @@ namespace Tebegrammmm
             httpClient = new HttpClient(handler);
         }
 
-        Thread AutoAuthThread;
-
         public MainWindow()
         {
             ServerData.GetServerAdress();
@@ -39,19 +40,17 @@ namespace Tebegrammmm
                     TBUserLogin.Text = data[0];
                     PBUserPassord.Password = data[1];
                     LoginButton.Focus();
-                    AutoAuthThread = new Thread(() => { AutoAuth(); });
-                    AutoAuthThread.Start();
+                    // Автоавторизация — после полного показа окна, без блокировки UI.
+                    this.Loaded += MainWindow_AutoAuth;
                 }
             }
         }
 
-        private async void AutoAuth()
+        private void MainWindow_AutoAuth(object sender, RoutedEventArgs e)
         {
-            Thread.Sleep(100);
-            this.Dispatcher.BeginInvoke(new Action(() =>
-            {
-                Authorization();
-            }));
+            this.Loaded -= MainWindow_AutoAuth;
+            this.Dispatcher.BeginInvoke(new Action(Authorization),
+                System.Windows.Threading.DispatcherPriority.Background);
         }
 
         private async void Authorization()
@@ -61,8 +60,10 @@ namespace Tebegrammmm
                 MessageBox.Show("Заполните все поля");
                 return;
             }
+            SetLoginLoading(true);
             try
             {
+                await ServerData.Ready;
                 string loginEnc = Uri.EscapeDataString(TBUserLogin.Text);
                 string passEnc = Uri.EscapeDataString(PBUserPassord.Password);
                 using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/login/{loginEnc}-{passEnc}");
@@ -118,20 +119,21 @@ namespace Tebegrammmm
                 catch (System.Text.Json.JsonException)
                 {
                     MessageBox.Show("Ошибка обработки данных сервера");
-                    return;
                 }
                 catch (Exception ex)
                 {
                     Log.Save($"[Authorization] Exception while handling server response: {ex.GetType().Name}: {ex.Message}\n{ex.StackTrace}");
                     MessageBox.Show($"Ошибка при входе: {ex.Message}\nПодробности в CrashLogs.");
-                    return;
                 }
             }
             catch (HttpRequestException ex)
             {
                 Log.Save($"[Authorization] Error: {ex.Message}");
                 MessageBox.Show("Ошибка при попытке авторизации\nПодробнее от ошибке можно узнать в краш логах");
-                return;
+            }
+            finally
+            {
+                SetLoginLoading(false);
             }
         }
 
@@ -173,8 +175,10 @@ namespace Tebegrammmm
                 return;
             }
 
+            SetRegLoading(true);
             try
             {
+                await ServerData.Ready;
                 string username = TBUserNameLogin.Text.Trim();
                 string password = PBUserPassword.Password;
                 string name = TBUserName.Text.Trim();
@@ -187,29 +191,47 @@ namespace Tebegrammmm
 
                 if (response.IsSuccessStatusCode)
                 {
-                    MessageBox.Show("Регистрация успешна! Теперь можно войти.");
                     Log.Save($"[Registration] User registered successfully: {username}");
 
-                    // Переключаемся на экран логина
+                    // Останавливаем состояние загрузки перед анимацией баннера
+                    SetRegLoading(false);
+
+                    // Плавно скрываем форму
+                    RegFormPanel.BeginAnimation(UIElement.OpacityProperty,
+                        new DoubleAnimation(1, 0, new Duration(TimeSpan.FromMilliseconds(200))));
+
+                    // Показываем баннер успеха
+                    RegSuccessBanner.Visibility = Visibility.Visible;
+                    var bannerFadeIn = new DoubleAnimation(0, 1, new Duration(TimeSpan.FromMilliseconds(350)))
+                    {
+                        EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+                    };
+                    RegSuccessBanner.BeginAnimation(UIElement.OpacityProperty, bannerFadeIn);
+
+                    // Ждём, затем переходим на экран входа
+                    await Task.Delay(1800);
+
+                    RegSuccessBanner.Visibility = Visibility.Collapsed;
+                    RegSuccessBanner.BeginAnimation(UIElement.OpacityProperty, null);
+                    RegFormPanel.BeginAnimation(UIElement.OpacityProperty, null);
+                    RegFormPanel.Opacity = 0;
+
                     LoginGrid.Visibility = Visibility.Visible;
-                    RegistrationGrid.Visibility = Visibility.Hidden;
+                    RegistrationGrid.Visibility = Visibility.Collapsed;
                     TBUserLogin.Text = username;
+                    PBUserPassord.Password = "";
+                    TBLoginPassShow.Text = "";
                     TBUserLogin.Focus();
+                    AnimateFormEntrance(LoginFormPanel);
                 }
                 else
                 {
                     if (content.Contains("already exists") || content.Contains("уже существует"))
-                    {
                         MessageBox.Show("Пользователь с таким логином уже существует");
-                    }
                     else if (content.Contains("должны быть заполнены"))
-                    {
                         MessageBox.Show("Все поля должны быть заполнены");
-                    }
                     else
-                    {
                         MessageBox.Show($"Ошибка регистрации: {content}");
-                    }
                     Log.Save($"[Registration] Registration error: {content}");
                 }
             }
@@ -223,6 +245,10 @@ namespace Tebegrammmm
                 Log.Save($"[Registration] Unexpected error: {ex.Message}");
                 MessageBox.Show("Произошла неожиданная ошибка\nСмотрите краш-логи");
             }
+            finally
+            {
+                SetRegLoading(false);
+            }
         }
 
         private void TextBox_KeyDown(object sender, KeyEventArgs e)
@@ -231,12 +257,21 @@ namespace Tebegrammmm
             {
                 if (LoginGrid.Visibility == Visibility.Visible)
                 {
-                    PBUserPassord.Focus();
+                    if (PBUserPassord.Visibility == Visibility.Visible)
+                        PBUserPassord.Focus();
+                    else
+                        TBLoginPassShow.Focus();
                 }
                 else
                 {
                     if (sender == TBUserName) TBUserNameLogin.Focus();
-                    else if (sender == TBUserNameLogin) PBUserPassword.Focus();
+                    else if (sender == TBUserNameLogin)
+                    {
+                        if (PBUserPassword.Visibility == Visibility.Visible)
+                            PBUserPassword.Focus();
+                        else
+                            TBRegPassShow.Focus();
+                    }
                 }
             }
         }
@@ -276,13 +311,10 @@ namespace Tebegrammmm
 
         private void RegisterButton_Click(object sender, RoutedEventArgs e)
         {
-            // Переключаемся на экран регистрации
-            LoginGrid.Visibility = Visibility.Hidden;
-            this.Width = 400;
-            this.Height = 500;
+            LoginGrid.Visibility = Visibility.Collapsed;
             RegistrationGrid.Visibility = Visibility.Visible;
             TBUserName.Focus();
-
+            AnimateFormEntrance(RegFormPanel);
         }
 
         private void DoRegisterButton_Click(object sender, RoutedEventArgs e)
@@ -292,12 +324,17 @@ namespace Tebegrammmm
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            // Возвращаемся на экран логина
             LoginGrid.Visibility = Visibility.Visible;
-            this.Width = 400;
-            this.Height = 400;
-            RegistrationGrid.Visibility = Visibility.Hidden;
+            RegistrationGrid.Visibility = Visibility.Collapsed;
+            PBUserPassord.Password = "";
+            TBLoginPassShow.Text = "";
             TBUserLogin.Focus();
+            AnimateFormEntrance(LoginFormPanel);
+        }
+
+        private void MinimizeBtn_Click(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
@@ -311,6 +348,214 @@ namespace Tebegrammmm
             {
                 this.DragMove();
             }
+        }
+
+        // ── Состояние загрузки — логин ───────────────────────────────────────
+        private void SetLoginLoading(bool loading)
+        {
+            LoginButton.Content   = loading ? "Входим…" : "Войти";
+            LoginButton.IsEnabled = !loading;
+            RegisterButton.IsEnabled = !loading;
+            TBUserLogin.IsEnabled     = !loading;
+            PBUserPassord.IsEnabled   = !loading;
+            TBLoginPassShow.IsEnabled = !loading;
+            LoginEyeBtn.IsEnabled     = !loading;
+
+            if (loading)
+            {
+                var pulse = new DoubleAnimation(1.0, 0.5, new Duration(TimeSpan.FromMilliseconds(650)))
+                {
+                    AutoReverse = true,
+                    RepeatBehavior = RepeatBehavior.Forever,
+                    EasingFunction = new SineEase { EasingMode = EasingMode.EaseInOut }
+                };
+                LoginButton.BeginAnimation(UIElement.OpacityProperty, pulse);
+            }
+            else
+            {
+                LoginButton.BeginAnimation(UIElement.OpacityProperty, null);
+                LoginButton.Opacity = 1.0;
+            }
+        }
+
+        // ── Состояние загрузки — регистрация ─────────────────────────────────
+        private void SetRegLoading(bool loading)
+        {
+            DoRegisterButton.Content   = loading ? "Создаём аккаунт…" : "Зарегистрироваться";
+            DoRegisterButton.IsEnabled = !loading;
+            BackButton.IsEnabled           = !loading;
+            TBUserName.IsEnabled           = !loading;
+            TBUserNameLogin.IsEnabled      = !loading;
+            PBUserPassword.IsEnabled       = !loading;
+            TBRegPassShow.IsEnabled        = !loading;
+            RegEyeBtn.IsEnabled            = !loading;
+            PBUserPasswordConfirm.IsEnabled   = !loading;
+            TBRegConfirmPassShow.IsEnabled    = !loading;
+            RegConfirmEyeBtn.IsEnabled        = !loading;
+
+            if (loading)
+            {
+                var pulse = new DoubleAnimation(1.0, 0.5, new Duration(TimeSpan.FromMilliseconds(650)))
+                {
+                    AutoReverse = true,
+                    RepeatBehavior = RepeatBehavior.Forever,
+                    EasingFunction = new SineEase { EasingMode = EasingMode.EaseInOut }
+                };
+                DoRegisterButton.BeginAnimation(UIElement.OpacityProperty, pulse);
+            }
+            else
+            {
+                DoRegisterButton.BeginAnimation(UIElement.OpacityProperty, null);
+                DoRegisterButton.Opacity = 1.0;
+            }
+        }
+
+        // ── Анимация появления формы (fade + slide up) ──────────────────────
+        private void AnimateFormEntrance(System.Windows.Controls.StackPanel panel)
+        {
+            var ease = new CubicEase { EasingMode = EasingMode.EaseOut };
+            var dur = new Duration(TimeSpan.FromMilliseconds(380));
+
+            ((TranslateTransform)panel.RenderTransform).Y = 12;
+            panel.Opacity = 0;
+
+            var opAnim = new DoubleAnimation(0, 1, dur) { EasingFunction = ease };
+            var trAnim = new DoubleAnimation(12, 0, dur) { EasingFunction = ease };
+
+            panel.BeginAnimation(UIElement.OpacityProperty, opAnim);
+            ((TranslateTransform)panel.RenderTransform).BeginAnimation(TranslateTransform.YProperty, trAnim);
+        }
+
+        // ── Анимация появления элемента (fade in) ───────────────────────────
+        private void AnimateFadeIn(UIElement element)
+        {
+            var anim = new DoubleAnimation(0, 1, new Duration(TimeSpan.FromMilliseconds(150)))
+            {
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+            };
+            element.BeginAnimation(UIElement.OpacityProperty, anim);
+        }
+
+        // ── Кнопка показа пароля — логин ─────────────────────────────────────
+        private void LoginEyeBtn_Click(object sender, RoutedEventArgs e)
+        {
+            bool isShowing = TBLoginPassShow.Visibility == Visibility.Visible;
+            if (isShowing)
+            {
+                PBUserPassord.Password = TBLoginPassShow.Text;
+                PBUserPassord.Visibility = Visibility.Visible;
+                AnimateFadeIn(PBUserPassord);
+                TBLoginPassShow.Visibility = Visibility.Collapsed;
+                LoginEyePath.Data = (Geometry)FindResource("IconEye");
+            }
+            else
+            {
+                TBLoginPassShow.Text = PBUserPassord.Password;
+                TBLoginPassShow.Visibility = Visibility.Visible;
+                AnimateFadeIn(TBLoginPassShow);
+                PBUserPassord.Visibility = Visibility.Collapsed;
+                LoginEyePath.Data = (Geometry)FindResource("IconEyeOff");
+            }
+        }
+
+        private void TBLoginPassShow_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+            => PBUserPassord.Password = TBLoginPassShow.Text;
+
+        private void TBLoginPassShow_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter) Authorization();
+        }
+
+        // ── Общее состояние видимости паролей на экране регистрации ─────────
+        private bool _regPasswordVisible = false;
+
+        // Один обработчик на обе кнопки-глаза в форме регистрации:
+        // переключает видимость СРАЗУ для обоих полей (пароль + подтверждение).
+        private void RegEyeBtn_Click(object sender, RoutedEventArgs e) => ToggleRegPassword();
+        private void RegConfirmEyeBtn_Click(object sender, RoutedEventArgs e) => ToggleRegPassword();
+
+        private void ToggleRegPassword()
+        {
+            _regPasswordVisible = !_regPasswordVisible;
+
+            if (_regPasswordVisible)
+            {
+                // Показать оба пароля
+                TBRegPassShow.Text = PBUserPassword.Password;
+                TBRegPassShow.Visibility = Visibility.Visible;
+                AnimateFadeIn(TBRegPassShow);
+                PBUserPassword.Visibility = Visibility.Collapsed;
+
+                TBRegConfirmPassShow.Text = PBUserPasswordConfirm.Password;
+                TBRegConfirmPassShow.Visibility = Visibility.Visible;
+                AnimateFadeIn(TBRegConfirmPassShow);
+                PBUserPasswordConfirm.Visibility = Visibility.Collapsed;
+
+                RegEyePath.Data = (Geometry)FindResource("IconEyeOff");
+                RegConfirmEyePath.Data = (Geometry)FindResource("IconEyeOff");
+            }
+            else
+            {
+                // Скрыть оба пароля
+                PBUserPassword.Password = TBRegPassShow.Text;
+                PBUserPassword.Visibility = Visibility.Visible;
+                AnimateFadeIn(PBUserPassword);
+                TBRegPassShow.Visibility = Visibility.Collapsed;
+
+                PBUserPasswordConfirm.Password = TBRegConfirmPassShow.Text;
+                PBUserPasswordConfirm.Visibility = Visibility.Visible;
+                AnimateFadeIn(PBUserPasswordConfirm);
+                TBRegConfirmPassShow.Visibility = Visibility.Collapsed;
+
+                RegEyePath.Data = (Geometry)FindResource("IconEye");
+                RegConfirmEyePath.Data = (Geometry)FindResource("IconEye");
+            }
+        }
+
+        private void TBRegPassShow_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+            => PBUserPassword.Password = TBRegPassShow.Text;
+
+        private void TBRegPassShow_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                if (PBUserPasswordConfirm.Visibility == Visibility.Visible)
+                    PBUserPasswordConfirm.Focus();
+                else
+                    TBRegConfirmPassShow.Focus();
+            }
+        }
+
+        private void TBRegConfirmPassShow_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+            => PBUserPasswordConfirm.Password = TBRegConfirmPassShow.Text;
+
+        // ── Появление/скрытие кнопок-глаз в зависимости от наличия текста ──
+        private void PBUserPassord_PasswordChanged(object sender, RoutedEventArgs e)
+            => FadeEyeButton(LoginEyeBtn, PBUserPassord.Password.Length > 0);
+
+        private void PBUserPassword_PasswordChanged(object sender, RoutedEventArgs e)
+            => FadeEyeButton(RegEyeBtn, PBUserPassword.Password.Length > 0);
+
+        private void PBUserPasswordConfirm_PasswordChanged(object sender, RoutedEventArgs e)
+            => FadeEyeButton(RegConfirmEyeBtn, PBUserPasswordConfirm.Password.Length > 0);
+
+        private void FadeEyeButton(System.Windows.Controls.Button btn, bool show)
+        {
+            // Кликабельность переключаем мгновенно, чтобы во время fade-out
+            // нельзя было случайно попасть по полупрозрачной кнопке.
+            btn.IsHitTestVisible = show;
+
+            var anim = new DoubleAnimation(show ? 1.0 : 0.0,
+                                           new Duration(TimeSpan.FromMilliseconds(150)))
+            {
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+            };
+            btn.BeginAnimation(UIElement.OpacityProperty, anim);
+        }
+
+        private void TBRegConfirmPassShow_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter) Registration();
         }
     }
 }

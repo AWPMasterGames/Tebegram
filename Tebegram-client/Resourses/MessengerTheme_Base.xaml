@@ -1,7 +1,17 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <LinearGradientBrush x:Key="ChatBackground">
-        <GradientStop Offset="0.1" Color="LightYellow" />
-        <GradientStop Offset="0.5" Color="LightGreen" />
-        <GradientStop Offset="0.9" Color="LightYellow" />
+    <!--
+        Радиальный градиент: центр чуть выше середины, немного светлее —
+        создаёт ощущение глубины и «источника света сверху».
+        Так делают Telegram и большинство тёмных мессенджеров.
+    -->
+    <RadialGradientBrush x:Key="ChatBackground" Center="0.5,0.2" GradientOrigin="0.5,0.2" RadiusX="1.1" RadiusY="0.95">
+        <GradientStop Offset="0.0" Color="#1E2845" />
+        <GradientStop Offset="1.0" Color="#0D1117" />
+    </RadialGradientBrush>
+
+    <!--  Светлая тема: очень тихий тёплый градиент, как в Telegram Light  -->
+    <LinearGradientBrush x:Key="ChatBackgroundLight" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Offset="0.0" Color="#F0F4FF" />
+        <GradientStop Offset="1.0" Color="#EAECF5" />
     </LinearGradientBrush>
 </ResourceDictionary>
