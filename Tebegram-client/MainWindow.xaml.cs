@@ -466,25 +466,49 @@ namespace Tebegrammmm
             if (e.Key == Key.Enter) Authorization();
         }
 
-        // ── Кнопка показа пароля — регистрация ───────────────────────────────
-        private void RegEyeBtn_Click(object sender, RoutedEventArgs e)
+        // ── Общее состояние видимости паролей на экране регистрации ─────────
+        private bool _regPasswordVisible = false;
+
+        // Один обработчик на обе кнопки-глаза в форме регистрации:
+        // переключает видимость СРАЗУ для обоих полей (пароль + подтверждение).
+        private void RegEyeBtn_Click(object sender, RoutedEventArgs e) => ToggleRegPassword();
+        private void RegConfirmEyeBtn_Click(object sender, RoutedEventArgs e) => ToggleRegPassword();
+
+        private void ToggleRegPassword()
         {
-            bool isShowing = TBRegPassShow.Visibility == Visibility.Visible;
-            if (isShowing)
+            _regPasswordVisible = !_regPasswordVisible;
+
+            if (_regPasswordVisible)
             {
-                PBUserPassword.Password = TBRegPassShow.Text;
-                PBUserPassword.Visibility = Visibility.Visible;
-                AnimateFadeIn(PBUserPassword);
-                TBRegPassShow.Visibility = Visibility.Collapsed;
-                RegEyePath.Data = (Geometry)FindResource("IconEye");
-            }
-            else
-            {
+                // Показать оба пароля
                 TBRegPassShow.Text = PBUserPassword.Password;
                 TBRegPassShow.Visibility = Visibility.Visible;
                 AnimateFadeIn(TBRegPassShow);
                 PBUserPassword.Visibility = Visibility.Collapsed;
+
+                TBRegConfirmPassShow.Text = PBUserPasswordConfirm.Password;
+                TBRegConfirmPassShow.Visibility = Visibility.Visible;
+                AnimateFadeIn(TBRegConfirmPassShow);
+                PBUserPasswordConfirm.Visibility = Visibility.Collapsed;
+
                 RegEyePath.Data = (Geometry)FindResource("IconEyeOff");
+                RegConfirmEyePath.Data = (Geometry)FindResource("IconEyeOff");
+            }
+            else
+            {
+                // Скрыть оба пароля
+                PBUserPassword.Password = TBRegPassShow.Text;
+                PBUserPassword.Visibility = Visibility.Visible;
+                AnimateFadeIn(PBUserPassword);
+                TBRegPassShow.Visibility = Visibility.Collapsed;
+
+                PBUserPasswordConfirm.Password = TBRegConfirmPassShow.Text;
+                PBUserPasswordConfirm.Visibility = Visibility.Visible;
+                AnimateFadeIn(PBUserPasswordConfirm);
+                TBRegConfirmPassShow.Visibility = Visibility.Collapsed;
+
+                RegEyePath.Data = (Geometry)FindResource("IconEye");
+                RegConfirmEyePath.Data = (Geometry)FindResource("IconEye");
             }
         }
 
@@ -502,30 +526,32 @@ namespace Tebegrammmm
             }
         }
 
-        // ── Кнопка показа пароля — подтверждение ─────────────────────────────
-        private void RegConfirmEyeBtn_Click(object sender, RoutedEventArgs e)
-        {
-            bool isShowing = TBRegConfirmPassShow.Visibility == Visibility.Visible;
-            if (isShowing)
-            {
-                PBUserPasswordConfirm.Password = TBRegConfirmPassShow.Text;
-                PBUserPasswordConfirm.Visibility = Visibility.Visible;
-                AnimateFadeIn(PBUserPasswordConfirm);
-                TBRegConfirmPassShow.Visibility = Visibility.Collapsed;
-                RegConfirmEyePath.Data = (Geometry)FindResource("IconEye");
-            }
-            else
-            {
-                TBRegConfirmPassShow.Text = PBUserPasswordConfirm.Password;
-                TBRegConfirmPassShow.Visibility = Visibility.Visible;
-                AnimateFadeIn(TBRegConfirmPassShow);
-                PBUserPasswordConfirm.Visibility = Visibility.Collapsed;
-                RegConfirmEyePath.Data = (Geometry)FindResource("IconEyeOff");
-            }
-        }
-
         private void TBRegConfirmPassShow_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
             => PBUserPasswordConfirm.Password = TBRegConfirmPassShow.Text;
+
+        // ── Появление/скрытие кнопок-глаз в зависимости от наличия текста ──
+        private void PBUserPassord_PasswordChanged(object sender, RoutedEventArgs e)
+            => FadeEyeButton(LoginEyeBtn, PBUserPassord.Password.Length > 0);
+
+        private void PBUserPassword_PasswordChanged(object sender, RoutedEventArgs e)
+            => FadeEyeButton(RegEyeBtn, PBUserPassword.Password.Length > 0);
+
+        private void PBUserPasswordConfirm_PasswordChanged(object sender, RoutedEventArgs e)
+            => FadeEyeButton(RegConfirmEyeBtn, PBUserPasswordConfirm.Password.Length > 0);
+
+        private void FadeEyeButton(System.Windows.Controls.Button btn, bool show)
+        {
+            // Кликабельность переключаем мгновенно, чтобы во время fade-out
+            // нельзя было случайно попасть по полупрозрачной кнопке.
+            btn.IsHitTestVisible = show;
+
+            var anim = new DoubleAnimation(show ? 1.0 : 0.0,
+                                           new Duration(TimeSpan.FromMilliseconds(150)))
+            {
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+            };
+            btn.BeginAnimation(UIElement.OpacityProperty, anim);
+        }
 
         private void TBRegConfirmPassShow_KeyDown(object sender, KeyEventArgs e)
         {
