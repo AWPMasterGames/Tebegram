@@ -39,6 +39,7 @@ namespace Tebegrammmm
         public string ServerAdress { get { return _ServerAdress; } }
         public string Message_FilePath { get { return _FilePath; } }
         public MessageStatus Status { get { return _Status; } set { _Status = value; } }
+        public bool IsOutgoing { get; set; } = false;
 
         public Message(string sender, string reciver, string text, string time, MessageType messageType = MessageType.Text, string serverAdress = null, string filePath = null)
         {

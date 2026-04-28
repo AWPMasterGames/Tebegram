@@ -10,7 +10,9 @@ namespace Tebegrammmm.Classes
         private static object _lock = new object();
         private static bool CheckDirectoryes()
         {
-            _CrashLogsDirectory = $"{Directory.GetCurrentDirectory()}/CrashLogs";
+            _CrashLogsDirectory = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "Tebegram", "CrashLogs");
             if (!Directory.Exists(_CrashLogsDirectory))
             {
                 Directory.CreateDirectory(_CrashLogsDirectory);
