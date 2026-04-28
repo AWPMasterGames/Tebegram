@@ -7,12 +7,13 @@ namespace Tebegrammmm.Data
 {
     public static class ServerData
     {
-        private const string DefaultAdress = "https://localhost:5000";
-        private const string AdressUrl = "https://raw.githubusercontent.com/AWPMasterGames/Tebegrammmm/refs/heads/main/Tebegrammmm/Adress.txt";
+        private const string DefaultAdress = "http://localhost:5000";
+        private const string AdressUrl = "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Tebegrammmm/Adress.txt";
 
-        //private static string _ServerAdress = DefaultAdress;
-        private static string _ServerAdress = AdressUrl;
+        private static string _ServerAdress = DefaultAdress;
         public static string ServerAdress { get { return _ServerAdress; } }
+
+        public static bool IsConnected { get; private set; } = false;
 
         private static readonly HttpClient _http = CreateHttpClient();
         private static Task _readyTask = Task.CompletedTask;
@@ -29,7 +30,8 @@ namespace Tebegrammmm.Data
             {
                 ServerCertificateCustomValidationCallback = (m, c, ch, e) => true
             };
-            return new HttpClient(handler) { Timeout = TimeSpan.FromSeconds(4) };
+            // Timeout не выставляем — каждый запрос управляет своим CancellationTokenSource
+            return new HttpClient(handler) { Timeout = System.Threading.Timeout.InfiniteTimeSpan };
         }
 
         /// <summary>
@@ -51,26 +53,29 @@ namespace Tebegrammmm.Data
                 if (!string.IsNullOrWhiteSpace(adress))
                     _ServerAdress = adress;
             }
-            catch
-            {
-                // нет сети / GitHub недоступен — остаёмся на DefaultAdress
-            }
+            catch { /* GitHub недоступен — остаёмся на localhost */ }
 
             await CheckAdressValidAsync().ConfigureAwait(false);
         }
 
+        // Проверяет адрес через /Test. Если сервер не отвечает "HI!" — откат на localhost.
         public static async Task CheckAdressValidAsync()
         {
             try
             {
-                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(8));
                 string a = await _http.GetStringAsync($"{_ServerAdress}/Test", cts.Token).ConfigureAwait(false);
-                if (a == "Hi!") return;
+                if (a.Trim() == "HI!")
+                {
+                    IsConnected = true;
+                    return;
+                }
             }
-            catch
-            {
-                // адрес недоступен — не подменяем, чтобы не нарушить ранее работавший сценарий
-            }
+            catch { }
+
+            // Адрес не прошёл проверку (недоступен или вернул не "HI!") — откат на localhost
+            IsConnected = false;
+            _ServerAdress = DefaultAdress;
         }
     }
 }

@@ -114,8 +114,9 @@ namespace Tebegrammmm
                 }
             };
 
-            await ws.ConnectAsync(new Uri($"{ServerData.ServerAdress.Replace("https:", "ws:")}/Voice/ws?userId={UserData.User.Id}&roomToken={Token}"),
-    CancellationToken.None);
+            string wsAddress = ServerData.ServerAdress.Replace("https:", "wss:").Replace("http:", "ws:");
+            await ws.ConnectAsync(new Uri($"{wsAddress}/Voice/ws?userId={UserData.User.Id}&roomToken={Token}"),
+                CancellationToken.None);
 
             IsMicrophoneOn = true;
 

@@ -11,8 +11,8 @@ namespace Tebegrammmm
         public SettingsPanelWindow()
         {
             InitializeComponent();
+            DataContext = UserData.User;
             TBUsername.Text = UserData.User.Username;
-            UserInfo.DataContext = UserData.User;
             CheckInputDevices();
         }
 
@@ -49,9 +49,8 @@ namespace Tebegrammmm
         private void InputDeviceCB_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             UserData.User.SelectedDeviceNum = InputDeviceCB.SelectedIndex;
-            if (!File.Exists("userDevice.data"))
-                File.Create("userDevice.data").Close();
-            File.WriteAllText("userDevice.data", $"{UserData.User.SelectedDeviceNum}");
+            AppPaths.EnsureDir();
+            File.WriteAllText(AppPaths.DeviceDataFile, $"{UserData.User.SelectedDeviceNum}");
         }
     }
 }

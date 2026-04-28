@@ -17,6 +17,7 @@ namespace Tebegrammmm
     {
         static HttpClient httpClient;
 
+
         static MainWindow()
         {
             // Игнорируем ошибки SSL сертификата для localhost (только для разработки!)
@@ -31,11 +32,13 @@ namespace Tebegrammmm
         {
             ServerData.GetServerAdress();
             InitializeComponent();
+            StartConnectingPulse();
+            _ = TrackConnectionAsync();
             TBUserLogin.Focus();
-            if (File.Exists("user.data"))
+            if (File.Exists(AppPaths.UserDataFile))
             {
                 string[] data;
-                if ((data = File.ReadAllText("user.data").Split('▫')).Length == 2)
+                if ((data = File.ReadAllText(AppPaths.UserDataFile).Split('▫')).Length == 2)
                 {
                     TBUserLogin.Text = data[0];
                     PBUserPassord.Password = data[1];
@@ -70,10 +73,17 @@ namespace Tebegrammmm
                 using HttpResponseMessage response = await httpClient.SendAsync(request);
                 string content = await response.Content.ReadAsStringAsync();
 
-                if (!response.IsSuccessStatusCode || string.IsNullOrEmpty(content))
+                if (string.IsNullOrEmpty(content))
                 {
-                    Log.Save($"[Authorization] Bad response: status={(int)response.StatusCode} len={content.Length}");
-                    MessageBox.Show($"Сервер вернул ошибку ({(int)response.StatusCode}). Проверьте логин/пароль и соединение.");
+                    Log.Save($"[Authorization] Empty response: status={(int)response.StatusCode}, addr={ServerData.ServerAdress}");
+                    MessageBox.Show($"Сервер не вернул ответ (статус {(int)response.StatusCode}).\nАдрес: {ServerData.ServerAdress}\nПроверьте, что сервер запущен.");
+                    return;
+                }
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    Log.Save($"[Authorization] Error response: status={(int)response.StatusCode}, body={content}");
+                    MessageBox.Show($"Ошибка сервера ({(int)response.StatusCode}):\n{content}");
                     return;
                 }
 
@@ -109,11 +119,8 @@ namespace Tebegrammmm
                     MessengerWindow mw = new MessengerWindow();
                     this.Hide();
                     mw.Show();
-                    if (!File.Exists("user.data"))
-                    {
-                        File.Create("user.data").Close();
-                    }
-                    File.WriteAllText("user.data", $"{TBUserLogin.Text}▫{PBUserPassord.Password}");
+                    AppPaths.EnsureDir();
+                    File.WriteAllText(AppPaths.UserDataFile, $"{TBUserLogin.Text}▫{PBUserPassord.Password}");
                     this.Close();
                 }
                 catch (System.Text.Json.JsonException)
@@ -128,8 +135,9 @@ namespace Tebegrammmm
             }
             catch (HttpRequestException ex)
             {
-                Log.Save($"[Authorization] Error: {ex.Message}");
-                MessageBox.Show("Ошибка при попытке авторизации\nПодробнее от ошибке можно узнать в краш логах");
+                string inner = ex.InnerException?.Message ?? "нет";
+                Log.Save($"[Authorization] Error: {ex.Message} | Inner: {inner} | Addr: {ServerData.ServerAdress}");
+                MessageBox.Show($"Ошибка при попытке авторизации\nАдрес: {ServerData.ServerAdress}\n{ex.Message}\n{inner}");
             }
             finally
             {
@@ -237,8 +245,9 @@ namespace Tebegrammmm
             }
             catch (HttpRequestException ex)
             {
-                Log.Save($"[Registration] Error: {ex.Message}");
-                MessageBox.Show("Ошибка регистрации\nПроверьте подключение к серверу\nСмотрите краш-логи");
+                string inner = ex.InnerException?.Message ?? "нет";
+                Log.Save($"[Registration] Error: {ex.Message} | Inner: {inner} | Addr: {ServerData.ServerAdress}");
+                MessageBox.Show($"Ошибка регистрации\nАдрес: {ServerData.ServerAdress}\n{ex.Message}\n{inner}");
             }
             catch (Exception ex)
             {
@@ -348,6 +357,55 @@ namespace Tebegrammmm
             {
                 this.DragMove();
             }
+        }
+
+        // ── Статус подключения ───────────────────────────────────────────────
+
+        private DoubleAnimation _pulseAnim;
+
+        private void StartConnectingPulse()
+        {
+            _pulseAnim = new DoubleAnimation(1.0, 0.25, new Duration(TimeSpan.FromMilliseconds(700)))
+            {
+                AutoReverse = true,
+                RepeatBehavior = RepeatBehavior.Forever,
+                EasingFunction = new SineEase { EasingMode = EasingMode.EaseInOut }
+            };
+            ConnStatusDot.BeginAnimation(UIElement.OpacityProperty, _pulseAnim);
+            ConnStatusDotReg.BeginAnimation(UIElement.OpacityProperty, _pulseAnim);
+        }
+
+        private async Task TrackConnectionAsync()
+        {
+            await ServerData.Ready;
+            Dispatcher.Invoke(() => ApplyConnectionStatus(ServerData.IsConnected));
+        }
+
+        private void ApplyConnectionStatus(bool connected)
+        {
+            // Останавливаем пульс
+            ConnStatusDot.BeginAnimation(UIElement.OpacityProperty, null);
+            ConnStatusDotReg.BeginAnimation(UIElement.OpacityProperty, null);
+            ConnStatusDot.Opacity = 1;
+            ConnStatusDotReg.Opacity = 1;
+
+            var dotColor  = connected
+                ? new SolidColorBrush(Color.FromRgb(76, 175, 80))   // зелёный
+                : new SolidColorBrush(Color.FromRgb(244, 67, 54));   // красный
+            string label  = connected ? "Подключен." : "Нет соединения";
+
+            ConnStatusDot.Fill    = dotColor;
+            ConnStatusDotReg.Fill = dotColor;
+            ConnStatusText.Text    = label;
+            ConnStatusTextReg.Text = label;
+
+            // Лёгкий fade текста
+            var fade = new DoubleAnimation(0.4, 1.0, new Duration(TimeSpan.FromMilliseconds(400)))
+            {
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+            };
+            ConnStatusText.BeginAnimation(UIElement.OpacityProperty, fade);
+            ConnStatusTextReg.BeginAnimation(UIElement.OpacityProperty, fade);
         }
 
         // ── Состояние загрузки — логин ───────────────────────────────────────
