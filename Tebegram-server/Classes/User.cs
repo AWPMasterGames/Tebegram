@@ -95,11 +95,11 @@ namespace TebegramServer
         }
         public string GetNewMessages()
         {
-            string messages = string.Empty;
             if (NewMessages.Count == 0) return "NotFound";
+            string messages = string.Empty;
             foreach (Message message in NewMessages)
             {
-                messages += message.ToString();
+                messages += message.ToString() + "❂";
             }
             NewMessages.Clear();
             return messages;
