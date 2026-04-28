@@ -3,7 +3,7 @@
 
   <Package Name="Tebegram"
            Manufacturer="Tebegram"
-           Version="1.0.3"
+           Version="1.0.6"
            UpgradeCode="4F2B1C8E-A3F5-4F8B-9D1A-7E4B2C6A5F3D"
            Scope="perMachine"
            Codepage="1251"
