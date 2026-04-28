@@ -10,7 +10,8 @@ namespace Tebegrammmm.Data
         private const string DefaultAdress = "https://localhost:5000";
         private const string AdressUrl = "https://raw.githubusercontent.com/AWPMasterGames/Tebegrammmm/refs/heads/main/Tebegrammmm/Adress.txt";
 
-        private static string _ServerAdress = DefaultAdress;
+        //private static string _ServerAdress = DefaultAdress;
+        private static string _ServerAdress = AdressUrl;
         public static string ServerAdress { get { return _ServerAdress; } }
 
         private static readonly HttpClient _http = CreateHttpClient();
