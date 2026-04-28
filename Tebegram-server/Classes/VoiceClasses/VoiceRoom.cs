@@ -36,11 +36,16 @@ namespace TebegramServer.Classes.VoiceClasses
                 if (RoomMembers[i].Member == roomMember)
                 {
                     await RoomMembers[i].Disconnect(webSocketCloseStatus, desciption, cancellationToken);
-
                     _RoomMembers.Remove(RoomMembers[i]);
                     _LastDiscconectTime = DateTime.Now;
                     break;
                 }
+            }
+
+            // Уведомляем оставшихся участников о завершении звонка
+            foreach (var remaining in _RoomMembers)
+            {
+                await remaining.SendMeText("CloseConnection");
             }
         }
 

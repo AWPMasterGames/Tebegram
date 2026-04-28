@@ -1,18 +1,15 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 
 namespace Tebegrammmm.ChatsFoldersRedactsWindows
 {
-    /// <summary>
-    /// Логика взаимодействия для AddFolderWindow.xaml
-    /// </summary>
     public partial class AddFolderWindow : Window
     {
         private ObservableCollection<Contact> AllConatcs;
         private ObservableCollection<Contact> FolderContacts;
-
         private ChatFolder NewChatsFolder;
+
         public AddFolderWindow(ObservableCollection<ChatFolder> chatsFolder, ChatFolder newFolder)
         {
             InitializeComponent();
@@ -20,13 +17,29 @@ namespace Tebegrammmm.ChatsFoldersRedactsWindows
             NewChatsFolder = newFolder;
             AllConatcs = chatsFolder[0].Contacts;
             LBMyContacts.ItemsSource = AllConatcs;
-
             LBFolderContacts.ItemsSource = FolderContacts;
+        }
+
+        private void Window_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == System.Windows.Input.MouseButton.Left)
+                this.DragMove();
+        }
+
+        private void MinimizeBtn_Click(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
+        }
+
+        private void CloseBtn_Click(object sender, RoutedEventArgs e)
+        {
+            this.DialogResult = false;
+            this.Close();
         }
 
         private void LBFolderContacts_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if(LBFolderContacts.SelectedItem == null) return;
+            if (LBFolderContacts.SelectedItem == null) return;
             FolderContacts.Remove(LBFolderContacts.SelectedItem as Contact);
         }
 
@@ -40,9 +53,7 @@ namespace Tebegrammmm.ChatsFoldersRedactsWindows
             for (int i = 0; i < FolderContacts.Count; i++)
             {
                 if (LBMyContacts.SelectedItem as Contact == FolderContacts[i])
-                {
                     return;
-                }
             }
             FolderContacts.Add(LBMyContacts.SelectedItem as Contact);
             LBMyContacts.SelectedIndex = -1;
@@ -50,10 +61,7 @@ namespace Tebegrammmm.ChatsFoldersRedactsWindows
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if(TBoxFolderName.Text.Length < 1)
-            {
-                return;
-            }
+            if (TBoxFolderName.Text.Length < 1) return;
             NewChatsFolder.ChangeFolderName(TBoxFolderName.Text);
             NewChatsFolder.Contacts = FolderContacts;
             this.DialogResult = true;
@@ -65,6 +73,7 @@ namespace Tebegrammmm.ChatsFoldersRedactsWindows
             this.DialogResult = false;
             this.Close();
         }
+
         private void Remove_Contact(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && button.CommandParameter is Contact contact)
@@ -72,11 +81,8 @@ namespace Tebegrammmm.ChatsFoldersRedactsWindows
                 if (FolderContacts != null && FolderContacts.Contains(contact))
                 {
                     FolderContacts.Remove(contact);
-
                     if (AllConatcs != null && !AllConatcs.Contains(contact))
-                    {
                         AllConatcs.Add(contact);
-                    }
                 }
             }
         }

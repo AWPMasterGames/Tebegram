@@ -1,24 +1,36 @@
-﻿<UserControl x:Class="Tebegrammmm.Controls.UserControl1"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Tebegrammmm.Controls"
-             mc:Ignorable="d" 
-             d:DesignHeight="40" d:DesignWidth="40">
-    <Grid>
-        <Border BorderThickness="3" Grid.Column="0" Width="40" BorderBrush="Black" Height="40" CornerRadius="60" Padding="0"
-HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Grid>
-                <Border Name="mask" Background="White" CornerRadius="60"/>
-                <StackPanel >
-                    <StackPanel.OpacityMask>
-                        <VisualBrush Visual="{Binding ElementName=mask}"/>
-                    </StackPanel.OpacityMask>
-                    <Image Name="ImgAvatar" Source="{Binding Avatar, Mode=OneWay}" />
+<UserControl
+    x:Class="Tebegrammmm.Controls.UserControl1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Tebegrammmm.Controls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="40"
+    d:DesignWidth="40"
+    mc:Ignorable="d">
 
-                </StackPanel>
-            </Grid>
-        </Border>
+    <Grid Width="40" Height="40">
+
+        <!--  Фоновый круг  -->
+        <Ellipse Fill="{StaticResource Light.BgElevatedBrush}" />
+
+        <!--  Иконка по умолчанию (видна, пока не загружен аватар)  -->
+        <Viewbox Margin="5">
+            <Path
+                Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 9.68 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20z"
+                Fill="{StaticResource Light.TextMutedBrush}"
+                Stretch="Uniform" />
+        </Viewbox>
+
+        <!--  Аватар (перекрывает иконку когда загружен)  -->
+        <Ellipse>
+            <Ellipse.Fill>
+                <ImageBrush ImageSource="{Binding Avatar, Mode=OneWay}" Stretch="UniformToFill" />
+            </Ellipse.Fill>
+        </Ellipse>
+
+        <!--  Тонкая граница  -->
+        <Ellipse Stroke="{StaticResource Light.BorderSubtleBrush}" StrokeThickness="1" />
+
     </Grid>
 </UserControl>

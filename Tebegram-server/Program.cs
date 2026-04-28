@@ -82,8 +82,18 @@ app.MapGet("/upload/{FileName}", async (HttpContext context, string FileName) =>
     var fileProvider = new PhysicalFileProvider(Directory.GetCurrentDirectory());
     var fieInfo = fileProvider.GetFileInfo($"uploads/{FileName}");
 
-    context.Response.Headers.ContentEncoding = "Unicode";
-    context.Response.Headers.ContentDisposition = $"attachment; filename={FileName}";
+    string ext = Path.GetExtension(FileName).TrimStart('.').ToLower();
+    string mime = ext switch
+    {
+        "jpg" or "jpeg" => "image/jpeg",
+        "png" => "image/png",
+        "gif" => "image/gif",
+        "webp" => "image/webp",
+        "bmp" => "image/bmp",
+        _ => "application/octet-stream"
+    };
+    context.Response.ContentType = mime;
+    context.Response.Headers.ContentDisposition = $"inline; filename={FileName}";
     await context.Response.SendFileAsync(fieInfo);
 });
 
@@ -105,7 +115,7 @@ app.MapPost("/avatars/{UserId}", async (HttpContext context, int UserId) =>
         Logs.Save($"Загружен файл {FName}");
         UsersData.FindUserById(UserId).Avatar = FName;
     }
-
+    UsersData.SaveUserToFile();
     await context.Response.WriteAsync(FName);
 
 });
@@ -120,31 +130,61 @@ app.MapGet("/avatars/{FileName}", async (HttpContext context, string FileName) =
     var fileProvider = new PhysicalFileProvider(Directory.GetCurrentDirectory());
     var fieInfo = fileProvider.GetFileInfo($"avatars/{FileName}");
 
-    context.Response.Headers.ContentEncoding = "Unicode";
-    context.Response.Headers.ContentDisposition = $"attachment; filename={FileName}";
+    string ext = Path.GetExtension(FileName).TrimStart('.').ToLower();
+    string mime = ext switch
+    {
+        "jpg" or "jpeg" => "image/jpeg",
+        "png" => "image/png",
+        "gif" => "image/gif",
+        "webp" => "image/webp",
+        "bmp" => "image/bmp",
+        _ => "application/octet-stream"
+    };
+    context.Response.ContentType = mime;
+    context.Response.Headers.ContentDisposition = $"inline; filename={FileName}";
     await context.Response.SendFileAsync(fieInfo);
 });
 
 app.MapGet("/login/{UserLogin}-{UserPassword}", async (HttpContext Context, string UserLogin, string UserPassword) =>
 {
-    if (!UsersData.IsExistUser(UserLogin))
+    try
     {
-        await Context.Response.WriteAsync("Пользователь с таким логином не существует");
-    }
-    else if (UsersData.Authorize(UserLogin, UserPassword) != null)
-    {
-        var user = UsersData.FindUserByLogin(UserLogin);
-        if (user != null)
+        if (!UsersData.IsExistUser(UserLogin))
         {
-            await Context.Response.WriteAsync(user.ToClientSend());
-            Logs.Save($"Пользователь {UserLogin} авторизировался");
+            await Context.Response.WriteAsync("Пользователь с таким логином не существует");
+            return;
         }
-        else
+
+        if (UsersData.Authorize(UserLogin, UserPassword) == null)
+        {
+            await Context.Response.WriteAsync("Неверный пароль");
+            return;
+        }
+
+        var user = UsersData.FindUserByLogin(UserLogin);
+        if (user == null)
         {
             await Context.Response.WriteAsync("Ошибка при поиске пользователя");
+            return;
         }
+
+        string payload = user.ToClientSend();
+        if (string.IsNullOrEmpty(payload))
+        {
+            Context.Response.StatusCode = 500;
+            await Context.Response.WriteAsync("Ошибка: ToClientSend вернул пустую строку");
+            return;
+        }
+
+        await Context.Response.WriteAsync(payload);
+        Logs.Save($"Пользователь {UserLogin} авторизировался");
     }
-    else await Context.Response.WriteAsync("Неверный пароль");
+    catch (Exception ex)
+    {
+        Logs.Save($"[Login] Исключение для {UserLogin}: {ex.GetType().Name}: {ex.Message}");
+        Context.Response.StatusCode = 500;
+        await Context.Response.WriteAsync($"Ошибка сервера: {ex.Message}");
+    }
 });
 
 app.MapGet("/register/{UserLogin}-{UserPassword}-{Username}-{Name}", async (HttpContext Context, string UserLogin, string UserPassword, string Username, string Name) =>
@@ -162,6 +202,7 @@ app.MapGet("/register/{UserLogin}-{UserPassword}-{Username}-{Name}", async (Http
                         }, "💬", false)
                 }, "");
         UsersData.AddUser(NewUser);
+        UsersData.SaveUserToFile();
         await Context.Response.WriteAsync(NewUser.ToClientSend());
         Logs.Save($"Пользователь {UserLogin} зарегрестрировался");
     }
@@ -221,6 +262,7 @@ app.MapPost("/messages", async (HttpContext Context) =>
     ReciverUser?.NewMessages.Add(message);
     SenderUser?.AddMessage(message);
     SenderUser?.NewMessages.Add(message);
+    UsersData.SaveUserToFile();
 
     return Context.Response.StatusCode = 200;
 });
@@ -241,6 +283,7 @@ app.MapPost("/Contact", async (HttpContext Context) =>
     if (Data[2].Trim().Length < 1) contact = new Contact(UContact.Id, UContact.Username, UContact.Name);
     else contact = new Contact(UContact.Id, UContact.Username, Data[2]);
     UsersData.FindUserById(int.Parse(Data[0]))?.AddContact(contact);
+    UsersData.SaveUserToFile();
     Context.Response.StatusCode = 200;
     await Context.Response.WriteAsync(contact.ToString());
 });
@@ -250,6 +293,7 @@ app.MapPut("/Contact", async (HttpContext Context) =>
     string Request = await reader.ReadToEndAsync();
     string[] Data = Request.Split('▫');
     UsersData.FindUserById(int.Parse(Data[0]))?.FindContactByUsername(Data[1]).ChangeName(Data[2]);
+    UsersData.SaveUserToFile();
     return Context.Response.StatusCode = 200;
 });
 app.MapDelete("/Contact", async (HttpContext Context) =>
@@ -259,6 +303,7 @@ app.MapDelete("/Contact", async (HttpContext Context) =>
     string[] Data = Request.Split('▫');
     User user = UsersData.FindUserById(int.Parse(Data[0]));
     user.RemoveContact(user.FindContactByUsername(Data[1]));
+    UsersData.SaveUserToFile();
     return Context.Response.StatusCode = 200;
 });
 

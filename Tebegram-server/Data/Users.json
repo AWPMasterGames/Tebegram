@@ -5,22 +5,25 @@
     "Password": "123",
     "Name": "Вася жопкин бамбук",
     "Username": "vasya",
+    "Avatart": "",
     "ChatsFolders": [
       {
         "Name": "Все чаты",
         "Contacts": [
           {
+            "Id": 0,
             "Username": "ybeka",
             "Name": "Убека",
             "Messages": []
           },
           {
+            "Id": 0,
             "Username": "masya",
             "Name": "Masya",
             "Messages": []
           }
         ],
-        "Icon": "💬",
+        "Icon": "\uD83D\uDCAC",
         "CanDelete": false
       }
     ]
@@ -31,22 +34,25 @@
     "Password": "123",
     "Name": "убека",
     "Username": "ybeka",
+    "Avatart": "",
     "ChatsFolders": [
       {
         "Name": "Все чаты",
         "Contacts": [
           {
+            "Id": 0,
             "Username": "vasya",
             "Name": "Вася жопкин бамбук",
             "Messages": []
           },
           {
+            "Id": 0,
             "Username": "masya",
             "Name": "Masya",
             "Messages": []
           }
         ],
-        "Icon": "💬",
+        "Icon": "\uD83D\uDCAC",
         "CanDelete": false
       }
     ]
@@ -57,22 +63,25 @@
     "Password": "123",
     "Name": "Мася",
     "Username": "masya",
+    "Avatart": "",
     "ChatsFolders": [
       {
         "Name": "Все чаты",
         "Contacts": [
           {
+            "Id": 0,
             "Username": "vasya",
             "Name": "Вася жопкин бамбук",
             "Messages": []
           },
           {
+            "Id": 0,
             "Username": "ybeka",
             "Name": "Убебка",
             "Messages": []
           }
         ],
-        "Icon": "💬",
+        "Icon": "\uD83D\uDCAC",
         "CanDelete": false
       }
     ]
@@ -83,22 +92,127 @@
     "Password": "123",
     "Name": "Админ",
     "Username": "admin_228",
+    "Avatart": "",
     "ChatsFolders": [
       {
         "Name": "Все чаты",
         "Contacts": [
           {
+            "Id": 0,
             "Username": "vasya",
             "Name": "Вася",
             "Messages": []
           },
           {
+            "Id": 0,
             "Username": "ybeka",
             "Name": "убека",
             "Messages": []
           }
         ],
-        "Icon": "💬",
+        "Icon": "\uD83D\uDCAC",
+        "CanDelete": false
+      }
+    ]
+  },
+  {
+    "Id": 5,
+    "Login": "test",
+    "Password": "1234",
+    "Name": "test",
+    "Username": "test",
+    "Avatart": "",
+    "ChatsFolders": [
+      {
+        "Name": "Все чаты",
+        "Contacts": [
+          {
+            "Id": 6,
+            "Username": "test2",
+            "Name": "test2",
+            "Messages": [
+              {
+                "Sender": "test",
+                "Recipient": "test2",
+                "Text": "Hello World",
+                "Time": "2026-04-29 07:33:00",
+                "MessageType": "Text",
+                "MessageString": "test▫test2▫Text▫2026-04-29 04:33:00▫▫Hello World",
+                "ServerAdress": ""
+              },
+              {
+                "Sender": "test2",
+                "Recipient": "test",
+                "Text": "20260427_160531.jpg",
+                "Time": "2026-04-29 07:34:00",
+                "MessageType": "File",
+                "MessageString": "test2▫test▫File▫2026-04-29 04:34:00▫http://localhost:5000/upload/20260427_160531.jpg▫20260427_160531.jpg",
+                "ServerAdress": "http://localhost:5000/upload/20260427_160531.jpg"
+              },
+              {
+                "Sender": "test",
+                "Recipient": "test2",
+                "Text": "20260427_160525.jpg",
+                "Time": "2026-04-29 07:34:00",
+                "MessageType": "File",
+                "MessageString": "test▫test2▫File▫2026-04-29 04:34:00▫http://localhost:5000/upload/20260427_160525.jpg▫20260427_160525.jpg",
+                "ServerAdress": "http://localhost:5000/upload/20260427_160525.jpg"
+              }
+            ]
+          }
+        ],
+        "Icon": "\uD83D\uDCAC",
+        "CanDelete": false
+      }
+    ]
+  },
+  {
+    "Id": 6,
+    "Login": "test2",
+    "Password": "1234",
+    "Name": "test2",
+    "Username": "test2",
+    "Avatart": "",
+    "ChatsFolders": [
+      {
+        "Name": "Все чаты",
+        "Contacts": [
+          {
+            "Id": 5,
+            "Username": "test",
+            "Name": "test",
+            "Messages": [
+              {
+                "Sender": "test",
+                "Recipient": "test2",
+                "Text": "Hello World",
+                "Time": "2026-04-29 07:33:00",
+                "MessageType": "Text",
+                "MessageString": "test▫test2▫Text▫2026-04-29 04:33:00▫▫Hello World",
+                "ServerAdress": ""
+              },
+              {
+                "Sender": "test2",
+                "Recipient": "test",
+                "Text": "20260427_160531.jpg",
+                "Time": "2026-04-29 07:34:00",
+                "MessageType": "File",
+                "MessageString": "test2▫test▫File▫2026-04-29 04:34:00▫http://localhost:5000/upload/20260427_160531.jpg▫20260427_160531.jpg",
+                "ServerAdress": "http://localhost:5000/upload/20260427_160531.jpg"
+              },
+              {
+                "Sender": "test",
+                "Recipient": "test2",
+                "Text": "20260427_160525.jpg",
+                "Time": "2026-04-29 07:34:00",
+                "MessageType": "File",
+                "MessageString": "test▫test2▫File▫2026-04-29 04:34:00▫http://localhost:5000/upload/20260427_160525.jpg▫20260427_160525.jpg",
+                "ServerAdress": "http://localhost:5000/upload/20260427_160525.jpg"
+              }
+            ]
+          }
+        ],
+        "Icon": "\uD83D\uDCAC",
         "CanDelete": false
       }
     ]
