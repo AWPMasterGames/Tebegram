@@ -10,7 +10,7 @@
 
         <Shortcut Id="AppDesktopShortcut"
                   Name="Tebegram"
-                  Description="Tebegram — мессенджер"
+                  Description="Tebegram - мессенджер"
                   Target="[INSTALLFOLDER]Tebegrammmm.exe"
                   WorkingDirectory="INSTALLFOLDER"
                   Icon="AppIcon.exe"
