@@ -54,7 +54,9 @@ namespace Tebegrammmm
         }
         public override string ToString()
         {
-            return $"{Sender}▫{Reciver}▫{MessageType}▫{Time}▫{ServerAdress}▫{Text}";
+            // Image сериализуется как File — сервер не знает про Image
+            string typeStr = _MessageType == MessageType.Image ? "File" : _MessageType.ToString();
+            return $"{Sender}▫{Reciver}▫{typeStr}▫{Time}▫{ServerAdress}▫{Text}";
         }
     }
 }

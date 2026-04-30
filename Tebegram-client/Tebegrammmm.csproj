@@ -1,5 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup Condition="'$(Configuration)' == 'Max'">
+    <DefineConstants>MAX</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Serge'">
+    <DefineConstants>SERGE</DefineConstants>
+  </PropertyGroup>
+
   <PropertyGroup>
+    <Configurations>Debug;Release;Max;Serge</Configurations>
     <TargetFramework>net8.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>

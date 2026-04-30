@@ -152,35 +152,7 @@ namespace Tebegrammmm
 
         private void StartSVT()
         {
-            SendVoiceThread = new Thread(() =>
-            {
-                bool isOn = true;
-                while (true)
-                {
-                    if (IsMicrophoneOn)
-                    {
-                        if (isOn)
-                        {
-                            continue;
-                        }
-                        waveIn.StartRecording();
-                        isOn = true;
-                        //MessageBox.Show("Микрофон включен");
-                    }
-                    else
-                    {
-                        if (!isOn)
-                        {
-                            continue;
-                        }
-                        waveIn.StopRecording();
-                        isOn = false;
-                        //MessageBox.Show("Микрофон выключен");
-                    }
-                }
-            });
-
-            SendVoiceThread.Start();
+            waveIn.StartRecording();
         }
 
         private void StartRVT()
@@ -209,10 +181,13 @@ namespace Tebegrammmm
                     switch (message)
                     {
                         case "CloseConnection":
-                            Dispatcher.Invoke(new Action(() =>
-                            {
-                                this.Close();
-                            }));
+                            Dispatcher.Invoke(() => this.Close());
+                            break;
+                        case "MicMuted":
+                            Dispatcher.Invoke(() => AnimateMicBadge(muting: true));
+                            break;
+                        case "MicUnmuted":
+                            Dispatcher.Invoke(() => AnimateMicBadge(muting: false));
                             break;
                     }
                 }
@@ -338,40 +313,69 @@ namespace Tebegrammmm
             this.Close();
         }
 
-        private void Button_Click_OffOnMicrofon(object sender, RoutedEventArgs e)
+        private async void Button_Click_OffOnMicrofon(object sender, RoutedEventArgs e)
         {
             IsMicrophoneOn = !IsMicrophoneOn;
-            AnimateMicToggle(muting: !IsMicrophoneOn);
+            if (IsMicrophoneOn)
+                waveIn.StartRecording();
+            else
+                waveIn.StopRecording();
+            AnimateMicButton(muting: !IsMicrophoneOn);
+
+            // Уведомляем собеседника через WebSocket
+            if (ws?.State == WebSocketState.Open)
+            {
+                string msg = IsMicrophoneOn ? "MicUnmuted" : "MicMuted";
+                var bytes = Encoding.UTF8.GetBytes(msg);
+                await ws.SendAsync(new ArraySegment<byte>(bytes), WebSocketMessageType.Text, true, CancellationToken.None);
+            }
         }
 
-        private void AnimateMicToggle(bool muting)
+        // Анимирует только кнопку микрофона (своё действие)
+        private void AnimateMicButton(bool muting)
         {
             const double SlashLength = 26.0;
             var duration = new Duration(TimeSpan.FromMilliseconds(220));
             var ease = new CubicEase { EasingMode = EasingMode.EaseOut };
 
-            // Черта: рисуем при мьюте (offset 26→0), стираем при разблокировке (0→26)
             var fromOffset = muting ? SlashLength : 0.0;
             var toOffset   = muting ? 0.0 : SlashLength;
 
             MicSlashLine.BeginAnimation(Shape.StrokeDashOffsetProperty,
                 new DoubleAnimation(fromOffset, toOffset, duration) { EasingFunction = ease });
-            MicAvatarSlashLine.BeginAnimation(Shape.StrokeDashOffsetProperty,
-                new DoubleAnimation(fromOffset, toOffset, duration) { EasingFunction = ease });
 
-            // Фон кнопки и бейджа: серый ↔ мягко-красный
             var mutedBg  = (Brush)FindResource("Light.DangerMutedBrush");
             var normalBg = (Brush)FindResource("Light.BgElevatedBrush");
-            BtnMic.Background          = muting ? mutedBg : normalBg;
-            MicButtonBorder.Background = muting ? mutedBg : normalBg;
+            BtnMic.Background = muting ? mutedBg : normalBg;
 
-            // Цвет иконки и черты: обычный ↔ красный
             var iconColor = muting
                 ? (Brush)FindResource("Light.DangerBrush")
                 : (Brush)FindResource("Light.TextPrimaryBrush");
-            MicIconPath.Fill          = iconColor;
+            MicIconPath.Fill    = iconColor;
+            MicSlashLine.Stroke = iconColor;
+        }
+
+        // Анимирует только бейдж аватара (состояние микрофона собеседника)
+        public void AnimateMicBadge(bool muting)
+        {
+            const double SlashLength = 26.0;
+            var duration = new Duration(TimeSpan.FromMilliseconds(220));
+            var ease = new CubicEase { EasingMode = EasingMode.EaseOut };
+
+            var fromOffset = muting ? SlashLength : 0.0;
+            var toOffset   = muting ? 0.0 : SlashLength;
+
+            MicAvatarSlashLine.BeginAnimation(Shape.StrokeDashOffsetProperty,
+                new DoubleAnimation(fromOffset, toOffset, duration) { EasingFunction = ease });
+
+            var mutedBg  = (Brush)FindResource("Light.DangerMutedBrush");
+            var normalBg = (Brush)FindResource("Light.BgElevatedBrush");
+            MicButtonBorder.Background = muting ? mutedBg : normalBg;
+
+            var iconColor = muting
+                ? (Brush)FindResource("Light.DangerBrush")
+                : (Brush)FindResource("Light.TextPrimaryBrush");
             MicAvatarPath.Fill        = iconColor;
-            MicSlashLine.Stroke       = iconColor;
             MicAvatarSlashLine.Stroke = iconColor;
         }
     }
