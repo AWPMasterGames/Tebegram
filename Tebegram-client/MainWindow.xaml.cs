@@ -66,7 +66,10 @@ namespace Tebegrammmm
             SetLoginLoading(true);
             try
             {
-                await ServerData.Ready;
+                if (!ServerData.IsConnected)
+                    await ServerData.RetryAsync();
+                else
+                    await ServerData.Ready;
                 string loginEnc = Uri.EscapeDataString(TBUserLogin.Text);
                 string passEnc = Uri.EscapeDataString(PBUserPassord.Password);
                 using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/login/{loginEnc}-{passEnc}");
@@ -186,7 +189,10 @@ namespace Tebegrammmm
             SetRegLoading(true);
             try
             {
-                await ServerData.Ready;
+                if (!ServerData.IsConnected)
+                    await ServerData.RetryAsync();
+                else
+                    await ServerData.Ready;
                 string username = TBUserNameLogin.Text.Trim();
                 string password = PBUserPassword.Password;
                 string name = TBUserName.Text.Trim();

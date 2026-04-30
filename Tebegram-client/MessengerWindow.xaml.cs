@@ -65,6 +65,9 @@ namespace Tebegrammmm
             CaltokenThread = new Thread(new ThreadStart(GetCallToken)) { IsBackground = true };
             CaltokenThread.Start();
 
+            // Открываем последний чат, если он сохранён
+            this.Loaded += MessengerWindow_OpenLastChat;
+
             if (File.Exists(AppPaths.DeviceDataFile))
             {
                 int dvNum = int.Parse(File.ReadAllText(AppPaths.DeviceDataFile));
@@ -77,6 +80,31 @@ namespace Tebegrammmm
         private void LoadStyle()
         {
             LBMessages.Background = (Brush)this.TryFindResource("ChatBackground");
+        }
+
+        private void MessengerWindow_OpenLastChat(object sender, RoutedEventArgs e)
+        {
+            this.Loaded -= MessengerWindow_OpenLastChat;
+            try
+            {
+                if (!File.Exists(AppPaths.LastChatFile)) return;
+                string lastUsername = File.ReadAllText(AppPaths.LastChatFile).Trim();
+                if (string.IsNullOrEmpty(lastUsername)) return;
+
+                var contacts = UserData.User.Contacts;
+                for (int i = 0; i < contacts.Count; i++)
+                {
+                    if (contacts[i].Username == lastUsername)
+                    {
+                        LBChats.SelectedIndex = i;
+                        break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Save($"[OpenLastChat] Error: {ex.Message}");
+            }
         }
 
         private async void GetCallToken()
@@ -166,10 +194,14 @@ namespace Tebegrammmm
             Contact = LBChats.SelectedItem as Contact;
             Log.Save($"[LBChats_SelectionChanged] Selected contact: {Contact?.Name} ({Contact?.Username})");
 
+            // Запоминаем последний открытый чат
+            try { File.WriteAllText(AppPaths.LastChatFile, Contact.Username); } catch { }
+
             GridChat.DataContext = Contact;
             LBMessages.ItemsSource = Contact.Messages;
             GridMessege.Visibility = Visibility.Visible;
             GridContactPanel.Visibility = Visibility.Visible;
+            Dispatcher.InvokeAsync(ScrollMessagesToBottom, System.Windows.Threading.DispatcherPriority.Loaded);
 
             // Восстанавливаем черновик для нового контакта
             if (TBMessage != null)
@@ -199,22 +231,25 @@ namespace Tebegrammmm
                     Dispatcher.Invoke(new Action(() =>
                     {
                         contact.Messages.Add(message);
+                        if (contact == Contact) ScrollMessagesToBottom();
                     }));
 
                     Log.Save($"[AddMessageToUser] Получено сообщение от {messageData[0]}: {text}");
                 }
-                else if (messageData[2] == "File")
+                else if (messageData[2] == "File" || messageData[2] == "Image")
                 {
-                    Message message = new Message(UserData.User.Name, messageData[1], messageData[5], messageData[3], MessageType.File, $"{ServerData.ServerAdress}/upload/{messageData[5]}");
+                    MessageType mt = DetectTypeByFilename(messageData[5]);
+                    Message message = new Message(UserData.User.Name, messageData[1], messageData[5], messageData[3], mt, $"{ServerData.ServerAdress}/upload/{Uri.EscapeDataString(messageData[5])}");
                     message.Status = MessageStatus.Sent;
                     message.IsOutgoing = true;
 
                     Dispatcher.Invoke(new Action(() =>
                     {
                         contact.Messages.Add(message);
+                        if (contact == Contact) ScrollMessagesToBottom();
                     }));
 
-                    Log.Save($"[AddMessageToUser] Получен файл от {messageData[0]}: {messageData[4]}");
+                    Log.Save($"[AddMessageToUser] Получен файл/изображение от {messageData[0]}: {messageData[5]}");
                 }
             }
             else if (UserData.User.FindContactByUsername(messageData[0]) == null)
@@ -236,20 +271,22 @@ namespace Tebegrammmm
                     Dispatcher.Invoke(new Action(() =>
                     {
                         contact.Messages.Add(message);
+                        if (contact == Contact) ScrollMessagesToBottom();
                     }));
                     // НЕ сохраняем на сервер - это уже сделал отправитель!
                     Log.Save($"[AddMessageToUser] Получено сообщение от {messageData[0]}: {text}");
                 }
-                else if (messageData[2] == "File")
+                else if (messageData[2] == "File" || messageData[2] == "Image")
                 {
-                    Message message = new Message(UserData.User.Name, messageData[1], messageData[5], messageData[3], MessageType.File, messageData[4]);
-                    message.Status = MessageStatus.Sent; // Файлы тоже просто сохраняются
+                    MessageType mt = DetectTypeByFilename(messageData[5]);
+                    Message message = new Message(UserData.User.Name, messageData[1], messageData[5], messageData[3], mt, $"{ServerData.ServerAdress}/upload/{Uri.EscapeDataString(messageData[5])}");
+                    message.Status = MessageStatus.Sent;
                     Dispatcher.Invoke(new Action(() =>
                     {
                         contact.Messages.Add(message);
+                        if (contact == Contact) ScrollMessagesToBottom();
                     }));
-                    // НЕ сохраняем на сервер - это уже сделал отправитель!
-                    Log.Save($"[AddMessageToUser] Получен файл от {messageData[0]}: {messageData[4]}");
+                    Log.Save($"[AddMessageToUser] Получен файл/изображение от {messageData[0]}: {messageData[5]}");
                 }
                 Dispatcher.Invoke(new Action(() =>
                 {
@@ -274,19 +311,22 @@ namespace Tebegrammmm
                             Dispatcher.Invoke(new Action(() =>
                             {
                                 contact.Messages.Add(message);
+                                if (contact == Contact) ScrollMessagesToBottom();
                             }));
 
                             // НЕ сохраняем на сервер - это уже сделал отправитель!
                             Log.Save($"[AddMessageToUser] Получено сообщение от {contact.Name}: {text}");
                         }
-                        else if (messageData[2] == "File")
+                        else if (messageData[2] == "File" || messageData[2] == "Image")
                         {
-                            Message message = new Message(contact.Name, messageData[1], messageData[5], messageData[3], MessageType.File, messageData[4]);
-                            message.Status = MessageStatus.Sent; // Файлы тоже просто сохраняются
+                            MessageType mt = DetectTypeByFilename(messageData[5]);
+                            Message message = new Message(contact.Name, messageData[1], messageData[5], messageData[3], mt, $"{ServerData.ServerAdress}/upload/{Uri.EscapeDataString(messageData[5])}");
+                            message.Status = MessageStatus.Sent;
 
                             Dispatcher.Invoke(new Action(() =>
                             {
                                 contact.Messages.Add(message);
+                                if (contact == Contact) ScrollMessagesToBottom();
                             }));
 
                             SaveMessageToFile(contact.Name, MessageData, false);
@@ -464,13 +504,12 @@ namespace Tebegrammmm
                 return;
             }
 
-            Message Message = new Message(UserData.User.Username, Contact.Username, message, DateTime.Now.ToString("hh:mm"), messageType, ServerFilePath);
+            Message Message = new Message(UserData.User.Username, Contact.Username, message, DateTime.Now.ToString("dd.MM.yyyy HH:mm"), messageType, ServerFilePath);
 
             Log.Save($"[SendMessage] Message added to local contact. Sending to UserData.User...");
             await SendMessageToUserAsync(Message);
             TBMessage.Text = string.Empty;
             Contact.Draft = string.Empty;
-            ScrollMessagesToBottom();
         }
 
         private void ScrollMessagesToBottom()
@@ -479,6 +518,15 @@ namespace Tebegrammmm
             var sv = GetScrollViewer(LBMessages);
             sv?.ScrollToBottom();
         }
+
+        private static readonly System.Collections.Generic.HashSet<string> _imageExtensions =
+            new System.Collections.Generic.HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            { ".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp", ".tiff", ".ico" };
+
+        private static MessageType DetectTypeByFilename(string filename) =>
+            _imageExtensions.Contains(System.IO.Path.GetExtension(filename))
+                ? MessageType.Image
+                : MessageType.File;
 
         private static System.Windows.Controls.ScrollViewer GetScrollViewer(System.Windows.DependencyObject o)
         {
@@ -698,6 +746,9 @@ namespace Tebegrammmm
                 return;
             }
 
+            bool isImage = mimeType.StartsWith("image/");
+            MessageType msgType = isImage ? MessageType.Image : MessageType.File;
+
             using var multipar = new MultipartFormDataContent();
             var fileStream = new StreamContent(File.OpenRead(filePath));
             fileStream.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
@@ -705,7 +756,50 @@ namespace Tebegrammmm
 
             using var response = await httpClient.PostAsync($"{ServerData.ServerAdress}/upload", multipar);
             var ResponseText = await response.Content.ReadAsStringAsync();
-            this.Dispatcher.Invoke(new Action(() => { SendMessage(Path.GetFileName(filePath).Replace(" ", "_"), MessageType.File, $"{ServerData.ServerAdress}/upload/{Path.GetFileName(filePath).Replace(" ", "_")}"); }));
+            string serverFileName = Path.GetFileName(filePath).Replace(" ", "_");
+            this.Dispatcher.Invoke(new Action(() => { SendMessage(serverFileName, msgType, $"{ServerData.ServerAdress}/upload/{Uri.EscapeDataString(serverFileName)}"); }));
+        }
+
+        private void ImageBorder_Loaded(object sender, RoutedEventArgs e)
+        {
+            var border = (Border)sender;
+            void UpdateClip()
+            {
+                border.Clip = new System.Windows.Media.RectangleGeometry(
+                    new Rect(0, 0, border.ActualWidth, border.ActualHeight), 8, 8);
+            }
+            UpdateClip();
+            border.SizeChanged += (s, _) => UpdateClip();
+        }
+
+        private async void ImageContextMenu_Download(object sender, RoutedEventArgs e)
+        {
+            var menuItem = sender as System.Windows.Controls.MenuItem;
+            var menu = menuItem?.Parent as System.Windows.Controls.ContextMenu;
+            var border = menu?.PlacementTarget as System.Windows.Controls.Border;
+            var message = border?.DataContext as Message;
+            if (message == null) return;
+
+            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            if (openFolderDialog.ShowDialog() != true || string.IsNullOrWhiteSpace(openFolderDialog.FolderName))
+                return;
+
+            string fileName = message.Text;
+            string fileUrl = !string.IsNullOrEmpty(message.ServerAdress)
+                ? message.ServerAdress
+                : $"{ServerData.ServerAdress}/upload/{Uri.EscapeDataString(fileName)}";
+            try
+            {
+                using var response = await httpClient.GetStreamAsync(fileUrl);
+                using var fs = new FileStream(Path.Combine(openFolderDialog.FolderName, fileName), FileMode.Create);
+                await response.CopyToAsync(fs);
+                MessageBox.Show($"Изображение {fileName} сохранено");
+            }
+            catch (Exception ex)
+            {
+                Log.Save($"[ImageContextMenu_Download] Error: {ex.Message}");
+                MessageBox.Show($"Ошибка при скачивании:\n{ex.Message}");
+            }
         }
 
         private async void Button_Click_SelectFile(object sender, RoutedEventArgs e)
@@ -726,36 +820,61 @@ namespace Tebegrammmm
 
         private async void LBMessages_SelectionChangeMessage(object sender, SelectionChangedEventArgs e)
         {
+            if (Mouse.RightButton == MouseButtonState.Pressed)
+            {
+                LBMessages.SelectedIndex = -1;
+                return;
+            }
+
             if (LBMessages.SelectedItem == null)
             {
                 LBMessages.SelectedIndex = -1;
                 return;
             }
-            else if ((LBMessages.SelectedItem as Message).MessageType == MessageType.File)
+
+            var message = LBMessages.SelectedItem as Message;
+            LBMessages.SelectedIndex = -1;
+
+            if (message.MessageType == MessageType.Image)
+            {
+                string fileName = message.Text;
+                string fileUrl = !string.IsNullOrEmpty(message.ServerAdress)
+                    ? message.ServerAdress
+                    : $"{ServerData.ServerAdress}/upload/{Uri.EscapeDataString(fileName)}";
+                string tempPath = Path.Combine(Path.GetTempPath(), fileName);
+                try
+                {
+                    Log.Save($"[OpenImage] url={fileUrl}, temp={tempPath}");
+                    using var response = await httpClient.GetStreamAsync(fileUrl);
+                    using var fs = new FileStream(tempPath, FileMode.Create);
+                    await response.CopyToAsync(fs);
+                    Process.Start(new System.Diagnostics.ProcessStartInfo(tempPath) { UseShellExecute = true });
+                }
+                catch (Exception ex)
+                {
+                    Log.Save($"[OpenImage] Error: {ex.GetType().Name}: {ex.Message}\n{ex.StackTrace}");
+                    MessageBox.Show($"Ошибка при открытии изображения:\n{ex.Message}");
+                }
+            }
+            else if (message.MessageType == MessageType.File)
             {
                 OpenFolderDialog openFolderDialog = new OpenFolderDialog();
 
                 if (openFolderDialog.ShowDialog() != true || string.IsNullOrWhiteSpace(openFolderDialog.FolderName))
-                {
-                    MessageBox.Show("Ошибка сервера");
                     return;
-                }
 
-                string fileName = (LBMessages.SelectedItem as Message).Text;
-                var fileUrl = $"{ServerData.ServerAdress}/upload/{fileName}";
-
+                string fileName = message.Text;
                 try
                 {
-                    using var response = await httpClient.GetStreamAsync(fileUrl);
+                    using var response = await httpClient.GetStreamAsync($"{ServerData.ServerAdress}/upload/{fileName}");
                     using var fs = new FileStream($"{openFolderDialog.FolderName}/{fileName}", FileMode.OpenOrCreate);
                     await response.CopyToAsync(fs);
-
                     MessageBox.Show($"Файл {fileName} скачен");
                 }
                 catch (Exception ex)
                 {
-                    Log.Save($"[LBMessages_SelectionChangeMessage] Error: {ex.Message}");
-                    MessageBox.Show($"Ошибка при скачивании файла\nПодробнее от ошибке можно узнать в краш логах");
+                    Log.Save($"[LBMessages_SelectionChangeMessage] File download error: {ex.Message}");
+                    MessageBox.Show("Ошибка при скачивании файла\nПодробнее в краш-логах");
                 }
             }
         }

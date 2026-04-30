@@ -13,7 +13,7 @@
   <!-- Тянем сборку клиента, её содержимое попадёт в MSI -->
   <ItemGroup>
     <ProjectReference Include="..\Tebegram-client\Tebegrammmm.csproj">
-      <Properties>Configuration=Release</Properties>
+      <Properties>Configuration=$(Configuration);Platform=AnyCPU</Properties>
     </ProjectReference>
   </ItemGroup>
 </Project>

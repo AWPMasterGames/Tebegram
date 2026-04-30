@@ -7,10 +7,13 @@ namespace Tebegrammmm.Data
 {
     public static class ServerData
     {
-        private const string DefaultAdress = "http://localhost:5000";
+#if MAX
         private const string AdressUrl = "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Tebegrammmm/Adress.txt";
+#elif SERGE
+        private const string AdressUrl = "https://raw.githubusercontent.com/DrunkMan404/ServerAddres/main/Adress.txt";
+#endif
 
-        private static string _ServerAdress = DefaultAdress;
+        private static string _ServerAdress = string.Empty;
         public static string ServerAdress { get { return _ServerAdress; } }
 
         public static bool IsConnected { get; private set; } = false;
@@ -30,41 +33,44 @@ namespace Tebegrammmm.Data
             {
                 ServerCertificateCustomValidationCallback = (m, c, ch, e) => true
             };
-            // Timeout не выставляем — каждый запрос управляет своим CancellationTokenSource
             return new HttpClient(handler) { Timeout = System.Threading.Timeout.InfiniteTimeSpan };
         }
 
         /// <summary>
         /// Запускает фоновую загрузку адреса сервера. Не блокирует UI-поток.
-        /// Адрес не сохраняется на диск.
         /// </summary>
         public static void GetServerAdress()
         {
             _readyTask = Task.Run(RefreshAdressAsync);
         }
 
+        /// <summary>
+        /// Повторно проверяет соединение. Используется перед запросами, если IsConnected == false.
+        /// </summary>
+        public static Task RetryAsync()
+        {
+            _readyTask = Task.Run(RefreshAdressAsync);
+            return _readyTask;
+        }
+
         private static async Task RefreshAdressAsync()
         {
-#if DEBUG
-            // TEMP: тестовый туннель — удалить эти 4 строки перед релизом
-            _ServerAdress = "https://0js6rmwx-5000.euw.devtunnels.ms";
-            await CheckAdressValidAsync().ConfigureAwait(false);
-            return;
-#endif
             try
             {
                 using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(4));
                 string raw = await _http.GetStringAsync(AdressUrl, cts.Token).ConfigureAwait(false);
-                string adress = raw.Split('\n')[0].Trim();
+                string adress = raw.Split('\n')[0].Trim().TrimEnd('/');
                 if (!string.IsNullOrWhiteSpace(adress))
                     _ServerAdress = adress;
             }
-            catch { /* GitHub недоступен — остаёмся на localhost */ }
+            catch { }
 
             await CheckAdressValidAsync().ConfigureAwait(false);
         }
 
-        // Проверяет адрес через /Test. Если сервер не отвечает "HI!" — откат на localhost.
+        /// <summary>
+        /// Проверяет доступность сервера через /Test.
+        /// </summary>
         public static async Task CheckAdressValidAsync()
         {
             try
@@ -79,9 +85,7 @@ namespace Tebegrammmm.Data
             }
             catch { }
 
-            // Адрес не прошёл проверку (недоступен или вернул не "HI!") — откат на localhost
             IsConnected = false;
-            _ServerAdress = DefaultAdress;
         }
     }
 }

@@ -412,24 +412,32 @@
                                             </Style>
                                         </TextBlock.Style>
                                     </TextBlock>
-                                    <!--  Изображение (только для File-сообщений)  -->
-                                    <Image
-                                        MaxHeight="320"
+                                    <!--  Изображение (только для Image-сообщений)  -->
+                                    <Border
                                         Margin="0,0,0,4"
-                                        RenderOptions.BitmapScalingMode="HighQuality"
-                                        Source="{Binding ServerAdress, Converter={StaticResource ImageUrlConverter}}"
-                                        Stretch="Uniform">
-                                        <Image.Style>
-                                            <Style TargetType="Image">
-                                                <Setter Property="Visibility" Value="Visible" />
+                                        CornerRadius="8"
+                                        Loaded="ImageBorder_Loaded">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Visibility" Value="Collapsed" />
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding MessageType}" Value="Text">
-                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    <DataTrigger Binding="{Binding MessageType}" Value="Image">
+                                                        <Setter Property="Visibility" Value="Visible" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
-                                        </Image.Style>
-                                    </Image>
+                                        </Border.Style>
+                                        <Border.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Скачать" Click="ImageContextMenu_Download" />
+                                            </ContextMenu>
+                                        </Border.ContextMenu>
+                                        <Image
+                                            MaxHeight="320"
+                                            RenderOptions.BitmapScalingMode="HighQuality"
+                                            Source="{Binding ServerAdress, Converter={StaticResource ImageUrlConverter}}"
+                                            Stretch="Uniform" />
+                                    </Border>
                                     <!--  Текст сообщения  -->
                                     <TextBlock
                                         FontSize="14"

@@ -10,6 +10,7 @@ namespace Tebegrammmm.Data
 
         public static readonly string UserDataFile    = Path.Combine(AppDataDir, "user.data");
         public static readonly string DeviceDataFile  = Path.Combine(AppDataDir, "userDevice.data");
+        public static readonly string LastChatFile    = Path.Combine(AppDataDir, "lastchat.data");
 
         public static void EnsureDir() => Directory.CreateDirectory(AppDataDir);
     }

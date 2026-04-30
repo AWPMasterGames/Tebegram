@@ -6,10 +6,10 @@
       Перед сборкой инсталлятора клиент должен быть собран в Release.
     -->
     <ComponentGroup Id="MainAppFiles" Directory="INSTALLFOLDER">
-      <Files Include="..\Tebegram-client\bin\Release\net8.0-windows\*.exe" />
-      <Files Include="..\Tebegram-client\bin\Release\net8.0-windows\*.dll" />
-      <Files Include="..\Tebegram-client\bin\Release\net8.0-windows\*.json" />
-      <Files Include="..\Tebegram-client\bin\Release\net8.0-windows\*.config" />
+      <Files Include="..\Tebegram-client\bin\$(Configuration)\net8.0-windows\*.exe" />
+      <Files Include="..\Tebegram-client\bin\$(Configuration)\net8.0-windows\*.dll" />
+      <Files Include="..\Tebegram-client\bin\$(Configuration)\net8.0-windows\*.json" />
+      <Files Include="..\Tebegram-client\bin\$(Configuration)\net8.0-windows\*.config" />
     </ComponentGroup>
   </Fragment>
 </Wix>
