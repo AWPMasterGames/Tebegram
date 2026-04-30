@@ -280,7 +280,7 @@
                             </StackPanel>
                         </Border>
 
-                        <!--  Устройство ввода  -->
+                        <!--  Устройство аудио ввода  -->
                         <Border
                             Margin="0,0,0,20"
                             Background="{StaticResource Light.BgSurfaceBrush}"
@@ -298,7 +298,7 @@
                                     FontSize="11"
                                     FontWeight="SemiBold"
                                     Foreground="{StaticResource Light.TextMutedBrush}"
-                                    Text="УСТРОЙСТВО ВВОДА" />
+                                    Text="УСТРОЙСТВО АУДИО ВВОДА" />
                                 <ComboBox
                                     x:Name="InputDeviceCB"
                                     Grid.Row="1"

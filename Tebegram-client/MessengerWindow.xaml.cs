@@ -49,6 +49,7 @@ namespace Tebegrammmm
 
             LBChatsLoders.ItemsSource = UserData.User.ChatsFolders;
             LBChatsLoders.SelectedIndex = 0;
+            BtnAllChats.Visibility = Visibility.Collapsed;
 
             TempContacts = UserData.User.Contacts;
 
@@ -162,6 +163,28 @@ namespace Tebegrammmm
                 Log.Save($"[GetCallToken] Error: {ex.Message}");
                 MessageBox.Show("Ошибка при попытке авторизации\nПодробнее от ошибке можно узнать в краш логах");
                 return; // Добавляем return, чтобы прекратить выполнение
+            }
+        }
+
+        private void ImageContainer_Loaded(object sender, RoutedEventArgs e)
+        {
+            var grid = (System.Windows.Controls.Grid)sender;
+            void UpdateClip()
+            {
+                grid.Clip = new System.Windows.Media.RectangleGeometry(
+                    new Rect(0, 0, grid.ActualWidth, grid.ActualHeight), 12, 12);
+            }
+            UpdateClip();
+            grid.SizeChanged += (s, _) => UpdateClip();
+        }
+
+        private void BtnAllChats_Click(object sender, RoutedEventArgs e)
+        {
+            if (UserData.User?.ChatsFolders?.Count > 0)
+            {
+                LBChats.ItemsSource = UserData.User.ChatsFolders[0].Contacts;
+                _IsInSearch = false;
+                SearchContactBarTB.Text = string.Empty;
             }
         }
 
@@ -760,17 +783,6 @@ namespace Tebegrammmm
             this.Dispatcher.Invoke(new Action(() => { SendMessage(serverFileName, msgType, $"{ServerData.ServerAdress}/upload/{Uri.EscapeDataString(serverFileName)}"); }));
         }
 
-        private void ImageBorder_Loaded(object sender, RoutedEventArgs e)
-        {
-            var border = (Border)sender;
-            void UpdateClip()
-            {
-                border.Clip = new System.Windows.Media.RectangleGeometry(
-                    new Rect(0, 0, border.ActualWidth, border.ActualHeight), 8, 8);
-            }
-            UpdateClip();
-            border.SizeChanged += (s, _) => UpdateClip();
-        }
 
         private async void ImageContextMenu_Download(object sender, RoutedEventArgs e)
         {

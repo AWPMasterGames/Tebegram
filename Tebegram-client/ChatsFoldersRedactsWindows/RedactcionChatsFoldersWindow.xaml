@@ -266,11 +266,9 @@
                                                 Height="32"
                                                 Background="{StaticResource Light.AccentMutedBrush}"
                                                 CornerRadius="10">
-                                                <TextBlock
-                                                    HorizontalAlignment="Center"
-                                                    VerticalAlignment="Center"
-                                                    FontSize="16"
-                                                    Text="{Binding Icon}" />
+                                                <Viewbox Width="18" Height="18">
+                                                    <Path Data="{StaticResource IconChat}" Fill="{StaticResource Light.AccentTextBrush}" />
+                                                </Viewbox>
                                             </Border>
 
                                             <!--  Название + счётчик  -->
