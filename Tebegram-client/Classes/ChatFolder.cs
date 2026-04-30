@@ -22,7 +22,7 @@ namespace Tebegrammmm
 
         public ObservableCollection<Contact> Contacts;
 
-        public ChatFolder(string icon = "📁", bool isCanRedact = true)
+        public ChatFolder(string icon = "", bool isCanRedact = true)
         {
             _Id = new Random().Next(0,20000000);
             Contacts = new ObservableCollection<Contact>();
@@ -30,7 +30,7 @@ namespace Tebegrammmm
             this._IsCanRedact = isCanRedact;
         }
 
-        public ChatFolder(string folderName, ObservableCollection<Contact> contacts, string icon = "📁", bool isCanRedact = true)
+        public ChatFolder(string folderName, ObservableCollection<Contact> contacts, string icon = "", bool isCanRedact = true)
         {
             this._Icon = icon;
             this._FolderName = folderName;

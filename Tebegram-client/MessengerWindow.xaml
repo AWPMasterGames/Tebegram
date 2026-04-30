@@ -72,6 +72,7 @@
         </Style>
 
         <classes:ImageUrlConverter x:Key="ImageUrlConverter" />
+        <classes:TimeFormatConverter x:Key="TimeFormatConverter" />
 
         <ControlTemplate x:Key="RoundIconButtonTemplate" TargetType="Button">
             <Border
@@ -96,7 +97,7 @@
     <Grid Name="MainGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="80" />
-            <ColumnDefinition Width="250" />
+            <ColumnDefinition Width="250" MinWidth="62" MaxWidth="360" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
@@ -104,6 +105,7 @@
         <Grid Background="{StaticResource Light.BgSurfaceBrush}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="50" />
+                <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
@@ -116,9 +118,39 @@
                     <Path Data="{StaticResource IconSettings}" Fill="{StaticResource Light.TextSecondaryBrush}" />
                 </Viewbox>
             </Button>
+            <!--  Статическая папка "Все чаты"  -->
+            <Button
+                Grid.Row="1"
+                x:Name="BtnAllChats"
+                Background="Transparent"
+                BorderBrush="Transparent"
+                Padding="4"
+                Click="BtnAllChats_Click">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="Transparent" />
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{StaticResource Light.BgElevatedBrush}" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                <StackPanel VerticalAlignment="Center">
+                    <Viewbox Width="22" Height="22" HorizontalAlignment="Center">
+                        <Path Data="{StaticResource IconChat}" Fill="{StaticResource Light.TextSecondaryBrush}" />
+                    </Viewbox>
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        FontSize="15"
+                        Foreground="{StaticResource Light.TextSecondaryBrush}"
+                        Text="Все чаты" />
+                </StackPanel>
+            </Button>
+
             <ListBox
                 x:Name="LBChatsLoders"
-                Grid.Row="1"
+                Grid.Row="2"
                 Background="Transparent"
                 BorderBrush="Transparent"
                 SelectionChanged="LBChatsLoders_SelectionChangeFolder">
@@ -140,11 +172,12 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel VerticalAlignment="Center">
-                            <TextBlock
-                                HorizontalAlignment="Center"
-                                FontSize="25"
-                                Foreground="{StaticResource Light.TextSecondaryBrush}"
-                                Text="{Binding Icon}" />
+                            <Viewbox
+                                Width="22"
+                                Height="22"
+                                HorizontalAlignment="Center">
+                                <Path Data="{StaticResource IconChat}" Fill="{StaticResource Light.TextSecondaryBrush}" />
+                            </Viewbox>
                             <TextBlock
                                 HorizontalAlignment="Center"
                                 FontSize="15"
@@ -154,7 +187,7 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <Grid Grid.Row="2">
+            <Grid Grid.Row="3">
                 <Viewbox
                     Width="22"
                     Height="22"
@@ -173,7 +206,7 @@
         </Grid>
 
         <!--  Список чатов  -->
-        <Grid Grid.Column="1" Background="{StaticResource Light.BgPrimaryBrush}">
+        <Grid Grid.Column="1" ClipToBounds="True" Background="{StaticResource Light.BgPrimaryBrush}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="50" />
                 <RowDefinition />
@@ -256,6 +289,17 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
+
+            <!--  Ресайз-разделитель  -->
+            <GridSplitter
+                Grid.RowSpan="2"
+                Width="4"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Stretch"
+                Background="Transparent"
+                Cursor="SizeWE"
+                ResizeBehavior="CurrentAndNext"
+                ResizeDirection="Columns" />
         </Grid>
 
         <!--  Область чата  -->
@@ -364,7 +408,7 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <!--  Пузырь сообщения  -->
-                            <Border MaxWidth="380">
+                            <Border MaxWidth="380" ClipToBounds="True">
                                 <Border.Style>
                                     <Style TargetType="Border">
                                         <Setter Property="Background" Value="{StaticResource Light.MsgIncomingBrush}" />
@@ -393,10 +437,10 @@
                                         Color="#000000" />
                                 </Border.Effect>
 
-                                <StackPanel Margin="12,8">
+                                <StackPanel Margin="0">
                                     <!--  Имя отправителя (скрыто для исходящих)  -->
                                     <TextBlock
-                                        Margin="0,0,0,3"
+                                        Margin="12,8,12,3"
                                         FontSize="12"
                                         FontWeight="SemiBold"
                                         Foreground="{StaticResource Light.AccentTextBrush}"
@@ -412,13 +456,11 @@
                                             </Style>
                                         </TextBlock.Style>
                                     </TextBlock>
-                                    <!--  Изображение (только для Image-сообщений)  -->
-                                    <Border
-                                        Margin="0,0,0,4"
-                                        CornerRadius="8"
-                                        Loaded="ImageBorder_Loaded">
-                                        <Border.Style>
-                                            <Style TargetType="Border">
+
+                                    <!--  Изображение + время поверх (только для Image)  -->
+                                    <Grid Loaded="ImageContainer_Loaded">
+                                        <Grid.Style>
+                                            <Style TargetType="Grid">
                                                 <Setter Property="Visibility" Value="Collapsed" />
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding MessageType}" Value="Image">
@@ -426,46 +468,70 @@
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
-                                        </Border.Style>
-                                        <Border.ContextMenu>
+                                        </Grid.Style>
+                                        <Grid.ContextMenu>
                                             <ContextMenu>
                                                 <MenuItem Header="Скачать" Click="ImageContextMenu_Download" />
                                             </ContextMenu>
-                                        </Border.ContextMenu>
+                                        </Grid.ContextMenu>
                                         <Image
                                             MaxHeight="320"
                                             RenderOptions.BitmapScalingMode="HighQuality"
                                             Source="{Binding ServerAdress, Converter={StaticResource ImageUrlConverter}}"
                                             Stretch="Uniform" />
-                                    </Border>
+                                        <!--  Время поверх фото  -->
+                                        <Border
+                                            Margin="0,0,8,8"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Bottom"
+                                            Background="#88000000"
+                                            CornerRadius="10"
+                                            Padding="6,2">
+                                            <TextBlock
+                                                FontSize="10"
+                                                Foreground="White"
+                                                Text="{Binding Time, Converter={StaticResource TimeFormatConverter}}" />
+                                        </Border>
+                                    </Grid>
+
                                     <!--  Текст сообщения  -->
                                     <TextBlock
+                                        Margin="12,8,12,0"
                                         FontSize="14"
                                         Text="{Binding Text}"
                                         TextWrapping="Wrap">
                                         <TextBlock.Style>
                                             <Style TargetType="TextBlock">
                                                 <Setter Property="Foreground" Value="{StaticResource Light.TextPrimaryBrush}" />
+                                                <Setter Property="Visibility" Value="Visible" />
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsOutgoing}" Value="True">
                                                         <Setter Property="Foreground" Value="White" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding MessageType}" Value="Image">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
                                         </TextBlock.Style>
                                     </TextBlock>
-                                    <!--  Время  -->
+
+                                    <!--  Время (только для текстовых сообщений)  -->
                                     <TextBlock
-                                        Margin="0,5,0,0"
+                                        Margin="12,4,12,8"
                                         HorizontalAlignment="Right"
                                         FontSize="10"
-                                        Text="{Binding Time}">
+                                        Text="{Binding Time, Converter={StaticResource TimeFormatConverter}}">
                                         <TextBlock.Style>
                                             <Style TargetType="TextBlock">
                                                 <Setter Property="Foreground" Value="{StaticResource Light.TextMutedBrush}" />
+                                                <Setter Property="Visibility" Value="Visible" />
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsOutgoing}" Value="True">
                                                         <Setter Property="Foreground" Value="#CCFFFFFF" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding MessageType}" Value="Image">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
