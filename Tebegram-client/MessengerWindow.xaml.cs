@@ -2,6 +2,7 @@
 using Microsoft.Win32;
 using NAudio.CoreAudioApi;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
@@ -34,6 +35,8 @@ namespace Tebegrammmm
         private static object thisLock = new();
         private bool _loggingOut = false;
         private CancellationTokenSource _cts = new CancellationTokenSource();
+        // Трекинг открытых просмотрщиков: URL → окно (гарантирует 1 экземпляр на фото)
+        private readonly Dictionary<string, ImageViewerWindow> _openImageViewers = new();
         Contact Contact { get; set; }
         Thread Thread { get; set; }
         Thread CaltokenThread { get; set; }
@@ -788,8 +791,8 @@ namespace Tebegrammmm
         {
             var menuItem = sender as System.Windows.Controls.MenuItem;
             var menu = menuItem?.Parent as System.Windows.Controls.ContextMenu;
-            var border = menu?.PlacementTarget as System.Windows.Controls.Border;
-            var message = border?.DataContext as Message;
+            var grid = menu?.PlacementTarget as System.Windows.Controls.Grid;
+            var message = grid?.DataContext as Message;
             if (message == null) return;
 
             OpenFolderDialog openFolderDialog = new OpenFolderDialog();
@@ -853,20 +856,21 @@ namespace Tebegrammmm
                 string fileUrl = !string.IsNullOrEmpty(message.ServerAdress)
                     ? message.ServerAdress
                     : $"{ServerData.ServerAdress}/upload/{Uri.EscapeDataString(fileName)}";
-                string tempPath = Path.Combine(Path.GetTempPath(), fileName);
-                try
+
+                // Это фото уже открыто — поднимаем существующее окно
+                if (_openImageViewers.TryGetValue(fileUrl, out var existing))
                 {
-                    Log.Save($"[OpenImage] url={fileUrl}, temp={tempPath}");
-                    using var response = await httpClient.GetStreamAsync(fileUrl);
-                    using var fs = new FileStream(tempPath, FileMode.Create);
-                    await response.CopyToAsync(fs);
-                    Process.Start(new System.Diagnostics.ProcessStartInfo(tempPath) { UseShellExecute = true });
+                    if (existing.WindowState == WindowState.Minimized)
+                        existing.WindowState = WindowState.Normal;
+                    existing.Activate();
+                    return;
                 }
-                catch (Exception ex)
-                {
-                    Log.Save($"[OpenImage] Error: {ex.GetType().Name}: {ex.Message}\n{ex.StackTrace}");
-                    MessageBox.Show($"Ошибка при открытии изображения:\n{ex.Message}");
-                }
+
+                // Открываем новое окно просмотра
+                var viewer = new ImageViewerWindow(fileUrl, fileName);
+                viewer.Closed += (_, _) => _openImageViewers.Remove(fileUrl);
+                _openImageViewers[fileUrl] = viewer;
+                viewer.Show();
             }
             else if (message.MessageType == MessageType.File)
             {
