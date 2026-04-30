@@ -1,33 +1,25 @@
 ﻿using System.Security.Cryptography;
+using System.Text;
 
 namespace TebegramServer.Tools
 {
     public class TokenGenerator
     {
         public TokenGenerator() { }
-        public string GetToken(string text)
+
+        public string GetToken(string label)
         {
-            var salt = Guid.NewGuid().ToString().Replace("-", "").ToLower();
-            var base64Salt = ToBase64String(salt);
-            var hashedSalt = MD5.HashData(Convert.FromBase64String(base64Salt));
-            var secret = $"{base64Salt}.{text}.{hashedSalt}";
-            var token = ToBase64String(secret);
+            // 32 криптографически случайных байта (256 бит)
+            var randomBytes = RandomNumberGenerator.GetBytes(32);
 
-            return token;
-        }
+            // SHA256 от случайных байт + метки для привязки к контексту
+            var combined = randomBytes.Concat(Encoding.UTF8.GetBytes(label)).ToArray();
+            var hash = SHA256.HashData(combined);
 
-        private string ToBase64String(string salt)
-        {
-            using var stream = new MemoryStream();
-            using TextWriter writer = new StreamWriter(stream);
-
-            writer.Write(salt);
-            writer.Flush();
-            stream.Flush();
-            stream.Seek(0, SeekOrigin.Begin);
-
-            using BinaryReader reader = new BinaryReader(stream);
-            return Convert.ToBase64String(reader.ReadBytes(salt.Length * 2));
+            return Convert.ToBase64String(hash)
+                .Replace('+', '-')
+                .Replace('/', '_')
+                .TrimEnd('=');
         }
     }
 }

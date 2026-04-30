@@ -3,6 +3,7 @@ using System.Net;
 using TebegramServer.Classes;
 using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Timers;
 
 namespace TebegramServer.Data
@@ -116,7 +117,7 @@ namespace TebegramServer.Data
                         Password = currentUser.Password,
                         Name = currentUser.Name,
                         Username = currentUser.Username,
-                        Avatart = currentUser.Avatar,
+                        Avatar = currentUser.Avatar,
                         ChatsFolders = currentUser.ChatsFolders.Select(folder => new ChatFolderData
                         {
                             Name = folder.FolderName,
@@ -183,7 +184,7 @@ namespace TebegramServer.Data
                     Password = user.Password,
                     Name = user.Name,
                     Username = user.Username,
-                    Avatart = user.Avatar,
+                    Avatar = user.Avatar,
                     ChatsFolders = user.ChatsFolders.Select(folder => new ChatFolderData
                     {
                         Name = folder.FolderName,
@@ -263,7 +264,7 @@ namespace TebegramServer.Data
                             chatsFolders.Add(new ChatFolder(folderData.Name, contacts, folderData.Icon, folderData.CanDelete));
                         }
                         
-                        Users.Add(new User(userData.Id, userData.Login, userData.Password, userData.Name, userData.Username, chatsFolders, userData.Avatart));
+                        Users.Add(new User(userData.Id, userData.Login, userData.Password, userData.Name, userData.Username, chatsFolders, userData.Avatar));
                     }
                 }
                 
@@ -283,7 +284,8 @@ namespace TebegramServer.Data
             public string Password { get; set; } = "";
             public string Name { get; set; } = "";
             public string Username { get; set; } = "";
-            public string Avatart { get; set; } = "";
+            [JsonPropertyName("Avatart")] // сохраняем имя поля в JSON для обратной совместимости
+            public string Avatar { get; set; } = "";
             public List<ChatFolderData> ChatsFolders { get; set; } = new();
         }
 

@@ -79,6 +79,12 @@ app.MapPost("/upload", async (HttpContext context) =>
 
 app.MapGet("/upload/{FileName}", async (HttpContext context, string FileName) =>
 {
+    if (FileName.Contains("..") || FileName.Contains('/') || FileName.Contains('\\'))
+    {
+        context.Response.StatusCode = 400;
+        return;
+    }
+
     var fileProvider = new PhysicalFileProvider(Directory.GetCurrentDirectory());
     var fieInfo = fileProvider.GetFileInfo($"uploads/{FileName}");
 
@@ -127,6 +133,12 @@ app.MapGet("/avatarsFileName/{UserId}", async (HttpContext context, int UserId) 
 
 app.MapGet("/avatars/{FileName}", async (HttpContext context, string FileName) =>
 {
+    if (FileName.Contains("..") || FileName.Contains('/') || FileName.Contains('\\'))
+    {
+        context.Response.StatusCode = 400;
+        return;
+    }
+
     var fileProvider = new PhysicalFileProvider(Directory.GetCurrentDirectory());
     var fieInfo = fileProvider.GetFileInfo($"avatars/{FileName}");
 
@@ -222,13 +234,13 @@ app.MapGet("/messages/{id}", async (HttpContext Context, int id) =>
     ChatFolder Folder = user.ChatsFolders[0];
 
     user.NewMessages.Clear();
-    string Messegas = string.Empty;
+    string messages = string.Empty;
     for (int i = 0; i < Folder.Contacts.Count; i++)
     {
-        Messegas += $"{Folder.Contacts[i].GetAllMeseges()}";
+        messages += $"{Folder.Contacts[i].GetAllMeseges()}";
     }
 
-    await Context.Response.WriteAsync(Messegas);
+    await Context.Response.WriteAsync(messages);
 });
 app.MapGet("/NewMessages/{id}", async (HttpContext Context, int id) =>
 {

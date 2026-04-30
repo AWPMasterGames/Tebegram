@@ -15,8 +15,8 @@ namespace TebegramServer.Classes.VoiceClasses
 
         private DateTime _CreatedTime { get; set; }
         public DateTime CreatedTime { get { return _CreatedTime; } }
-        private DateTime _LastDiscconectTime { get; set; }
-        public DateTime LastDiscconectTime { get { return _LastDiscconectTime; } }
+        private DateTime _LastDisconnectTime { get; set; }
+        public DateTime LastDisconnectTime { get { return _LastDisconnectTime; } }
         public VoiceRoom(int id, string roomToken)
         {
             _Id = id;
@@ -37,7 +37,7 @@ namespace TebegramServer.Classes.VoiceClasses
                 {
                     await RoomMembers[i].Disconnect(webSocketCloseStatus, desciption, cancellationToken);
                     _RoomMembers.Remove(RoomMembers[i]);
-                    _LastDiscconectTime = DateTime.Now;
+                    _LastDisconnectTime = DateTime.Now;
                     break;
                 }
             }

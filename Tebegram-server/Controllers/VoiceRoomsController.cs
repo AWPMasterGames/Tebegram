@@ -9,15 +9,18 @@ namespace TebegramServer.Controllers
     {
         public static Dictionary<string, VoiceRoom> VoiceRooms = new Dictionary<string, VoiceRoom>();
         private static List<string> VoiceRoomTokens = new List<string>();
+        private static readonly object _roomsLock = new object();
 
         public static string CreateRoom(string UsernameCreator)
         {
             string roomToken = new TokenGenerator().GetToken(UsernameCreator);
-            VoiceRoom VR = new VoiceRoom(VoiceRooms.Count, roomToken);
-            VoiceRooms.Add(roomToken, VR);
-            VoiceRoomTokens.Add(roomToken);
-            Console.WriteLine($"Создана новая комната:\nId: {VR.Id}\nToken: {VR.RoomToken}");
-
+            lock (_roomsLock)
+            {
+                VoiceRoom VR = new VoiceRoom(VoiceRooms.Count, roomToken);
+                VoiceRooms.Add(roomToken, VR);
+                VoiceRoomTokens.Add(roomToken);
+                Console.WriteLine($"Создана новая комната:\nId: {VR.Id}\nToken: {VR.RoomToken}");
+            }
             return roomToken;
         }
 
@@ -34,12 +37,15 @@ namespace TebegramServer.Controllers
         public static async Task DisconnectFromRoom(WebSocket webSocket, string Token, WebSocketCloseStatus webSocketCloseStatus, string desciption, CancellationToken cancellationToken)
         {
             await VoiceRooms[Token].RemoveMember(webSocket, webSocketCloseStatus, desciption, cancellationToken);
-            if (VoiceRooms[Token].RoomMembers.Count < 1)
+            lock (_roomsLock)
             {
-                int voiceId = VoiceRooms[Token].Id;
-                VoiceRooms.Remove(Token);
-                VoiceRoomTokens.Remove(Token);
-                Console.WriteLine($"Комната Id: {voiceId} удалена иза отсутсвующих учасников");
+                if (VoiceRooms.TryGetValue(Token, out var room) && room.RoomMembers.Count < 1)
+                {
+                    int voiceId = room.Id;
+                    VoiceRooms.Remove(Token);
+                    VoiceRoomTokens.Remove(Token);
+                    Console.WriteLine($"Комната Id: {voiceId} удалена из-за отсутствующих участников");
+                }
             }
         }
 
@@ -59,13 +65,21 @@ namespace TebegramServer.Controllers
         {
             while (true)
             {
-                for (int i = VoiceRooms.Count - 1; i >= 0; i--)
+                lock (_roomsLock)
                 {
-                    if (((VoiceRooms[VoiceRoomTokens[i]].CreatedTime - DateTime.Now).Minutes > 5)
-                        && ((VoiceRooms[VoiceRoomTokens[i]].LastDiscconectTime - DateTime.Now).Minutes > 5))
+                    for (int i = VoiceRoomTokens.Count - 1; i >= 0; i--)
                     {
-                        VoiceRooms.Remove(VoiceRoomTokens[i]);
-                        VoiceRoomTokens.Remove(VoiceRoomTokens[i]);
+                        var room = VoiceRooms[VoiceRoomTokens[i]];
+                        bool isEmpty = room.RoomMembers.Count == 0;
+                        bool createdLongAgo = (DateTime.Now - room.CreatedTime).TotalMinutes > 5;
+                        bool disconnectedLongAgo = room.LastDisconnectTime != default &&
+                                                   (DateTime.Now - room.LastDisconnectTime).TotalMinutes > 5;
+                        if (isEmpty && (disconnectedLongAgo || createdLongAgo))
+                        {
+                            Console.WriteLine($"Комната Id: {room.Id} удалена по таймауту");
+                            VoiceRooms.Remove(VoiceRoomTokens[i]);
+                            VoiceRoomTokens.RemoveAt(i);
+                        }
                     }
                 }
 
