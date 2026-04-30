@@ -45,6 +45,12 @@ namespace Tebegrammmm.Data
 
         private static async Task RefreshAdressAsync()
         {
+#if DEBUG
+            // TEMP: тестовый туннель — удалить эти 4 строки перед релизом
+            _ServerAdress = "https://0js6rmwx-5000.euw.devtunnels.ms";
+            await CheckAdressValidAsync().ConfigureAwait(false);
+            return;
+#endif
             try
             {
                 using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(4));
