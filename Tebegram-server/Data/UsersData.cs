@@ -137,6 +137,16 @@ namespace TebegramServer.Data
             owner.FindContactByUsername(contactUsername)?.ChangeName(newName);
         }
 
+        // Сбрасывает CallToken у всех пользователей, чей токен связан с данной комнатой
+        public static void ClearCallTokensForRoom(string roomToken)
+        {
+            foreach (var u in Users)
+            {
+                if (!string.IsNullOrEmpty(u.CallToken) && u.CallToken.Contains(roomToken))
+                    u.CallToken = "";
+            }
+        }
+
         // Обновляет аватар в БД и в памяти
         public static void UpdateAvatar(int userId, string avatarFileName, AppDbContext db)
         {

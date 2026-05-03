@@ -381,7 +381,11 @@ app.MapGet("/Voice/DeclineCall/{userId}-{token}", async (HttpContext Context, in
     User? user = UsersData.FindUserById(userId);
     if (user != null) user.CallToken = "";
 
-    VoiceRoomsController.VoiceRooms[token].SendTextToRoom("CloseConnection");
+    UsersData.ClearCallTokensForRoom(token);
+
+    if (VoiceRoomsController.VoiceRooms.TryGetValue(token, out var room))
+        room.SendTextToRoom("CloseConnection");
+
     await Context.Response.WriteAsync("ok");
 });
 
@@ -397,8 +401,15 @@ app.Map("/Voice/ws", async context =>
         User? user = UsersData.FindUserById(int.Parse(userID!));
 
         VoiceRoomsController.ConnectingToRoom(ws, Token!, user!);
+        // Токен использован — сбрасываем, чтобы при следующем запуске не показывалось старое окно
+        user!.CallToken = "";
         if (VoiceRoomsController.GetRoomId(Token!) == -1) return;
         Console.WriteLine($"Пользователь {user!.Username} подключился к комнате Id: {VoiceRoomsController.GetRoomId(Token!)}");
+
+        // Если в комнате уже есть первый участник — уведомляем его, что звонок принят
+        var joinedRoom = VoiceRoomsController.VoiceRooms.GetValueOrDefault(Token!);
+        if (joinedRoom != null && joinedRoom.RoomMembers.Count >= 2)
+            joinedRoom.SendTextToOthers(ws, "CallAccepted");
 
         await ReceiveMessage(ws, async (result, buffer) =>
         {
@@ -414,6 +425,8 @@ app.Map("/Voice/ws", async context =>
             {
                 Console.WriteLine($"Пользователь {user.Username} отключился от комнаты Id: {VoiceRoomsController.GetRoomId(Token!)}");
                 await VoiceRoomsController.DisconnectFromRoom(ws, Token!, result.CloseStatus!.Value, result.CloseStatusDescription, CancellationToken.None);
+                // Чистим токены вызываемого пользователя, если он ещё не подключался
+                UsersData.ClearCallTokensForRoom(Token!);
             }
         });
     }
