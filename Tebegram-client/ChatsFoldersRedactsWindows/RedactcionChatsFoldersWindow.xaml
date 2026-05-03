@@ -23,16 +23,16 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     FontSize="{TemplateBinding FontSize}"
-                    Foreground="{StaticResource Light.TextMutedBrush}"
+                    Foreground="{DynamicResource Light.TextMutedBrush}"
                     Text="{TemplateBinding Content}" />
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.DangerBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.DangerBrush}" />
                     <Setter TargetName="Txt" Property="Foreground" Value="White" />
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.DangerHoverBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.DangerHoverBrush}" />
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -44,16 +44,16 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     FontSize="{TemplateBinding FontSize}"
-                    Foreground="{StaticResource Light.TextMutedBrush}"
+                    Foreground="{DynamicResource Light.TextMutedBrush}"
                     Text="{TemplateBinding Content}" />
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.BgElevatedBrush}" />
-                    <Setter TargetName="Txt" Property="Foreground" Value="{StaticResource Light.TextPrimaryBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.BgElevatedBrush}" />
+                    <Setter TargetName="Txt" Property="Foreground" Value="{DynamicResource Light.TextPrimaryBrush}" />
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.BgDeepBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.BgDeepBrush}" />
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -64,10 +64,10 @@
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.AccentHoverBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.AccentHoverBrush}" />
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.AccentPressedBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.AccentPressedBrush}" />
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -83,10 +83,10 @@
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.BgElevatedBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.BgElevatedBrush}" />
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.BgDeepBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.BgDeepBrush}" />
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -103,10 +103,10 @@
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.DangerMutedBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.DangerMutedBrush}" />
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.DangerBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.DangerBrush}" />
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -142,8 +142,8 @@
 
             <Border
                 Padding="24"
-                Background="{StaticResource Light.BgPrimaryBrush}"
-                BorderBrush="{StaticResource Light.BorderDefaultBrush}"
+                Background="{DynamicResource Light.BgPrimaryBrush}"
+                BorderBrush="{DynamicResource Light.BorderDefaultBrush}"
                 BorderThickness="1"
                 CornerRadius="20">
                 <Border.Effect>
@@ -218,14 +218,14 @@
                             HorizontalAlignment="Center"
                             FontSize="22"
                             FontWeight="SemiBold"
-                            Foreground="{StaticResource Light.TextPrimaryBrush}"
+                            Foreground="{DynamicResource Light.TextPrimaryBrush}"
                             Text="Мои папки" />
 
                         <!--  Список папок  -->
                         <Border
                             Margin="0,0,0,12"
-                            Background="{StaticResource Light.BgSurfaceBrush}"
-                            BorderBrush="{StaticResource Light.BorderSubtleBrush}"
+                            Background="{DynamicResource Light.BgSurfaceBrush}"
+                            BorderBrush="{DynamicResource Light.BorderSubtleBrush}"
                             BorderThickness="1"
                             CornerRadius="14">
                             <ListBox
@@ -243,10 +243,10 @@
                                         <Setter Property="Cursor" Value="Hand" />
                                         <Style.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="{StaticResource Light.BgElevatedBrush}" />
+                                                <Setter Property="Background" Value="{DynamicResource Light.BgElevatedBrush}" />
                                             </Trigger>
                                             <Trigger Property="IsSelected" Value="True">
-                                                <Setter Property="Background" Value="{StaticResource Light.AccentMutedBrush}" />
+                                                <Setter Property="Background" Value="{DynamicResource Light.AccentMutedBrush}" />
                                             </Trigger>
                                         </Style.Triggers>
                                     </Style>
@@ -264,10 +264,10 @@
                                             <Border
                                                 Width="32"
                                                 Height="32"
-                                                Background="{StaticResource Light.AccentMutedBrush}"
+                                                Background="{DynamicResource Light.AccentMutedBrush}"
                                                 CornerRadius="10">
                                                 <Viewbox Width="18" Height="18">
-                                                    <Path Data="{StaticResource IconChat}" Fill="{StaticResource Light.AccentTextBrush}" />
+                                                    <Path Data="{StaticResource IconChat}" Fill="{DynamicResource Light.AccentTextBrush}" />
                                                 </Viewbox>
                                             </Border>
 
@@ -276,11 +276,11 @@
                                                 <TextBlock
                                                     FontSize="14"
                                                     FontWeight="Medium"
-                                                    Foreground="{StaticResource Light.TextPrimaryBrush}"
+                                                    Foreground="{DynamicResource Light.TextPrimaryBrush}"
                                                     Text="{Binding FolderName}" />
                                                 <TextBlock
                                                     FontSize="12"
-                                                    Foreground="{StaticResource Light.TextMutedBrush}"
+                                                    Foreground="{DynamicResource Light.TextMutedBrush}"
                                                     Text="{Binding ChatsCount, StringFormat='Чатов: {0}'}" />
                                             </StackPanel>
 
@@ -303,7 +303,7 @@
                                                 <Viewbox Width="13" Height="13">
                                                     <Path
                                                         Data="{StaticResource IconClose}"
-                                                        Fill="{StaticResource Light.DangerBrush}"
+                                                        Fill="{DynamicResource Light.DangerBrush}"
                                                         Stretch="Uniform" />
                                                 </Viewbox>
                                             </Button>
@@ -318,7 +318,7 @@
                         <Button
                             Height="40"
                             Margin="0,0,0,12"
-                            Background="{StaticResource Light.AccentPrimaryBrush}"
+                            Background="{DynamicResource Light.AccentPrimaryBrush}"
                             Click="Button_Click"
                             FontSize="14"
                             FontWeight="SemiBold"
@@ -340,12 +340,12 @@
                         <!--  Закрыть  -->
                         <Button
                             Height="38"
-                            BorderBrush="{StaticResource Light.BorderDefaultBrush}"
+                            BorderBrush="{DynamicResource Light.BorderDefaultBrush}"
                             BorderThickness="1"
                             Click="Button_Click_1"
                             Content="Закрыть"
                             FontSize="14"
-                            Foreground="{StaticResource Light.TextSecondaryBrush}"
+                            Foreground="{DynamicResource Light.TextSecondaryBrush}"
                             Template="{StaticResource SecondaryButtonTemplate}" />
 
                     </StackPanel>

@@ -34,8 +34,8 @@ namespace Tebegrammmm
         });
         private static object thisLock = new();
         private bool _loggingOut = false;
+        private bool _isLoadingHistory = false;
         private CancellationTokenSource _cts = new CancellationTokenSource();
-        // Трекинг открытых просмотрщиков: URL → окно (гарантирует 1 экземпляр на фото)
         private readonly Dictionary<string, ImageViewerWindow> _openImageViewers = new();
         Contact Contact { get; set; }
         Thread Thread { get; set; }
@@ -69,15 +69,15 @@ namespace Tebegrammmm
             CaltokenThread = new Thread(new ThreadStart(GetCallToken)) { IsBackground = true };
             CaltokenThread.Start();
 
-            // Открываем последний чат, если он сохранён
-            this.Loaded += MessengerWindow_OpenLastChat;
-
-            if (File.Exists(AppPaths.DeviceDataFile))
+            // Читаем сохранённый номер устройства без COM-запроса к аудиоподсистеме.
+            // EnumerateAudioEndPoints() — медленный COM-вызов (1-3 с), его нельзя
+            // вызывать на UI-потоке. Если сохранённый индекс окажется невалидным,
+            // NAudio упадёт с понятным исключением, а пользователь сможет
+            // перевыбрать устройство в настройках.
+            if (File.Exists(AppPaths.DeviceDataFile) &&
+                int.TryParse(File.ReadAllText(AppPaths.DeviceDataFile), out int savedDevice))
             {
-                int dvNum = int.Parse(File.ReadAllText(AppPaths.DeviceDataFile));
-                if (dvNum > new MMDeviceEnumerator().EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active).Count - 1)
-                    UserData.User.SelectedDeviceNum = 0;
-                else UserData.User.SelectedDeviceNum = dvNum;
+                UserData.User.SelectedDeviceNum = savedDevice;
             }
         }
 
@@ -86,9 +86,10 @@ namespace Tebegrammmm
             LBMessages.Background = (Brush)this.TryFindResource("ChatBackground");
         }
 
-        private void MessengerWindow_OpenLastChat(object sender, RoutedEventArgs e)
+        private void OpenLastChat()
         {
-            this.Loaded -= MessengerWindow_OpenLastChat;
+            // Если пользователь уже сам выбрал чат пока грузилась история — не перебиваем его
+            if (Contact != null) return;
             try
             {
                 if (!File.Exists(AppPaths.LastChatFile)) return;
@@ -202,7 +203,7 @@ namespace Tebegrammmm
             SearchContactBarTB.Text = string.Empty;
         }
 
-        private void LBChats_SelectionChangedChat(object sender, SelectionChangedEventArgs e)
+        private async void LBChats_SelectionChangedChat(object sender, SelectionChangedEventArgs e)
         {
             // Сохраняем черновик для предыдущего контакта
             if (Contact != null && TBMessage != null)
@@ -217,7 +218,28 @@ namespace Tebegrammmm
                 return;
             }
 
-            Contact = LBChats.SelectedItem as Contact;
+            var selected = LBChats.SelectedItem as Contact;
+
+            // Если это preview-контакт (из поиска на сервере) — добавляем его
+            if (selected != null && selected.IsSearchPreview)
+            {
+                LBChats.SelectedIndex = -1;
+                bool added = await SendAddNewContactRequest($"{UserData.User.Id}▫{selected.Username}▫{selected.Name}");
+                if (added)
+                {
+                    SearchContactBarTB.Text = string.Empty;
+                    // Открываем только что добавленный контакт
+                    var newContact = UserData.User.FindContactByUsername(selected.Username);
+                    if (newContact != null)
+                    {
+                        LBChats.ItemsSource = UserData.User.Contacts;
+                        LBChats.SelectedItem = newContact;
+                    }
+                }
+                return;
+            }
+
+            Contact = selected;
             Log.Save($"[LBChats_SelectionChanged] Selected contact: {Contact?.Name} ({Contact?.Username})");
 
             // Запоминаем последний открытый чат
@@ -257,7 +279,7 @@ namespace Tebegrammmm
                     Dispatcher.Invoke(new Action(() =>
                     {
                         contact.Messages.Add(message);
-                        if (contact == Contact) ScrollMessagesToBottom();
+                        if (contact == Contact && !_isLoadingHistory) ScrollMessagesToBottom();
                     }));
 
                     Log.Save($"[AddMessageToUser] Получено сообщение от {messageData[0]}: {text}");
@@ -272,7 +294,7 @@ namespace Tebegrammmm
                     Dispatcher.Invoke(new Action(() =>
                     {
                         contact.Messages.Add(message);
-                        if (contact == Contact) ScrollMessagesToBottom();
+                        if (contact == Contact && !_isLoadingHistory) ScrollMessagesToBottom();
                     }));
 
                     Log.Save($"[AddMessageToUser] Получен файл/изображение от {messageData[0]}: {messageData[5]}");
@@ -297,7 +319,7 @@ namespace Tebegrammmm
                     Dispatcher.Invoke(new Action(() =>
                     {
                         contact.Messages.Add(message);
-                        if (contact == Contact) ScrollMessagesToBottom();
+                        if (contact == Contact && !_isLoadingHistory) ScrollMessagesToBottom();
                     }));
                     // НЕ сохраняем на сервер - это уже сделал отправитель!
                     Log.Save($"[AddMessageToUser] Получено сообщение от {messageData[0]}: {text}");
@@ -310,7 +332,7 @@ namespace Tebegrammmm
                     Dispatcher.Invoke(new Action(() =>
                     {
                         contact.Messages.Add(message);
-                        if (contact == Contact) ScrollMessagesToBottom();
+                        if (contact == Contact && !_isLoadingHistory) ScrollMessagesToBottom();
                     }));
                     Log.Save($"[AddMessageToUser] Получен файл/изображение от {messageData[0]}: {messageData[5]}");
                 }
@@ -337,7 +359,7 @@ namespace Tebegrammmm
                             Dispatcher.Invoke(new Action(() =>
                             {
                                 contact.Messages.Add(message);
-                                if (contact == Contact) ScrollMessagesToBottom();
+                                if (contact == Contact && !_isLoadingHistory) ScrollMessagesToBottom();
                             }));
 
                             // НЕ сохраняем на сервер - это уже сделал отправитель!
@@ -352,7 +374,7 @@ namespace Tebegrammmm
                             Dispatcher.Invoke(new Action(() =>
                             {
                                 contact.Messages.Add(message);
-                                if (contact == Contact) ScrollMessagesToBottom();
+                                if (contact == Contact && !_isLoadingHistory) ScrollMessagesToBottom();
                             }));
 
                             SaveMessageToFile(contact.Name, MessageData, false);
@@ -377,13 +399,22 @@ namespace Tebegrammmm
                 try
                 {
                     string[] Messages = content.Split('❂');
+                    _isLoadingHistory = true;
                     for (int i = 0; i < Messages.Length - 1; i++)
                     {
                         AddMessageToUser(Messages[i]);
+                        // Каждые 10 сообщений отдаём поток UI — пользователь может взаимодействовать
+                        if (i % 10 == 0) await Task.Yield();
                     }
+                    _isLoadingHistory = false;
+                    OpenLastChat();
+                    MessagesLoadingOverlay.Visibility = Visibility.Collapsed;
                 }
                 catch (Exception ex)
                 {
+                    _isLoadingHistory = false;
+                    OpenLastChat();
+                    MessagesLoadingOverlay.Visibility = Visibility.Collapsed;
                     Log.Save($"[GetMessage] Error: {ex.Message}");
                     MessageBox.Show("Ошибка при попытке получения сообщений\nПодробнее от ошибке можно узнать в краш логах");
                     return;
@@ -923,31 +954,93 @@ namespace Tebegrammmm
         ObservableCollection<Contact> TempContacts;
         ObservableCollection<Contact> FindedContacts;
         private bool _IsInSearch = false;
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        private CancellationTokenSource _searchCts;
+
+        private async void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(SearchContactBarTB.Text) || string.IsNullOrEmpty(SearchContactBarTB.Text))
+            string text = SearchContactBarTB.Text;
+
+            if (string.IsNullOrWhiteSpace(text))
             {
                 if (_IsInSearch)
                 {
                     LBChats.ItemsSource = TempContacts;
                     _IsInSearch = false;
                 }
+                return;
+            }
+
+            _IsInSearch = true;
+            TempContacts = (LBChatsLoders.SelectedItem as ChatFolder)?.Contacts ?? UserData.User.Contacts;
+
+            bool isLoginSearch = text.StartsWith("@");
+            string query = isLoginSearch ? text.Substring(1).ToLower() : text.ToLower();
+
+            var results = new ObservableCollection<Contact>();
+
+            foreach (Contact contact in UserData.User.Contacts)
+            {
+                bool match = isLoginSearch
+                    ? contact.Username.ToLower().StartsWith(query)
+                    : contact.Name.ToLower().Contains(query) || contact.Username.ToLower().Contains(query);
+                if (match) results.Add(contact);
+            }
+
+            LBChats.ItemsSource = results;
+
+            if (isLoginSearch && query.Length >= 1)
+            {
+                _searchCts?.Cancel();
+                _searchCts = new CancellationTokenSource();
+                var cts = _searchCts;
+
+                try
+                {
+                    await Task.Delay(350, cts.Token);
+                    if (cts.IsCancellationRequested) return;
+
+                    using var request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/UserName/{query}");
+                    using var response = await httpClient.SendAsync(request, cts.Token);
+                    if (cts.IsCancellationRequested) return;
+
+                    string raw = await response.Content.ReadAsStringAsync();
+                    string[] parts = raw.Split('▫');
+
+                    if (parts.Length >= 2 && !string.IsNullOrEmpty(parts[0]) && parts[0] != "NotFound"
+                        && !results.Any(c => c.Username.ToLower() == query))
+                    {
+                        var preview = new Contact(int.Parse(parts[0]), query, parts[1])
+                        {
+                            IsSearchPreview = true
+                        };
+                        results.Add(preview);
+                    }
+                }
+                catch (OperationCanceledException) { }
+                catch (Exception ex) { Log.Save($"[Search] {ex.Message}"); }
+            }
+        }
+
+        private const double _collapseThreshold = 150;
+        private bool _isNarrow = false;
+
+        private void ChatListContainer_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            bool shouldBeNarrow = e.NewSize.Width < _collapseThreshold;
+            if (shouldBeNarrow == _isNarrow) return;
+            _isNarrow = shouldBeNarrow;
+
+            if (shouldBeNarrow)
+            {
+                SearchArea.Visibility = Visibility.Collapsed;
+                BtnAddNarrow.Visibility = Visibility.Visible;
+                LBChats.Tag = "narrow";
             }
             else
             {
-                _IsInSearch = true;
-                TempContacts = (LBChatsLoders.SelectedItem as ChatFolder).Contacts;
-
-                FindedContacts = new ObservableCollection<Contact>();
-
-                foreach (Contact contact in UserData.User.Contacts)
-                {
-                    if (contact.Name.ToLower().Contains(SearchContactBarTB.Text.ToLower()) || contact.Username.ToLower().Contains(SearchContactBarTB.Text.ToLower()))
-                    {
-                        FindedContacts.Add(contact);
-                    }
-                }
-                LBChats.ItemsSource = FindedContacts;
+                BtnAddNarrow.Visibility = Visibility.Collapsed;
+                SearchArea.Visibility = Visibility.Visible;
+                LBChats.Tag = null;
             }
         }
     }

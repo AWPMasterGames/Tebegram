@@ -3,7 +3,23 @@
     <OutputName>TebegramSetup</OutputName>
     <OutputType>Package</OutputType>
     <InstallerPlatform>x64</InstallerPlatform>
+    <Configurations>Debug;Release;Max;Serge</Configurations>
+    <!-- Отключаем авто-включение .wxs, чтобы не было дублей с явными Compile Include ниже -->
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
+
+  <!-- Явное перечисление файлов — Solution Explorer показывает их без расширения HeatWave -->
+  <ItemGroup>
+    <Compile Include="Package.wxs" />
+    <Compile Include="Components.wxs" />
+    <Compile Include="Folders.wxs" />
+    <Compile Include="Shortcut.wxs" />
+    <Compile Include="OptionsDlg.wxs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Package.ru-ru.wxl" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="WixToolset.UI.wixext" Version="5.0.2" />

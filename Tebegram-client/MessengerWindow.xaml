@@ -12,7 +12,7 @@
     Height="550"
     MinWidth="600"
     MinHeight="350"
-    Background="{StaticResource Light.BgDeepBrush}"
+    Background="{DynamicResource Light.BgDeepBrush}"
     Closing="Window_Closing"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
@@ -41,7 +41,7 @@
                                             <ControlTemplate TargetType="Thumb">
                                                 <Border
                                                     Margin="1,0"
-                                                    Background="{StaticResource Light.BorderStrongBrush}"
+                                                    Background="{DynamicResource Light.BorderStrongBrush}"
                                                     CornerRadius="3" />
                                             </ControlTemplate>
                                         </Thumb.Template>
@@ -102,7 +102,7 @@
         </Grid.ColumnDefinitions>
 
         <!--  Левая панель  -->
-        <Grid Background="{StaticResource Light.BgSurfaceBrush}">
+        <Grid Background="{DynamicResource Light.BgSurfaceBrush}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="50" />
                 <RowDefinition Height="auto" />
@@ -115,7 +115,7 @@
                 BorderBrush="Transparent"
                 Click="Button_Click_Settings">
                 <Viewbox Width="22" Height="22">
-                    <Path Data="{StaticResource IconSettings}" Fill="{StaticResource Light.TextSecondaryBrush}" />
+                    <Path Data="{StaticResource IconSettings}" Fill="{DynamicResource Light.TextSecondaryBrush}" />
                 </Viewbox>
             </Button>
             <!--  Статическая папка "Все чаты"  -->
@@ -131,19 +131,19 @@
                         <Setter Property="Background" Value="Transparent" />
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="{StaticResource Light.BgElevatedBrush}" />
+                                <Setter Property="Background" Value="{DynamicResource Light.BgElevatedBrush}" />
                             </Trigger>
                         </Style.Triggers>
                     </Style>
                 </Button.Style>
                 <StackPanel VerticalAlignment="Center">
                     <Viewbox Width="22" Height="22" HorizontalAlignment="Center">
-                        <Path Data="{StaticResource IconChat}" Fill="{StaticResource Light.TextSecondaryBrush}" />
+                        <Path Data="{StaticResource IconChat}" Fill="{DynamicResource Light.TextSecondaryBrush}" />
                     </Viewbox>
                     <TextBlock
                         HorizontalAlignment="Center"
                         FontSize="15"
-                        Foreground="{StaticResource Light.TextSecondaryBrush}"
+                        Foreground="{DynamicResource Light.TextSecondaryBrush}"
                         Text="Все чаты" />
                 </StackPanel>
             </Button>
@@ -161,10 +161,10 @@
                         <Setter Property="Padding" Value="4" />
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="{StaticResource Light.BgElevatedBrush}" />
+                                <Setter Property="Background" Value="{DynamicResource Light.BgElevatedBrush}" />
                             </Trigger>
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter Property="Background" Value="{StaticResource Light.AccentMutedBrush}" />
+                                <Setter Property="Background" Value="{DynamicResource Light.AccentMutedBrush}" />
                             </Trigger>
                         </Style.Triggers>
                     </Style>
@@ -176,72 +176,73 @@
                                 Width="22"
                                 Height="22"
                                 HorizontalAlignment="Center">
-                                <Path Data="{StaticResource IconChat}" Fill="{StaticResource Light.TextSecondaryBrush}" />
+                                <Path Data="{StaticResource IconChat}" Fill="{DynamicResource Light.TextSecondaryBrush}" />
                             </Viewbox>
                             <TextBlock
                                 HorizontalAlignment="Center"
                                 FontSize="15"
-                                Foreground="{StaticResource Light.TextSecondaryBrush}"
+                                Foreground="{DynamicResource Light.TextSecondaryBrush}"
                                 Text="{Binding FolderName}" />
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <Grid Grid.Row="3">
-                <Viewbox
-                    Width="22"
-                    Height="22"
-                    VerticalAlignment="Center"
-                    IsHitTestVisible="False">
-                    <Path Data="{StaticResource IconInfo}" Fill="{StaticResource Light.TextSecondaryBrush}" />
+            <Button
+                Grid.Row="3"
+                Height="50"
+                Background="Transparent"
+                BorderBrush="Transparent"
+                Click="Button_Click_FoldersMenu">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="Transparent" />
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource Light.BgElevatedBrush}" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                <Viewbox Width="22" Height="22">
+                    <Path Data="{StaticResource IconInfo}" Fill="{DynamicResource Light.TextSecondaryBrush}" />
                 </Viewbox>
-                <Button
-                    Height="50"
-                    Background="Transparent"
-                    BorderBrush="Transparent"
-                    Click="Button_Click_FoldersMenu"
-                    Content=""
-                    FontSize="15" />
-            </Grid>
+            </Button>
         </Grid>
 
         <!--  Список чатов  -->
-        <Grid Grid.Column="1" ClipToBounds="True" Background="{StaticResource Light.BgPrimaryBrush}">
+        <Grid
+            x:Name="ChatListContainer"
+            Grid.Column="1"
+            ClipToBounds="True"
+            Background="{DynamicResource Light.BgPrimaryBrush}"
+            SizeChanged="ChatListContainer_SizeChanged">
             <Grid.RowDefinitions>
                 <RowDefinition Height="50" />
                 <RowDefinition />
             </Grid.RowDefinitions>
-            <StackPanel
-                Margin="10,0"
-                HorizontalAlignment="Right"
-                Orientation="Horizontal">
+            <Grid x:Name="SearchArea" Margin="8,0">
                 <TextBox
                     Name="SearchContactBarTB"
-                    Width="165"
                     Height="35"
-                    Margin="0,0,25,0"
-                    Background="{StaticResource Light.BgInputBrush}"
-                    FontSize="20"
-                    Foreground="{StaticResource Light.TextPrimaryBrush}"
+                    Background="{DynamicResource Light.BgInputBrush}"
+                    FontSize="14"
+                    Foreground="{DynamicResource Light.TextPrimaryBrush}"
                     Template="{StaticResource TextBoxBaseControlTemplate}"
                     TextChanged="TextBox_TextChanged"
                     TextWrapping="Wrap" />
-                <Button
-                    Background="Transparent"
-                    BorderBrush="Transparent"
-                    Click="Button_Click_AddContact">
-                    <Border
-                        Width="35"
-                        Height="35"
-                        BorderBrush="{StaticResource Light.BorderDefaultBrush}"
-                        BorderThickness="0"
-                        CornerRadius="20">
-                        <Viewbox Width="18" Height="18">
-                            <Path Data="{StaticResource IconAddUser}" Fill="{StaticResource Light.AccentTextBrush}" />
-                        </Viewbox>
-                    </Border>
-                </Button>
-            </StackPanel>
+            </Grid>
+            <Button
+                x:Name="BtnAddNarrow"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="Transparent"
+                BorderBrush="Transparent"
+                Click="Button_Click_AddContact"
+                Visibility="Collapsed">
+                <Viewbox Width="20" Height="20">
+                    <Path Data="{StaticResource IconAddUser}" Fill="{DynamicResource Light.AccentTextBrush}" />
+                </Viewbox>
+            </Button>
             <ListBox
                 x:Name="LBChats"
                 Grid.Row="1"
@@ -255,10 +256,10 @@
                         <Setter Property="Padding" Value="6,4" />
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="{StaticResource Light.BgElevatedBrush}" />
+                                <Setter Property="Background" Value="{DynamicResource Light.BgElevatedBrush}" />
                             </Trigger>
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter Property="Background" Value="{StaticResource Light.AccentMutedBrush}" />
+                                <Setter Property="Background" Value="{DynamicResource Light.AccentMutedBrush}" />
                             </Trigger>
                         </Style.Triggers>
                     </Style>
@@ -274,38 +275,53 @@
                                 <RowDefinition />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
-                            <local1:UserControl1 Grid.RowSpan="2" Avatar="https://djnkpzmq-5000.euw.devtunnels.ms/avatars/1008024429709774919.webp" />
+                            <local1:UserControl1
+                                Grid.RowSpan="2"
+                                Width="44"
+                                Height="44"
+                                Avatar="{Binding Avatar}" />
                             <TextBlock
                                 Grid.RowSpan="2"
                                 Grid.Column="1"
                                 Height="50"
                                 Margin="10,0"
                                 FontSize="15"
-                                Foreground="{StaticResource Light.TextPrimaryBrush}"
+                                Foreground="{DynamicResource Light.TextPrimaryBrush}"
                                 Text="{Binding Name}"
                                 TextTrimming="CharacterEllipsis"
-                                TextWrapping="NoWrap" />
+                                TextWrapping="NoWrap">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=ListBox}}" Value="narrow">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
 
-            <!--  Ресайз-разделитель  -->
-            <GridSplitter
-                Grid.RowSpan="2"
-                Width="4"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Stretch"
-                Background="Transparent"
-                Cursor="SizeWE"
-                ResizeBehavior="CurrentAndNext"
-                ResizeDirection="Columns" />
         </Grid>
+
+        <!--  Ресайз-разделитель колонки чатов  -->
+        <GridSplitter
+            Grid.Column="1"
+            Width="4"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Stretch"
+            Background="Transparent"
+            Cursor="SizeWE"
+            ResizeBehavior="CurrentAndNext"
+            ResizeDirection="Columns" />
 
         <!--  Область чата  -->
         <Border
             Grid.Column="2"
-            BorderBrush="{StaticResource Light.BorderSubtleBrush}"
+            BorderBrush="{DynamicResource Light.BorderSubtleBrush}"
             BorderThickness="1,0,0,0">
             <Grid x:Name="GridChat">
                 <Grid.RowDefinitions>
@@ -316,11 +332,12 @@
 
                 <!--  Шапка чата  -->
                 <Border
-                    Background="{StaticResource Light.BgSurfaceBrush}"
-                    BorderBrush="{StaticResource Light.BorderSubtleBrush}"
+                    Background="{DynamicResource Light.BgSurfaceBrush}"
+                    BorderBrush="{DynamicResource Light.BorderSubtleBrush}"
                     BorderThickness="0,0,0,1">
                     <Grid Name="GridContactPanel" Margin="10,5,0,0">
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition />
                             <ColumnDefinition Width="auto" />
                         </Grid.ColumnDefinitions>
@@ -328,15 +345,22 @@
                             <RowDefinition />
                             <RowDefinition />
                         </Grid.RowDefinitions>
+                        <local1:UserControl1
+                            Grid.RowSpan="2"
+                            Width="36"
+                            Height="36"
+                            Margin="0,0,10,0"
+                            Avatar="{Binding Avatar}" />
                         <TextBlock
+                            Grid.Column="1"
                             Name="TBChat_Name"
-                            Margin="10,0"
+                            Margin="0,0,10,0"
                             FontSize="15"
-                            Foreground="{StaticResource Light.TextPrimaryBrush}"
+                            Foreground="{DynamicResource Light.TextPrimaryBrush}"
                             Text="{Binding Name}" />
                         <StackPanel
                             Grid.RowSpan="2"
-                            Grid.Column="1"
+                            Grid.Column="2"
                             Margin="5,-2,5,0"
                             Orientation="Horizontal">
                             <Button
@@ -350,7 +374,7 @@
                                     BorderThickness="2"
                                     CornerRadius="20">
                                     <Viewbox Width="20" Height="20">
-                                        <Path Data="{StaticResource IconPhone}" Fill="{StaticResource Light.AccentTextBrush}" />
+                                        <Path Data="{StaticResource IconPhone}" Fill="{DynamicResource Light.AccentTextBrush}" />
                                     </Viewbox>
                                 </Border>
                             </Button>
@@ -365,7 +389,7 @@
                                     BorderThickness="2"
                                     CornerRadius="20">
                                     <Viewbox Width="18" Height="18">
-                                        <Path Data="{StaticResource IconRemoveUser}" Fill="{StaticResource Light.DangerBrush}" />
+                                        <Path Data="{StaticResource IconRemoveUser}" Fill="{DynamicResource Light.DangerBrush}" />
                                     </Viewbox>
                                 </Border>
                             </Button>
@@ -375,11 +399,26 @@
                                 BorderBrush="Transparent"
                                 Click="Button_Click_ContactRedact">
                                 <Viewbox Width="20" Height="20">
-                                    <Path Data="{StaticResource IconList}" Fill="{StaticResource Light.TextSecondaryBrush}" />
+                                    <Path Data="{StaticResource IconList}" Fill="{DynamicResource Light.TextSecondaryBrush}" />
                                 </Viewbox>
                             </Button>
                         </StackPanel>
                     </Grid>
+                </Border>
+
+                <!--  Оверлей загрузки (виден до получения истории с сервера)  -->
+                <Border
+                    x:Name="MessagesLoadingOverlay"
+                    Grid.Row="1"
+                    Panel.ZIndex="1"
+                    Background="{DynamicResource Light.BgPrimaryBrush}"
+                    Visibility="Visible">
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontSize="16"
+                        Foreground="{DynamicResource Light.TextMutedBrush}"
+                        Text="Загрузка…" />
                 </Border>
 
                 <!--  Сообщения  -->
@@ -411,20 +450,20 @@
                             <Border MaxWidth="380" ClipToBounds="True">
                                 <Border.Style>
                                     <Style TargetType="Border">
-                                        <Setter Property="Background" Value="{StaticResource Light.MsgIncomingBrush}" />
+                                        <Setter Property="Background" Value="{DynamicResource Light.MsgIncomingBrush}" />
                                         <Setter Property="HorizontalAlignment" Value="Left" />
                                         <Setter Property="CornerRadius" Value="4,14,14,14" />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsOutgoing}" Value="True">
                                                 <Setter Property="HorizontalAlignment" Value="Right" />
-                                                <Setter Property="Background" Value="{StaticResource Light.MsgOutgoingBrush}" />
+                                                <Setter Property="Background" Value="{DynamicResource Light.MsgOutgoingBrush}" />
                                                 <Setter Property="CornerRadius" Value="14,4,14,14" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding Status}" Value="Pending">
-                                                <Setter Property="Background" Value="{StaticResource Light.MsgPendingBrush}" />
+                                                <Setter Property="Background" Value="{DynamicResource Light.MsgPendingBrush}" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding Status}" Value="Failed">
-                                                <Setter Property="Background" Value="{StaticResource Light.MsgFailedBrush}" />
+                                                <Setter Property="Background" Value="{DynamicResource Light.MsgFailedBrush}" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -443,7 +482,7 @@
                                         Margin="12,8,12,3"
                                         FontSize="12"
                                         FontWeight="SemiBold"
-                                        Foreground="{StaticResource Light.AccentTextBrush}"
+                                        Foreground="{DynamicResource Light.AccentTextBrush}"
                                         Text="{Binding Sender}">
                                         <TextBlock.Style>
                                             <Style TargetType="TextBlock">
@@ -502,7 +541,7 @@
                                         TextWrapping="Wrap">
                                         <TextBlock.Style>
                                             <Style TargetType="TextBlock">
-                                                <Setter Property="Foreground" Value="{StaticResource Light.TextPrimaryBrush}" />
+                                                <Setter Property="Foreground" Value="{DynamicResource Light.TextPrimaryBrush}" />
                                                 <Setter Property="Visibility" Value="Visible" />
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsOutgoing}" Value="True">
@@ -524,7 +563,7 @@
                                         Text="{Binding Time, Converter={StaticResource TimeFormatConverter}}">
                                         <TextBlock.Style>
                                             <Style TargetType="TextBlock">
-                                                <Setter Property="Foreground" Value="{StaticResource Light.TextMutedBrush}" />
+                                                <Setter Property="Foreground" Value="{DynamicResource Light.TextMutedBrush}" />
                                                 <Setter Property="Visibility" Value="Visible" />
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsOutgoing}" Value="True">
@@ -546,8 +585,8 @@
                 <!--  Поле ввода  -->
                 <Border
                     Grid.Row="2"
-                    Background="{StaticResource Light.BgSurfaceBrush}"
-                    BorderBrush="{StaticResource Light.BorderSubtleBrush}"
+                    Background="{DynamicResource Light.BgSurfaceBrush}"
+                    BorderBrush="{DynamicResource Light.BorderSubtleBrush}"
                     BorderThickness="0,1,0,0"
                     Padding="10,8">
                     <Grid x:Name="GridMessege" VerticalAlignment="Center">
@@ -562,14 +601,14 @@
                             Width="34"
                             Height="34"
                             Margin="0,0,8,0"
-                            Background="{StaticResource Light.BgElevatedBrush}"
+                            Background="{DynamicResource Light.BgElevatedBrush}"
                             Click="Button_Click_SelectFile"
                             Template="{StaticResource RoundIconButtonTemplate}"
                             ToolTip="Прикрепить файл">
                             <Viewbox Width="16" Height="16">
                                 <Path
                                     Data="{StaticResource IconAttach}"
-                                    Fill="{StaticResource Light.TextSecondaryBrush}"
+                                    Fill="{DynamicResource Light.TextSecondaryBrush}"
                                     Stretch="Uniform" />
                             </Viewbox>
                         </Button>
@@ -577,8 +616,8 @@
                         <!--  Поле ввода текста  -->
                         <Border
                             Grid.Column="1"
-                            Background="{StaticResource Light.BgInputBrush}"
-                            BorderBrush="{StaticResource Light.BorderDefaultBrush}"
+                            Background="{DynamicResource Light.BgInputBrush}"
+                            BorderBrush="{DynamicResource Light.BorderDefaultBrush}"
                             BorderThickness="1"
                             CornerRadius="12"
                             Padding="12,6">
@@ -591,7 +630,7 @@
                                     Background="Transparent"
                                     BorderThickness="0"
                                     FontSize="14"
-                                    Foreground="{StaticResource Light.TextPrimaryBrush}"
+                                    Foreground="{DynamicResource Light.TextPrimaryBrush}"
                                     KeyDown="TBMessage_KeyDown_SendMessage"
                                     TextWrapping="Wrap" />
                             </ScrollViewer>
@@ -603,7 +642,7 @@
                             Width="34"
                             Height="34"
                             Margin="8,0,0,0"
-                            Background="{StaticResource Light.AccentPrimaryBrush}"
+                            Background="{DynamicResource Light.AccentPrimaryBrush}"
                             Click="Button_Click_SendMessage"
                             Template="{StaticResource RoundIconButtonTemplate}"
                             ToolTip="Отправить">
