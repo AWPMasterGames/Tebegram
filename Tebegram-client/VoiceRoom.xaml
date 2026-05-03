@@ -26,16 +26,16 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     FontSize="{TemplateBinding FontSize}"
-                    Foreground="{StaticResource Light.TextMutedBrush}"
+                    Foreground="{DynamicResource Light.TextMutedBrush}"
                     Text="{TemplateBinding Content}" />
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.DangerBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.DangerBrush}" />
                     <Setter TargetName="Txt" Property="Foreground" Value="White" />
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.DangerHoverBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.DangerHoverBrush}" />
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -67,16 +67,16 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     FontSize="{TemplateBinding FontSize}"
-                    Foreground="{StaticResource Light.TextMutedBrush}"
+                    Foreground="{DynamicResource Light.TextMutedBrush}"
                     Text="{TemplateBinding Content}" />
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.BgElevatedBrush}" />
-                    <Setter TargetName="Txt" Property="Foreground" Value="{StaticResource Light.TextPrimaryBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.BgElevatedBrush}" />
+                    <Setter TargetName="Txt" Property="Foreground" Value="{DynamicResource Light.TextPrimaryBrush}" />
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.BgDeepBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.BgDeepBrush}" />
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -112,8 +112,8 @@
 
             <Border
                 Padding="24"
-                Background="{StaticResource Light.BgPrimaryBrush}"
-                BorderBrush="{StaticResource Light.BorderDefaultBrush}"
+                Background="{DynamicResource Light.BgPrimaryBrush}"
+                BorderBrush="{DynamicResource Light.BorderDefaultBrush}"
                 BorderThickness="1"
                 CornerRadius="20">
                 <Border.Effect>
@@ -196,7 +196,7 @@
                                 VerticalAlignment="Center"
                                 FontSize="18"
                                 FontWeight="SemiBold"
-                                Foreground="{StaticResource Light.TextPrimaryBrush}"
+                                Foreground="{DynamicResource Light.TextPrimaryBrush}"
                                 Text="{Binding Name}" />
 
                             <StackPanel
@@ -204,10 +204,10 @@
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center">
                                 <Grid Width="170" Height="170">
-                                    <Ellipse Fill="{StaticResource Light.BgDeepBrush}" />
+                                    <Ellipse Fill="{DynamicResource Light.BgDeepBrush}" />
                                     <Ellipse>
                                         <Ellipse.Fill>
-                                            <ImageBrush ImageSource="{Binding Avatar}" Stretch="UniformToFill" />
+                                            <ImageBrush x:Name="IncomingAvatarBrush" Stretch="UniformToFill" />
                                         </Ellipse.Fill>
                                     </Ellipse>
                                 </Grid>
@@ -215,7 +215,7 @@
                                     Margin="0,12,0,0"
                                     HorizontalAlignment="Center"
                                     FontSize="13"
-                                    Foreground="{StaticResource Light.TextMutedBrush}"
+                                    Foreground="{DynamicResource Light.TextMutedBrush}"
                                     Text="Входящий звонок…" />
                             </StackPanel>
 
@@ -234,7 +234,7 @@
                                     Width="56"
                                     Height="56"
                                     Margin="14,0"
-                                    Background="{StaticResource Light.DangerBrush}"
+                                    Background="{DynamicResource Light.DangerBrush}"
                                     Click="Button_Click_Decline"
                                     Template="{StaticResource CircleActionButton}"
                                     ToolTip="Отклонить">
@@ -251,7 +251,7 @@
                                     Width="56"
                                     Height="56"
                                     Margin="14,0"
-                                    Background="{StaticResource Light.AccentPrimaryBrush}"
+                                    Background="{DynamicResource Light.AccentPrimaryBrush}"
                                     Click="Button_Click_Accept"
                                     Template="{StaticResource CircleActionButton}"
                                     ToolTip="Принять">
@@ -279,7 +279,7 @@
                                 VerticalAlignment="Center"
                                 FontSize="18"
                                 FontWeight="SemiBold"
-                                Foreground="{StaticResource Light.TextPrimaryBrush}"
+                                Foreground="{DynamicResource Light.TextPrimaryBrush}"
                                 Text="{Binding Name}" />
 
                             <StackPanel
@@ -287,10 +287,10 @@
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center">
                                 <Grid Width="170" Height="170">
-                                    <Ellipse Fill="{StaticResource Light.BgDeepBrush}" />
+                                    <Ellipse Fill="{DynamicResource Light.BgDeepBrush}" />
                                     <Ellipse>
                                         <Ellipse.Fill>
-                                            <ImageBrush ImageSource="{Binding Avatar}" Stretch="UniformToFill" />
+                                            <ImageBrush x:Name="ActiveAvatarBrush" Stretch="UniformToFill" />
                                         </Ellipse.Fill>
                                     </Ellipse>
 
@@ -300,25 +300,25 @@
                                         Height="44"
                                         HorizontalAlignment="Right"
                                         VerticalAlignment="Bottom"
-                                        Background="{StaticResource Light.BgPrimaryBrush}"
+                                        Background="{DynamicResource Light.BgPrimaryBrush}"
                                         CornerRadius="22">
                                         <Border
                                             x:Name="MicButtonBorder"
                                             Width="36"
                                             Height="36"
-                                            Background="{StaticResource Light.BgElevatedBrush}"
+                                            Background="{DynamicResource Light.BgElevatedBrush}"
                                             CornerRadius="18">
                                             <Viewbox Width="16" Height="16">
                                                 <Grid Width="24" Height="24">
                                                     <Path
                                                         x:Name="MicAvatarPath"
                                                         Data="{StaticResource IconMic}"
-                                                        Fill="{StaticResource Light.TextPrimaryBrush}"
+                                                        Fill="{DynamicResource Light.TextPrimaryBrush}"
                                                         Stretch="Uniform" />
                                                     <Line
                                                         x:Name="MicAvatarSlashLine"
                                                         IsHitTestVisible="False"
-                                                        Stroke="{StaticResource Light.TextPrimaryBrush}"
+                                                        Stroke="{DynamicResource Light.TextPrimaryBrush}"
                                                         StrokeDashArray="26"
                                                         StrokeDashOffset="26"
                                                         StrokeThickness="2"
@@ -335,7 +335,7 @@
                                     Margin="0,12,0,0"
                                     HorizontalAlignment="Center"
                                     FontSize="14"
-                                    Foreground="{StaticResource Light.TextMutedBrush}"
+                                    Foreground="{DynamicResource Light.TextMutedBrush}"
                                     Text="00:00" />
                             </StackPanel>
 
@@ -356,13 +356,13 @@
                                     Width="48"
                                     Height="48"
                                     Margin="5,0"
-                                    Background="{StaticResource Light.BgElevatedBrush}"
+                                    Background="{DynamicResource Light.BgElevatedBrush}"
                                     Template="{StaticResource CircleActionButton}"
                                     ToolTip="Демонстрация экрана">
                                     <Viewbox Width="20" Height="20">
                                         <Path
                                             Data="{StaticResource IconScreenShare}"
-                                            Fill="{StaticResource Light.TextPrimaryBrush}"
+                                            Fill="{DynamicResource Light.TextPrimaryBrush}"
                                             Stretch="Uniform" />
                                     </Viewbox>
                                 </Button>
@@ -373,13 +373,13 @@
                                     Width="48"
                                     Height="48"
                                     Margin="5,0"
-                                    Background="{StaticResource Light.BgElevatedBrush}"
+                                    Background="{DynamicResource Light.BgElevatedBrush}"
                                     Template="{StaticResource CircleActionButton}"
                                     ToolTip="Включить видеозвонок">
                                     <Viewbox Width="20" Height="20">
                                         <Path
                                             Data="{StaticResource IconCamera}"
-                                            Fill="{StaticResource Light.TextPrimaryBrush}"
+                                            Fill="{DynamicResource Light.TextPrimaryBrush}"
                                             Stretch="Uniform" />
                                     </Viewbox>
                                 </Button>
@@ -390,7 +390,7 @@
                                     Width="56"
                                     Height="56"
                                     Margin="5,0"
-                                    Background="{StaticResource Light.DangerBrush}"
+                                    Background="{DynamicResource Light.DangerBrush}"
                                     Click="Button_Click"
                                     Template="{StaticResource CircleActionButton}"
                                     ToolTip="Завершить">
@@ -408,7 +408,7 @@
                                     Width="48"
                                     Height="48"
                                     Margin="5,0"
-                                    Background="{StaticResource Light.BgElevatedBrush}"
+                                    Background="{DynamicResource Light.BgElevatedBrush}"
                                     Click="Button_Click_OffOnMicrofon"
                                     Template="{StaticResource CircleActionButton}"
                                     ToolTip="Микрофон">
@@ -417,13 +417,13 @@
                                             <Path
                                                 x:Name="MicIconPath"
                                                 Data="{StaticResource IconMic}"
-                                                Fill="{StaticResource Light.TextPrimaryBrush}"
+                                                Fill="{DynamicResource Light.TextPrimaryBrush}"
                                                 Stretch="Uniform" />
                                             <!--  Перечёркивающая линия (рисуется при мьюте)  -->
                                             <Line
                                                 x:Name="MicSlashLine"
                                                 IsHitTestVisible="False"
-                                                Stroke="{StaticResource Light.TextPrimaryBrush}"
+                                                Stroke="{DynamicResource Light.TextPrimaryBrush}"
                                                 StrokeDashArray="26"
                                                 StrokeDashOffset="26"
                                                 StrokeThickness="2"
@@ -439,13 +439,13 @@
                                     Width="48"
                                     Height="48"
                                     Margin="5,0"
-                                    Background="{StaticResource Light.BgElevatedBrush}"
+                                    Background="{DynamicResource Light.BgElevatedBrush}"
                                     Template="{StaticResource CircleActionButton}"
                                     ToolTip="Добавить участника">
                                     <Viewbox Width="20" Height="20">
                                         <Path
                                             Data="{StaticResource IconPlus}"
-                                            Fill="{StaticResource Light.TextPrimaryBrush}"
+                                            Fill="{DynamicResource Light.TextPrimaryBrush}"
                                             Stretch="Uniform" />
                                     </Viewbox>
                                 </Button>

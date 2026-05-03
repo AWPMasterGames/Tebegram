@@ -24,16 +24,16 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     FontSize="{TemplateBinding FontSize}"
-                    Foreground="{StaticResource Light.TextMutedBrush}"
+                    Foreground="{DynamicResource Light.TextMutedBrush}"
                     Text="{TemplateBinding Content}" />
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.DangerBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.DangerBrush}" />
                     <Setter TargetName="Txt" Property="Foreground" Value="White" />
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.DangerHoverBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.DangerHoverBrush}" />
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -45,16 +45,16 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     FontSize="{TemplateBinding FontSize}"
-                    Foreground="{StaticResource Light.TextMutedBrush}"
+                    Foreground="{DynamicResource Light.TextMutedBrush}"
                     Text="{TemplateBinding Content}" />
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.BgElevatedBrush}" />
-                    <Setter TargetName="Txt" Property="Foreground" Value="{StaticResource Light.TextPrimaryBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.BgElevatedBrush}" />
+                    <Setter TargetName="Txt" Property="Foreground" Value="{DynamicResource Light.TextPrimaryBrush}" />
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.BgDeepBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.BgDeepBrush}" />
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -65,10 +65,10 @@
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.AccentHoverBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.AccentHoverBrush}" />
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.AccentPressedBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.AccentPressedBrush}" />
                 </Trigger>
                 <Trigger Property="IsEnabled" Value="False">
                     <Setter TargetName="Bd" Property="Opacity" Value="0.45" />
@@ -87,10 +87,10 @@
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.BgElevatedBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.BgElevatedBrush}" />
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.BgDeepBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.BgDeepBrush}" />
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -102,10 +102,10 @@
             <Setter Property="Cursor" Value="Hand" />
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="{StaticResource Light.BgElevatedBrush}" />
+                    <Setter Property="Background" Value="{DynamicResource Light.BgElevatedBrush}" />
                 </Trigger>
                 <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="{StaticResource Light.AccentMutedBrush}" />
+                    <Setter Property="Background" Value="{DynamicResource Light.AccentMutedBrush}" />
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -117,10 +117,10 @@
             <Setter Property="Cursor" Value="Hand" />
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="{StaticResource Light.DangerMutedBrush}" />
+                    <Setter Property="Background" Value="{DynamicResource Light.DangerMutedBrush}" />
                 </Trigger>
                 <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="{StaticResource Light.DangerMutedBrush}" />
+                    <Setter Property="Background" Value="{DynamicResource Light.DangerMutedBrush}" />
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -156,8 +156,8 @@
 
             <Border
                 Padding="24"
-                Background="{StaticResource Light.BgPrimaryBrush}"
-                BorderBrush="{StaticResource Light.BorderDefaultBrush}"
+                Background="{DynamicResource Light.BgPrimaryBrush}"
+                BorderBrush="{DynamicResource Light.BorderDefaultBrush}"
                 BorderThickness="1"
                 CornerRadius="20">
                 <Border.Effect>
@@ -232,24 +232,24 @@
                             HorizontalAlignment="Center"
                             FontSize="22"
                             FontWeight="SemiBold"
-                            Foreground="{StaticResource Light.TextPrimaryBrush}"
+                            Foreground="{DynamicResource Light.TextPrimaryBrush}"
                             Text="Новая папка" />
 
                         <!--  Название папки  -->
                         <TextBlock
                             Margin="0,0,0,5"
                             FontSize="12"
-                            Foreground="{StaticResource Light.TextMutedBrush}"
+                            Foreground="{DynamicResource Light.TextMutedBrush}"
                             Text="Название папки" />
                         <TextBox
                             x:Name="TBoxFolderName"
                             Height="36"
                             Margin="0,0,0,20"
-                            Background="{StaticResource Light.BgInputBrush}"
-                            BorderBrush="{StaticResource Light.BorderDefaultBrush}"
+                            Background="{DynamicResource Light.BgInputBrush}"
+                            BorderBrush="{DynamicResource Light.BorderDefaultBrush}"
                             BorderThickness="1"
                             FontSize="14"
-                            Foreground="{StaticResource Light.TextPrimaryBrush}"
+                            Foreground="{DynamicResource Light.TextPrimaryBrush}"
                             Template="{StaticResource TextBoxBaseControlTemplate}" />
 
                         <!--  Двухколоночные списки контактов  -->
@@ -263,8 +263,8 @@
                             <!--  Все контакты  -->
                             <Border
                                 Grid.Column="0"
-                                Background="{StaticResource Light.BgSurfaceBrush}"
-                                BorderBrush="{StaticResource Light.BorderSubtleBrush}"
+                                Background="{DynamicResource Light.BgSurfaceBrush}"
+                                BorderBrush="{DynamicResource Light.BorderSubtleBrush}"
                                 BorderThickness="1"
                                 CornerRadius="12">
                                 <Grid>
@@ -277,7 +277,7 @@
                                         HorizontalAlignment="Center"
                                         FontSize="11"
                                         FontWeight="SemiBold"
-                                        Foreground="{StaticResource Light.TextMutedBrush}"
+                                        Foreground="{DynamicResource Light.TextMutedBrush}"
                                         Text="ВСЕ КОНТАКТЫ" />
                                     <ListBox
                                         x:Name="LBMyContacts"
@@ -295,7 +295,7 @@
                                                         Margin="8,0,0,0"
                                                         VerticalAlignment="Center"
                                                         FontSize="13"
-                                                        Foreground="{StaticResource Light.TextPrimaryBrush}"
+                                                        Foreground="{DynamicResource Light.TextPrimaryBrush}"
                                                         Text="{Binding Name}" />
                                                 </StackPanel>
                                             </DataTemplate>
@@ -310,14 +310,14 @@
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 FontSize="16"
-                                Foreground="{StaticResource Light.TextMutedBrush}"
+                                Foreground="{DynamicResource Light.TextMutedBrush}"
                                 Text="⇄" />
 
                             <!--  В папке  -->
                             <Border
                                 Grid.Column="2"
-                                Background="{StaticResource Light.BgSurfaceBrush}"
-                                BorderBrush="{StaticResource Light.AccentMutedBrush}"
+                                Background="{DynamicResource Light.BgSurfaceBrush}"
+                                BorderBrush="{DynamicResource Light.AccentMutedBrush}"
                                 BorderThickness="1"
                                 CornerRadius="12">
                                 <Grid>
@@ -330,7 +330,7 @@
                                         HorizontalAlignment="Center"
                                         FontSize="11"
                                         FontWeight="SemiBold"
-                                        Foreground="{StaticResource Light.AccentTextBrush}"
+                                        Foreground="{DynamicResource Light.AccentTextBrush}"
                                         Text="В ПАПКЕ" />
                                     <ListBox
                                         x:Name="LBFolderContacts"
@@ -348,7 +348,7 @@
                                                         Margin="8,0,0,0"
                                                         VerticalAlignment="Center"
                                                         FontSize="13"
-                                                        Foreground="{StaticResource Light.TextPrimaryBrush}"
+                                                        Foreground="{DynamicResource Light.TextPrimaryBrush}"
                                                         Text="{Binding Name}" />
                                                 </StackPanel>
                                             </DataTemplate>
@@ -363,7 +363,7 @@
                             Margin="0,0,0,20"
                             HorizontalAlignment="Center"
                             FontSize="11"
-                            Foreground="{StaticResource Light.TextMutedBrush}"
+                            Foreground="{DynamicResource Light.TextMutedBrush}"
                             Text="Слева — добавить в папку · Справа — убрать из папки" />
 
                         <!--  Кнопки  -->
@@ -376,17 +376,17 @@
                             <Button
                                 Grid.Column="0"
                                 Height="40"
-                                BorderBrush="{StaticResource Light.BorderDefaultBrush}"
+                                BorderBrush="{DynamicResource Light.BorderDefaultBrush}"
                                 BorderThickness="1"
                                 Click="Button_Click_1"
                                 Content="Отмена"
                                 FontSize="14"
-                                Foreground="{StaticResource Light.TextSecondaryBrush}"
+                                Foreground="{DynamicResource Light.TextSecondaryBrush}"
                                 Template="{StaticResource SecondaryButtonTemplate}" />
                             <Button
                                 Grid.Column="2"
                                 Height="40"
-                                Background="{StaticResource Light.AccentPrimaryBrush}"
+                                Background="{DynamicResource Light.AccentPrimaryBrush}"
                                 Click="Button_Click"
                                 Content="Создать"
                                 FontSize="14"

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -11,7 +12,7 @@ using Tebegrammmm.Data;
 
 namespace Tebegrammmm
 {
-    public class Contact
+    public class Contact : INotifyPropertyChanged
     {
         static HttpClient httpClient = new HttpClient(new HttpClientHandler
         {
@@ -21,12 +22,25 @@ namespace Tebegrammmm
         private int _UserId;
         private string _Name = string.Empty;
         private ObservableCollection<Message> _Messages;
+        private string _Avatar;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public int UserId { get { return _UserId; } }
         public string Name { get { return _Name; } }
         public ObservableCollection<Message> Messages { get { return _Messages; } }
         public string Username { get; set; }
-        public string Avatar { get; set; }
-        public string Draft { get; set; } = string.Empty; // Черновик сообщения
+        public string Avatar
+        {
+            get => _Avatar;
+            set
+            {
+                _Avatar = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Avatar)));
+            }
+        }
+        public string Draft { get; set; } = string.Empty;
+        public bool IsSearchPreview { get; set; } = false;
 
         public Contact()
         {

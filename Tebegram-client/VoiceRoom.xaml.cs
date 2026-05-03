@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using Tebegrammmm.Classes;
 using System.Xml.Linq;
 using Tebegrammmm.Classes;
 using Tebegrammmm.Data;
@@ -35,6 +36,7 @@ namespace Tebegrammmm
         private string Token { get; set; }
         private Contact Contact { get; set; }
         private bool IsMicrophoneOn { get; set; }
+        private Mode _mode;
 
         private DispatcherTimer _callTimer;
         private TimeSpan _callDuration;
@@ -54,9 +56,18 @@ namespace Tebegrammmm
             }
 
             _instance = this;
+            _mode = mode;
             Contact = contact;
             Token = token;
             this.DataContext = contact;
+
+            contact.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName == nameof(contact.Avatar))
+                    _ = LoadContactAvatarAsync(contact.Avatar);
+            };
+            if (!string.IsNullOrEmpty(contact.Avatar))
+                _ = LoadContactAvatarAsync(contact.Avatar);
 
             switch (mode)
             {
@@ -90,7 +101,11 @@ namespace Tebegrammmm
             waveIn.DeviceNumber = UserData.User.SelectedDeviceNum;
             waveIn.WaveFormat = new WaveFormat(20480, 16, 1);
 
-            waveProvider = new BufferedWaveProvider(new WaveFormat(20480, 16, 1));
+            waveProvider = new BufferedWaveProvider(new WaveFormat(20480, 16, 1))
+            {
+                DiscardOnBufferOverflow = true,
+                BufferDuration = TimeSpan.FromSeconds(3)
+            };
             buffer = new byte[4096];
 
             waveOut.Init(waveProvider);
@@ -120,7 +135,11 @@ namespace Tebegrammmm
 
             IsMicrophoneOn = true;
 
-            StartCallTimer();
+            if (_mode == Mode.AcceptCall)
+                StartCallTimer();
+            else
+                CallTimeText.Text = "Вызов…";
+
             StartSVT();
             StartRVT();
         }
@@ -182,6 +201,9 @@ namespace Tebegrammmm
                     {
                         case "CloseConnection":
                             Dispatcher.Invoke(() => this.Close());
+                            break;
+                        case "CallAccepted":
+                            Dispatcher.Invoke(() => StartCallTimer());
                             break;
                         case "MicMuted":
                             Dispatcher.Invoke(() => AnimateMicBadge(muting: true));
@@ -377,6 +399,14 @@ namespace Tebegrammmm
                 : (Brush)FindResource("Light.TextPrimaryBrush");
             MicAvatarPath.Fill        = iconColor;
             MicAvatarSlashLine.Stroke = iconColor;
+        }
+
+        private async Task LoadContactAvatarAsync(string url)
+        {
+            var bmp = await AvatarLoader.LoadAsync(url);
+            if (bmp == null) return;
+            IncomingAvatarBrush.ImageSource = bmp;
+            ActiveAvatarBrush.ImageSource = bmp;
         }
     }
 }

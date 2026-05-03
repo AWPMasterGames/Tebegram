@@ -24,16 +24,16 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     FontSize="{TemplateBinding FontSize}"
-                    Foreground="{StaticResource Light.TextMutedBrush}"
+                    Foreground="{DynamicResource Light.TextMutedBrush}"
                     Text="{TemplateBinding Content}" />
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.DangerBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.DangerBrush}" />
                     <Setter TargetName="Txt" Property="Foreground" Value="White" />
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.DangerHoverBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.DangerHoverBrush}" />
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -45,16 +45,159 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     FontSize="{TemplateBinding FontSize}"
-                    Foreground="{StaticResource Light.TextMutedBrush}"
+                    Foreground="{DynamicResource Light.TextMutedBrush}"
                     Text="{TemplateBinding Content}" />
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.BgElevatedBrush}" />
-                    <Setter TargetName="Txt" Property="Foreground" Value="{StaticResource Light.TextPrimaryBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.BgElevatedBrush}" />
+                    <Setter TargetName="Txt" Property="Foreground" Value="{DynamicResource Light.TextPrimaryBrush}" />
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.BgDeepBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.BgDeepBrush}" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <!--  ComboBox: item container  -->
+        <Style x:Key="DeviceComboBoxItemStyle" TargetType="ComboBoxItem">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource Light.TextPrimaryBrush}" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Padding" Value="12,9" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBoxItem">
+                        <Border
+                            x:Name="ItemBd"
+                            Margin="4,2"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="8"
+                            Padding="{TemplateBinding Padding}">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ItemBd" Property="Background" Value="{DynamicResource Light.BgElevatedBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="ItemBd" Property="Background" Value="{DynamicResource Light.AccentMutedBrush}" />
+                                <Setter Property="Foreground" Value="{DynamicResource Light.AccentTextBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--  ComboBox: основной шаблон  -->
+        <ControlTemplate x:Key="DeviceComboBoxTemplate" TargetType="ComboBox">
+            <Grid>
+                <Border
+                    x:Name="Bd"
+                    Height="42"
+                    Background="{DynamicResource Light.BgInputBrush}"
+                    BorderBrush="{DynamicResource Light.BorderDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="10">
+                    <Grid Margin="14,0,12,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="20" />
+                        </Grid.ColumnDefinitions>
+                        <ContentPresenter
+                            VerticalAlignment="Center"
+                            Content="{TemplateBinding SelectionBoxItem}"
+                            ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                            ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}"
+                            IsHitTestVisible="False"
+                            TextBlock.FontSize="13"
+                            TextBlock.Foreground="{DynamicResource Light.TextPrimaryBrush}" />
+                        <Path
+                            x:Name="Arrow"
+                            Grid.Column="1"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Data="M0,0 L4,5 L8,0"
+                            Fill="Transparent"
+                            Stroke="{DynamicResource Light.TextMutedBrush}"
+                            StrokeEndLineCap="Round"
+                            StrokeLineJoin="Round"
+                            StrokeStartLineCap="Round"
+                            StrokeThickness="1.5" />
+                    </Grid>
+                </Border>
+                <ToggleButton
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Focusable="False"
+                    IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                    ClickMode="Press">
+                    <ToggleButton.Template>
+                        <ControlTemplate TargetType="ToggleButton">
+                            <Border Background="Transparent" />
+                        </ControlTemplate>
+                    </ToggleButton.Template>
+                </ToggleButton>
+                <Popup
+                    x:Name="PART_Popup"
+                    AllowsTransparency="True"
+                    Focusable="False"
+                    IsOpen="{TemplateBinding IsDropDownOpen}"
+                    Placement="Bottom"
+                    PopupAnimation="Slide">
+                    <Border
+                        MinWidth="{TemplateBinding ActualWidth}"
+                        MaxHeight="200"
+                        Margin="0,4,0,0"
+                        Background="{DynamicResource Light.BgSurfaceBrush}"
+                        BorderBrush="{DynamicResource Light.BorderDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        Padding="0,4">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Opacity="0.1" ShadowDepth="4" Color="#000000" />
+                        </Border.Effect>
+                        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                            <ItemsPresenter />
+                        </ScrollViewer>
+                    </Border>
+                </Popup>
+            </Grid>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Light.BorderStrongBrush}" />
+                </Trigger>
+                <Trigger Property="IsDropDownOpen" Value="True">
+                    <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Light.BorderFocusBrush}" />
+                    <Setter TargetName="Arrow" Property="Data" Value="M0,5 L4,0 L8,5" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <!--  Кнопка редактирования аватара  -->
+        <ControlTemplate x:Key="EditAvatarButtonTemplate" TargetType="Button">
+            <Border Background="{DynamicResource Light.BgPrimaryBrush}" CornerRadius="18">
+                <Border
+                    x:Name="InnerBd"
+                    Width="28"
+                    Height="28"
+                    Background="{DynamicResource Light.AccentPrimaryBrush}"
+                    CornerRadius="14">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="8" Opacity="0.25" ShadowDepth="2" Color="#000000" />
+                    </Border.Effect>
+                    <Viewbox Width="13" Height="13">
+                        <Path Data="{StaticResource IconEdit}" Fill="White" Stretch="Uniform" />
+                    </Viewbox>
+                </Border>
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="InnerBd" Property="Opacity" Value="0.82" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter TargetName="InnerBd" Property="Opacity" Value="0.65" />
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -64,17 +207,17 @@
             <Border
                 x:Name="Bd"
                 Background="Transparent"
-                BorderBrush="{StaticResource Light.DangerBrush}"
+                BorderBrush="{DynamicResource Light.DangerBrush}"
                 BorderThickness="1"
                 CornerRadius="8">
                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.DangerMutedBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.DangerMutedBrush}" />
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.DangerBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.DangerBrush}" />
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -110,8 +253,8 @@
 
             <Border
                 Padding="24"
-                Background="{StaticResource Light.BgPrimaryBrush}"
-                BorderBrush="{StaticResource Light.BorderDefaultBrush}"
+                Background="{DynamicResource Light.BgPrimaryBrush}"
+                BorderBrush="{DynamicResource Light.BorderDefaultBrush}"
                 BorderThickness="1"
                 CornerRadius="20">
                 <Border.Effect>
@@ -186,7 +329,7 @@
                             HorizontalAlignment="Center"
                             FontSize="22"
                             FontWeight="SemiBold"
-                            Foreground="{StaticResource Light.TextPrimaryBrush}"
+                            Foreground="{DynamicResource Light.TextPrimaryBrush}"
                             Text="Настройки" />
 
                         <!--  Блок пользователя  -->
@@ -194,34 +337,54 @@
                             x:Name="UserInfo"
                             Margin="0,0,0,20"
                             HorizontalAlignment="Center">
-                            <!--  Аватар  -->
-                            <local1:UserControl1
-                                Width="80"
-                                Height="80"
+                            <!--  Аватар с кнопкой редактирования  -->
+                            <Grid
+                                Width="160"
+                                Height="160"
                                 Margin="0,0,0,12"
-                                HorizontalAlignment="Center"
-                                Avatar="{Binding Avatar}" />
+                                HorizontalAlignment="Center">
+                                <Ellipse Fill="{DynamicResource Light.BgElevatedBrush}" />
+                                <Viewbox Margin="30">
+                                    <Path
+                                        Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 9.68 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20z"
+                                        Fill="{DynamicResource Light.TextMutedBrush}"
+                                        Stretch="Uniform" />
+                                </Viewbox>
+                                <Ellipse>
+                                    <Ellipse.Fill>
+                                        <ImageBrush x:Name="AvatarImageBrush" ImageSource="{Binding Avatar}" Stretch="UniformToFill" />
+                                    </Ellipse.Fill>
+                                </Ellipse>
+                                <Button
+                                    Width="40"
+                                    Height="40"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Bottom"
+                                    Click="EditAvatarBtn_Click"
+                                    Cursor="Hand"
+                                    Template="{StaticResource EditAvatarButtonTemplate}" />
+                            </Grid>
 
                             <!--  Имя пользователя  -->
                             <TextBlock
                                 HorizontalAlignment="Center"
                                 FontSize="18"
                                 FontWeight="SemiBold"
-                                Foreground="{StaticResource Light.TextPrimaryBrush}"
+                                Foreground="{DynamicResource Light.TextPrimaryBrush}"
                                 Text="{Binding Name}" />
                         </StackPanel>
 
                         <!--  Разделитель  -->
                         <Border
                             Margin="0,0,0,20"
-                            Background="{StaticResource Light.BorderSubtleBrush}"
+                            Background="{DynamicResource Light.BorderSubtleBrush}"
                             Height="1" />
 
                         <!--  Информационные строки  -->
                         <Border
                             Margin="0,0,0,20"
-                            Background="{StaticResource Light.BgSurfaceBrush}"
-                            BorderBrush="{StaticResource Light.BorderSubtleBrush}"
+                            Background="{DynamicResource Light.BgSurfaceBrush}"
+                            BorderBrush="{DynamicResource Light.BorderSubtleBrush}"
                             BorderThickness="1"
                             CornerRadius="14">
                             <StackPanel>
@@ -236,12 +399,12 @@
                                         <TextBlock
                                             FontSize="11"
                                             FontWeight="SemiBold"
-                                            Foreground="{StaticResource Light.TextMutedBrush}"
+                                            Foreground="{DynamicResource Light.TextMutedBrush}"
                                             Text="ЛОГИН" />
                                         <TextBlock
                                             x:Name="TBLogin"
                                             FontSize="15"
-                                            Foreground="{StaticResource Light.TextPrimaryBrush}"
+                                            Foreground="{DynamicResource Light.TextPrimaryBrush}"
                                             Text="{Binding Login}" />
                                     </StackPanel>
                                     <Viewbox
@@ -251,7 +414,7 @@
                                         VerticalAlignment="Center">
                                         <Path
                                             Data="{StaticResource IconInfo}"
-                                            Fill="{StaticResource Light.TextMutedBrush}"
+                                            Fill="{DynamicResource Light.TextMutedBrush}"
                                             Stretch="Uniform" />
                                     </Viewbox>
                                 </Grid>
@@ -259,7 +422,7 @@
                                 <!--  Разделитель строк  -->
                                 <Border
                                     Margin="16,0"
-                                    Background="{StaticResource Light.BorderSubtleBrush}"
+                                    Background="{DynamicResource Light.BorderSubtleBrush}"
                                     Height="1" />
 
                                 <!--  Имя пользователя  -->
@@ -268,12 +431,12 @@
                                         <TextBlock
                                             FontSize="11"
                                             FontWeight="SemiBold"
-                                            Foreground="{StaticResource Light.TextMutedBrush}"
+                                            Foreground="{DynamicResource Light.TextMutedBrush}"
                                             Text="ИМЯ ПОЛЬЗОВАТЕЛЯ" />
                                         <TextBlock
                                             x:Name="TBUsername"
                                             FontSize="15"
-                                            Foreground="{StaticResource Light.TextPrimaryBrush}" />
+                                            Foreground="{DynamicResource Light.TextPrimaryBrush}" />
                                     </StackPanel>
                                 </Grid>
 
@@ -282,32 +445,155 @@
 
                         <!--  Устройство аудио ввода  -->
                         <Border
-                            Margin="0,0,0,20"
-                            Background="{StaticResource Light.BgSurfaceBrush}"
-                            BorderBrush="{StaticResource Light.BorderSubtleBrush}"
+                            Margin="0,0,0,12"
+                            Background="{DynamicResource Light.BgSurfaceBrush}"
+                            BorderBrush="{DynamicResource Light.BorderSubtleBrush}"
+                            BorderThickness="1"
+                            CornerRadius="14"
+                            Padding="16,14">
+                            <StackPanel>
+                                <StackPanel Margin="0,0,0,10" Orientation="Horizontal">
+                                    <Viewbox
+                                        Width="13"
+                                        Height="13"
+                                        Margin="0,0,6,0"
+                                        VerticalAlignment="Center">
+                                        <Path Data="{StaticResource IconMic}" Fill="{DynamicResource Light.TextMutedBrush}" />
+                                    </Viewbox>
+                                    <TextBlock
+                                        VerticalAlignment="Center"
+                                        FontSize="11"
+                                        FontWeight="SemiBold"
+                                        Foreground="{DynamicResource Light.TextMutedBrush}"
+                                        Text="УСТРОЙСТВО АУДИО ВВОДА" />
+                                </StackPanel>
+                                <ComboBox
+                                    x:Name="InputDeviceCB"
+                                    ItemContainerStyle="{StaticResource DeviceComboBoxItemStyle}"
+                                    SelectionChanged="InputDeviceCB_SelectionChanged"
+                                    Template="{StaticResource DeviceComboBoxTemplate}">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding FriendlyName}" />
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </StackPanel>
+                        </Border>
+
+                        <!--  Тема  -->
+                        <Border
+                            Margin="0,0,0,12"
+                            Background="{DynamicResource Light.BgSurfaceBrush}"
+                            BorderBrush="{DynamicResource Light.BorderSubtleBrush}"
                             BorderThickness="1"
                             CornerRadius="14"
                             Padding="16,14">
                             <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <TextBlock
-                                    Margin="0,0,0,8"
-                                    FontSize="11"
-                                    FontWeight="SemiBold"
-                                    Foreground="{StaticResource Light.TextMutedBrush}"
-                                    Text="УСТРОЙСТВО АУДИО ВВОДА" />
-                                <ComboBox
-                                    x:Name="InputDeviceCB"
-                                    Grid.Row="1"
-                                    Background="{StaticResource Light.BgInputBrush}"
-                                    BorderBrush="{StaticResource Light.BorderDefaultBrush}"
-                                    BorderThickness="1"
-                                    FontSize="13"
-                                    Foreground="{StaticResource Light.TextPrimaryBrush}"
-                                    SelectionChanged="InputDeviceCB_SelectionChanged" />
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock
+                                        FontSize="11"
+                                        FontWeight="SemiBold"
+                                        Foreground="{DynamicResource Light.TextMutedBrush}"
+                                        Text="ОФОРМЛЕНИЕ" />
+                                    <TextBlock
+                                        x:Name="ThemeLabel"
+                                        Margin="0,2,0,0"
+                                        FontSize="15"
+                                        Foreground="{DynamicResource Light.TextPrimaryBrush}"
+                                        Text="Светлая тема" />
+                                </StackPanel>
+                                <CheckBox
+                                    x:Name="ThemeToggle"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    Checked="ThemeToggle_Changed"
+                                    Focusable="False"
+                                    Unchecked="ThemeToggle_Changed">
+                                    <CheckBox.Template>
+                                        <ControlTemplate TargetType="CheckBox">
+                                            <Border
+                                                Width="80"
+                                                Height="36"
+                                                Background="{DynamicResource Light.BgDeepBrush}"
+                                                BorderBrush="{DynamicResource Light.BorderDefaultBrush}"
+                                                BorderThickness="1"
+                                                CornerRadius="18"
+                                                Cursor="Hand">
+                                                <Grid>
+                                                    <Viewbox
+                                                        Width="15"
+                                                        Height="15"
+                                                        HorizontalAlignment="Left"
+                                                        Margin="11,0,0,0">
+                                                        <Path Data="{StaticResource IconSun}" Fill="{DynamicResource Light.TextMutedBrush}" />
+                                                    </Viewbox>
+                                                    <Viewbox
+                                                        Width="15"
+                                                        Height="15"
+                                                        HorizontalAlignment="Right"
+                                                        Margin="0,0,11,0">
+                                                        <Path Data="{StaticResource IconMoon}" Fill="{DynamicResource Light.TextMutedBrush}" />
+                                                    </Viewbox>
+                                                    <Border
+                                                        x:Name="Thumb"
+                                                        Width="30"
+                                                        Height="30"
+                                                        HorizontalAlignment="Left"
+                                                        Margin="3,0,0,0"
+                                                        Background="{DynamicResource Light.AccentPrimaryBrush}"
+                                                        CornerRadius="15"
+                                                        Opacity="0.25">
+                                                        <Border.RenderTransform>
+                                                            <TranslateTransform x:Name="ThumbX" X="0" />
+                                                        </Border.RenderTransform>
+                                                        <Border.Effect>
+                                                            <DropShadowEffect
+                                                                BlurRadius="8"
+                                                                Opacity="0.25"
+                                                                ShadowDepth="2"
+                                                                Color="#000000" />
+                                                        </Border.Effect>
+                                                    </Border>
+                                                </Grid>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsChecked" Value="True">
+                                                    <Trigger.EnterActions>
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <DoubleAnimation
+                                                                    Storyboard.TargetName="ThumbX"
+                                                                    Storyboard.TargetProperty="X"
+                                                                    To="41"
+                                                                    Duration="0:0:0.28">
+                                                                    <DoubleAnimation.EasingFunction>
+                                                                        <CubicEase EasingMode="EaseInOut" />
+                                                                    </DoubleAnimation.EasingFunction>
+                                                                </DoubleAnimation>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </Trigger.EnterActions>
+                                                    <Trigger.ExitActions>
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <DoubleAnimation
+                                                                    Storyboard.TargetName="ThumbX"
+                                                                    Storyboard.TargetProperty="X"
+                                                                    To="0"
+                                                                    Duration="0:0:0.28">
+                                                                    <DoubleAnimation.EasingFunction>
+                                                                        <CubicEase EasingMode="EaseInOut" />
+                                                                    </DoubleAnimation.EasingFunction>
+                                                                </DoubleAnimation>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </Trigger.ExitActions>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </CheckBox.Template>
+                                </CheckBox>
                             </Grid>
                         </Border>
 
@@ -320,13 +606,13 @@
                                 <TextBlock
                                     Margin="0,0,8,0"
                                     FontSize="16"
-                                    Foreground="{StaticResource Light.DangerBrush}"
+                                    Foreground="{DynamicResource Light.DangerBrush}"
                                     Text="⏻" />
                                 <TextBlock
                                     VerticalAlignment="Center"
                                     FontSize="14"
                                     FontWeight="SemiBold"
-                                    Foreground="{StaticResource Light.DangerBrush}"
+                                    Foreground="{DynamicResource Light.DangerBrush}"
                                     Text="Выйти из аккаунта" />
                             </StackPanel>
                         </Button>

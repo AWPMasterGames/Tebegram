@@ -1,10 +1,10 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <ControlTemplate x:Key="TextBoxBaseControlTemplate" TargetType="{x:Type TextBoxBase}">
         <Border
             x:Name="Bd"
             Padding="8,6"
             Background="{TemplateBinding Background}"
-            BorderBrush="{StaticResource Light.BorderDefaultBrush}"
+            BorderBrush="{DynamicResource Light.BorderDefaultBrush}"
             BorderThickness="{TemplateBinding BorderThickness}"
             CornerRadius="10">
             <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center" />

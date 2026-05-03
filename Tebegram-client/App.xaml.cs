@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using Tebegrammmm.Classes;
+using Tebegrammmm.Data;
 
 namespace Tebegrammmm
 {
@@ -18,6 +20,13 @@ namespace Tebegrammmm
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+
+            AppPaths.EnsureDir();
+            if (File.Exists(AppPaths.ThemeDataFile) &&
+                bool.TryParse(File.ReadAllText(AppPaths.ThemeDataFile), out bool savedDark) && savedDark)
+            {
+                ThemeManager.Apply(savedDark, animate: false);
+            }
 
             DispatcherUnhandledException += (s, args) =>
             {

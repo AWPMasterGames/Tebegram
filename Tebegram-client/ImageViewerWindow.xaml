@@ -4,113 +4,230 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     AllowsTransparency="True"
     Background="Transparent"
-    MinWidth="400"
-    MinHeight="300"
-    MouseDown="Window_MouseDown"
+    MinWidth="420"
+    MinHeight="320"
     WindowStartupLocation="CenterScreen"
     WindowStyle="None"
     ResizeMode="CanResizeWithGrip">
 
     <Window.Resources>
-        <ControlTemplate x:Key="RoundIconButtonTemplate" TargetType="Button">
-            <Border
-                x:Name="Bd"
-                Width="{TemplateBinding Width}"
-                Height="{TemplateBinding Height}"
-                Background="{TemplateBinding Background}"
-                CornerRadius="999">
+
+        <!--  Тонкий скроллбар под тёмный фон  -->
+        <Style TargetType="ScrollBar">
+            <Setter Property="Width" Value="5" />
+            <Setter Property="MinWidth" Value="5" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Grid x:Name="Root" Width="5">
+                            <Track
+                                x:Name="PART_Track"
+                                IsDirectionReversed="True"
+                                Margin="0,4">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="ScrollBar.PageUpCommand" Focusable="False" Opacity="0" />
+                                </Track.DecreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb>
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Border Margin="1,0" Background="#66FFFFFF" CornerRadius="3" />
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="ScrollBar.PageDownCommand" Focusable="False" Opacity="0" />
+                                </Track.IncreaseRepeatButton>
+                            </Track>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Orientation" Value="Horizontal">
+                                <Setter TargetName="Root" Property="Width" Value="Auto" />
+                                <Setter TargetName="Root" Property="Height" Value="5" />
+                                <Setter TargetName="PART_Track" Property="IsDirectionReversed" Value="False" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="Orientation" Value="Horizontal">
+                    <Setter Property="Height" Value="5" />
+                    <Setter Property="Width" Value="Auto" />
+                    <Setter Property="MinWidth" Value="0" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!--  Системные кнопки (свернуть / развернуть) — прямоугольные, как в Windows  -->
+        <ControlTemplate x:Key="CaptionBtnTemplate" TargetType="Button">
+            <Border x:Name="Bd" Background="Transparent">
                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter TargetName="Bd" Property="Opacity" Value="0.82" />
+                    <Setter TargetName="Bd" Property="Background" Value="#33FFFFFF" />
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
-                    <Setter TargetName="Bd" Property="Opacity" Value="0.62" />
+                    <Setter TargetName="Bd" Property="Background" Value="#55FFFFFF" />
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
+
+        <!--  Кнопка закрытия — красный фон при наведении  -->
+        <ControlTemplate x:Key="CloseBtnTemplate" TargetType="Button">
+            <Border x:Name="Bd" Background="Transparent">
+                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="Bd" Property="Background" Value="#C42B1C" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter TargetName="Bd" Property="Background" Value="#A0221A" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
     </Window.Resources>
 
-    <Grid>
+    <Grid x:Name="OuterGrid" Margin="8">
         <Border
+            x:Name="OuterBorder"
             Background="#1A1A1A"
-            CornerRadius="16">
+            CornerRadius="0">
             <Border.Effect>
-                <DropShadowEffect
-                    BlurRadius="30"
-                    Opacity="0.5"
-                    ShadowDepth="6"
-                    Color="#000000" />
+                <DropShadowEffect BlurRadius="18" Opacity="0.55" ShadowDepth="4" Color="#000000" />
             </Border.Effect>
 
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="44" />
+                    <RowDefinition Height="36" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <!--  Верхняя панель  -->
-                <Grid Grid.Row="0" Margin="16,0,8,0">
+                <!--
+                    Заголовок: появляется только при наведении на верхние 50px.
+                    Системные кнопки Windows (UseAeroCaptionButtons) недоступны
+                    при AllowsTransparency=True, поэтому используем стилизованные кастомные.
+                -->
+                <Grid
+                    x:Name="TitleBarRow"
+                    Grid.Row="0"
+                    MouseDown="TitleBar_MouseDown"
+                    MouseMove="TitleBar_MouseMove"
+                    MouseUp="TitleBar_MouseUp">
+
+                    <!--  Название файла  -->
                     <TextBlock
                         x:Name="TitleText"
+                        Margin="14,0,0,0"
                         VerticalAlignment="Center"
-                        FontSize="14"
+                        FontSize="13"
                         FontWeight="SemiBold"
                         Foreground="#CCFFFFFF"
                         TextTrimming="CharacterEllipsis" />
 
                     <StackPanel
                         HorizontalAlignment="Right"
-                        VerticalAlignment="Center"
+                        VerticalAlignment="Stretch"
                         Orientation="Horizontal">
+
+                        <!--  Системные кнопки  -->
                         <Button
-                            Width="32"
-                            Height="32"
+                            x:Name="MinimizeBtn"
+                            Width="46"
+                            Height="36"
+                            Margin="0,0,0,0"
                             Click="MinimizeBtn_Click"
                             Content="─"
-                            FontSize="13"
-                            Foreground="#99FFFFFF"
-                            Template="{StaticResource RoundIconButtonTemplate}"
+                            FontSize="10"
+                            Foreground="#CCFFFFFF"
+                            Template="{StaticResource CaptionBtnTemplate}"
                             ToolTip="Свернуть" />
                         <Button
-                            Width="32"
-                            Height="32"
-                            Margin="2,0,0,0"
+                            x:Name="MaximizeBtn"
+                            Width="46"
+                            Height="36"
+                            Click="MaximizeBtn_Click"
+                            Content="□"
+                            FontSize="10"
+                            Foreground="#CCFFFFFF"
+                            Template="{StaticResource CaptionBtnTemplate}"
+                            ToolTip="Развернуть" />
+                        <Button
+                            x:Name="CloseBtn"
+                            Width="46"
+                            Height="36"
                             Click="CloseBtn_Click"
                             Content="✕"
-                            FontSize="13"
-                            Foreground="#99FFFFFF"
-                            Template="{StaticResource RoundIconButtonTemplate}"
+                            FontSize="10"
+                            Foreground="#CCFFFFFF"
+                            Template="{StaticResource CloseBtnTemplate}"
                             ToolTip="Закрыть" />
                     </StackPanel>
                 </Grid>
 
-                <!--  Изображение  -->
-                <ScrollViewer
-                    Grid.Row="1"
-                    Margin="12,0,12,12"
-                    HorizontalScrollBarVisibility="Auto"
-                    VerticalScrollBarVisibility="Auto">
-                    <Grid>
-                        <!--  Спиннер загрузки  -->
-                        <TextBlock
-                            x:Name="LoadingText"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            FontSize="14"
-                            Foreground="#66FFFFFF"
-                            Text="Загрузка..." />
+                <!--  Область просмотра  -->
+                <Grid Grid.Row="1">
 
-                        <Image
-                            x:Name="MainImage"
-                            MaxWidth="1600"
-                            MaxHeight="1200"
-                            RenderOptions.BitmapScalingMode="HighQuality"
-                            Stretch="Uniform"
-                            Visibility="Collapsed" />
-                    </Grid>
-                </ScrollViewer>
+                    <ScrollViewer
+                        x:Name="ImageScrollViewer"
+                        Margin="12,0,12,12"
+                        HorizontalScrollBarVisibility="Auto"
+                        VerticalScrollBarVisibility="Auto"
+                        PreviewMouseWheel="ScrollViewer_PreviewMouseWheel"
+                        PreviewMouseLeftButtonDown="Image_PreviewMouseLeftButtonDown"
+                        PreviewMouseMove="Image_PreviewMouseMove"
+                        PreviewMouseLeftButtonUp="Image_PreviewMouseLeftButtonUp">
+                        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock
+                                x:Name="LoadingText"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                FontSize="14"
+                                Foreground="#66FFFFFF"
+                                Text="Загрузка..." />
+
+                            <!--  Border обрезает изображение по скруглённым углам при зуме  -->
+                            <Border x:Name="ImageBorder" ClipToBounds="True" CornerRadius="0">
+                                <Image
+                                    x:Name="MainImage"
+                                    RenderOptions.BitmapScalingMode="HighQuality"
+                                    Stretch="None"
+                                    Visibility="Collapsed">
+                                    <Image.LayoutTransform>
+                                        <ScaleTransform x:Name="ImageScale" ScaleX="1" ScaleY="1" />
+                                    </Image.LayoutTransform>
+                                </Image>
+                            </Border>
+                        </Grid>
+                    </ScrollViewer>
+
+                    <!--  Grip изменения размера — помещён внутрь видимой области,
+                          т.к. с AllowsTransparency=True стандартный grip попадает в прозрачную тень  -->
+
+                    <!--  Плавающий бейдж масштаба — появляется при изменении зума  -->
+                    <Border
+                        x:Name="ZoomBadge"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Bottom"
+                        Margin="0,0,0,18"
+                        Background="#CC000000"
+                        CornerRadius="8"
+                        IsHitTestVisible="False"
+                        Opacity="0"
+                        Padding="14,5">
+                        <TextBlock
+                            x:Name="ZoomBadgeText"
+                            FontSize="13"
+                            FontWeight="SemiBold"
+                            Foreground="White" />
+                    </Border>
+
+                </Grid>
             </Grid>
         </Border>
     </Grid>

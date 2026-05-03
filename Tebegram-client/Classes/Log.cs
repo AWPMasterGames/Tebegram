@@ -31,7 +31,6 @@ namespace Tebegrammmm.Classes
                 {
                     File.Create($"{_CrashLogsDirectory}/{dateTime.ToString("dd.MM.yyyy")}.txt").Close();
                 }
-                Thread.Sleep( 100 );
                 File.AppendAllText($"{_CrashLogsDirectory}/{dateTime.ToString("dd.MM.yyyy")}.txt", $"[{dateTime.ToString("dd.MM.yyyy HH:mm:ss")}]  {log}\n");
             }
         }
