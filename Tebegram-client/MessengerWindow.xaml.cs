@@ -74,10 +74,10 @@ namespace Tebegrammmm
 
         private void LoadStyle()
         {
-            LinearGradientBrush LGB = (LinearGradientBrush)this.TryFindResource("ChatBackground");
+            //LinearGradientBrush LGB = (LinearGradientBrush)this.TryFindResource("ChatBackground");
             ResourceDictionary resourceDictionary = new ResourceDictionary();
 
-            LBMessages.Background = LGB;
+            LBMessages.Background = (RadialGradientBrush)this.TryFindResource("ChatBackground");
         }
 
         private async void GetCallToken()
@@ -99,7 +99,7 @@ namespace Tebegrammmm
                         if (Content != "NotFound")
                         {
                             string[] data = Content.Split('▫');
-
+                            MessageBox.Show($"{Contact}");
                             string CallerUsername = data[0];
                             string token = data[1];
 

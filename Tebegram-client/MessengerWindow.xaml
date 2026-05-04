@@ -238,7 +238,16 @@
                                 <RowDefinition />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
-                            <local1:UserControl1 Grid.RowSpan="2" Avatar="https://djnkpzmq-5000.euw.devtunnels.ms/avatars/1008024429709774919.webp" />
+                            <Ellipse Grid.RowSpan="2" Fill="{StaticResource Light.BgDeepBrush}" />
+                            <Ellipse
+                                Grid.RowSpan="2"
+                                Width="50"
+                                Height="50"
+                                HorizontalAlignment="Center">
+                                <Ellipse.Fill>
+                                    <ImageBrush ImageSource="{Binding Avatar}" Stretch="UniformToFill" />
+                                </Ellipse.Fill>
+                            </Ellipse>
                             <TextBlock
                                 Grid.RowSpan="2"
                                 Grid.Column="1"
