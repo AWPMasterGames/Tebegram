@@ -118,7 +118,7 @@ app.MapGet("/avatarsFileName/{UserId}", async (HttpContext context, int UserId) 
 app.MapGet("/avatars/{FileName}", async (HttpContext context, string FileName) =>
 {
     var fileProvider = new PhysicalFileProvider(Directory.GetCurrentDirectory());
-    var fieInfo = fileProvider.GetFileInfo($"avatars/{FileName}");
+    var fieInfo = fileProvider.GetFileInfo($"Data/avatars/{FileName}");
 
     context.Response.Headers.ContentEncoding = "Unicode";
     context.Response.Headers.ContentDisposition = $"attachment; filename={FileName}";

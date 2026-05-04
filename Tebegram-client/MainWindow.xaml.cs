@@ -31,7 +31,6 @@ namespace Tebegrammmm
         {
             ServerData.GetServerAdress();
             InitializeComponent();
-            MessageBox.Show(ServerData.ServerAdress);
             TBUserLogin.Focus();
             if (File.Exists("user.data"))
             {
@@ -97,7 +96,7 @@ namespace Tebegrammmm
                         userData[3],
                         new ObservableCollection<ChatFolder>{
                             new ChatFolder(userData[5], new ObservableCollection<Contact> {}, userData[6], bool.Parse(userData[7]))},
-                        $"{ServerData.ServerAdress}/{userData[4]}"
+                        $"{ServerData.ServerAdress}/avatars/{userData[4]}"
                     );
 
                     for (int i = 9; i < userData.Length - 1; i++)
