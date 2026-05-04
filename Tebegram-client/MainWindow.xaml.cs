@@ -31,6 +31,7 @@ namespace Tebegrammmm
         {
             ServerData.GetServerAdress();
             InitializeComponent();
+            MessageBox.Show(ServerData.ServerAdress);
             TBUserLogin.Focus();
             if (File.Exists("user.data"))
             {
