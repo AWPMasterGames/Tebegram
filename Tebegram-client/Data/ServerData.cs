@@ -8,7 +8,7 @@ namespace Tebegrammmm.Data
     public static class ServerData
     {
         private const string DefaultAdress = "https://localhost:5000";
-        private const string AdressUrl = "https://raw.githubusercontent.com/AWPMasterGames/Tebegrammmm/refs/heads/main/Tebegrammmm/Adress.txt";
+        private const string AdressUrl = "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Tebegrammmm/Adress.txt";
 
         private static string _ServerAdress = DefaultAdress;
         public static string ServerAdress { get { return _ServerAdress; } }
@@ -64,7 +64,7 @@ namespace Tebegrammmm.Data
             {
                 using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
                 string a = await _http.GetStringAsync($"{_ServerAdress}/Test", cts.Token).ConfigureAwait(false);
-                if (a == "Hi!") return;
+                if (a == "HI!") return;
             }
             catch
             {
