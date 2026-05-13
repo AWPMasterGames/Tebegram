@@ -21,6 +21,7 @@ namespace Tebegrammmm
 
         public bool InCall { get; set; }
         public int SelectedDeviceNum{ get; set; }
+        public string SelectedDeviceName{ get; set; }
 
         public User(int id, string login, string password, string name, string username, ObservableCollection<ChatFolder> chatsFolders, string avatar)
         {
