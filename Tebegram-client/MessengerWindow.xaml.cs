@@ -65,10 +65,19 @@ namespace Tebegrammmm
 
             if (File.Exists("userDevice.data"))
             {
-                int dvNum = int.Parse(File.ReadAllText("userDevice.data"));
-                if (dvNum > new MMDeviceEnumerator().EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active).Count - 1)
-                    UserData.User.SelectedDeviceNum = 0;
-                else UserData.User.SelectedDeviceNum = dvNum;
+                UserData.User.SelectedDeviceName = File.ReadAllText("userDevice.data");
+                MMDeviceCollection DeviceCollector = (new MMDeviceEnumerator()).EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active);
+                if (UserData.User.SelectedDeviceName != null)
+                {
+                    for (int i = 0; i < DeviceCollector.Count; i++)
+                    {
+                        if (DeviceCollector[i].DeviceFriendlyName == UserData.User.SelectedDeviceName)
+                        {
+                            UserData.User.SelectedDeviceNum = 1;
+                            break;
+                        }
+                    }
+                }
             }
         }
 
@@ -99,7 +108,7 @@ namespace Tebegrammmm
                         if (Content != "NotFound")
                         {
                             string[] data = Content.Split('▫');
-                            MessageBox.Show($"{Contact}");
+                            //MessageBox.Show($"{Contact}");
                             string CallerUsername = data[0];
                             string token = data[1];
 

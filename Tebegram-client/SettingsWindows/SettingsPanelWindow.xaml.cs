@@ -38,20 +38,34 @@ namespace Tebegrammmm
             this.Close();
         }
 
-        private async void CheckInputDevices()
+        private void CheckInputDevices()
         {
-            MMDeviceEnumerator enumerator = new MMDeviceEnumerator();
-            InputDeviceCB.ItemsSource = enumerator.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active);
-            InputDeviceCB.SelectedIndex = UserData.User.SelectedDeviceNum == null ? 0 : UserData.User.SelectedDeviceNum;
+            MMDeviceCollection DeviceCollector = (new MMDeviceEnumerator()).EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active);
+            InputDeviceCB.ItemsSource = DeviceCollector;
+            if (UserData.User.SelectedDeviceName != null)
+            {
+                foreach (MMDevice device in InputDeviceCB.Items)
+                {
+                    if (device.DeviceFriendlyName == UserData.User.SelectedDeviceName)
+                    {
+                        InputDeviceCB.SelectedItem = device;
+                    }
+                }
+            }
+            else
+            {
+                InputDeviceCB.SelectedIndex = 0;
+            }
             Thread.Sleep(100);
         }
 
         private void InputDeviceCB_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             UserData.User.SelectedDeviceNum = InputDeviceCB.SelectedIndex;
+            UserData.User.SelectedDeviceName = (InputDeviceCB.SelectedItem as MMDevice).DeviceFriendlyName;
             if (!File.Exists("userDevice.data"))
                 File.Create("userDevice.data").Close();
-            File.WriteAllText("userDevice.data", $"{UserData.User.SelectedDeviceNum}");
+            File.WriteAllText("userDevice.data", $"{UserData.User.SelectedDeviceName}");
         }
     }
 }
