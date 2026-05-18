@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
+using System.Net.WebSockets;
 using System.Text;
+using TebegramServer.Classes;
 using TebegramServer.Data;
 
 namespace TebegramServer
@@ -22,8 +24,10 @@ namespace TebegramServer
 
         public ObservableCollection<ChatFolder> ChatsFolders { get; set; }
         public ObservableCollection<Contact> Contacts { get { return ChatsFolders[0].Contacts; } }
+        public ObservableCollection<int> Chats = new ObservableCollection<int>();
 
         public ObservableCollection<Message> NewMessages = new ObservableCollection<Message>();
+        public ObservableCollection<WebSocket> ChatsSessions = new ObservableCollection<WebSocket>();
 
         public User(int id, string login, string password, string name, string username, ObservableCollection<ChatFolder> chatsFolders, string avatar)
         {
@@ -77,6 +81,13 @@ namespace TebegramServer
 
             return sb.ToString();
         }
+
+        public void AddChat(int chatId)
+        {
+            Chats.Add(chatId);
+
+        }
+
         public void AddContact(Contact contact)
         {
             ChatsFolders[0].Contacts.Add(contact);

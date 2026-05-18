@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tebegrammmm.Classes;
 
 namespace Tebegrammmm
 {
@@ -21,11 +22,13 @@ namespace Tebegrammmm
         public bool IsCanRedact { get { return _IsCanRedact; } }
 
         public ObservableCollection<Contact> Contacts;
+        public ObservableCollection<Chat> Chats;
 
         public ChatFolder(string icon = "📁", bool isCanRedact = true)
         {
             _Id = new Random().Next(0,20000000);
             Contacts = new ObservableCollection<Contact>();
+            Chats = new ObservableCollection<Chat>();
             this._Icon = icon;
             this._IsCanRedact = isCanRedact;
         }
@@ -36,8 +39,7 @@ namespace Tebegrammmm
             this._FolderName = folderName;
             this.Contacts = contacts;
             this._IsCanRedact = isCanRedact;
-            if(contacts == null) Contacts = new ObservableCollection<Contact>();
-            else if(contacts !=null) Contacts = contacts;
+            Contacts = contacts == null? new ObservableCollection<Contact>() : contacts;
         }
 
         public void AddContact(Contact contact)

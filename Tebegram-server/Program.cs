@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.FileProviders;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Net;
 using System.Net.WebSockets;
 using System.Text;
@@ -383,6 +384,59 @@ async Task ReceiveMessage(WebSocket socket, Action<WebSocketReceiveResult, byte[
         }
     }
 }*/
+#endregion
+
+#region Chat
+
+app.Map("/Chat/ws", async context =>
+{
+    if (context.WebSockets.IsWebSocketRequest)
+    {
+        var userID = context.Request.Query["userId"];
+
+        using var ws = await context.WebSockets.AcceptWebSocketAsync();
+
+        User user = UsersData.FindUserById(int.Parse(userID));
+        user.ChatsSessions.Add(ws);
+
+        await ReceiveMessage(ws,
+            async (result, buffer) =>
+            {
+                if (result.MessageType == WebSocketMessageType.Text)
+                {
+                    string request = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
+                    string[] data = request.Split("▫#▫");
+
+                    switch (data[0].ToUpper())
+                    {
+                        case "SEND":
+                            int chatId = ChatsController.CheckIsExist(int.Parse(data[1]), user, data[2]);
+                            ChatsController.SendMessage(chatId, data[3]);
+                            break;
+                    }
+                    
+                }
+                else if (result.MessageType == WebSocketMessageType.Close || ws.State == WebSocketState.Aborted)
+                {
+                    //VoiceRoomsController.DisconnectFromRoom(ws,Token);
+                    Console.WriteLine($"Пользователь {user.Username} закрыл клиент");
+                    for (int i = 0; i < user.ChatsSessions.Count; i++)
+                    {
+                        if(user.ChatsSessions[i] == ws)
+                        {
+                            user.ChatsSessions[i].CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
+                            user.ChatsSessions.RemoveAt(i);
+                        }
+                    }
+                }
+            });
+    }
+    else
+    {
+        context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+    }
+});
+
 #endregion
 
 app.Run();
