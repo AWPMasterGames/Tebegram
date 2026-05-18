@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,6 +32,7 @@ namespace Tebegrammmm
         {
             ServerCertificateCustomValidationCallback = (m, c, ch, e) => true
         });
+        private ClientWebSocket ws = new ClientWebSocket();
         private static object thisLock = new();
         Contact Contact { get; set; }
         Thread Thread { get; set; }
@@ -51,6 +53,8 @@ namespace Tebegrammmm
             TempContacts = UserData.User.Contacts;
 
             // Загружаем историю сообщений с сервера
+            InitChatWebSocket();
+
             GetMessages();
 
             Thread = new Thread(new ThreadStart(GetNewMessages)) { IsBackground = true };
@@ -77,6 +81,35 @@ namespace Tebegrammmm
                             break;
                         }
                     }
+                }
+            }
+        }
+
+        private async void InitChatWebSocket()
+        {
+            await ws.ConnectAsync(new Uri($"{ServerData.ServerAdress.Replace("https:", "ws:")}/Chat/ws?userId={UserData.User.Id}"),
+    CancellationToken.None);
+
+            Thread thread = new Thread(new ThreadStart(ReceiveVoice));
+            thread.Start();
+        }
+
+        private async void ReceiveVoice()
+        {
+            while (ws.State == WebSocketState.Open)
+            {
+                ArraySegment<byte> receiveBuffer = new ArraySegment<byte>(new byte[1024]);
+                var result = await ws.ReceiveAsync(receiveBuffer, CancellationToken.None);
+                if (result.MessageType == WebSocketMessageType.Text)
+                {
+                    string textMessage = Encoding.UTF8.GetString(receiveBuffer.Array, 0, result.Count);
+                    MessageBox.Show($"Получено сообщение: {textMessage}");
+                }
+                else if (result.MessageType == WebSocketMessageType.Close)
+                {
+                    await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, null, CancellationToken.None);
+                    Console.WriteLine(result.CloseStatusDescription);
+                    break;
                 }
             }
         }
@@ -475,6 +508,12 @@ namespace Tebegrammmm
             Message Message = new Message(UserData.User.Username, Contact.Username, message, DateTime.Now.ToString("hh:mm"), messageType, ServerFilePath);
 
             Log.Save($"[SendMessage] Message added to local contact. Sending to UserData.User...");
+
+            string request = $"SEND▫#▫0▫#▫{Contact.Username}▫#▫{Message.ToString()}";
+            MessageBox.Show(Message.Text);
+            ArraySegment<byte> buffer = new ArraySegment<byte>(Encoding.UTF8.GetBytes(request));
+            await ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+
             await SendMessageToUserAsync(Message);
             TBMessage.Text = string.Empty;
             Contact.Draft = string.Empty; // Очищаем черновик после отправки
@@ -664,8 +703,11 @@ namespace Tebegrammmm
 
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private async void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            if (ws != null)
+                if (ws.State == WebSocketState.Open)
+                    await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
             Process.GetCurrentProcess().Kill();
         }
 
@@ -797,6 +839,7 @@ namespace Tebegrammmm
                         FindedContacts.Add(contact);
                     }
                 }
+
                 LBChats.ItemsSource = FindedContacts;
             }
         }
