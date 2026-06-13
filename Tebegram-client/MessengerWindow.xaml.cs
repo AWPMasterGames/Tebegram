@@ -57,8 +57,8 @@ namespace Tebegrammmm
 
             GetMessages();
 
-            Thread = new Thread(new ThreadStart(GetNewMessages)) { IsBackground = true };
-            Thread.Start();
+            /*Thread = new Thread(new ThreadStart(GetNewMessages)) { IsBackground = true };
+            Thread.Start();*/
 
             TBMessage.IsEnabled = true;
             //GetCallToken();
@@ -90,11 +90,11 @@ namespace Tebegrammmm
             await ws.ConnectAsync(new Uri($"{ServerData.ServerAdress.Replace("https:", "ws:")}/Chat/ws?userId={UserData.User.Id}"),
     CancellationToken.None);
 
-            Thread thread = new Thread(new ThreadStart(ReceiveVoice));
+            Thread thread = new Thread(new ThreadStart(ReceiveMessage));
             thread.Start();
         }
 
-        private async void ReceiveVoice()
+        private async void ReceiveMessage()
         {
             while (ws.State == WebSocketState.Open)
             {
@@ -103,12 +103,22 @@ namespace Tebegrammmm
                 if (result.MessageType == WebSocketMessageType.Text)
                 {
                     string textMessage = Encoding.UTF8.GetString(receiveBuffer.Array, 0, result.Count);
-                    MessageBox.Show($"Получено сообщение: {textMessage}");
+                    //распределение сообщений в чаты
+                    try
+                    {
+                            AddMessageToUser(textMessage);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Save($"[GetMessage] Error: {ex.Message}");
+                        MessageBox.Show("Ошибка при попытке получения сообщений\nПодробнее от ошибке можно узнать в краш логах");
+                        return;
+                    }
                 }
                 else if (result.MessageType == WebSocketMessageType.Close)
                 {
                     await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, null, CancellationToken.None);
-                    Console.WriteLine(result.CloseStatusDescription);
+                    //Console.WriteLine(result.CloseStatusDescription);
                     break;
                 }
             }
@@ -510,7 +520,7 @@ namespace Tebegrammmm
             Log.Save($"[SendMessage] Message added to local contact. Sending to UserData.User...");
 
             string request = $"SEND▫#▫0▫#▫{Contact.Username}▫#▫{Message.ToString()}";
-            MessageBox.Show(Message.Text);
+            //MessageBox.Show(Message.Text);
             ArraySegment<byte> buffer = new ArraySegment<byte>(Encoding.UTF8.GetBytes(request));
             await ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
 
