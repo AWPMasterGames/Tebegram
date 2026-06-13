@@ -49,6 +49,7 @@ namespace TebegramServer.Controllers
                 {
                     if (session.State == WebSocketState.Open)
                     {
+                        Console.WriteLine($"Send to user: {user.Username} | message: {message.ToString()}");
                         var arraySegment = new ArraySegment<byte>(Encoding.UTF8.GetBytes(message.ToString()));
                         await session.SendAsync(arraySegment, WebSocketMessageType.Text, true, CancellationToken.None);
                     }

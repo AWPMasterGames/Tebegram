@@ -404,7 +404,8 @@ app.Map("/Chat/ws", async context =>
             {
                 if (result.MessageType == WebSocketMessageType.Text)
                 {
-                    string request = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
+                    string request = Encoding.UTF8.GetString(buffer, 0, result.Count);
+
                     string[] data = request.Split("▫#▫");
 
                     switch (data[0].ToUpper())
@@ -414,7 +415,6 @@ app.Map("/Chat/ws", async context =>
                             ChatsController.SendMessage(chatId, data[3]);
                             break;
                     }
-                    
                 }
                 else if (result.MessageType == WebSocketMessageType.Close || ws.State == WebSocketState.Aborted)
                 {
