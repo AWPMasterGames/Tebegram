@@ -4,34 +4,28 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
     Title="Авторизация"
     Width="400"
+    SizeToContent="Height"
     AllowsTransparency="True"
     Background="Transparent"
     MouseDown="Window_MouseDown"
     Opacity="1"
-    SizeToContent="Height"
     WindowStartupLocation="CenterScreen"
-    WindowStyle="None"
-    mc:Ignorable="d">
+    WindowStyle="None">
 
     <Window.Resources>
 
-        <!--  Поле ввода без рамки — для PasswordBox и TextBox внутри кастомного контейнера  -->
+        <!-- Поле ввода без рамки — для PasswordBox и TextBox внутри кастомного контейнера -->
         <ControlTemplate x:Key="InnerPasswordBox" TargetType="PasswordBox">
-            <ScrollViewer
-                x:Name="PART_ContentHost"
-                Margin="8,0,0,0"
-                VerticalAlignment="Center" />
+            <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center" Margin="8,0,0,0" />
         </ControlTemplate>
         <ControlTemplate x:Key="InnerTextBox" TargetType="TextBox">
-            <ScrollViewer
-                x:Name="PART_ContentHost"
-                Margin="8,0,0,0"
-                VerticalAlignment="Center" />
+            <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center" Margin="8,0,0,0" />
         </ControlTemplate>
 
-        <!--  Кнопка глаза: прозрачная, только иконка  -->
+        <!-- Кнопка глаза: прозрачная, только иконка -->
         <ControlTemplate x:Key="EyeButtonTemplate" TargetType="Button">
             <Border x:Name="Bd" Background="Transparent">
                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
@@ -43,12 +37,9 @@
             </ControlTemplate.Triggers>
         </ControlTemplate>
 
-        <!--  Кнопка закрытия: прозрачная → красная при наведении  -->
+        <!-- Кнопка закрытия: прозрачная → красная при наведении -->
         <ControlTemplate x:Key="CloseButtonTemplate" TargetType="Button">
-            <Border
-                x:Name="Bd"
-                Background="Transparent"
-                CornerRadius="6">
+            <Border x:Name="Bd" Background="Transparent" CornerRadius="6">
                 <TextBlock
                     x:Name="Txt"
                     HorizontalAlignment="Center"
@@ -68,12 +59,9 @@
             </ControlTemplate.Triggers>
         </ControlTemplate>
 
-        <!--  Кнопка свернуть  -->
+        <!-- Кнопка свернуть -->
         <ControlTemplate x:Key="MinimizeButtonTemplate" TargetType="Button">
-            <Border
-                x:Name="Bd"
-                Background="Transparent"
-                CornerRadius="6">
+            <Border x:Name="Bd" Background="Transparent" CornerRadius="6">
                 <TextBlock
                     x:Name="Txt"
                     HorizontalAlignment="Center"
@@ -93,12 +81,9 @@
             </ControlTemplate.Triggers>
         </ControlTemplate>
 
-        <!--  Основная кнопка со скруглением и hover  -->
+        <!-- Основная кнопка со скруглением и hover -->
         <ControlTemplate x:Key="PrimaryButtonTemplate" TargetType="Button">
-            <Border
-                x:Name="Bd"
-                Background="{TemplateBinding Background}"
-                CornerRadius="8">
+            <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="8">
                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
             </Border>
             <ControlTemplate.Triggers>
@@ -111,7 +96,7 @@
             </ControlTemplate.Triggers>
         </ControlTemplate>
 
-        <!--  Вторичная кнопка со скруглением и hover  -->
+        <!-- Вторичная кнопка со скруглением и hover -->
         <ControlTemplate x:Key="SecondaryButtonTemplate" TargetType="Button">
             <Border
                 x:Name="Bd"
@@ -136,7 +121,9 @@
     <Grid Background="Transparent">
 
         <!--  Экран логина  -->
-        <Grid x:Name="LoginGrid" Visibility="Visible">
+        <Grid
+            x:Name="LoginGrid"
+            Visibility="Visible">
             <Grid.Triggers>
                 <EventTrigger RoutedEvent="UIElement.MouseEnter">
                     <BeginStoryboard>
@@ -200,33 +187,12 @@
                             Template="{StaticResource CloseButtonTemplate}" />
                     </StackPanel>
 
-                    <!--  Статус подключения — левый верхний угол  -->
-                    <StackPanel
-                        Margin="4,8,0,0"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top"
-                        Orientation="Horizontal">
-                        <Ellipse
-                            x:Name="ConnStatusDot"
-                            Width="7"
-                            Height="7"
-                            Margin="0,0,6,0"
-                            VerticalAlignment="Center"
-                            Fill="#FFCA28" />
-                        <TextBlock
-                            x:Name="ConnStatusText"
-                            VerticalAlignment="Center"
-                            FontSize="11"
-                            Foreground="{StaticResource Light.TextMutedBrush}"
-                            Text="Подключение..." />
-                    </StackPanel>
-
-                    <!--  Микро-анимация появления формы  -->
+                    <!-- Микро-анимация появления формы -->
                     <StackPanel
                         x:Name="LoginFormPanel"
                         VerticalAlignment="Center"
-                        d:Opacity="1"
-                        Opacity="0">
+                        Opacity="0"
+                        d:Opacity="1">
                         <StackPanel.RenderTransform>
                             <TranslateTransform />
                         </StackPanel.RenderTransform>
@@ -277,7 +243,7 @@
                             Template="{StaticResource TextBoxBaseControlTemplate}" />
 
                         <TextBlock Foreground="{StaticResource Light.TextSecondaryBrush}" Text="Пароль" />
-                        <!--  Контейнер поля пароля с кнопкой показа  -->
+                        <!-- Контейнер поля пароля с кнопкой показа -->
                         <Border
                             Height="35"
                             Margin="0,5,0,25"
@@ -318,10 +284,10 @@
                                     x:Name="LoginEyeBtn"
                                     Width="34"
                                     HorizontalAlignment="Right"
-                                    Click="LoginEyeBtn_Click"
                                     Focusable="False"
                                     IsHitTestVisible="False"
                                     Opacity="0"
+                                    Click="LoginEyeBtn_Click"
                                     Template="{StaticResource EyeButtonTemplate}">
                                     <Viewbox Width="16" Height="16">
                                         <Path
@@ -361,7 +327,9 @@
         </Grid>
 
         <!--  Экран регистрации  -->
-        <Grid x:Name="RegistrationGrid" Visibility="Collapsed">
+        <Grid
+            x:Name="RegistrationGrid"
+            Visibility="Collapsed">
             <Grid.Triggers>
                 <EventTrigger RoutedEvent="UIElement.MouseEnter">
                     <BeginStoryboard>
@@ -426,27 +394,6 @@
                             Template="{StaticResource CloseButtonTemplate}" />
                     </StackPanel>
 
-                    <!--  Статус подключения — левый верхний угол  -->
-                    <StackPanel
-                        Margin="4,8,0,0"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top"
-                        Orientation="Horizontal">
-                        <Ellipse
-                            x:Name="ConnStatusDotReg"
-                            Width="7"
-                            Height="7"
-                            Margin="0,0,6,0"
-                            VerticalAlignment="Center"
-                            Fill="#FFCA28" />
-                        <TextBlock
-                            x:Name="ConnStatusTextReg"
-                            VerticalAlignment="Center"
-                            FontSize="11"
-                            Foreground="{StaticResource Light.TextMutedBrush}"
-                            Text="Подключение..." />
-                    </StackPanel>
-
                     <!--  Баннер успешной регистрации  -->
                     <Border
                         x:Name="RegSuccessBanner"
@@ -484,8 +431,8 @@
                     <StackPanel
                         x:Name="RegFormPanel"
                         VerticalAlignment="Center"
-                        d:Opacity="1"
-                        Opacity="0">
+                        Opacity="0"
+                        d:Opacity="1">
                         <StackPanel.RenderTransform>
                             <TranslateTransform />
                         </StackPanel.RenderTransform>
@@ -563,10 +510,10 @@
                                     x:Name="RegEyeBtn"
                                     Width="34"
                                     HorizontalAlignment="Right"
-                                    Click="RegEyeBtn_Click"
                                     Focusable="False"
                                     IsHitTestVisible="False"
                                     Opacity="0"
+                                    Click="RegEyeBtn_Click"
                                     Template="{StaticResource EyeButtonTemplate}">
                                     <Viewbox Width="16" Height="16">
                                         <Path
@@ -619,10 +566,10 @@
                                     x:Name="RegConfirmEyeBtn"
                                     Width="34"
                                     HorizontalAlignment="Right"
-                                    Click="RegConfirmEyeBtn_Click"
                                     Focusable="False"
                                     IsHitTestVisible="False"
                                     Opacity="0"
+                                    Click="RegConfirmEyeBtn_Click"
                                     Template="{StaticResource EyeButtonTemplate}">
                                     <Viewbox Width="16" Height="16">
                                         <Path

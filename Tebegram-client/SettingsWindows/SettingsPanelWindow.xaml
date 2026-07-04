@@ -195,12 +195,21 @@
                             Margin="0,0,0,20"
                             HorizontalAlignment="Center">
                             <!--  Аватар  -->
-                            <local1:UserControl1
+                            <!--<local1:UserControl1
                                 Width="80"
                                 Height="80"
                                 Margin="0,0,0,12"
                                 HorizontalAlignment="Center"
-                                Avatar="{Binding Avatar}" />
+                                Avatar="{Binding Avatar}" />-->
+                            <Ellipse Fill="{StaticResource Light.BgDeepBrush}" />
+                            <Ellipse
+                                Width="80"
+                                Height="80"
+                                HorizontalAlignment="Center">
+                                <Ellipse.Fill>
+                                    <ImageBrush ImageSource="{Binding Avatar}" Stretch="UniformToFill" />
+                                </Ellipse.Fill>
+                            </Ellipse>
 
                             <!--  Имя пользователя  -->
                             <TextBlock

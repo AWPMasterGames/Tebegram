@@ -30,7 +30,9 @@
         </Ellipse>
 
         <!--  Тонкая граница  -->
-        <Ellipse Stroke="{StaticResource Light.BorderSubtleBrush}" StrokeThickness="1" />
+        <Ellipse
+            Stroke="{StaticResource Light.BorderSubtleBrush}"
+            StrokeThickness="1" />
 
     </Grid>
 </UserControl>

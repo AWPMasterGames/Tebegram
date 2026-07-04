@@ -119,7 +119,6 @@ namespace Tebegrammmm
                 CancellationToken.None);
 
             IsMicrophoneOn = true;
-
             StartCallTimer();
             StartSVT();
             StartRVT();
@@ -154,7 +153,7 @@ namespace Tebegrammmm
         {
             SendVoiceThread = new Thread(() =>
             {
-                bool isOn = true;
+                bool isOn = false;
                 while (true)
                 {
                     if (IsMicrophoneOn)
@@ -165,7 +164,7 @@ namespace Tebegrammmm
                         }
                         waveIn.StartRecording();
                         isOn = true;
-                        //MessageBox.Show("Микрофон включен");
+                        MessageBox.Show("Микрофон включен");
                     }
                     else
                     {
@@ -175,7 +174,7 @@ namespace Tebegrammmm
                         }
                         waveIn.StopRecording();
                         isOn = false;
-                        //MessageBox.Show("Микрофон выключен");
+                        MessageBox.Show("Микрофон выключен");
                     }
                 }
             });
