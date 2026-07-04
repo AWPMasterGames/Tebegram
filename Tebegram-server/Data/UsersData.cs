@@ -98,7 +98,7 @@ namespace TebegramServer.Data
                     return;
                 }
 
-                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Data", "Users.json");
+                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Users.json");
 
                 // Создаем директорию, если она не существует
                 Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
@@ -132,10 +132,9 @@ namespace TebegramServer.Data
                                     Sender = message.Sender,
                                     Recipient = message.Reciver,
                                     Text = message.Text,
-                                    Time = ConvertToUserTimeZone(message.Time),
+                                    Time = ConvertToUserTimeZone(message.Time), // Конвертируем время в часовой пояс пользователя
                                     MessageType = message.MessageType.ToString(),
-                                    MessageString = message.ToString(),
-                                    ServerAdress = message.ServerAdress ?? ""
+                                    MessageString = message.ToString() // Используем ToString() из Message
                                 }).ToList()
                             }).ToList()
                         }).ToList()
@@ -172,7 +171,7 @@ namespace TebegramServer.Data
         {
             try
             {
-                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Data", "Users.json");
+                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Users.json");
                 
                 // Создаем директорию, если она не существует
                 Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
@@ -201,8 +200,7 @@ namespace TebegramServer.Data
                                 Text = message.Text,
                                 Time = ConvertToUserTimeZone(message.Time),
                                 MessageType = message.MessageType.ToString(),
-                                MessageString = message.ToString(),
-                                ServerAdress = message.ServerAdress ?? ""
+                                MessageString = message.ToString()
                             }).ToList()
                         }).ToList()
                     }).ToList()
@@ -228,7 +226,7 @@ namespace TebegramServer.Data
         {
             try
             {
-                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Data", "Users.json");
+                string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Users.json");
                 
                 if (!File.Exists(filePath))
                 {
@@ -256,8 +254,7 @@ namespace TebegramServer.Data
                                 foreach (var messageData in contactData.Messages)
                                 {
                                     var messageType = Enum.TryParse<MessageType>(messageData.MessageType, out var type) ? type : MessageType.Text;
-                                    string serverAdress = string.IsNullOrEmpty(messageData.ServerAdress) ? null : messageData.ServerAdress;
-                                    messages.Add(new Message(messageData.Sender, messageData.Recipient, messageData.Text, messageData.Time, messageType, serverAdress));
+                                    messages.Add(new Message(messageData.Sender, messageData.Recipient, messageData.Text, messageData.Time, messageType));
                                 }
                                 
                                 contacts.Add(new Contact(contactData.Id,contactData.Username, contactData.Name, messages));
@@ -314,7 +311,6 @@ namespace TebegramServer.Data
             public string Time { get; set; } = "";
             public string MessageType { get; set; } = "Text";
             public string MessageString { get; set; } = "";
-            public string ServerAdress { get; set; } = "";
         }
     }
 }

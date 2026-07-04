@@ -1,23 +1,29 @@
-﻿using System.Windows;
+﻿using System;
+using System.ComponentModel;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Xml.Linq;
 
 namespace Tebegrammmm.Controls
 {
     /// <summary>
     /// Логика взаимодействия для UserControl1.xaml
     /// </summary>
-    public partial class UserControl1 : UserControl
+    public partial class UserControl1 : UserControl, INotifyPropertyChanged
     {
-        public static readonly DependencyProperty AvatarProperty = DependencyProperty.Register(
-            nameof(Avatar),
-            typeof(string),
-            typeof(UserControl1),
-            new PropertyMetadata(null));
-
+        private string _Avatar;
         public string Avatar
         {
-            get => (string)GetValue(AvatarProperty);
-            set => SetValue(AvatarProperty, value);
+            get { return _Avatar; }
+            set
+            {
+                _Avatar = value;
+                if (PropertyChanged != null)
+                    PropertyChanged(this, new PropertyChangedEventArgs(nameof(Avatar)));
+            }
         }
 
         public UserControl1()
@@ -25,5 +31,7 @@ namespace Tebegrammmm.Controls
             InitializeComponent();
             DataContext = this;
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,9 +32,8 @@ namespace Tebegrammmm
         {
             ServerCertificateCustomValidationCallback = (m, c, ch, e) => true
         });
+        private ClientWebSocket ws = new ClientWebSocket();
         private static object thisLock = new();
-        private bool _loggingOut = false;
-        private CancellationTokenSource _cts = new CancellationTokenSource();
         Contact Contact { get; set; }
         Thread Thread { get; set; }
         Thread CaltokenThread { get; set; }
@@ -53,10 +53,12 @@ namespace Tebegrammmm
             TempContacts = UserData.User.Contacts;
 
             // Загружаем историю сообщений с сервера
+            InitChatWebSocket();
+
             GetMessages();
 
-            Thread = new Thread(new ThreadStart(GetNewMessages)) { IsBackground = true };
-            Thread.Start();
+            /*Thread = new Thread(new ThreadStart(GetNewMessages)) { IsBackground = true };
+            Thread.Start();*/
 
             TBMessage.IsEnabled = true;
             //GetCallToken();
@@ -65,25 +67,76 @@ namespace Tebegrammmm
             CaltokenThread = new Thread(new ThreadStart(GetCallToken)) { IsBackground = true };
             CaltokenThread.Start();
 
-            if (File.Exists(AppPaths.DeviceDataFile))
+            if (File.Exists("userDevice.data"))
             {
-                int dvNum = int.Parse(File.ReadAllText(AppPaths.DeviceDataFile));
-                if (dvNum > new MMDeviceEnumerator().EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active).Count - 1)
-                    UserData.User.SelectedDeviceNum = 0;
-                else UserData.User.SelectedDeviceNum = dvNum;
+                UserData.User.SelectedDeviceName = File.ReadAllText("userDevice.data");
+                MMDeviceCollection DeviceCollector = (new MMDeviceEnumerator()).EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active);
+                if (UserData.User.SelectedDeviceName != null)
+                {
+                    for (int i = 0; i < DeviceCollector.Count; i++)
+                    {
+                        if (DeviceCollector[i].DeviceFriendlyName == UserData.User.SelectedDeviceName)
+                        {
+                            UserData.User.SelectedDeviceNum = 1;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        private async void InitChatWebSocket()
+        {
+            await ws.ConnectAsync(new Uri($"{ServerData.ServerAdress.Replace("https:", "ws:")}/Chat/ws?userId={UserData.User.Id}"),
+    CancellationToken.None);
+
+            Thread thread = new Thread(new ThreadStart(ReceiveMessage));
+            thread.Start();
+        }
+
+        private async void ReceiveMessage()
+        {
+            while (ws.State == WebSocketState.Open)
+            {
+                ArraySegment<byte> receiveBuffer = new ArraySegment<byte>(new byte[1024]);
+                var result = await ws.ReceiveAsync(receiveBuffer, CancellationToken.None);
+                if (result.MessageType == WebSocketMessageType.Text)
+                {
+                    string textMessage = Encoding.UTF8.GetString(receiveBuffer.Array, 0, result.Count);
+                    //распределение сообщений в чаты
+                    try
+                    {
+                            AddMessageToUser(textMessage);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Save($"[GetMessage] Error: {ex.Message}");
+                        MessageBox.Show("Ошибка при попытке получения сообщений\nПодробнее от ошибке можно узнать в краш логах");
+                        return;
+                    }
+                }
+                else if (result.MessageType == WebSocketMessageType.Close)
+                {
+                    await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, null, CancellationToken.None);
+                    //Console.WriteLine(result.CloseStatusDescription);
+                    break;
+                }
             }
         }
 
         private void LoadStyle()
         {
-            LBMessages.Background = (Brush)this.TryFindResource("ChatBackground");
+            //LinearGradientBrush LGB = (LinearGradientBrush)this.TryFindResource("ChatBackground");
+            ResourceDictionary resourceDictionary = new ResourceDictionary();
+
+            LBMessages.Background = (RadialGradientBrush)this.TryFindResource("ChatBackground");
         }
 
         private async void GetCallToken()
         {
             try
             {
-                while (!_cts.IsCancellationRequested)
+                while (true)
                 {
                     try
                     {
@@ -98,8 +151,7 @@ namespace Tebegrammmm
                         if (Content != "NotFound")
                         {
                             string[] data = Content.Split('▫');
-                            if (data.Length < 2) { Thread.Sleep(1500); continue; }
-
+                            //MessageBox.Show($"{Contact}");
                             string CallerUsername = data[0];
                             string token = data[1];
 
@@ -193,27 +245,27 @@ namespace Tebegrammmm
                         text += messageData[i];
                     }
                     Message message = new Message(UserData.User.Name, UserData.User.Username, text, messageData[3]);
-                    message.Status = MessageStatus.Sent;
-                    message.IsOutgoing = true;
+                    message.Status = MessageStatus.Sent; // Все сообщения просто сохраняются
 
                     Dispatcher.Invoke(new Action(() =>
                     {
                         contact.Messages.Add(message);
                     }));
 
+                    // НЕ сохраняем на сервер - это уже сделал отправитель!
                     Log.Save($"[AddMessageToUser] Получено сообщение от {messageData[0]}: {text}");
                 }
                 else if (messageData[2] == "File")
                 {
                     Message message = new Message(UserData.User.Name, messageData[1], messageData[5], messageData[3], MessageType.File, $"{ServerData.ServerAdress}/upload/{messageData[5]}");
-                    message.Status = MessageStatus.Sent;
-                    message.IsOutgoing = true;
+                    message.Status = MessageStatus.Sent; // Файлы тоже просто сохраняются
 
                     Dispatcher.Invoke(new Action(() =>
                     {
                         contact.Messages.Add(message);
                     }));
 
+                    // НЕ сохраняем на сервер - это уже сделал отправитель!
                     Log.Save($"[AddMessageToUser] Получен файл от {messageData[0]}: {messageData[4]}");
                 }
             }
@@ -222,7 +274,6 @@ namespace Tebegrammmm
                 using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/UserName/{messageData[0]}");
                 using HttpResponseMessage response = await httpClient.SendAsync(request);
                 string[] content = (await response.Content.ReadAsStringAsync()).Split("▫");
-                if (content.Length < 2 || string.IsNullOrEmpty(content[0])) return;
                 Contact contact = new Contact(int.Parse(content[0]), messageData[0], content[1]);
                 if (messageData[2] == "Text")
                 {
@@ -334,7 +385,7 @@ namespace Tebegrammmm
         {
             try
             {
-                while (!_cts.IsCancellationRequested)
+                while (true)
                 {
                     try
                     {
@@ -402,7 +453,7 @@ namespace Tebegrammmm
                 string MessegeDataInFile = $"{MessegeData[0]}▫{ContactName}▫{MessegeData[1]}▫{MessegeData[2]}▫{MessegeData[3]}▫{MessegeData[4]}▫{MessegeData[4]}";
 
                 string userId = UserData.User.Id.ToString();
-                string dataFolder = Path.Combine(AppPaths.AppDataDir, "Data");
+                string dataFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
 
                 if (!Directory.Exists(dataFolder))
                 {
@@ -467,29 +518,15 @@ namespace Tebegrammmm
             Message Message = new Message(UserData.User.Username, Contact.Username, message, DateTime.Now.ToString("hh:mm"), messageType, ServerFilePath);
 
             Log.Save($"[SendMessage] Message added to local contact. Sending to UserData.User...");
+
+            string request = $"SEND▫#▫0▫#▫{Contact.Username}▫#▫{Message.ToString()}";
+            //MessageBox.Show(Message.Text);
+            ArraySegment<byte> buffer = new ArraySegment<byte>(Encoding.UTF8.GetBytes(request));
+            await ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+
             await SendMessageToUserAsync(Message);
             TBMessage.Text = string.Empty;
-            Contact.Draft = string.Empty;
-            ScrollMessagesToBottom();
-        }
-
-        private void ScrollMessagesToBottom()
-        {
-            if (LBMessages.Items.Count == 0) return;
-            var sv = GetScrollViewer(LBMessages);
-            sv?.ScrollToBottom();
-        }
-
-        private static System.Windows.Controls.ScrollViewer GetScrollViewer(System.Windows.DependencyObject o)
-        {
-            if (o is System.Windows.Controls.ScrollViewer sv) return sv;
-            for (int i = 0; i < System.Windows.Media.VisualTreeHelper.GetChildrenCount(o); i++)
-            {
-                var child = System.Windows.Media.VisualTreeHelper.GetChild(o, i);
-                var result = GetScrollViewer(child);
-                if (result != null) return result;
-            }
-            return null;
+            Contact.Draft = string.Empty; // Очищаем черновик после отправки
         }
 
         private void Button_Click_SendMessage(object sender, RoutedEventArgs e)
@@ -676,11 +713,12 @@ namespace Tebegrammmm
 
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private async void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            _cts.Cancel();
-            if (!_loggingOut)
-                Process.GetCurrentProcess().Kill();
+            if (ws != null)
+                if (ws.State == WebSocketState.Open)
+                    await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
+            Process.GetCurrentProcess().Kill();
         }
 
         private void Button_Click_FoldersMenu(object sender, RoutedEventArgs e)
@@ -706,6 +744,7 @@ namespace Tebegrammmm
             using var response = await httpClient.PostAsync($"{ServerData.ServerAdress}/upload", multipar);
             var ResponseText = await response.Content.ReadAsStringAsync();
             this.Dispatcher.Invoke(new Action(() => { SendMessage(Path.GetFileName(filePath).Replace(" ", "_"), MessageType.File, $"{ServerData.ServerAdress}/upload/{Path.GetFileName(filePath).Replace(" ", "_")}"); }));
+            MessageBox.Show(ResponseText);
         }
 
         private async void Button_Click_SelectFile(object sender, RoutedEventArgs e)
@@ -765,9 +804,7 @@ namespace Tebegrammmm
             SettingsPanelWindow SPW = new SettingsPanelWindow();
             if (SPW.ShowDialog() == true)
             {
-                AppPaths.EnsureDir();
-                File.WriteAllText(AppPaths.UserDataFile, string.Empty);
-                _loggingOut = true;
+                File.WriteAllText("user.data", $"\0");
                 MainWindow mainWindow = new MainWindow();
                 mainWindow.Show();
                 this.Close();
@@ -812,6 +849,7 @@ namespace Tebegrammmm
                         FindedContacts.Add(contact);
                     }
                 }
+
                 LBChats.ItemsSource = FindedContacts;
             }
         }

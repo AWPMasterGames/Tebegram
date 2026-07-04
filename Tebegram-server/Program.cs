@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.FileProviders;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Net;
 using System.Net.WebSockets;
 using System.Text;
@@ -82,18 +83,8 @@ app.MapGet("/upload/{FileName}", async (HttpContext context, string FileName) =>
     var fileProvider = new PhysicalFileProvider(Directory.GetCurrentDirectory());
     var fieInfo = fileProvider.GetFileInfo($"uploads/{FileName}");
 
-    string ext = Path.GetExtension(FileName).TrimStart('.').ToLower();
-    string mime = ext switch
-    {
-        "jpg" or "jpeg" => "image/jpeg",
-        "png" => "image/png",
-        "gif" => "image/gif",
-        "webp" => "image/webp",
-        "bmp" => "image/bmp",
-        _ => "application/octet-stream"
-    };
-    context.Response.ContentType = mime;
-    context.Response.Headers.ContentDisposition = $"inline; filename={FileName}";
+    context.Response.Headers.ContentEncoding = "Unicode";
+    context.Response.Headers.ContentDisposition = $"attachment; filename={FileName}";
     await context.Response.SendFileAsync(fieInfo);
 });
 
@@ -115,7 +106,7 @@ app.MapPost("/avatars/{UserId}", async (HttpContext context, int UserId) =>
         Logs.Save($"Загружен файл {FName}");
         UsersData.FindUserById(UserId).Avatar = FName;
     }
-    UsersData.SaveUserToFile();
+
     await context.Response.WriteAsync(FName);
 
 });
@@ -128,63 +119,33 @@ app.MapGet("/avatarsFileName/{UserId}", async (HttpContext context, int UserId) 
 app.MapGet("/avatars/{FileName}", async (HttpContext context, string FileName) =>
 {
     var fileProvider = new PhysicalFileProvider(Directory.GetCurrentDirectory());
-    var fieInfo = fileProvider.GetFileInfo($"avatars/{FileName}");
+    var fieInfo = fileProvider.GetFileInfo($"Data/avatars/{FileName}");
 
-    string ext = Path.GetExtension(FileName).TrimStart('.').ToLower();
-    string mime = ext switch
-    {
-        "jpg" or "jpeg" => "image/jpeg",
-        "png" => "image/png",
-        "gif" => "image/gif",
-        "webp" => "image/webp",
-        "bmp" => "image/bmp",
-        _ => "application/octet-stream"
-    };
-    context.Response.ContentType = mime;
-    context.Response.Headers.ContentDisposition = $"inline; filename={FileName}";
+    context.Response.Headers.ContentEncoding = "Unicode";
+    context.Response.Headers.ContentDisposition = $"attachment; filename={FileName}";
     await context.Response.SendFileAsync(fieInfo);
 });
 
 app.MapGet("/login/{UserLogin}-{UserPassword}", async (HttpContext Context, string UserLogin, string UserPassword) =>
 {
-    try
+    if (!UsersData.IsExistUser(UserLogin))
     {
-        if (!UsersData.IsExistUser(UserLogin))
-        {
-            await Context.Response.WriteAsync("Пользователь с таким логином не существует");
-            return;
-        }
-
-        if (UsersData.Authorize(UserLogin, UserPassword) == null)
-        {
-            await Context.Response.WriteAsync("Неверный пароль");
-            return;
-        }
-
+        await Context.Response.WriteAsync("Пользователь с таким логином не существует");
+    }
+    else if (UsersData.Authorize(UserLogin, UserPassword) != null)
+    {
         var user = UsersData.FindUserByLogin(UserLogin);
-        if (user == null)
+        if (user != null)
+        {
+            await Context.Response.WriteAsync(user.ToClientSend());
+            Logs.Save($"Пользователь {UserLogin} авторизировался");
+        }
+        else
         {
             await Context.Response.WriteAsync("Ошибка при поиске пользователя");
-            return;
         }
-
-        string payload = user.ToClientSend();
-        if (string.IsNullOrEmpty(payload))
-        {
-            Context.Response.StatusCode = 500;
-            await Context.Response.WriteAsync("Ошибка: ToClientSend вернул пустую строку");
-            return;
-        }
-
-        await Context.Response.WriteAsync(payload);
-        Logs.Save($"Пользователь {UserLogin} авторизировался");
     }
-    catch (Exception ex)
-    {
-        Logs.Save($"[Login] Исключение для {UserLogin}: {ex.GetType().Name}: {ex.Message}");
-        Context.Response.StatusCode = 500;
-        await Context.Response.WriteAsync($"Ошибка сервера: {ex.Message}");
-    }
+    else await Context.Response.WriteAsync("Неверный пароль");
 });
 
 app.MapGet("/register/{UserLogin}-{UserPassword}-{Username}-{Name}", async (HttpContext Context, string UserLogin, string UserPassword, string Username, string Name) =>
@@ -202,7 +163,6 @@ app.MapGet("/register/{UserLogin}-{UserPassword}-{Username}-{Name}", async (Http
                         }, "💬", false)
                 }, "");
         UsersData.AddUser(NewUser);
-        UsersData.SaveUserToFile();
         await Context.Response.WriteAsync(NewUser.ToClientSend());
         Logs.Save($"Пользователь {UserLogin} зарегрестрировался");
     }
@@ -262,7 +222,6 @@ app.MapPost("/messages", async (HttpContext Context) =>
     ReciverUser?.NewMessages.Add(message);
     SenderUser?.AddMessage(message);
     SenderUser?.NewMessages.Add(message);
-    UsersData.SaveUserToFile();
 
     return Context.Response.StatusCode = 200;
 });
@@ -283,7 +242,6 @@ app.MapPost("/Contact", async (HttpContext Context) =>
     if (Data[2].Trim().Length < 1) contact = new Contact(UContact.Id, UContact.Username, UContact.Name);
     else contact = new Contact(UContact.Id, UContact.Username, Data[2]);
     UsersData.FindUserById(int.Parse(Data[0]))?.AddContact(contact);
-    UsersData.SaveUserToFile();
     Context.Response.StatusCode = 200;
     await Context.Response.WriteAsync(contact.ToString());
 });
@@ -293,7 +251,6 @@ app.MapPut("/Contact", async (HttpContext Context) =>
     string Request = await reader.ReadToEndAsync();
     string[] Data = Request.Split('▫');
     UsersData.FindUserById(int.Parse(Data[0]))?.FindContactByUsername(Data[1]).ChangeName(Data[2]);
-    UsersData.SaveUserToFile();
     return Context.Response.StatusCode = 200;
 });
 app.MapDelete("/Contact", async (HttpContext Context) =>
@@ -303,7 +260,6 @@ app.MapDelete("/Contact", async (HttpContext Context) =>
     string[] Data = Request.Split('▫');
     User user = UsersData.FindUserById(int.Parse(Data[0]));
     user.RemoveContact(user.FindContactByUsername(Data[1]));
-    UsersData.SaveUserToFile();
     return Context.Response.StatusCode = 200;
 });
 
@@ -428,6 +384,59 @@ async Task ReceiveMessage(WebSocket socket, Action<WebSocketReceiveResult, byte[
         }
     }
 }*/
+#endregion
+
+#region Chat
+
+app.Map("/Chat/ws", async context =>
+{
+    if (context.WebSockets.IsWebSocketRequest)
+    {
+        var userID = context.Request.Query["userId"];
+
+        using var ws = await context.WebSockets.AcceptWebSocketAsync();
+
+        User user = UsersData.FindUserById(int.Parse(userID));
+        user.ChatsSessions.Add(ws);
+
+        await ReceiveMessage(ws,
+            async (result, buffer) =>
+            {
+                if (result.MessageType == WebSocketMessageType.Text)
+                {
+                    string request = Encoding.UTF8.GetString(buffer, 0, result.Count);
+
+                    string[] data = request.Split("▫#▫");
+
+                    switch (data[0].ToUpper())
+                    {
+                        case "SEND":
+                            int chatId = ChatsController.CheckIsExist(int.Parse(data[1]), user, data[2]);
+                            ChatsController.SendMessage(chatId, data[3]);
+                            break;
+                    }
+                }
+                else if (result.MessageType == WebSocketMessageType.Close || ws.State == WebSocketState.Aborted)
+                {
+                    //VoiceRoomsController.DisconnectFromRoom(ws,Token);
+                    Console.WriteLine($"Пользователь {user.Username} закрыл клиент");
+                    for (int i = 0; i < user.ChatsSessions.Count; i++)
+                    {
+                        if(user.ChatsSessions[i] == ws)
+                        {
+                            user.ChatsSessions[i].CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
+                            user.ChatsSessions.RemoveAt(i);
+                        }
+                    }
+                }
+            });
+    }
+    else
+    {
+        context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+    }
+});
+
 #endregion
 
 app.Run();

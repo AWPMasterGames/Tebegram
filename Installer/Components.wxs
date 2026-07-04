@@ -1,0 +1,12 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Fragment>
+    <!--
+      Авто-харвест всех файлов из выходной папки клиента.
+      $(var.Tebegrammmm.TargetDir) подставляется WiX SDK из ProjectReference.
+      Pdb/xml-файлы исключаем.
+    -->
+    <ComponentGroup Id="MainAppFiles" Directory="INSTALLFOLDER">
+      <Files Include="$(var.Tebegrammmm.TargetDir)**" />
+    </ComponentGroup>
+  </Fragment>
+</Wix>

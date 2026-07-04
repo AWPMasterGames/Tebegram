@@ -1,0 +1,11 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Fragment>
+    <!-- Установка по умолчанию: C:\Program Files\Tebegram -->
+    <StandardDirectory Id="ProgramFiles6432Folder">
+      <Directory Id="INSTALLFOLDER" Name="Tebegram" />
+    </StandardDirectory>
+
+    <!-- Папка рабочего стола нужна для опционального ярлыка -->
+    <StandardDirectory Id="DesktopFolder" />
+  </Fragment>
+</Wix>
