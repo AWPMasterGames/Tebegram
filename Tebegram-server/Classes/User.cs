@@ -88,6 +88,27 @@ namespace TebegramServer
 
         }
 
+        public const string FavoritesName = "Избранное";
+
+        /// <summary>
+        /// Гарантирует наличие «Избранного» — чата с самим собой (как в Telegram).
+        /// Это контакт с собственным username, всегда первым в списке.
+        /// </summary>
+        public void EnsureFavorites()
+        {
+            Contact? existing = FindContactByUsername(Username);
+            if (existing == null)
+            {
+                ChatsFolders[0].Contacts.Insert(0, new Contact(Id, Username, FavoritesName));
+            }
+            else if (ChatsFolders[0].Contacts.IndexOf(existing) != 0)
+            {
+                // Держим Избранное первым в списке
+                ChatsFolders[0].Contacts.Remove(existing);
+                ChatsFolders[0].Contacts.Insert(0, existing);
+            }
+        }
+
         public void AddContact(Contact contact)
         {
             ChatsFolders[0].Contacts.Add(contact);
@@ -96,7 +117,7 @@ namespace TebegramServer
         {
             ChatsFolders[0].Contacts.Remove(contact);
         }
-        public Contact FindContactByUsername(string username)
+        public Contact? FindContactByUsername(string username)
         {
             foreach (Contact contact in ChatsFolders[0].Contacts)
             {
@@ -117,28 +138,54 @@ namespace TebegramServer
         }
         public void AddMessage(Message message)
         {
+            // Чат с собой (Избранное): sender == reciver == я — кладём один раз
+            if (message.Sender == Username && message.Reciver == Username)
+            {
+                EnsureFavorites();
+                FindContactByUsername(Username)!.Messages.Add(message);
+                return;
+            }
+
             if (message.Sender == Username)
             {
-                Contact contact = FindContactByUsername(message.Reciver);
-                if (FindContactByUsername(message.Reciver) == null)
+                Contact? contact = FindContactByUsername(message.Reciver);
+                if (contact == null)
                 {
-                    User uConact = UsersData.FindUserByUsername(message.Reciver);
+                    User? uConact = UsersData.FindUserByUsername(message.Reciver);
+                    if (uConact == null) return; // получатель не зарегистрирован — раньше тут падал NullReferenceException
                     contact = new Contact(uConact.Id, uConact.Username, uConact.Name);
                     Contacts.Add(contact);
                 }
-                FindContactByUsername(message.Reciver).Messages.Add(message);
-            }
-            else if (FindContactByUsername(message.Sender) == null)
-            {
-                User uConact = UsersData.FindUserByUsername(message.Sender);
-                Contact contact = new Contact(uConact.Id, uConact.Username, uConact.Name);
                 contact.Messages.Add(message);
-                AddContact(contact);
             }
-            else if (message.Sender != Username)
+            else
             {
-                FindContactByUsername(message.Sender).Messages.Add(message);
+                Contact? contact = FindContactByUsername(message.Sender);
+                if (contact == null)
+                {
+                    User? uConact = UsersData.FindUserByUsername(message.Sender);
+                    if (uConact == null) return;
+                    contact = new Contact(uConact.Id, uConact.Username, uConact.Name);
+                    AddContact(contact);
+                }
+                contact.Messages.Add(message);
             }
+        }
+
+        /// <summary>Удаляет сообщение из указанного контакта по времени и тексту.</summary>
+        public bool DeleteMessage(string contactUsername, string time, string text)
+        {
+            Contact? contact = FindContactByUsername(contactUsername);
+            if (contact == null) return false;
+            for (int i = contact.Messages.Count - 1; i >= 0; i--)
+            {
+                if (contact.Messages[i].Time == time && contact.Messages[i].Text == text)
+                {
+                    contact.Messages.RemoveAt(i);
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

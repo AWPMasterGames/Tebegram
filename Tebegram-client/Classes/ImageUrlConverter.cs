@@ -45,6 +45,8 @@ namespace Tebegrammmm.Classes
             }
             catch
             {
+                // Запоминаем неудачу, иначе каждый повторный биндинг снова блокирует UI на таймаут
+                _cache[url] = null;
                 return null;
             }
         }

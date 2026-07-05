@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "tebegram-server",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "set DOTNET_ROLL_FORWARD=LatestMajor&& dotnet run --project Tebegram-server\\TebegramServer.csproj --no-build"],
+      "port": 5000
+    }
+  ]
+}

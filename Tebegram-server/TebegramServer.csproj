@@ -6,4 +6,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <!-- Веб-клиент (PWA) из папки docs попадает в сборку сервера как wwwroot
+       и раздаётся по адресу /app -->
+  <ItemGroup>
+    <Content Include="..\docs\**" LinkBase="wwwroot" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

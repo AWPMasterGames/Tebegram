@@ -29,7 +29,7 @@ namespace TebegramServer.Classes.VoiceClasses
         {
             _RoomMembers.Add(roomMember);
         }
-        public async Task RemoveMember(WebSocket roomMember, WebSocketCloseStatus webSocketCloseStatus, string desciption, CancellationToken cancellationToken)
+        public async Task RemoveMember(WebSocket roomMember, WebSocketCloseStatus webSocketCloseStatus, string? desciption, CancellationToken cancellationToken)
         {
             for (int i = 0; i < RoomMembers.Count; i++)
             {
@@ -44,26 +44,25 @@ namespace TebegramServer.Classes.VoiceClasses
             }
         }
 
-        public void SendVoiceToRoom(WebSocket member, byte[] voice)
+        public async Task SendVoiceToRoom(WebSocket member, byte[] voice)
         {
-            foreach (RoomMember roomMember in _RoomMembers)
+            // Снимок списка: участники могут отключаться во время рассылки.
+            // await обязателен — два параллельных SendAsync на одном сокете кидают исключение.
+            foreach (RoomMember roomMember in _RoomMembers.ToList())
             {
                 if (roomMember.Member == member)
                 {
                     continue;
                 }
-                else
-                {
-                    roomMember.SendMe(voice);
-                }
+                await roomMember.SendMe(voice);
             }
         }
 
-        public void SendTextToRoom(string text)
+        public async Task SendTextToRoom(string text)
         {
-            foreach (RoomMember roomMember in _RoomMembers)
+            foreach (RoomMember roomMember in _RoomMembers.ToList())
             {
-                    roomMember.SendMeText(text);
+                await roomMember.SendMeText(text);
             }
         }
     }

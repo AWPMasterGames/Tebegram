@@ -69,24 +69,6 @@ namespace TebegramServer.Data
             Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Инициализация UsersData завершена. Пользователей в памяти: {Users.Count}");
         }
         
-        // Метод для конвертации времени в часовой пояс пользователя
-        private static string ConvertToUserTimeZone(string timeString)
-        {
-            try
-            {
-                // Пытаемся распарсить время и конвертировать в локальное время
-                if (DateTime.TryParse(timeString, out DateTime dateTime))
-                {
-                    // Конвертируем в локальное время пользователя
-                    return dateTime.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss");
-                }
-                return timeString; // Если не удалось распарсить, возвращаем как есть
-            }
-            catch
-            {
-                return timeString; // При ошибке возвращаем оригинальное время
-            }
-        }
         public static void SaveUserToFile()
         {
             try
@@ -105,8 +87,9 @@ namespace TebegramServer.Data
 
                 List<UserData> usersData = new List<UserData>();
 
-                // Проходим по всем пользователям из коллекции Users
-                foreach (var currentUser in Users)
+                // Проходим по снимкам коллекций (.ToList()) — иначе автосохранение падает,
+                // если в этот момент другой поток добавляет сообщение или контакт
+                foreach (var currentUser in Users.ToList())
                 {
                     // Конвертируем User в UserData
                     var userData = new UserData
@@ -117,22 +100,22 @@ namespace TebegramServer.Data
                         Name = currentUser.Name,
                         Username = currentUser.Username,
                         Avatart = currentUser.Avatar,
-                        ChatsFolders = currentUser.ChatsFolders.Select(folder => new ChatFolderData
+                        ChatsFolders = currentUser.ChatsFolders.ToList().Select(folder => new ChatFolderData
                         {
                             Name = folder.FolderName,
                             Icon = folder.Icon,
                             CanDelete = folder.IsCanRedact,
-                            Contacts = folder.Contacts.Select(contact => new ContactData
+                            Contacts = folder.Contacts.ToList().Select(contact => new ContactData
                             {
                                 Id = contact.UserId,
                                 Username = contact.Username,
                                 Name = contact.Name,
-                                Messages = contact.Messages.Select(message => new MessageData
+                                Messages = contact.Messages.ToList().Select(message => new MessageData
                                 {
                                     Sender = message.Sender,
                                     Recipient = message.Reciver,
                                     Text = message.Text,
-                                    Time = ConvertToUserTimeZone(message.Time), // Конвертируем время в часовой пояс пользователя
+                                    Time = message.Time, // Время храним как есть — конвертация ломала формат и сдвигала часы
                                     MessageType = message.MessageType.ToString(),
                                     MessageString = message.ToString() // Используем ToString() из Message
                                 }).ToList()
@@ -191,6 +174,7 @@ namespace TebegramServer.Data
                         CanDelete = folder.IsCanRedact,
                         Contacts = folder.Contacts.Select(contact => new ContactData
                         {
+                            Id = contact.UserId,
                             Username = contact.Username,
                             Name = contact.Name,
                             Messages = contact.Messages.Select(message => new MessageData
@@ -198,7 +182,7 @@ namespace TebegramServer.Data
                                 Sender = message.Sender,
                                 Recipient = message.Reciver,
                                 Text = message.Text,
-                                Time = ConvertToUserTimeZone(message.Time),
+                                Time = message.Time,
                                 MessageType = message.MessageType.ToString(),
                                 MessageString = message.ToString()
                             }).ToList()
@@ -263,7 +247,9 @@ namespace TebegramServer.Data
                             chatsFolders.Add(new ChatFolder(folderData.Name, contacts, folderData.Icon, folderData.CanDelete));
                         }
                         
-                        Users.Add(new User(userData.Id, userData.Login, userData.Password, userData.Name, userData.Username, chatsFolders, userData.Avatart));
+                        var loadedUser = new User(userData.Id, userData.Login, userData.Password, userData.Name, userData.Username, chatsFolders, userData.Avatart);
+                        loadedUser.EnsureFavorites(); // у всех существующих юзеров появляется «Избранное»
+                        Users.Add(loadedUser);
                     }
                 }
                 

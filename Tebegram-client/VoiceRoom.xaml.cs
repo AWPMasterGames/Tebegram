@@ -88,10 +88,17 @@ namespace Tebegrammmm
             ws = new ClientWebSocket();
             waveIn = new WaveInEvent();
             waveIn.DeviceNumber = UserData.User.SelectedDeviceNum;
-            waveIn.WaveFormat = new WaveFormat(20480, 16, 1);
+            // Общий формат для всех платформ (ПК/веб/Android): PCM 16 бит, 48 кГц, моно.
+            // Это родная частота браузера и Android — звук совместим между устройствами.
+            waveIn.WaveFormat = new WaveFormat(48000, 16, 1);
+            waveIn.BufferMilliseconds = 20; // короткие пакеты — меньше задержка
 
-            waveProvider = new BufferedWaveProvider(new WaveFormat(20480, 16, 1));
-            buffer = new byte[4096];
+            waveProvider = new BufferedWaveProvider(new WaveFormat(48000, 16, 1))
+            {
+                BufferDuration = TimeSpan.FromSeconds(3),
+                DiscardOnBufferOverflow = true
+            };
+            buffer = new byte[8192];
 
             waveOut.Init(waveProvider);
 
@@ -149,35 +156,26 @@ namespace Tebegrammmm
         }
 
 
+        private volatile bool _callEnded = false;
+
         private void StartSVT()
         {
             SendVoiceThread = new Thread(() =>
             {
                 bool isOn = false;
-                while (true)
+                while (!_callEnded)
                 {
-                    if (IsMicrophoneOn)
+                    if (IsMicrophoneOn != isOn)
                     {
-                        if (isOn)
-                        {
-                            continue;
-                        }
-                        waveIn.StartRecording();
-                        isOn = true;
-                        MessageBox.Show("Микрофон включен");
+                        if (IsMicrophoneOn) waveIn.StartRecording();
+                        else waveIn.StopRecording();
+                        isOn = IsMicrophoneOn;
                     }
-                    else
-                    {
-                        if (!isOn)
-                        {
-                            continue;
-                        }
-                        waveIn.StopRecording();
-                        isOn = false;
-                        MessageBox.Show("Микрофон выключен");
-                    }
+                    // Раньше цикл крутился без задержки и съедал целое ядро процессора,
+                    // а MessageBox при каждом переключении блокировал поток
+                    Thread.Sleep(50);
                 }
-            });
+            }) { IsBackground = true };
 
             SendVoiceThread.Start();
         }
@@ -188,15 +186,25 @@ namespace Tebegrammmm
             {
                 waveOut.Play();
                 ReceiveVoice();
-            });
+            }) { IsBackground = true };
             ReceiveVoiceThread.Start();
         }
 
         private async void ReceiveVoice()
         {
-            while (ws.State == WebSocketState.Open)
+            while (ws.State == WebSocketState.Open && !_callEnded)
             {
-                var result = await ws.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                WebSocketReceiveResult result;
+                try
+                {
+                    result = await ws.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                }
+                catch (Exception ex)
+                {
+                    // Обрыв связи — выходим из цикла, не роняя приложение
+                    Log.Save($"[VoiceRoom.ReceiveVoice] {ex.Message}");
+                    break;
+                }
                 if (result.MessageType == WebSocketMessageType.Binary)
                 {
                     //Console.WriteLine(buffer[0]);
@@ -321,10 +329,29 @@ namespace Tebegrammmm
 
         private async void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            // Дубликат окна (когда звонок уже открыт) не должен сбрасывать состояние реального звонка
+            if (_instance != null && _instance != this) return;
+
+            _callEnded = true;
             StopCallTimer();
-            if (ws != null)
-                if (ws.State == WebSocketState.Open)
+            try
+            {
+                waveIn?.StopRecording();
+                waveOut?.Stop();
+            }
+            catch (Exception ex)
+            {
+                Log.Save($"[VoiceRoom.Closing] {ex.Message}");
+            }
+            try
+            {
+                if (ws != null && ws.State == WebSocketState.Open)
                     await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
+            }
+            catch (Exception ex)
+            {
+                Log.Save($"[VoiceRoom.Closing] {ex.Message}");
+            }
             UserData.User.InCall = false;
         }
 

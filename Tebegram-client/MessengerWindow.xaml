@@ -184,12 +184,13 @@
                     Width="165"
                     Height="35"
                     Margin="0,0,25,0"
+                    VerticalContentAlignment="Center"
                     Background="{StaticResource Light.BgInputBrush}"
-                    FontSize="20"
+                    FontSize="14"
                     Foreground="{StaticResource Light.TextPrimaryBrush}"
                     Template="{StaticResource TextBoxBaseControlTemplate}"
                     TextChanged="TextBox_TextChanged"
-                    TextWrapping="Wrap" />
+                    ToolTip="Поиск по контактам" />
                 <Button
                     Background="Transparent"
                     BorderBrush="Transparent"
@@ -367,17 +368,49 @@
                             <Setter Property="Padding" Value="0,3" />
                         </Style>
                     </ListBox.ItemContainerStyle>
+
+                    <!--  Группировка сообщений по дням: плашка-разделитель с датой  -->
+                    <ListBox.GroupStyle>
+                        <GroupStyle>
+                            <GroupStyle.HeaderTemplate>
+                                <DataTemplate>
+                                    <Border
+                                        Margin="0,8"
+                                        HorizontalAlignment="Center"
+                                        Padding="12,4"
+                                        Background="{StaticResource Light.BgSurfaceBrush}"
+                                        CornerRadius="12">
+                                        <TextBlock
+                                            FontSize="12"
+                                            FontWeight="SemiBold"
+                                            Foreground="{StaticResource Light.TextSecondaryBrush}"
+                                            Text="{Binding Name, Converter={StaticResource DateKeyToLabel}}" />
+                                    </Border>
+                                </DataTemplate>
+                            </GroupStyle.HeaderTemplate>
+                        </GroupStyle>
+                    </ListBox.GroupStyle>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <!--  Пузырь сообщения  -->
-                            <Border
-                                MaxWidth="400"
-                                HorizontalAlignment="Left"
-                                CornerRadius="4,14,14,14">
+                            <!--  Пузырь сообщения: свои — справа с акцентным фоном, чужие — слева  -->
+                            <Border MaxWidth="400">
+                                <Border.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Click="DeleteMessage_ForMe_Click" Header="Удалить у себя" />
+                                        <MenuItem Click="DeleteMessage_ForAll_Click" Header="Удалить у всех" />
+                                    </ContextMenu>
+                                </Border.ContextMenu>
                                 <Border.Style>
                                     <Style TargetType="Border">
                                         <Setter Property="Background" Value="{StaticResource Light.MsgIncomingBrush}" />
+                                        <Setter Property="HorizontalAlignment" Value="Left" />
+                                        <Setter Property="CornerRadius" Value="4,14,14,14" />
                                         <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsOutgoing}" Value="True">
+                                                <Setter Property="Background" Value="{StaticResource Light.MsgOutgoingBrush}" />
+                                                <Setter Property="HorizontalAlignment" Value="Right" />
+                                                <Setter Property="CornerRadius" Value="14,4,14,14" />
+                                            </DataTrigger>
                                             <DataTrigger Binding="{Binding Status}" Value="Pending">
                                                 <Setter Property="Background" Value="{StaticResource Light.MsgPendingBrush}" />
                                             </DataTrigger>
@@ -396,13 +429,23 @@
                                 </Border.Effect>
 
                                 <StackPanel Margin="12,8">
-                                    <!--  Имя отправителя  -->
+                                    <!--  Имя отправителя (у своих сообщений не показывается)  -->
                                     <TextBlock
                                         Margin="0,0,0,3"
                                         FontSize="12"
                                         FontWeight="SemiBold"
-                                        Foreground="{StaticResource Light.AccentTextBrush}"
-                                        Text="{Binding Sender}" />
+                                        Text="{Binding Sender}">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="{StaticResource Light.AccentTextBrush}" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsOutgoing}" Value="True">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                     <!--  Вложение (файл/изображение)  -->
                                     <Image
                                         MaxHeight="200"
@@ -412,21 +455,59 @@
                                     <!--  Текст сообщения  -->
                                     <TextBlock
                                         FontSize="14"
-                                        Foreground="{StaticResource Light.TextPrimaryBrush}"
                                         Text="{Binding Text}"
-                                        TextWrapping="Wrap" />
+                                        TextWrapping="Wrap">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="{StaticResource Light.TextPrimaryBrush}" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsOutgoing}" Value="True">
+                                                        <Setter Property="Foreground" Value="{StaticResource Light.TextInverseBrush}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                     <!--  Время  -->
                                     <TextBlock
                                         Margin="0,5,0,0"
                                         HorizontalAlignment="Right"
                                         FontSize="10"
-                                        Foreground="{StaticResource Light.TextMutedBrush}"
-                                        Text="{Binding Time}" />
+                                        Text="{Binding TimeShort}">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="{StaticResource Light.TextMutedBrush}" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsOutgoing}" Value="True">
+                                                        <Setter Property="Foreground" Value="#D6DBFF" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                 </StackPanel>
                             </Border>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
+
+                <!--  Заглушка, пока чат не выбран  -->
+                <StackPanel
+                    x:Name="EmptyChatPlaceholder"
+                    Grid.Row="1"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    IsHitTestVisible="False">
+                    <Border
+                        Padding="14,6"
+                        Background="{StaticResource Light.BgSurfaceBrush}"
+                        CornerRadius="14">
+                        <TextBlock
+                            FontSize="14"
+                            Foreground="{StaticResource Light.TextSecondaryBrush}"
+                            Text="Выберите, кому хотите написать" />
+                    </Border>
+                </StackPanel>
 
                 <!--  Поле ввода  -->
                 <Border
