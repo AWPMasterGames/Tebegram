@@ -26,12 +26,7 @@ namespace Tebegrammmm.Classes
             CheckDirectoryes();
             lock (_lock)
             {
-
-                if (!File.Exists($"{_CrashLogsDirectory}/{dateTime.ToString("dd.MM.yyyy")}.txt"))
-                {
-                    File.Create($"{_CrashLogsDirectory}/{dateTime.ToString("dd.MM.yyyy")}.txt").Close();
-                }
-                Thread.Sleep( 100 );
+                // AppendAllText сам создаёт файл; Thread.Sleep(100) здесь тормозил каждый вызов лога
                 File.AppendAllText($"{_CrashLogsDirectory}/{dateTime.ToString("dd.MM.yyyy")}.txt", $"[{dateTime.ToString("dd.MM.yyyy HH:mm:ss")}]  {log}\n");
             }
         }

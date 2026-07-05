@@ -64,10 +64,15 @@ namespace Tebegrammmm
         {
             try
             {
+                await ServerData.Ready;
                 using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/avatarsFileName/{UserId}");
                 using HttpResponseMessage response = await httpClient.SendAsync(request);
                 string content = await response.Content.ReadAsStringAsync();
-                Avatar = $"{ServerData.ServerAdress}/avatars/{content}";
+                // Ставим аватар только при успешном ответе — иначе в URL попадал текст ошибки сервера
+                if (response.IsSuccessStatusCode && !string.IsNullOrWhiteSpace(content))
+                {
+                    Avatar = $"{ServerData.ServerAdress}/avatars/{content}";
+                }
             }
             catch (Exception ex)
             {

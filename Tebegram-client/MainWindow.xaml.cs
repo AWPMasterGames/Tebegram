@@ -32,16 +32,32 @@ namespace Tebegrammmm
             ServerData.GetServerAdress();
             InitializeComponent();
             TBUserLogin.Focus();
-            if (File.Exists("user.data"))
+
+            // Фоновая проверка обновлений — не блокирует запуск
+            _ = UpdateChecker.CheckAsync();
+
+            // Данные храним в AppData (AppPaths) — в Program Files запись запрещена.
+            // Старый файл рядом с exe читаем для миграции.
+            string userDataPath = File.Exists(AppPaths.UserDataFile) ? AppPaths.UserDataFile
+                                : File.Exists("user.data") ? "user.data"
+                                : null;
+            if (userDataPath != null)
             {
-                string[] data;
-                if ((data = File.ReadAllText("user.data").Split('▫')).Length == 2)
+                try
                 {
-                    TBUserLogin.Text = data[0];
-                    PBUserPassord.Password = data[1];
-                    LoginButton.Focus();
-                    // Автоавторизация — после полного показа окна, без блокировки UI.
-                    this.Loaded += MainWindow_AutoAuth;
+                    string[] data;
+                    if ((data = File.ReadAllText(userDataPath).Split('▫')).Length == 2)
+                    {
+                        TBUserLogin.Text = data[0];
+                        PBUserPassord.Password = data[1];
+                        LoginButton.Focus();
+                        // Автоавторизация — после полного показа окна, без блокировки UI.
+                        this.Loaded += MainWindow_AutoAuth;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Save($"[MainWindow] Не удалось прочитать сохранённые данные входа: {ex.Message}");
                 }
             }
         }
@@ -109,11 +125,17 @@ namespace Tebegrammmm
                     MessengerWindow mw = new MessengerWindow();
                     this.Hide();
                     mw.Show();
-                    if (!File.Exists("user.data"))
+                    try
                     {
-                        File.Create("user.data").Close();
+                        AppPaths.EnsureDir();
+                        File.WriteAllText(AppPaths.UserDataFile, $"{TBUserLogin.Text}▫{PBUserPassord.Password}");
+                        // Убираем старый файл рядом с exe после миграции в AppData
+                        if (File.Exists("user.data")) File.Delete("user.data");
                     }
-                    File.WriteAllText("user.data", $"{TBUserLogin.Text}▫{PBUserPassord.Password}");
+                    catch (Exception ex)
+                    {
+                        Log.Save($"[Authorization] Не удалось сохранить данные входа: {ex.Message}");
+                    }
                     this.Close();
                 }
                 catch (System.Text.Json.JsonException)

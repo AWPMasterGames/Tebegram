@@ -3,9 +3,13 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:Tebegrammmm"
+    xmlns:classes="clr-namespace:Tebegrammmm.Classes"
     StartupUri="MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
+
+            <!--  Конвертер подписи даты для разделителей сообщений  -->
+            <classes:DateKeyToLabelConverter x:Key="DateKeyToLabel" />
 
             <!--  Единый шрифт приложения: Segoe UI Variable (Win11), Segoe UI (Win10)  -->
             <Style TargetType="TextBlock">

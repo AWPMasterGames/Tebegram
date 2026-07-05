@@ -1,87 +1,131 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Net.WebSockets;
 using System.Text;
 using TebegramServer.Classes;
 using TebegramServer.Data;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace TebegramServer.Controllers
 {
     public static class ChatsController
     {
         public static Dictionary<int, Chat> Chats = new Dictionary<int, Chat>();
-
+        private static readonly object _lock = new object();
+        private static readonly Random _random = new Random();
 
         public static int CreateChat(List<User> members)
         {
-            Chat chat = new Chat(1000000 + new Random().Next(int.MaxValue-1000001), "", false, "", null, members, new ObservableCollection<Message>());
-            Chats.Add(chat.Id, chat);
-            foreach (User user in members)
+            lock (_lock)
             {
-                user.AddChat(chat.Id);
+                // Убираем дубли — для чата с собой members = [user, user] превращается в [user]
+                members = members.Distinct().ToList();
+
+                // Генерируем Id, пока не найдём свободный — раньше случайный Id мог совпасть и Add кидал исключение
+                int id;
+                do
+                {
+                    id = 1000000 + _random.Next(int.MaxValue - 1000001);
+                } while (Chats.ContainsKey(id));
+
+                Chat chat = new Chat(id, "", false, "", null, members, new ObservableCollection<Message>());
+                Chats.Add(chat.Id, chat);
+                foreach (User user in members)
+                {
+                    user.AddChat(chat.Id);
+                }
+                return chat.Id;
             }
-            return chat.Id;
         }
 
-
-        public static async void SendMessage(int chatId, string messageD)
+        public static async Task SendMessage(int chatId, string messageD)
         {
-            string[] messageData = messageD.Split('▫');
-            Message message = null;
-            if (messageData[2] == "Text")
+            Chat? chat;
+            lock (_lock)
             {
-                string text = messageData[5];
-                for (int i = 6; i < messageData.Length; i++)
-                {
-                    text += messageData[i];
-                }
+                if (!Chats.TryGetValue(chatId, out chat)) return;
+            }
+
+            string[] messageData = messageD.Split('▫');
+            Message? message = null;
+            if (messageData.Length >= 6 && messageData[2] == "Text")
+            {
+                // Текст может содержать ▫ — склеиваем хвост обратно с разделителем
+                string text = string.Join('▫', messageData.Skip(5));
                 message = new Message(messageData[0], messageData[1], text, messageData[3]);
             }
-            else if (messageData[2] == "File")
+            else if (messageData.Length >= 6 && messageData[2] == "File")
             {
                 message = new Message(messageData[0], messageData[1], messageData[5], messageData[3], MessageType.File, messageData[4]);
             }
-            Chats[chatId].Messages.Add(message);
+            if (message == null) return;
 
-            foreach (User user in Chats[chatId].Members)
+            chat.Messages.Add(message);
+
+            foreach (User user in chat.Members.ToList())
             {
-                foreach(WebSocket session in user.ChatsSessions)
+                // Снимок списка сессий: коллекция может меняться из других потоков во время рассылки
+                foreach (WebSocket session in user.ChatsSessions.ToList())
                 {
                     if (session.State == WebSocketState.Open)
                     {
-                        Console.WriteLine($"Send to user: {user.Username} | message: {message.ToString()}");
-                        var arraySegment = new ArraySegment<byte>(Encoding.UTF8.GetBytes(message.ToString()));
-                        await session.SendAsync(arraySegment, WebSocketMessageType.Text, true, CancellationToken.None);
+                        try
+                        {
+                            Console.WriteLine($"Send to user: {user.Username} | message: {message}");
+                            var arraySegment = new ArraySegment<byte>(Encoding.UTF8.GetBytes(message.ToString()));
+                            await session.SendAsync(arraySegment, WebSocketMessageType.Text, true, CancellationToken.None);
+                        }
+                        catch (WebSocketException)
+                        {
+                            // Сокет умер между проверкой State и отправкой — просто пропускаем
+                        }
                     }
                 }
             }
         }
 
+        /// <summary>
+        /// Возвращает Id чата для отправки. Если чат с таким Id не существует,
+        /// ищет существующий личный чат между этими двумя пользователями
+        /// (раньше на каждое сообщение создавался новый чат, т.к. клиент всегда шлёт chatId=0).
+        /// Если и его нет — создаёт новый. Возвращает -1, если получатель не найден.
+        /// </summary>
         public static int CheckIsExist(int chatId, User user, string receiver)
         {
-            if (!ContainsChat(chatId))
+            lock (_lock)
             {
-                List<User> members = new List<User>();
-                members.Add(user);
-                members.Add(UsersData.FindUserByUsername(receiver));
-                chatId = CreateChat(members);
+                if (ContainsChat(chatId)) return chatId;
             }
-            return chatId;
+
+            User? receiverUser = UsersData.FindUserByUsername(receiver);
+            if (receiverUser == null) return -1;
+
+            bool isSelfChat = ReferenceEquals(user, receiverUser);
+
+            lock (_lock)
+            {
+                foreach (Chat chat in Chats.Values)
+                {
+                    if (chat.IsGroup) continue;
+                    if (isSelfChat)
+                    {
+                        // Чат с собой — ровно один участник (я). Иначе совпал бы любой мой чат.
+                        if (chat.Members.Count == 1 && chat.Members[0] == user) return chat.Id;
+                    }
+                    else if (chat.Members.Contains(user) && chat.Members.Contains(receiverUser))
+                    {
+                        return chat.Id;
+                    }
+                }
+            }
+
+            return CreateChat(new List<User> { user, receiverUser });
         }
-
-
-
-
-
-
-
-
-
-
 
         public static bool ContainsChat(int id)
         {
-            return Chats.ContainsKey(id);
+            lock (_lock)
+            {
+                return Chats.ContainsKey(id);
+            }
         }
     }
 }

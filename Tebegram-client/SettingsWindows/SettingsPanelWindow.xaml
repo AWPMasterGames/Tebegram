@@ -59,6 +59,25 @@
             </ControlTemplate.Triggers>
         </ControlTemplate>
 
+        <!--  «Тихая» текстовая кнопка (ссылка)  -->
+        <ControlTemplate x:Key="GhostButtonTemplate" TargetType="Button">
+            <Border
+                x:Name="Bd"
+                Padding="8,5"
+                Background="Transparent"
+                CornerRadius="8">
+                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.AccentMutedBrush}" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter TargetName="Bd" Property="Opacity" Value="0.7" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
         <!--  Кнопка выхода: outline красная  -->
         <ControlTemplate x:Key="DangerButtonTemplate" TargetType="Button">
             <Border
@@ -218,6 +237,20 @@
                                 FontWeight="SemiBold"
                                 Foreground="{StaticResource Light.TextPrimaryBrush}"
                                 Text="{Binding Name}" />
+
+                            <!--  Смена аватара  -->
+                            <Button
+                                Margin="0,8,0,0"
+                                HorizontalAlignment="Center"
+                                Click="ChangeAvatar_Click"
+                                Cursor="Hand"
+                                Template="{StaticResource GhostButtonTemplate}">
+                                <TextBlock
+                                    FontSize="13"
+                                    FontWeight="SemiBold"
+                                    Foreground="{StaticResource Light.AccentTextBrush}"
+                                    Text="Сменить аватар" />
+                            </Button>
                         </StackPanel>
 
                         <!--  Разделитель  -->
@@ -317,6 +350,45 @@
                                     FontSize="13"
                                     Foreground="{StaticResource Light.TextPrimaryBrush}"
                                     SelectionChanged="InputDeviceCB_SelectionChanged" />
+                            </Grid>
+                        </Border>
+
+                        <!--  Приложение: версия и обновления  -->
+                        <Border
+                            Margin="0,0,0,20"
+                            Padding="16,14"
+                            Background="{StaticResource Light.BgSurfaceBrush}"
+                            BorderBrush="{StaticResource Light.BorderSubtleBrush}"
+                            BorderThickness="1"
+                            CornerRadius="14">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock
+                                        FontSize="11"
+                                        FontWeight="SemiBold"
+                                        Foreground="{StaticResource Light.TextMutedBrush}"
+                                        Text="ПРИЛОЖЕНИЕ" />
+                                    <TextBlock
+                                        x:Name="TBVersion"
+                                        FontSize="15"
+                                        Foreground="{StaticResource Light.TextPrimaryBrush}" />
+                                </StackPanel>
+                                <Button
+                                    Grid.Column="1"
+                                    VerticalAlignment="Center"
+                                    Click="CheckUpdates_Click"
+                                    Cursor="Hand"
+                                    Template="{StaticResource GhostButtonTemplate}">
+                                    <TextBlock
+                                        FontSize="13"
+                                        FontWeight="SemiBold"
+                                        Foreground="{StaticResource Light.AccentTextBrush}"
+                                        Text="Проверить обновления" />
+                                </Button>
                             </Grid>
                         </Border>
 

@@ -2,6 +2,9 @@
 bin/
 obj/
 
+# Собранные установщики — их место в GitHub Releases, не в репозитории
+Installer/Output/
+
 # IDE files
 .vs/
 *.user
