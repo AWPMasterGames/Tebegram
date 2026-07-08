@@ -8,6 +8,8 @@ Installer/Output/
 # IDE files
 .vs/
 *.user
+# Логи авто-обновления проекта, генерируемые Visual Studio
+UpgradeLog*.htm
 
 # Server runtime data
 Tebegram-server/Logs/
