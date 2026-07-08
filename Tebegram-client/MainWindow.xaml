@@ -187,6 +187,17 @@
                             Template="{StaticResource CloseButtonTemplate}" />
                     </StackPanel>
 
+                    <!-- Индикатор связи с сервером: зелёный — есть, серый — проверка, красный — нет ответа -->
+                    <Ellipse
+                        x:Name="LoginConnDot"
+                        Width="9"
+                        Height="9"
+                        Margin="4,9,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Fill="#9CA3AF"
+                        ToolTip="Проверка соединения с сервером…" />
+
                     <!-- Микро-анимация появления формы -->
                     <StackPanel
                         x:Name="LoginFormPanel"
@@ -393,6 +404,17 @@
                             FontSize="14"
                             Template="{StaticResource CloseButtonTemplate}" />
                     </StackPanel>
+
+                    <!-- Индикатор связи с сервером: зелёный — есть, серый — проверка, красный — нет ответа -->
+                    <Ellipse
+                        x:Name="RegConnDot"
+                        Width="9"
+                        Height="9"
+                        Margin="4,9,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Fill="#9CA3AF"
+                        ToolTip="Проверка соединения с сервером…" />
 
                     <!--  Баннер успешной регистрации  -->
                     <Border
