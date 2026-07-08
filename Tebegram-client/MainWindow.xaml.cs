@@ -36,6 +36,10 @@ namespace Tebegrammmm
             // Фоновая проверка обновлений — не блокирует запуск
             _ = UpdateChecker.CheckAsync();
 
+            // Индикатор соединения с сервером на окнах входа/регистрации
+            this.Closed += (_, __) => _connMonitorRunning = false;
+            StartConnectionMonitor();
+
             // Данные храним в AppData (AppPaths) — в Program Files запись запрещена.
             // Старый файл рядом с exe читаем для миграции.
             string userDataPath = File.Exists(AppPaths.UserDataFile) ? AppPaths.UserDataFile
@@ -67,6 +71,44 @@ namespace Tebegrammmm
             this.Loaded -= MainWindow_AutoAuth;
             this.Dispatcher.BeginInvoke(new Action(Authorization),
                 System.Windows.Threading.DispatcherPriority.Background);
+        }
+
+        // ── Индикатор соединения с сервером ──────────────────────────────────
+        // Зелёный — сервер на связи, серый — идёт проверка, красный — нет ответа за 3 с.
+        private static readonly Brush ConnBrushSearching = new SolidColorBrush(Color.FromRgb(0x9C, 0xA3, 0xAF));
+        private static readonly Brush ConnBrushConnected = new SolidColorBrush(Color.FromRgb(0x22, 0xC5, 0x5E));
+        private static readonly Brush ConnBrushFailed = new SolidColorBrush(Color.FromRgb(0xEF, 0x44, 0x44));
+
+        private bool _connMonitorRunning;
+
+        private async void StartConnectionMonitor()
+        {
+            if (_connMonitorRunning) return;
+            _connMonitorRunning = true;
+
+            while (_connMonitorRunning)
+            {
+                SetConnStatus(ConnBrushSearching, "Проверка соединения с сервером…");
+
+                bool ok = await ServerData.PingAsync(); // до 3 секунд
+
+                if (!_connMonitorRunning) break;
+
+                if (ok)
+                    SetConnStatus(ConnBrushConnected, "Сервер на связи");
+                else
+                    SetConnStatus(ConnBrushFailed, "Сервер не отвечает");
+
+                // Пауза перед следующей проверкой (индикатор остаётся «живым»)
+                try { await Task.Delay(5000); } catch { }
+            }
+        }
+
+        private void SetConnStatus(Brush brush, string tooltip)
+        {
+            // Обе точки присутствуют в дереве всегда (одна из форм свёрнута) — обновляем обе
+            if (LoginConnDot != null) { LoginConnDot.Fill = brush; LoginConnDot.ToolTip = tooltip; }
+            if (RegConnDot != null) { RegConnDot.Fill = brush; RegConnDot.ToolTip = tooltip; }
         }
 
         private async void Authorization()

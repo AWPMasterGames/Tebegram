@@ -113,5 +113,27 @@ namespace Tebegrammmm.Data
                 // адрес недоступен — не подменяем, чтобы не нарушить ранее работавший сценарий
             }
         }
+
+        /// <summary>
+        /// Проверяет доступность сервера: сначала дожидается загрузки адреса,
+        /// затем запрашивает /Test с таймаутом 3 секунды.
+        /// Возвращает true, если сервер ответил «HI!» вовремя.
+        /// </summary>
+        public static async Task<bool> PingAsync()
+        {
+            try { await Ready.ConfigureAwait(true); }
+            catch { /* адрес мог не загрузиться — всё равно пробуем текущий */ }
+
+            try
+            {
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+                string a = await _http.GetStringAsync($"{_ServerAdress}/Test", cts.Token).ConfigureAwait(true);
+                return a.Trim() == "HI!";
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }
