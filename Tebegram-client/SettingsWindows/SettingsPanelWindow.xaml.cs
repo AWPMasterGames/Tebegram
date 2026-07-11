@@ -21,9 +21,34 @@ namespace Tebegrammmm
         {
             InitializeComponent();
             TBUsername.Text = UserData.User.Username;
+            TBLogin.Text = UserData.User.Login; // раньше {Binding Login} не работал — TBLogin вне UserInfo
             TBVersion.Text = $"Tebegram {UpdateChecker.CurrentVersion}";
             UserInfo.DataContext = UserData.User;
             CheckInputDevices();
+
+            // Тумблер темы: выставляем без вызова обработчика
+            ThemeToggle.Checked -= ThemeToggle_Changed;
+            ThemeToggle.Unchecked -= ThemeToggle_Changed;
+            ThemeToggle.IsChecked = ThemeManager.IsDark;
+            ThemeLabel.Text = ThemeManager.IsDark ? "Тёмная тема" : "Светлая тема";
+            ThemeToggle.Checked += ThemeToggle_Changed;
+            ThemeToggle.Unchecked += ThemeToggle_Changed;
+        }
+
+        private void ThemeToggle_Changed(object sender, RoutedEventArgs e)
+        {
+            bool isDark = ThemeToggle.IsChecked == true;
+            ThemeLabel.Text = isDark ? "Тёмная тема" : "Светлая тема";
+            ThemeManager.Apply(isDark);
+            try
+            {
+                AppPaths.EnsureDir();
+                File.WriteAllText(AppPaths.ThemeDataFile, isDark.ToString());
+            }
+            catch (System.Exception ex)
+            {
+                Tebegrammmm.Classes.Log.Save($"[Settings] Не удалось сохранить тему: {ex.Message}");
+            }
         }
 
         private async void ChangeAvatar_Click(object sender, RoutedEventArgs e)
@@ -35,13 +60,20 @@ namespace Tebegrammmm
             };
             if (dlg.ShowDialog() != true) return;
 
+            // Окно предпросмотра/обрезки — выбираем участок фото под круглый аватар
+            var cropper = new AvatarCropWindow(dlg.FileName) { Owner = this };
+            if (cropper.ShowDialog() != true || string.IsNullOrEmpty(cropper.CroppedPngPath))
+                return;
+
+            string cropped = cropper.CroppedPngPath;
             try
             {
                 using var multipart = new MultipartFormDataContent();
-                var fileContent = new StreamContent(File.OpenRead(dlg.FileName));
-                string mime = MIME.GetMimeType(Path.GetExtension(dlg.FileName));
-                fileContent.Headers.ContentType = new MediaTypeHeaderValue(mime == "application/octet-stream" ? "image/png" : mime);
-                multipart.Add(fileContent, "file", Path.GetFileName(dlg.FileName));
+                var fileContent = new StreamContent(File.OpenRead(cropped));
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue("image/png");
+                // Уникальное имя, чтобы кэш аватара обновился
+                string uploadName = $"avatar_{UserData.User.Id}_{System.DateTime.Now:HHmmss}.png";
+                multipart.Add(fileContent, "file", uploadName);
 
                 using var response = await httpClient.PostAsync($"{ServerData.ServerAdress}/avatars/{UserData.User.Id}", multipart);
                 string stored = await response.Content.ReadAsStringAsync();
@@ -63,6 +95,10 @@ namespace Tebegrammmm
             {
                 Log.Save($"[Settings.ChangeAvatar] {ex.Message}");
                 MessageBox.Show("Не удалось загрузить аватар. Проверь соединение с сервером.");
+            }
+            finally
+            {
+                try { File.Delete(cropped); } catch { }
             }
         }
 

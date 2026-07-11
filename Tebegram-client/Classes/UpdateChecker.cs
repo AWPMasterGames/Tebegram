@@ -17,7 +17,13 @@ namespace Tebegrammmm.Classes
         // Текущая версия клиента. Должна совпадать с MyAppVersion в Installer/TebegramSetup.iss
         public const string CurrentVersion = "1.0.3";
 
-        private const string VersionUrl = "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/version.txt";
+        // Кандидаты в порядке приоритета: main — основной источник для пользователей,
+        // main-dev-Test — запасной (в main файла version.txt пока нет, там всегда 404)
+        private static readonly string[] VersionUrls =
+        {
+            "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/version.txt",
+            "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main-dev-Test/version.txt",
+        };
         private const string DownloadPageUrl = "https://github.com/AWPMasterGames/Tebegram/releases/latest";
 
         private static readonly HttpClient _http = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
@@ -30,27 +36,39 @@ namespace Tebegrammmm.Classes
         {
             try
             {
-                string raw = (await _http.GetStringAsync(VersionUrl)).Split('\n')[0].Trim();
+                string raw = null;
+                foreach (string url in VersionUrls)
+                {
+                    try
+                    {
+                        raw = (await _http.GetStringAsync(url)).Split('\n')[0].Trim();
+                        break;
+                    }
+                    catch
+                    {
+                        // этот источник недоступен (например, 404 в main) — пробуем следующий
+                    }
+                }
 
-                if (!Version.TryParse(raw, out Version latest) ||
+                if (raw == null ||
+                    !Version.TryParse(raw, out Version latest) ||
                     !Version.TryParse(CurrentVersion, out Version current))
                 {
-                    if (notifyIfLatest) MessageBox.Show("Не удалось проверить обновления.", "Обновление Tebegram");
+                    if (notifyIfLatest) TbgDialogWindow.Show("Не удалось проверить обновления.", "Обновление Tebegram");
                     return;
                 }
                 if (latest <= current)
                 {
-                    if (notifyIfLatest) MessageBox.Show($"У вас последняя версия ({current}).", "Обновление Tebegram");
+                    if (notifyIfLatest) TbgDialogWindow.Show($"У вас последняя версия ({current}).", "Обновление Tebegram");
                     return;
                 }
 
-                MessageBoxResult result = MessageBox.Show(
+                bool open = TbgDialogWindow.Confirm(
                     $"Доступна новая версия Tebegram {latest} (у вас {current}).\n\nОткрыть страницу загрузки?",
                     "Обновление Tebegram",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Information);
+                    "Открыть", "Позже");
 
-                if (result == MessageBoxResult.Yes)
+                if (open)
                 {
                     Process.Start(new ProcessStartInfo(DownloadPageUrl) { UseShellExecute = true });
                 }
@@ -59,7 +77,7 @@ namespace Tebegrammmm.Classes
             {
                 // Нет сети или GitHub недоступен — тихая проверка просто пропускается
                 Log.Save($"[UpdateChecker] {ex.GetType().Name}: {ex.Message}");
-                if (notifyIfLatest) MessageBox.Show("Не удалось проверить обновления. Проверь подключение к интернету.", "Обновление Tebegram");
+                if (notifyIfLatest) TbgDialogWindow.Show("Не удалось проверить обновления. Проверь подключение к интернету.", "Обновление Tebegram");
             }
         }
     }

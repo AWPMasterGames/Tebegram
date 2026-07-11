@@ -54,6 +54,56 @@
   }
 }
 
+/* Ручной выбор темы в настройках перекрывает системную
+   (data-theme на <html>; без атрибута — авто по prefers-color-scheme) */
+:root[data-theme="light"] {
+  --bg-deep: #E8ECF5;
+  --bg-primary: #FFFFFF;
+  --bg-surface: #F2F4FA;
+  --bg-elevated: #EAECF5;
+  --bg-input: #F0F2F8;
+  --accent: #4A5AE8;
+  --accent-hover: #5B6BF5;
+  --accent-muted: #DCE0FF;
+  --accent-text: #3A4AD0;
+  --danger: #D93025;
+  --success: #1E8A5E;
+  --text-primary: #0D1117;
+  --text-secondary: #505870;
+  --text-muted: #909AAF;
+  --text-inverse: #FFFFFF;
+  --border-subtle: #EAECF5;
+  --border-default: #D4D8E8;
+  --msg-out: #4A5AE8;
+  --msg-in: #FFFFFF;
+  --chat-bg: linear-gradient(135deg, #F0F4FF 0%, #EAECF5 100%);
+  --shadow: 0 1px 6px rgba(0, 0, 0, .08);
+}
+
+:root[data-theme="dark"] {
+  --bg-deep: #0D1117;
+  --bg-primary: #161B27;
+  --bg-surface: #1E2438;
+  --bg-elevated: #262D47;
+  --bg-input: #1A1F33;
+  --accent: #5B6BF5;
+  --accent-hover: #6B7BFF;
+  --accent-muted: #1E2560;
+  --accent-text: #8B9BFF;
+  --danger: #F04F4F;
+  --success: #3ECF8E;
+  --text-primary: #E8EAED;
+  --text-secondary: #8B91A8;
+  --text-muted: #4A5068;
+  --text-inverse: #FFFFFF;
+  --border-subtle: #1E2438;
+  --border-default: #2E3550;
+  --msg-out: #2D3F9E;
+  --msg-in: #262D47;
+  --chat-bg: radial-gradient(120% 95% at 50% 20%, #1E2845 0%, #0D1117 100%);
+  --shadow: 0 1px 6px rgba(0, 0, 0, .35);
+}
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 html, body {
@@ -73,11 +123,18 @@ html, body {
 
 /* Безопасные зоны iPhone (чёлка и полоса внизу) */
 .safe-top { padding-top: calc(env(safe-area-inset-top, 0px) + 8px); }
-.safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 6px); }
+/* Не полный inset (34px на iPhone), а сильно урезанный: панели почти у самого
+   края. Это НЕ заблокировано системой — iOS рисует «домашний индикатор» поверх
+   нашего контента; ~10px хватает, чтобы кнопки не попадали ровно под полоску.
+   max() не даёт уйти в 0 на устройствах без «чёлки». */
+.safe-bottom { padding-bottom: max(calc(env(safe-area-inset-bottom, 0px) - 24px), 4px); }
 
 /* ═══════════ Экраны ═══════════ */
 .screen {
   position: fixed;
+  /* Привязка ко ВСЕМ четырём краям (bottom:0 прижимает таббар к самому низу).
+     Никаких height:100vh/dvh — на iPhone-ярлыке они врут, оставляя полосу снизу:
+     фиксированный элемент, растянутый через inset, физически не может её оставить */
   inset: 0;
   display: flex;
   flex-direction: column;
@@ -269,12 +326,26 @@ html, body {
 
 /* ═══════════ Нижняя панель вкладок ═══════════ */
 .tabbar {
+  /* Прибит к НИЗУ вьюпорта жёстко (fixed), а не через flex: на iPhone (Safari
+     standalone) flex-раскладка оставляла полосу под панелью, хотя в Chromium всё
+     было ровно. Фиксированной позиции всё равно на высотные капризы движка.
+     z-index 10 < 20 (.screen-chat) — экран чата выезжает ПОВЕРХ панели. */
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
   display: flex;
   border-top: .5px solid var(--border-default);
   background: color-mix(in srgb, var(--bg-primary) 92%, transparent);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  flex-shrink: 0;
+}
+/* Панель плавает над контентом — списку и настройкам нужен нижний отступ,
+   чтобы последний элемент не прятался под ней */
+.chat-list,
+.settings {
+  padding-bottom: calc(66px + env(safe-area-inset-bottom, 0px));
 }
 .tabbar-item {
   flex: 1;
@@ -372,6 +443,119 @@ html, body {
 }
 .bubble--file { text-decoration: none; display: block; }
 .bubble--file .file-name { font-weight: 600; text-decoration: underline; }
+/* ═══════════ Глобальный поиск (@логин) ═══════════ */
+.gs-header {
+  padding: 14px 16px 6px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  color: var(--text-muted);
+}
+.gs-item .avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-muted);
+  color: var(--accent-text);
+  font-weight: 700;
+}
+
+/* ═══════════ Заглушка горизонтального режима ═══════════ */
+.rotate-lock {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.rotate-lock p { margin-top: 6px; color: var(--text-secondary); font-size: 14px; }
+/* Только телефоны (по высоте), не десктопные окна */
+@media (orientation: landscape) and (max-height: 500px) {
+  .rotate-lock { display: flex; }
+}
+
+/* ═══════════ Просмотр фото (лайтбокс) ═══════════ */
+.photo-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(8, 10, 16, .92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.photo-viewer img {
+  max-width: 94vw;
+  max-height: 84vh;
+  border-radius: 10px;
+  object-fit: contain;
+}
+.pv-btn {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  background: rgba(255, 255, 255, .12);
+  color: #fff;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+.pv-close {
+  top: calc(env(safe-area-inset-top, 0px) + 14px);
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+.pv-close svg { width: 22px; height: 22px; }
+.pv-download {
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 18px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 22px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* Инлайн-превью фото в пузыре (как в десктопном клиенте) */
+.bubble-photo {
+  display: block;
+  max-width: min(240px, 100%);
+  max-height: 260px;
+  border-radius: 13px;
+  object-fit: contain;
+}
+/* Фото-пузырь: минимальная рамка (u исходящих фон был широкой обводкой),
+   время — плашкой поверх фото, как в Telegram */
+.bubble--photo {
+  padding: 3px;
+  position: relative;
+  /* Без этого пузырь широких (горизонтальных) фото растягивался до НАТУРАЛЬНОЙ
+     ширины картинки, хотя сама она ужата до 240px — справа оставалась пустота,
+     и время «висело в воздухе» вместо наложения на фото */
+  width: fit-content;
+  max-width: min(246px, 78%);
+}
+.bubble--photo .bubble-time {
+  position: absolute;
+  right: 9px;
+  bottom: 9px;
+  margin: 0;
+  padding: 1px 7px;
+  border-radius: 9px;
+  background: rgba(0, 0, 0, .45);
+  color: #fff;
+  opacity: 1;
+}
 
 .messages-date {
   align-self: center;
@@ -472,6 +656,7 @@ html, body {
   outline: none;
 }
 .settings-hint { color: var(--text-muted); font-size: 12px; }
+.settings-value { color: var(--text-secondary); font-size: 15px; }
 .settings-version { text-align: center; color: var(--text-muted); font-size: 12px; margin-top: 8px; }
 .chevron { color: var(--text-muted); font-size: 20px; }
 
@@ -493,6 +678,43 @@ html, body {
 .modal-card h2 { font-size: 19px; }
 .modal-actions { display: flex; gap: 10px; }
 .modal-actions .btn { flex: 1; }
+
+/* ═══════════ Обрезка аватара ═══════════ */
+.crop-area {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #000;
+  touch-action: none;       /* перетаскивание пальцем, а не скролл */
+  cursor: grab;
+}
+.crop-area:active { cursor: grabbing; }
+#crop-img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  max-width: none;          /* транслируем/масштабируем сами */
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+  will-change: transform;
+}
+/* Затемнение вне круга + тонкое кольцо (как в десктопном кропе) */
+.crop-ring {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle 140px at center, transparent 139px, rgba(0, 0, 0, .55) 140px);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .25);
+  border-radius: 14px;
+}
+#crop-zoom {
+  width: 100%;
+  accent-color: var(--accent);
+}
 
 /* ═══════════ Подсказка установки ═══════════ */
 .install-hint {

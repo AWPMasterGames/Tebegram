@@ -45,16 +45,16 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     FontSize="{TemplateBinding FontSize}"
-                    Foreground="{StaticResource Light.TextMutedBrush}"
+                    Foreground="{DynamicResource Light.TextMutedBrush}"
                     Text="{TemplateBinding Content}" />
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.DangerBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.DangerBrush}" />
                     <Setter TargetName="Txt" Property="Foreground" Value="White" />
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.DangerHoverBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.DangerHoverBrush}" />
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -67,16 +67,16 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     FontSize="{TemplateBinding FontSize}"
-                    Foreground="{StaticResource Light.TextMutedBrush}"
+                    Foreground="{DynamicResource Light.TextMutedBrush}"
                     Text="{TemplateBinding Content}" />
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.BgElevatedBrush}" />
-                    <Setter TargetName="Txt" Property="Foreground" Value="{StaticResource Light.TextPrimaryBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.BgElevatedBrush}" />
+                    <Setter TargetName="Txt" Property="Foreground" Value="{DynamicResource Light.TextPrimaryBrush}" />
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.BgDeepBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.BgDeepBrush}" />
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -88,10 +88,10 @@
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.AccentHoverBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.AccentHoverBrush}" />
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.AccentPressedBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.AccentPressedBrush}" />
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -108,10 +108,10 @@
             </Border>
             <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.BgElevatedBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.BgElevatedBrush}" />
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource Light.BgDeepBrush}" />
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.BgDeepBrush}" />
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -150,8 +150,8 @@
             </Grid.Triggers>
             <Border
                 Padding="20"
-                Background="{StaticResource Light.BgPrimaryBrush}"
-                BorderBrush="{StaticResource Light.BorderDefaultBrush}"
+                Background="{DynamicResource Light.BgPrimaryBrush}"
+                BorderBrush="{DynamicResource Light.BorderDefaultBrush}"
                 BorderThickness="1"
                 CornerRadius="20">
                 <Border.Effect>
@@ -238,22 +238,22 @@
                             HorizontalAlignment="Center"
                             FontSize="28"
                             FontWeight="SemiBold"
-                            Foreground="{StaticResource Light.TextPrimaryBrush}"
+                            Foreground="{DynamicResource Light.TextPrimaryBrush}"
                             Text="Вход" />
 
-                        <TextBlock Foreground="{StaticResource Light.TextSecondaryBrush}" Text="Логин" />
+                        <TextBlock Foreground="{DynamicResource Light.TextSecondaryBrush}" Text="Логин" />
                         <TextBox
                             x:Name="TBUserLogin"
                             Height="35"
                             Margin="0,5,0,15"
-                            Background="{StaticResource Light.BgInputBrush}"
-                            BorderBrush="{StaticResource Light.BorderDefaultBrush}"
+                            Background="{DynamicResource Light.BgInputBrush}"
+                            BorderBrush="{DynamicResource Light.BorderDefaultBrush}"
                             FontSize="15"
-                            Foreground="{StaticResource Light.TextPrimaryBrush}"
+                            Foreground="{DynamicResource Light.TextPrimaryBrush}"
                             KeyDown="TextBox_KeyDown"
                             Template="{StaticResource TextBoxBaseControlTemplate}" />
 
-                        <TextBlock Foreground="{StaticResource Light.TextSecondaryBrush}" Text="Пароль" />
+                        <TextBlock Foreground="{DynamicResource Light.TextSecondaryBrush}" Text="Пароль" />
                         <!-- Контейнер поля пароля с кнопкой показа -->
                         <Border
                             Height="35"
@@ -262,11 +262,11 @@
                             CornerRadius="8">
                             <Border.Style>
                                 <Style TargetType="Border">
-                                    <Setter Property="Background" Value="{StaticResource Light.BgInputBrush}" />
-                                    <Setter Property="BorderBrush" Value="{StaticResource Light.BorderDefaultBrush}" />
+                                    <Setter Property="Background" Value="{DynamicResource Light.BgInputBrush}" />
+                                    <Setter Property="BorderBrush" Value="{DynamicResource Light.BorderDefaultBrush}" />
                                     <Style.Triggers>
                                         <Trigger Property="IsKeyboardFocusWithin" Value="True">
-                                            <Setter Property="BorderBrush" Value="{StaticResource Light.BorderFocusBrush}" />
+                                            <Setter Property="BorderBrush" Value="{DynamicResource Light.BorderFocusBrush}" />
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>
@@ -277,7 +277,7 @@
                                     Background="Transparent"
                                     BorderThickness="0"
                                     FontSize="15"
-                                    Foreground="{StaticResource Light.TextPrimaryBrush}"
+                                    Foreground="{DynamicResource Light.TextPrimaryBrush}"
                                     KeyDown="TBUserPassord_KeyDown"
                                     PasswordChanged="PBUserPassord_PasswordChanged"
                                     Template="{StaticResource InnerPasswordBox}" />
@@ -286,7 +286,7 @@
                                     Background="Transparent"
                                     BorderThickness="0"
                                     FontSize="15"
-                                    Foreground="{StaticResource Light.TextPrimaryBrush}"
+                                    Foreground="{DynamicResource Light.TextPrimaryBrush}"
                                     KeyDown="TBLoginPassShow_KeyDown"
                                     Template="{StaticResource InnerTextBox}"
                                     TextChanged="TBLoginPassShow_TextChanged"
@@ -304,7 +304,7 @@
                                         <Path
                                             x:Name="LoginEyePath"
                                             Data="{StaticResource IconEye}"
-                                            Fill="{StaticResource Light.TextMutedBrush}" />
+                                            Fill="{DynamicResource Light.TextMutedBrush}" />
                                     </Viewbox>
                                 </Button>
                             </Grid>
@@ -314,23 +314,23 @@
                             x:Name="LoginButton"
                             Height="40"
                             Margin="0,0,0,10"
-                            Background="{StaticResource Light.AccentPrimaryBrush}"
+                            Background="{DynamicResource Light.AccentPrimaryBrush}"
                             Click="Button_Click"
                             Content="Войти"
                             FontSize="16"
                             FontWeight="Bold"
-                            Foreground="{StaticResource Light.TextInverseBrush}"
+                            Foreground="{DynamicResource Light.TextInverseBrush}"
                             Template="{StaticResource PrimaryButtonTemplate}" />
 
                         <Button
                             x:Name="RegisterButton"
                             Height="35"
-                            BorderBrush="{StaticResource Light.BorderDefaultBrush}"
+                            BorderBrush="{DynamicResource Light.BorderDefaultBrush}"
                             BorderThickness="1"
                             Click="RegisterButton_Click"
                             Content="Регистрация"
                             FontSize="14"
-                            Foreground="{StaticResource Light.TextSecondaryBrush}"
+                            Foreground="{DynamicResource Light.TextSecondaryBrush}"
                             Template="{StaticResource SecondaryButtonTemplate}" />
                     </StackPanel>
                 </Grid>
@@ -368,8 +368,8 @@
             <Border
                 x:Name="RegistrationBorder"
                 Padding="20"
-                Background="{StaticResource Light.BgPrimaryBrush}"
-                BorderBrush="{StaticResource Light.BorderDefaultBrush}"
+                Background="{DynamicResource Light.BgPrimaryBrush}"
+                BorderBrush="{DynamicResource Light.BorderDefaultBrush}"
                 BorderThickness="1"
                 CornerRadius="20">
                 <Border.Effect>
@@ -429,7 +429,7 @@
                                 Height="68"
                                 Margin="0,0,0,18"
                                 HorizontalAlignment="Center"
-                                Background="{StaticResource Light.AccentPrimaryBrush}"
+                                Background="{DynamicResource Light.AccentPrimaryBrush}"
                                 CornerRadius="34">
                                 <Viewbox Width="34" Height="34">
                                     <Path Data="{StaticResource IconCheck}" Fill="White" />
@@ -440,12 +440,12 @@
                                 HorizontalAlignment="Center"
                                 FontSize="22"
                                 FontWeight="SemiBold"
-                                Foreground="{StaticResource Light.TextPrimaryBrush}"
+                                Foreground="{DynamicResource Light.TextPrimaryBrush}"
                                 Text="Аккаунт создан!" />
                             <TextBlock
                                 HorizontalAlignment="Center"
                                 FontSize="13"
-                                Foreground="{StaticResource Light.TextMutedBrush}"
+                                Foreground="{DynamicResource Light.TextMutedBrush}"
                                 Text="Переходим на страницу входа…" />
                         </StackPanel>
                     </Border>
@@ -464,34 +464,34 @@
                             HorizontalAlignment="Center"
                             FontSize="28"
                             FontWeight="SemiBold"
-                            Foreground="{StaticResource Light.TextPrimaryBrush}"
+                            Foreground="{DynamicResource Light.TextPrimaryBrush}"
                             Text="Регистрация" />
 
-                        <TextBlock Foreground="{StaticResource Light.TextSecondaryBrush}" Text="Имя" />
+                        <TextBlock Foreground="{DynamicResource Light.TextSecondaryBrush}" Text="Имя" />
                         <TextBox
                             x:Name="TBUserName"
                             Height="35"
                             Margin="0,5,0,15"
-                            Background="{StaticResource Light.BgInputBrush}"
-                            BorderBrush="{StaticResource Light.BorderDefaultBrush}"
+                            Background="{DynamicResource Light.BgInputBrush}"
+                            BorderBrush="{DynamicResource Light.BorderDefaultBrush}"
                             FontSize="15"
-                            Foreground="{StaticResource Light.TextPrimaryBrush}"
+                            Foreground="{DynamicResource Light.TextPrimaryBrush}"
                             KeyDown="TextBox_KeyDown"
                             Template="{StaticResource TextBoxBaseControlTemplate}" />
 
-                        <TextBlock Foreground="{StaticResource Light.TextSecondaryBrush}" Text="Логин" />
+                        <TextBlock Foreground="{DynamicResource Light.TextSecondaryBrush}" Text="Логин" />
                         <TextBox
                             x:Name="TBUserNameLogin"
                             Height="35"
                             Margin="0,5,0,15"
-                            Background="{StaticResource Light.BgInputBrush}"
-                            BorderBrush="{StaticResource Light.BorderDefaultBrush}"
+                            Background="{DynamicResource Light.BgInputBrush}"
+                            BorderBrush="{DynamicResource Light.BorderDefaultBrush}"
                             FontSize="15"
-                            Foreground="{StaticResource Light.TextPrimaryBrush}"
+                            Foreground="{DynamicResource Light.TextPrimaryBrush}"
                             KeyDown="TextBox_KeyDown"
                             Template="{StaticResource TextBoxBaseControlTemplate}" />
 
-                        <TextBlock Foreground="{StaticResource Light.TextSecondaryBrush}" Text="Пароль" />
+                        <TextBlock Foreground="{DynamicResource Light.TextSecondaryBrush}" Text="Пароль" />
                         <Border
                             Height="35"
                             Margin="0,5,0,15"
@@ -499,11 +499,11 @@
                             CornerRadius="8">
                             <Border.Style>
                                 <Style TargetType="Border">
-                                    <Setter Property="Background" Value="{StaticResource Light.BgInputBrush}" />
-                                    <Setter Property="BorderBrush" Value="{StaticResource Light.BorderDefaultBrush}" />
+                                    <Setter Property="Background" Value="{DynamicResource Light.BgInputBrush}" />
+                                    <Setter Property="BorderBrush" Value="{DynamicResource Light.BorderDefaultBrush}" />
                                     <Style.Triggers>
                                         <Trigger Property="IsKeyboardFocusWithin" Value="True">
-                                            <Setter Property="BorderBrush" Value="{StaticResource Light.BorderFocusBrush}" />
+                                            <Setter Property="BorderBrush" Value="{DynamicResource Light.BorderFocusBrush}" />
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>
@@ -514,7 +514,7 @@
                                     Background="Transparent"
                                     BorderThickness="0"
                                     FontSize="14"
-                                    Foreground="{StaticResource Light.TextPrimaryBrush}"
+                                    Foreground="{DynamicResource Light.TextPrimaryBrush}"
                                     KeyDown="PasswordBox_KeyDown"
                                     PasswordChanged="PBUserPassword_PasswordChanged"
                                     Template="{StaticResource InnerPasswordBox}" />
@@ -523,7 +523,7 @@
                                     Background="Transparent"
                                     BorderThickness="0"
                                     FontSize="14"
-                                    Foreground="{StaticResource Light.TextPrimaryBrush}"
+                                    Foreground="{DynamicResource Light.TextPrimaryBrush}"
                                     KeyDown="TBRegPassShow_KeyDown"
                                     Template="{StaticResource InnerTextBox}"
                                     TextChanged="TBRegPassShow_TextChanged"
@@ -541,13 +541,13 @@
                                         <Path
                                             x:Name="RegEyePath"
                                             Data="{StaticResource IconEye}"
-                                            Fill="{StaticResource Light.TextMutedBrush}" />
+                                            Fill="{DynamicResource Light.TextMutedBrush}" />
                                     </Viewbox>
                                 </Button>
                             </Grid>
                         </Border>
 
-                        <TextBlock Foreground="{StaticResource Light.TextSecondaryBrush}" Text="Подтвердите пароль" />
+                        <TextBlock Foreground="{DynamicResource Light.TextSecondaryBrush}" Text="Подтвердите пароль" />
                         <Border
                             Height="35"
                             Margin="0,5,0,25"
@@ -555,11 +555,11 @@
                             CornerRadius="8">
                             <Border.Style>
                                 <Style TargetType="Border">
-                                    <Setter Property="Background" Value="{StaticResource Light.BgInputBrush}" />
-                                    <Setter Property="BorderBrush" Value="{StaticResource Light.BorderDefaultBrush}" />
+                                    <Setter Property="Background" Value="{DynamicResource Light.BgInputBrush}" />
+                                    <Setter Property="BorderBrush" Value="{DynamicResource Light.BorderDefaultBrush}" />
                                     <Style.Triggers>
                                         <Trigger Property="IsKeyboardFocusWithin" Value="True">
-                                            <Setter Property="BorderBrush" Value="{StaticResource Light.BorderFocusBrush}" />
+                                            <Setter Property="BorderBrush" Value="{DynamicResource Light.BorderFocusBrush}" />
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>
@@ -570,7 +570,7 @@
                                     Background="Transparent"
                                     BorderThickness="0"
                                     FontSize="14"
-                                    Foreground="{StaticResource Light.TextPrimaryBrush}"
+                                    Foreground="{DynamicResource Light.TextPrimaryBrush}"
                                     KeyDown="PasswordBox_KeyDown"
                                     PasswordChanged="PBUserPasswordConfirm_PasswordChanged"
                                     Template="{StaticResource InnerPasswordBox}" />
@@ -579,7 +579,7 @@
                                     Background="Transparent"
                                     BorderThickness="0"
                                     FontSize="14"
-                                    Foreground="{StaticResource Light.TextPrimaryBrush}"
+                                    Foreground="{DynamicResource Light.TextPrimaryBrush}"
                                     KeyDown="TBRegConfirmPassShow_KeyDown"
                                     Template="{StaticResource InnerTextBox}"
                                     TextChanged="TBRegConfirmPassShow_TextChanged"
@@ -597,7 +597,7 @@
                                         <Path
                                             x:Name="RegConfirmEyePath"
                                             Data="{StaticResource IconEye}"
-                                            Fill="{StaticResource Light.TextMutedBrush}" />
+                                            Fill="{DynamicResource Light.TextMutedBrush}" />
                                     </Viewbox>
                                 </Button>
                             </Grid>
@@ -607,23 +607,23 @@
                             x:Name="DoRegisterButton"
                             Height="40"
                             Margin="0,0,0,10"
-                            Background="{StaticResource Light.AccentPrimaryBrush}"
+                            Background="{DynamicResource Light.AccentPrimaryBrush}"
                             Click="DoRegisterButton_Click"
                             Content="Зарегистрироваться"
                             FontSize="16"
                             FontWeight="Bold"
-                            Foreground="{StaticResource Light.TextInverseBrush}"
+                            Foreground="{DynamicResource Light.TextInverseBrush}"
                             Template="{StaticResource PrimaryButtonTemplate}" />
 
                         <Button
                             x:Name="BackButton"
                             Height="35"
-                            BorderBrush="{StaticResource Light.BorderDefaultBrush}"
+                            BorderBrush="{DynamicResource Light.BorderDefaultBrush}"
                             BorderThickness="1"
                             Click="BackButton_Click"
                             Content="Назад"
                             FontSize="14"
-                            Foreground="{StaticResource Light.TextSecondaryBrush}"
+                            Foreground="{DynamicResource Light.TextSecondaryBrush}"
                             Template="{StaticResource SecondaryButtonTemplate}" />
                     </StackPanel>
                 </Grid>

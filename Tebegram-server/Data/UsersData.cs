@@ -47,7 +47,24 @@ namespace TebegramServer.Data
         public static User? FindUserByUsername(string username)
         {
             return Users.FirstOrDefault(user => user.Username == username);
-        }   
+        }
+
+        /// <summary>
+        /// Поиск по подстроке логина или имени (для глобального поиска через @).
+        /// Порядок: точное совпадение логина → логин начинается с запроса → остальные вхождения.
+        /// </summary>
+        public static List<User> FindUsers(string query, int limit = 20)
+        {
+            string q = query.ToLowerInvariant();
+            return Users.ToList()
+                .Where(u => (u.Username?.ToLowerInvariant().Contains(q) ?? false)
+                         || (u.Name?.ToLowerInvariant().Contains(q) ?? false))
+                .OrderBy(u => u.Username.ToLowerInvariant() == q ? 0
+                            : u.Username.ToLowerInvariant().StartsWith(q) ? 1 : 2)
+                .ThenBy(u => u.Username, StringComparer.OrdinalIgnoreCase)
+                .Take(limit)
+                .ToList();
+        }
         
         public static void AddUser(User user)
         {
@@ -61,6 +78,21 @@ namespace TebegramServer.Data
         public static int GetNextUserId()
         {
             return Users.Any() ? Users.Max(u => u.Id) + 1 : 1;
+        }
+
+        /// <summary>
+        /// Сбрасывает токен звонка у ВСЕХ участников: у звонившего он хранится как «token»,
+        /// у вызываемого — как «caller▫token». Иначе после завершения звонка токен зависал
+        /// у второй стороны (фантомный входящий звонок).
+        /// </summary>
+        public static void ClearCallTokens(string token)
+        {
+            if (string.IsNullOrEmpty(token)) return;
+            foreach (var user in Users.ToList())
+            {
+                if (user.CallToken == token || (user.CallToken?.EndsWith($"▫{token}") ?? false))
+                    user.CallToken = "";
+            }
         }
         
         // Метод для принудительной инициализации данных перед запуском сервера
@@ -117,6 +149,7 @@ namespace TebegramServer.Data
                                     Text = message.Text,
                                     Time = message.Time, // Время храним как есть — конвертация ломала формат и сдвигала часы
                                     MessageType = message.MessageType.ToString(),
+                                    ServerAdress = message.ServerAdress ?? "", // без него фото после рестарта сервера теряли URL
                                     MessageString = message.ToString() // Используем ToString() из Message
                                 }).ToList()
                             }).ToList()
@@ -184,6 +217,7 @@ namespace TebegramServer.Data
                                 Text = message.Text,
                                 Time = message.Time,
                                 MessageType = message.MessageType.ToString(),
+                                ServerAdress = message.ServerAdress ?? "",
                                 MessageString = message.ToString()
                             }).ToList()
                         }).ToList()
@@ -238,7 +272,10 @@ namespace TebegramServer.Data
                                 foreach (var messageData in contactData.Messages)
                                 {
                                     var messageType = Enum.TryParse<MessageType>(messageData.MessageType, out var type) ? type : MessageType.Text;
-                                    messages.Add(new Message(messageData.Sender, messageData.Recipient, messageData.Text, messageData.Time, messageType));
+                                    // ServerAdress восстанавливаем — раньше терялся, и фото после
+                                    // рестарта сервера приходили клиентам с пустым URL (пустые пузыри)
+                                    string? serverAdress = string.IsNullOrEmpty(messageData.ServerAdress) ? null : messageData.ServerAdress;
+                                    messages.Add(new Message(messageData.Sender, messageData.Recipient, messageData.Text, messageData.Time, messageType, serverAdress));
                                 }
                                 
                                 contacts.Add(new Contact(contactData.Id,contactData.Username, contactData.Name, messages));
@@ -296,6 +333,7 @@ namespace TebegramServer.Data
             public string Text { get; set; } = "";
             public string Time { get; set; } = "";
             public string MessageType { get; set; } = "Text";
+            public string ServerAdress { get; set; } = ""; // URL файла (для File-сообщений)
             public string MessageString { get; set; } = "";
         }
     }

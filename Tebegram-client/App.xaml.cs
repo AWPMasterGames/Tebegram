@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using Tebegrammmm.Classes;
+using Tebegrammmm.Data;
 
 namespace Tebegrammmm
 {
@@ -18,6 +20,23 @@ namespace Tebegrammmm
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+
+            // Применяем тему до показа окон.
+            // Вызываем ВСЕГДА (даже для светлой) — так кисти темы заменяются на
+            // изменяемые (не замороженные) экземпляры ДО загрузки окон, и последующее
+            // переключение применяется вживую ко всем уже открытым окнам.
+            try
+            {
+                AppPaths.EnsureDir();
+                bool savedDark = false;
+                if (File.Exists(AppPaths.ThemeDataFile))
+                    bool.TryParse(File.ReadAllText(AppPaths.ThemeDataFile), out savedDark);
+                ThemeManager.Apply(savedDark, animate: false);
+            }
+            catch (Exception ex)
+            {
+                Log.Save($"[App] Не удалось применить тему: {ex.Message}");
+            }
 
             DispatcherUnhandledException += (s, args) =>
             {

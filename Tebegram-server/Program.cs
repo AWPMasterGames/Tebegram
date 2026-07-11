@@ -12,8 +12,10 @@ using TebegramServer.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Настройка порта
-builder.WebHost.UseUrls("https://localhost:5000");
+// Привязка порта задаётся в appsettings.json (Kestrel:Endpoints → http://0.0.0.0:5000).
+// Раньше здесь стоял UseUrls("https://localhost:5000"), но Kestrel:Endpoints его молча
+// переопределял, из-за чего порт 5000 фактически слушал HTTP, а конфиг ложно обещал HTTPS —
+// это путало настройку devtunnel и приводило к зависанию соединения (красная лампочка).
 
 // CORS — нужен веб-клиенту (GitHub Pages / PWA), десктопному клиенту не мешает
 builder.Services.AddCors(options =>
@@ -52,7 +54,15 @@ if (webRoot != null)
 {
     var webFileProvider = new PhysicalFileProvider(webRoot);
     app.UseDefaultFiles(new DefaultFilesOptions { FileProvider = webFileProvider, RequestPath = "/app" });
-    app.UseStaticFiles(new StaticFileOptions { FileProvider = webFileProvider, RequestPath = "/app" });
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = webFileProvider,
+        RequestPath = "/app",
+        // no-cache: браузеры (особенно iPhone) неделями держали старые app.js/index.html
+        // в эвристическом HTTP-кэше — обновления «не доезжали» до пользователей.
+        // Файлы маленькие, перепроверка на каждый запуск не мешает.
+        OnPrepareResponse = ctx => ctx.Context.Response.Headers.CacheControl = "no-cache"
+    });
     Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Веб-клиент доступен по /app (папка: {webRoot})");
 }
 
@@ -217,6 +227,26 @@ app.MapGet("/register/{UserLogin}-{UserPassword}-{Username}-{Name}", async (Http
         await Context.Response.WriteAsync(NewUser.ToClientSend());
         Logs.Save($"Пользователь {UserLogin} зарегрестрировался");
     }
+});
+
+// Глобальный поиск пользователей по подстроке логина/имени (для поиска через @).
+// Ответ: id▫username▫name❂id▫username▫name❂…  Точное совпадение логина — первым.
+app.MapGet("/Users/find/{query}", async (HttpContext Context, string query) =>
+{
+    string q = query.Trim().TrimStart('@');
+    if (q.Length < 2)
+    {
+        await Context.Response.WriteAsync("");
+        return;
+    }
+
+    StringBuilder sb = new StringBuilder();
+    foreach (User found in UsersData.FindUsers(q))
+    {
+        if (sb.Length > 0) sb.Append('❂');
+        sb.Append($"{found.Id}▫{found.Username}▫{found.Name}");
+    }
+    await Context.Response.WriteAsync(sb.ToString());
 });
 
 app.MapGet("/UserName/{username}", async (HttpContext Context, string username) =>
@@ -541,6 +571,9 @@ app.MapGet("/Voice/DeclineCall/{userId:int}-{token}", async (HttpContext Context
     User? user = UsersData.FindUserById(userId);
 
     if (user != null) user.CallToken = "";
+
+    // Токен зависал у второй стороны звонка — чистим у всех участников
+    UsersData.ClearCallTokens(token);
 
     // Комната могла уже быть удалена — раньше тут падал KeyNotFoundException
     if (VoiceRoomsController.VoiceRooms.TryGetValue(token, out var room))

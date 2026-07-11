@@ -11,6 +11,10 @@
             <!--  Конвертер подписи даты для разделителей сообщений  -->
             <classes:DateKeyToLabelConverter x:Key="DateKeyToLabel" />
 
+            <!--  Время в одну строку с коротким текстом сообщения  -->
+            <classes:InlineTimeConverter x:Key="InlineTime" />
+            <BooleanToVisibilityConverter x:Key="BoolToVis" />
+
             <!--  Единый шрифт приложения: Segoe UI Variable (Win11), Segoe UI (Win10)  -->
             <Style TargetType="TextBlock">
                 <Setter Property="FontFamily" Value="Segoe UI Variable, Segoe UI" />

@@ -43,6 +43,7 @@ namespace Tebegrammmm
         {
             InitializeComponent();
             LoadStyle();
+            _fullChatsTemplate = LBChats.ItemTemplate; // сохраняем полный шаблон для переключения режимов
             GridMessege.Visibility = Visibility.Collapsed;
             GridContactPanel.Visibility = Visibility.Collapsed;
 
@@ -165,10 +166,8 @@ namespace Tebegrammmm
 
         private void LoadStyle()
         {
-            //LinearGradientBrush LGB = (LinearGradientBrush)this.TryFindResource("ChatBackground");
-            ResourceDictionary resourceDictionary = new ResourceDictionary();
-
-            LBMessages.Background = (RadialGradientBrush)this.TryFindResource("ChatBackground");
+            // Фон чата теперь задаётся в XAML (сплошной по теме + узор-обои),
+            // раньше здесь принудительно ставился тёмный градиент даже в светлой теме.
         }
 
         private async void GetCallToken()
@@ -190,7 +189,13 @@ namespace Tebegrammmm
                         if (Content != "NotFound")
                         {
                             string[] data = Content.Split('▫');
-                            //MessageBox.Show($"{Contact}");
+                            if (data.Length < 2)
+                            {
+                                // Свой же токен исходящего звонка (без ▫) — это не входящий звонок.
+                                // Раньше data[1] бросал IndexOutOfRange и убивал поток опроса звонков.
+                                Thread.Sleep(1500);
+                                continue;
+                            }
                             string CallerUsername = data[0];
                             string token = data[1];
 
@@ -212,8 +217,10 @@ namespace Tebegrammmm
                             }
                         }
                     }
-                    catch (HttpRequestException ex)
+                    catch (HttpRequestException)
                     {
+                        // Сервер недоступен — ждём, иначе цикл долбит его без паузы
+                        Thread.Sleep(3000);
                         continue;
                     }
                     // задержка перед новым запросом
@@ -331,6 +338,9 @@ namespace Tebegrammmm
             {
                 using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/UserName/{messageData[0]}");
                 using HttpResponseMessage response = await httpClient.SendAsync(request);
+                // Отправитель мог быть удалён на сервере — иначе int.Parse ниже падал
+                // с «Необработанной ошибкой» на тексте «Пользователь не найден»
+                if (!response.IsSuccessStatusCode) return;
                 string[] content = (await response.Content.ReadAsStringAsync()).Split("▫");
                 Contact contact = new Contact(int.Parse(content[0]), messageData[0], content[1]);
                 if (messageData[2] == "Text")
@@ -706,10 +716,13 @@ namespace Tebegrammmm
                     {
                         for (int j = 0; j < UserData.User.ChatsFolders[i].Contacts.Count; j++)
                         {
-                            if (UserData.User.ChatsFolders[i].Contacts[j].Name == contact.Name)
+                            // Сравниваем по Username (уникален), а не по отображаемому имени —
+                            // иначе удалялся чужой контакт с таким же именем
+                            if (UserData.User.ChatsFolders[i].Contacts[j].Username == contact.Username)
                             {
                                 UserData.User.ChatsFolders[i].Contacts[j].Messages.Clear();
                                 UserData.User.ChatsFolders[i].Contacts.RemoveAt(j);
+                                j--; // после RemoveAt следующий элемент сдвигается на место j
                             }
                         }
                     }
@@ -826,7 +839,7 @@ namespace Tebegrammmm
                     GridChat.DataContext = Contact;
                     TBChat_Name.Text = Contact.Name;
 
-                    MessageBox.Show("Имя контакта изменено");
+                    // Системное окно «Имя контакта изменено» убрано — новое имя сразу видно в списке
                     Log.Save($"[ContactEdit] Контакт изменен: {oldName} -> {Contact.Name}");
                 }
             }
@@ -839,24 +852,26 @@ namespace Tebegrammmm
 
         private void Button_Click_ContactRedact(object sender, RoutedEventArgs e)
         {
-            if (LBChats.SelectedItem == null)
-            {
-                return;
-            }
-            // Сохраняем старое имя до изменения
+            if (Contact == null) return;
+
             string oldName = Contact.Name;
+            Contact target = Contact;
 
-            // Используем специальное окно для редактирования имени
-            EditContactNameWindow editWindow = new EditContactNameWindow(Contact);
+            EditContactNameWindow editWindow = new EditContactNameWindow(target);
+            if (editWindow.ShowDialog() != true) return;
 
-            if (editWindow.ShowDialog() == true)
+            if (editWindow.DeleteRequested)
             {
-
+                // Удаление контакта перенесено сюда из шапки чата
+                GridContactPanel.Visibility = Visibility.Collapsed;
+                GridMessege.Visibility = Visibility.Collapsed;
+                EmptyChatPlaceholder.Visibility = Visibility.Visible;
+                SendRemoveContactRequest(target);
+            }
+            else
+            {
                 SendEditContactRequest(editWindow.NewName, oldName);
             }
-
-
-
         }
 
         private async void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -965,7 +980,8 @@ namespace Tebegrammmm
             using var response = await httpClient.PostAsync($"{ServerData.ServerAdress}/upload", multipar);
             var ResponseText = await response.Content.ReadAsStringAsync();
             this.Dispatcher.Invoke(new Action(() => { SendMessage(Path.GetFileName(filePath).Replace(" ", "_"), MessageType.File, $"{ServerData.ServerAdress}/upload/{Path.GetFileName(filePath).Replace(" ", "_")}"); }));
-            MessageBox.Show(ResponseText);
+            // Системное окно с ответом сервера (именем файла) убрано — файл и так появляется в чате
+            Log.Save($"[SendFileToServer] Загружен файл: {ResponseText}");
         }
 
         private async void Button_Click_SelectFile(object sender, RoutedEventArgs e)
@@ -984,6 +1000,16 @@ namespace Tebegrammmm
             await SendFileToServer(fileDialog.FileName);
         }
 
+        // Открытые окна просмотра фото (чтобы одно фото не открывалось дважды)
+        private readonly System.Collections.Generic.Dictionary<string, ImageViewerWindow> _openImageViewers = new();
+
+        private static bool IsImageFile(string name)
+        {
+            string ext = Path.GetExtension(name ?? "").ToLowerInvariant();
+            return ext == ".png" || ext == ".jpg" || ext == ".jpeg"
+                || ext == ".gif" || ext == ".bmp" || ext == ".webp";
+        }
+
         private async void LBMessages_SelectionChangeMessage(object sender, SelectionChangedEventArgs e)
         {
             if (LBMessages.SelectedItem == null)
@@ -991,32 +1017,63 @@ namespace Tebegrammmm
                 LBMessages.SelectedIndex = -1;
                 return;
             }
-            else if ((LBMessages.SelectedItem as Message).MessageType == MessageType.File)
-            {
-                OpenFolderDialog openFolderDialog = new OpenFolderDialog();
 
-                if (openFolderDialog.ShowDialog() != true || string.IsNullOrWhiteSpace(openFolderDialog.FolderName))
+            Message msg = LBMessages.SelectedItem as Message;
+            LBMessages.SelectedIndex = -1; // сбрасываем выделение, чтобы повторный клик срабатывал
+
+            if (msg == null || msg.MessageType != MessageType.File) return;
+
+            // ПКМ тоже выделяет элемент ListBox — но правый клик должен открывать
+            // только контекстное меню, а не просмотрщик/скачивание
+            if (Mouse.RightButton == MouseButtonState.Pressed) return;
+
+            // Фото — открываем во встроенном просмотрщике (зум, вписывание)
+            if (IsImageFile(msg.Text))
+            {
+                string fileUrl = msg.FileUrl;
+                if (_openImageViewers.TryGetValue(fileUrl, out var existing))
                 {
-                    MessageBox.Show("Ошибка сервера");
+                    if (existing.WindowState == WindowState.Minimized) existing.WindowState = WindowState.Normal;
+                    existing.Activate();
                     return;
                 }
+                var viewer = new ImageViewerWindow(fileUrl, msg.Text);
+                viewer.Closed += (_, __) => _openImageViewers.Remove(fileUrl);
+                _openImageViewers[fileUrl] = viewer;
+                viewer.Show();
+                return;
+            }
 
-                string fileName = (LBMessages.SelectedItem as Message).Text;
-                var fileUrl = $"{ServerData.ServerAdress}/upload/{fileName}";
+            // Прочие файлы — скачиваем в выбранную папку
+            await DownloadFileAsync(msg);
+        }
 
-                try
-                {
-                    using var response = await httpClient.GetStreamAsync(fileUrl);
-                    using var fs = new FileStream($"{openFolderDialog.FolderName}/{fileName}", FileMode.OpenOrCreate);
-                    await response.CopyToAsync(fs);
+        /// <summary>ПКМ по фото/файлу → «Сохранить»: выбор папки и скачивание.</summary>
+        private void SaveFile_Click(object sender, RoutedEventArgs e)
+            => _ = DownloadFileAsync(MessageFromMenu(sender));
 
-                    MessageBox.Show($"Файл {fileName} скачен");
-                }
-                catch (Exception ex)
-                {
-                    Log.Save($"[LBMessages_SelectionChangeMessage] Error: {ex.Message}");
-                    MessageBox.Show($"Ошибка при скачивании файла\nПодробнее от ошибке можно узнать в краш логах");
-                }
+        private async Task DownloadFileAsync(Message msg)
+        {
+            if (msg == null || msg.MessageType != MessageType.File) return;
+
+            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            if (openFolderDialog.ShowDialog() != true || string.IsNullOrWhiteSpace(openFolderDialog.FolderName))
+                return;
+
+            try
+            {
+                using var response = await httpClient.GetStreamAsync(msg.FileUrl);
+                // FileMode.Create вместо OpenOrCreate: перезапись более длинного старого файла
+                // не оставляет «хвост» из его прежних байтов
+                using var fs = new FileStream(Path.Combine(openFolderDialog.FolderName, msg.Text), FileMode.Create);
+                await response.CopyToAsync(fs);
+
+                Log.Save($"[DownloadFile] Файл {msg.Text} сохранён в {openFolderDialog.FolderName}");
+            }
+            catch (Exception ex)
+            {
+                Log.Save($"[DownloadFile] Error: {ex.Message}");
+                MessageBox.Show($"Ошибка при скачивании файла\nПодробнее об ошибке можно узнать в краш логах");
             }
         }
 
@@ -1057,7 +1114,11 @@ namespace Tebegrammmm
         private bool _IsInSearch = false;
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(SearchContactBarTB.Text) || string.IsNullOrEmpty(SearchContactBarTB.Text))
+            // Плейсхолдер прячем, когда есть текст
+            if (SearchPlaceholder != null)
+                SearchPlaceholder.Visibility = string.IsNullOrEmpty(SearchContactBarTB.Text) ? Visibility.Visible : Visibility.Collapsed;
+
+            if (string.IsNullOrWhiteSpace(SearchContactBarTB.Text))
             {
                 if (_IsInSearch)
                 {
@@ -1070,18 +1131,108 @@ namespace Tebegrammmm
                 _IsInSearch = true;
                 TempContacts = (LBChatsLoders.SelectedItem as ChatFolder).Contacts;
 
-                FindedContacts = new ObservableCollection<Contact>();
+                string q = SearchContactBarTB.Text.ToLower().TrimStart('@');
+
+                // Порядок выдачи: точное совпадение логина → логины, начинающиеся
+                // с запроса → остальные вхождения (в логине или имени) в конце
+                var exact = new System.Collections.Generic.List<Contact>();
+                var prefix = new System.Collections.Generic.List<Contact>();
+                var rest = new System.Collections.Generic.List<Contact>();
 
                 foreach (Contact contact in UserData.User.Contacts)
                 {
-                    if (contact.Name.ToLower().Contains(SearchContactBarTB.Text.ToLower()) || contact.Username.ToLower().Contains(SearchContactBarTB.Text.ToLower()))
-                    {
-                        FindedContacts.Add(contact);
-                    }
+                    string username = contact.Username?.ToLower() ?? "";
+                    string name = contact.Name?.ToLower() ?? "";
+
+                    if (username == q) exact.Add(contact);
+                    else if (username.StartsWith(q)) prefix.Add(contact);
+                    else if (username.Contains(q) || name.Contains(q)) rest.Add(contact);
                 }
 
+                FindedContacts = new ObservableCollection<Contact>(exact.Concat(prefix).Concat(rest));
                 LBChats.ItemsSource = FindedContacts;
             }
+        }
+
+        /// <summary>
+        /// Enter в поиске: открыть найденный контакт, либо найти НОВОГО пользователя
+        /// по логину (можно с @) на сервере и начать с ним чат.
+        /// </summary>
+        private async void SearchBar_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key != Key.Enter) return;
+
+            string query = SearchContactBarTB.Text.Trim().TrimStart('@');
+            if (string.IsNullOrEmpty(query)) return;
+
+            // Уже в контактах — просто открываем
+            Contact existing = UserData.User.FindContactByUsername(query);
+            if (existing != null)
+            {
+                OpenContact(existing);
+                SearchContactBarTB.Text = string.Empty;
+                return;
+            }
+
+            // Ищем нового пользователя на сервере и добавляем в контакты
+            bool ok = await SendAddNewContactRequest($"{UserData.User.Id}▫{query}▫");
+            if (ok)
+            {
+                Contact added = UserData.User.FindContactByUsername(query);
+                SearchContactBarTB.Text = string.Empty;
+                if (added != null) OpenContact(added);
+            }
+            // при 404 SendAddNewContactRequest сам покажет «не найден»
+        }
+
+        // ── Ширина списка чатов меняется перетаскиванием (GridSplitter) ──────
+        // Уже 140px — компактный режим «только аватарки», шире — полный список.
+        private const double CompactThreshold = 140;
+        private const double CompactWidth = 72;
+
+        private bool _compactChats = false;
+        private System.Windows.DataTemplate _fullChatsTemplate;
+
+        private void ChatListPanel_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            bool compact = e.NewSize.Width < CompactThreshold;
+            if (compact == _compactChats) return;
+            _compactChats = compact;
+
+            if (compact)
+            {
+                SearchBox.Visibility = Visibility.Collapsed;
+                LBChats.ItemTemplate = (System.Windows.DataTemplate)FindResource("LBChatsCompactTemplate");
+                SearchContactBarTB.Text = string.Empty; // сбрасываем поиск при сворачивании
+            }
+            else
+            {
+                SearchBox.Visibility = Visibility.Visible;
+                LBChats.ItemTemplate = _fullChatsTemplate;
+            }
+        }
+
+        private const double StandardWidth = 250;
+
+        private void ChatSplitter_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        {
+            // Два фиксатора: «только аватарки» (72) и стандартная ширина (250).
+            // Узкая зона прилипает к 72, зона вокруг стандартной — к 250, шире — свободно.
+            double w = ChatListColumn.ActualWidth;
+            if (w < CompactThreshold)
+                ChatListColumn.Width = new GridLength(CompactWidth);
+            else if (w < StandardWidth + 40)
+                ChatListColumn.Width = new GridLength(StandardWidth);
+        }
+
+        /// <summary>Сбрасывает поиск, переключает на «Все чаты» и открывает контакт.</summary>
+        private void OpenContact(Contact contact)
+        {
+            _IsInSearch = false;
+            LBChatsLoders.SelectedIndex = 0; // «Все чаты» — там точно есть новый контакт
+            LBChats.ItemsSource = UserData.User.ChatsFolders[0].Contacts;
+            LBChats.SelectedItem = contact;
+            LBChats.ScrollIntoView(contact);
         }
     }
 }

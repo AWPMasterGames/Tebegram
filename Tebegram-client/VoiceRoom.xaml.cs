@@ -352,6 +352,19 @@ namespace Tebegrammmm
             {
                 Log.Save($"[VoiceRoom.Closing] {ex.Message}");
             }
+            try
+            {
+                // Сообщаем серверу о завершении звонка при ЛЮБОМ закрытии окна (крестик,
+                // завершение вызова), а не только по кнопке «Отклонить» — иначе токены звонка
+                // зависают на сервере: у собеседника бесконечно всплывает входящий звонок,
+                // а у звонившего падает опрос GetCallToken. Повторный вызов безвреден.
+                using HttpRequestMessage declineRequest = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/Voice/DeclineCall/{UserData.User.Id}-{Token}");
+                using HttpResponseMessage declineResponse = await httpClient.SendAsync(declineRequest);
+            }
+            catch (Exception ex)
+            {
+                Log.Save($"[VoiceRoom.Closing] DeclineCall: {ex.Message}");
+            }
             UserData.User.InCall = false;
         }
 
