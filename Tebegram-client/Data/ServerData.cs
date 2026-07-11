@@ -7,7 +7,9 @@ namespace Tebegrammmm.Data
 {
     public static class ServerData
     {
-        private const string DefaultAdress = "https://localhost:5000";
+        // Локальный fallback, если адрес не удалось загрузить. Сервер слушает HTTP на 5000
+        // (TLS терминирует devtunnel), поэтому здесь именно http, а не https.
+        private const string DefaultAdress = "http://localhost:5000";
 
         /// <summary>
         /// Файл рядом с exe для ручного переопределения адреса (для локальных тестов).

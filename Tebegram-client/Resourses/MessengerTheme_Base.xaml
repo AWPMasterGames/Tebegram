@@ -14,4 +14,25 @@
         <GradientStop Offset="0.0" Color="#F0F4FF" />
         <GradientStop Offset="1.0" Color="#EAECF5" />
     </LinearGradientBrush>
+
+    <!--  Тонкий узор-обои области сообщений: сетка едва заметных точек.
+          Полупрозрачный нейтральный цвет одинаково деликатно ложится и на светлую,
+          и на тёмную тему (кладётся поверх сплошного фона темы).  -->
+    <DrawingBrush
+        x:Key="ChatPatternBrush"
+        Stretch="None"
+        TileMode="Tile"
+        Viewport="0,0,26,26"
+        ViewportUnits="Absolute">
+        <DrawingBrush.Drawing>
+            <GeometryDrawing Brush="#128A93A6">
+                <GeometryDrawing.Geometry>
+                    <EllipseGeometry
+                        Center="13,13"
+                        RadiusX="1.3"
+                        RadiusY="1.3" />
+                </GeometryDrawing.Geometry>
+            </GeometryDrawing>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
 </ResourceDictionary>

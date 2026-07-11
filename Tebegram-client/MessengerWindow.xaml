@@ -11,7 +11,7 @@
     Height="550"
     MinWidth="600"
     MinHeight="350"
-    Background="{StaticResource Light.BgDeepBrush}"
+    Background="{DynamicResource Light.BgDeepBrush}"
     Closing="Window_Closing"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
@@ -40,7 +40,7 @@
                                             <ControlTemplate TargetType="Thumb">
                                                 <Border
                                                     Margin="1,0"
-                                                    Background="{StaticResource Light.BorderStrongBrush}"
+                                                    Background="{DynamicResource Light.BorderStrongBrush}"
                                                     CornerRadius="3" />
                                             </ControlTemplate>
                                         </Thumb.Template>
@@ -88,17 +88,130 @@
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
+
+        <!--  Контекстное меню (скруглённое, в теме)  -->
+        <Style x:Key="TbgContextMenuStyle" TargetType="ContextMenu">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ContextMenu">
+                        <Border
+                            Padding="4"
+                            Background="{DynamicResource Light.BgSurfaceBrush}"
+                            BorderBrush="{DynamicResource Light.BorderDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="10">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="16" Opacity="0.16" ShadowDepth="3" Color="#000000" />
+                            </Border.Effect>
+                            <StackPanel IsItemsHost="True" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--  Обычный пункт меню (в теме, скруглённый ховер)  -->
+        <Style x:Key="TbgMenuItemStyle" TargetType="MenuItem">
+            <Setter Property="Foreground" Value="{DynamicResource Light.TextPrimaryBrush}" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Padding" Value="14,9" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="MenuItem">
+                        <Border
+                            x:Name="Bd"
+                            Padding="{TemplateBinding Padding}"
+                            Background="Transparent"
+                            CornerRadius="7">
+                            <ContentPresenter VerticalAlignment="Center" ContentSource="Header" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.BgElevatedBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--  Пункт меню удаления (красный, скруглённый ховер)  -->
+        <Style x:Key="TbgMenuItemDangerStyle" TargetType="MenuItem">
+            <Setter Property="Foreground" Value="{DynamicResource Light.DangerBrush}" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Padding" Value="14,9" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="MenuItem">
+                        <Border
+                            x:Name="Bd"
+                            Padding="{TemplateBinding Padding}"
+                            Background="Transparent"
+                            CornerRadius="7">
+                            <ContentPresenter VerticalAlignment="Center" ContentSource="Header" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.DangerMutedBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--  Компактный шаблон списка чатов: только аватар (режим «только аватарки»)  -->
+        <DataTemplate x:Key="LBChatsCompactTemplate">
+            <Grid
+                Width="46"
+                Height="46"
+                Margin="0,2"
+                HorizontalAlignment="Center"
+                ToolTip="{Binding Name}">
+                <Ellipse Fill="{DynamicResource Light.BgElevatedBrush}" />
+                <!--  Без отступов: круг глифа совпадает с кружком аватара  -->
+                <Viewbox Margin="0">
+                    <Path
+                        Data="{StaticResource IconDefaultAvatar}"
+                        Fill="{DynamicResource Light.TextMutedBrush}"
+                        Stretch="Uniform" />
+                </Viewbox>
+                <Ellipse>
+                    <Ellipse.Fill>
+                        <ImageBrush ImageSource="{Binding Avatar}" Stretch="UniformToFill" />
+                    </Ellipse.Fill>
+                </Ellipse>
+                <!--  «Избранное» — всегда постоянная закладка (поверх любого аватара)  -->
+                <Grid Visibility="{Binding IsFavorites, Converter={StaticResource BoolToVis}}">
+                    <Ellipse Fill="{DynamicResource Light.AccentPrimaryBrush}" />
+                    <!--  Холст 24×24 (родная сетка иконки) — закладка строго по центру круга  -->
+                    <Viewbox Margin="12">
+                        <Grid Width="24" Height="24">
+                            <Path Data="{StaticResource IconBookmark}" Fill="White" />
+                        </Grid>
+                    </Viewbox>
+                </Grid>
+                <Ellipse Stroke="{DynamicResource Light.BorderSubtleBrush}" StrokeThickness="1" />
+            </Grid>
+        </DataTemplate>
     </Window.Resources>
 
     <Grid Name="MainGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="80" />
-            <ColumnDefinition Width="250" />
+            <!--  Ширина меняется перетаскиванием (GridSplitter ниже); до 140px — режим «только аватарки»  -->
+            <ColumnDefinition
+                x:Name="ChatListColumn"
+                Width="250"
+                MinWidth="72"
+                MaxWidth="420" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
         <!--  Левая панель  -->
-        <Grid Background="{StaticResource Light.BgSurfaceBrush}">
+        <Grid Background="{DynamicResource Light.BgSurfaceBrush}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="50" />
                 <RowDefinition Height="auto" />
@@ -110,7 +223,7 @@
                 BorderBrush="Transparent"
                 Click="Button_Click_Settings">
                 <Viewbox Width="22" Height="22">
-                    <Path Data="{StaticResource IconSettings}" Fill="{StaticResource Light.TextSecondaryBrush}" />
+                    <Path Data="{StaticResource IconSettings}" Fill="{DynamicResource Light.TextSecondaryBrush}" />
                 </Viewbox>
             </Button>
             <ListBox
@@ -124,12 +237,14 @@
                         <Setter Property="Background" Value="Transparent" />
                         <Setter Property="BorderThickness" Value="0" />
                         <Setter Property="Padding" Value="4" />
+                        <!--  Stretch — иначе иконка центрируется по ширине текста папки, а не колонки  -->
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="{StaticResource Light.BgElevatedBrush}" />
+                                <Setter Property="Background" Value="{DynamicResource Light.BgElevatedBrush}" />
                             </Trigger>
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter Property="Background" Value="{StaticResource Light.AccentMutedBrush}" />
+                                <Setter Property="Background" Value="{DynamicResource Light.AccentMutedBrush}" />
                             </Trigger>
                         </Style.Triggers>
                     </Style>
@@ -137,16 +252,48 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel VerticalAlignment="Center">
+                            <!--  Системная папка «Все чаты» (IsCanRedact=False) — векторная иконка  -->
+                            <Viewbox
+                                Width="26"
+                                Height="26"
+                                HorizontalAlignment="Center">
+                                <Viewbox.Style>
+                                    <Style TargetType="Viewbox">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsCanRedact}" Value="False">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Viewbox.Style>
+                                <Path Data="{StaticResource IconAllChats}" Fill="{DynamicResource Light.TextSecondaryBrush}" />
+                            </Viewbox>
+                            <!--  Пользовательские папки — их эмодзи-иконка  -->
                             <TextBlock
                                 HorizontalAlignment="Center"
                                 FontSize="25"
-                                Foreground="{StaticResource Light.TextSecondaryBrush}"
-                                Text="{Binding Icon}" />
+                                Foreground="{DynamicResource Light.TextSecondaryBrush}"
+                                Text="{Binding Icon}"
+                                TextAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsCanRedact}" Value="False">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
                             <TextBlock
                                 HorizontalAlignment="Center"
-                                FontSize="15"
-                                Foreground="{StaticResource Light.TextSecondaryBrush}"
-                                Text="{Binding FolderName}" />
+                                FontSize="13"
+                                Foreground="{DynamicResource Light.TextSecondaryBrush}"
+                                Text="{Binding FolderName}"
+                                TextAlignment="Center"
+                                TextTrimming="CharacterEllipsis" />
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
@@ -157,7 +304,7 @@
                     Height="22"
                     VerticalAlignment="Center"
                     IsHitTestVisible="False">
-                    <Path Data="{StaticResource IconInfo}" Fill="{StaticResource Light.TextSecondaryBrush}" />
+                    <Path Data="{StaticResource IconInfo}" Fill="{DynamicResource Light.TextSecondaryBrush}" />
                 </Viewbox>
                 <Button
                     Height="50"
@@ -169,44 +316,39 @@
             </Grid>
         </Grid>
 
-        <!--  Список чатов  -->
-        <Grid Grid.Column="1" Background="{StaticResource Light.BgPrimaryBrush}">
+        <!--  Список чатов (ширина меняется перетаскиванием правой границы)  -->
+        <Grid
+            x:Name="ChatListPanel"
+            Grid.Column="1"
+            Background="{DynamicResource Light.BgPrimaryBrush}"
+            SizeChanged="ChatListPanel_SizeChanged">
             <Grid.RowDefinitions>
                 <RowDefinition Height="50" />
                 <RowDefinition />
             </Grid.RowDefinitions>
-            <StackPanel
-                Margin="10,0"
-                HorizontalAlignment="Right"
-                Orientation="Horizontal">
-                <TextBox
-                    Name="SearchContactBarTB"
-                    Width="165"
-                    Height="35"
-                    Margin="0,0,25,0"
-                    VerticalContentAlignment="Center"
-                    Background="{StaticResource Light.BgInputBrush}"
-                    FontSize="14"
-                    Foreground="{StaticResource Light.TextPrimaryBrush}"
-                    Template="{StaticResource TextBoxBaseControlTemplate}"
-                    TextChanged="TextBox_TextChanged"
-                    ToolTip="Поиск по контактам" />
-                <Button
-                    Background="Transparent"
-                    BorderBrush="Transparent"
-                    Click="Button_Click_AddContact">
-                    <Border
-                        Width="35"
-                        Height="35"
-                        BorderBrush="{StaticResource Light.BorderDefaultBrush}"
-                        BorderThickness="0"
-                        CornerRadius="20">
-                        <Viewbox Width="18" Height="18">
-                            <Path Data="{StaticResource IconAddUser}" Fill="{StaticResource Light.AccentTextBrush}" />
-                        </Viewbox>
-                    </Border>
-                </Button>
-            </StackPanel>
+            <Grid Margin="10,8">
+                <Grid x:Name="SearchBox">
+                    <TextBox
+                        Name="SearchContactBarTB"
+                        Height="34"
+                        VerticalContentAlignment="Center"
+                        Background="{DynamicResource Light.BgInputBrush}"
+                        FontSize="14"
+                        Foreground="{DynamicResource Light.TextPrimaryBrush}"
+                        KeyDown="SearchBar_KeyDown"
+                        Template="{StaticResource TextBoxBaseControlTemplate}"
+                        TextChanged="TextBox_TextChanged" />
+                    <!--  Плейсхолдер: поиск по контактам + поиск новых по @логину  -->
+                    <TextBlock
+                        x:Name="SearchPlaceholder"
+                        Margin="18,0,0,0"
+                        VerticalAlignment="Center"
+                        FontSize="14"
+                        Foreground="{DynamicResource Light.TextMutedBrush}"
+                        IsHitTestVisible="False"
+                        Text="@ для поиска" />
+                </Grid>
+            </Grid>
             <ListBox
                 x:Name="LBChats"
                 Grid.Row="1"
@@ -218,12 +360,14 @@
                         <Setter Property="Background" Value="Transparent" />
                         <Setter Property="BorderThickness" Value="0" />
                         <Setter Property="Padding" Value="6,4" />
+                        <!--  Stretch — чтобы в компактном режиме аватар центрировался по всей ширине колонки  -->
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="{StaticResource Light.BgElevatedBrush}" />
+                                <Setter Property="Background" Value="{DynamicResource Light.BgElevatedBrush}" />
                             </Trigger>
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter Property="Background" Value="{StaticResource Light.AccentMutedBrush}" />
+                                <Setter Property="Background" Value="{DynamicResource Light.AccentMutedBrush}" />
                             </Trigger>
                         </Style.Triggers>
                     </Style>
@@ -239,23 +383,44 @@
                                 <RowDefinition />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
-                            <Ellipse Grid.RowSpan="2" Fill="{StaticResource Light.BgDeepBrush}" />
-                            <Ellipse
+                            <!--  Аватар: фон + иконка по умолчанию + фото + рамка  -->
+                            <Grid
                                 Grid.RowSpan="2"
                                 Width="50"
                                 Height="50"
                                 HorizontalAlignment="Center">
-                                <Ellipse.Fill>
-                                    <ImageBrush ImageSource="{Binding Avatar}" Stretch="UniformToFill" />
-                                </Ellipse.Fill>
-                            </Ellipse>
+                                <Ellipse Fill="{DynamicResource Light.BgElevatedBrush}" />
+                                <!--  Без отступов: круг глифа совпадает с кружком аватара  -->
+                                <Viewbox Margin="0">
+                                    <Path
+                                        Data="{StaticResource IconDefaultAvatar}"
+                                        Fill="{DynamicResource Light.TextMutedBrush}"
+                                        Stretch="Uniform" />
+                                </Viewbox>
+                                <Ellipse>
+                                    <Ellipse.Fill>
+                                        <ImageBrush ImageSource="{Binding Avatar}" Stretch="UniformToFill" />
+                                    </Ellipse.Fill>
+                                </Ellipse>
+                                <!--  «Избранное» — всегда постоянная закладка (поверх любого аватара)  -->
+                                <Grid Visibility="{Binding IsFavorites, Converter={StaticResource BoolToVis}}">
+                                    <Ellipse Fill="{DynamicResource Light.AccentPrimaryBrush}" />
+                                    <!--  Холст 24×24 (родная сетка иконки) — закладка строго по центру круга  -->
+                                    <Viewbox Margin="13">
+                                        <Grid Width="24" Height="24">
+                                            <Path Data="{StaticResource IconBookmark}" Fill="White" />
+                                        </Grid>
+                                    </Viewbox>
+                                </Grid>
+                                <Ellipse Stroke="{DynamicResource Light.BorderSubtleBrush}" StrokeThickness="1" />
+                            </Grid>
                             <TextBlock
                                 Grid.RowSpan="2"
                                 Grid.Column="1"
                                 Height="50"
                                 Margin="10,0"
                                 FontSize="15"
-                                Foreground="{StaticResource Light.TextPrimaryBrush}"
+                                Foreground="{DynamicResource Light.TextPrimaryBrush}"
                                 Text="{Binding Name}"
                                 TextTrimming="CharacterEllipsis"
                                 TextWrapping="NoWrap" />
@@ -268,7 +433,7 @@
         <!--  Область чата  -->
         <Border
             Grid.Column="2"
-            BorderBrush="{StaticResource Light.BorderSubtleBrush}"
+            BorderBrush="{DynamicResource Light.BorderSubtleBrush}"
             BorderThickness="1,0,0,0">
             <Grid x:Name="GridChat">
                 <Grid.RowDefinitions>
@@ -279,56 +444,39 @@
 
                 <!--  Шапка чата  -->
                 <Border
-                    Background="{StaticResource Light.BgSurfaceBrush}"
-                    BorderBrush="{StaticResource Light.BorderSubtleBrush}"
+                    Background="{DynamicResource Light.BgSurfaceBrush}"
+                    BorderBrush="{DynamicResource Light.BorderSubtleBrush}"
                     BorderThickness="0,0,0,1">
-                    <Grid Name="GridContactPanel" Margin="10,5,0,0">
+                    <Grid Name="GridContactPanel" Margin="16,0,10,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
                             <ColumnDefinition Width="auto" />
                         </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
                         <TextBlock
                             Name="TBChat_Name"
-                            Margin="10,0"
-                            FontSize="15"
-                            Foreground="{StaticResource Light.TextPrimaryBrush}"
-                            Text="{Binding Name}" />
+                            VerticalAlignment="Center"
+                            FontSize="17"
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource Light.TextPrimaryBrush}"
+                            Text="{Binding Name}"
+                            TextTrimming="CharacterEllipsis"
+                            TextWrapping="NoWrap" />
                         <StackPanel
-                            Grid.RowSpan="2"
                             Grid.Column="1"
-                            Margin="5,-2,5,0"
+                            VerticalAlignment="Center"
                             Orientation="Horizontal">
                             <Button
                                 Background="Transparent"
                                 BorderBrush="Transparent"
-                                Click="Button_Click_CallContact">
+                                Click="Button_Click_CallContact"
+                                ToolTip="Позвонить">
                                 <Border
                                     Width="35"
                                     Height="35"
-                                    BorderBrush="Transparent"
-                                    BorderThickness="2"
+                                    Background="Transparent"
                                     CornerRadius="20">
                                     <Viewbox Width="20" Height="20">
-                                        <Path Data="{StaticResource IconPhone}" Fill="{StaticResource Light.AccentTextBrush}" />
-                                    </Viewbox>
-                                </Border>
-                            </Button>
-                            <Button
-                                Background="Transparent"
-                                BorderBrush="Transparent"
-                                Click="Button_Click_RemoveContact">
-                                <Border
-                                    Width="35"
-                                    Height="35"
-                                    BorderBrush="Transparent"
-                                    BorderThickness="2"
-                                    CornerRadius="20">
-                                    <Viewbox Width="18" Height="18">
-                                        <Path Data="{StaticResource IconRemoveUser}" Fill="{StaticResource Light.DangerBrush}" />
+                                        <Path Data="{StaticResource IconPhone}" Fill="{DynamicResource Light.AccentTextBrush}" />
                                     </Viewbox>
                                 </Border>
                             </Button>
@@ -336,19 +484,25 @@
                                 Width="40"
                                 Background="Transparent"
                                 BorderBrush="Transparent"
-                                Click="Button_Click_ContactRedact">
+                                Click="Button_Click_ContactRedact"
+                                ToolTip="Изменить контакт">
                                 <Viewbox Width="20" Height="20">
-                                    <Path Data="{StaticResource IconList}" Fill="{StaticResource Light.TextSecondaryBrush}" />
+                                    <Path Data="{StaticResource IconList}" Fill="{DynamicResource Light.TextSecondaryBrush}" />
                                 </Viewbox>
                             </Button>
                         </StackPanel>
                     </Grid>
                 </Border>
 
+                <!--  Фон чата: сплошной по теме + тонкий узор-обои (одинаково хорош в обеих темах)  -->
+                <Rectangle Grid.Row="1" Fill="{DynamicResource Light.BgDeepBrush}" />
+                <Rectangle Grid.Row="1" Fill="{StaticResource ChatPatternBrush}" />
+
                 <!--  Сообщения  -->
                 <ListBox
                     x:Name="LBMessages"
                     Grid.Row="1"
+                    Background="Transparent"
                     BorderThickness="0"
                     Padding="12,8"
                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -356,9 +510,6 @@
                     SelectionChanged="LBMessages_SelectionChangeMessage"
                     VirtualizingPanel.ScrollUnit="Pixel"
                     d:ItemsSource="{d:SampleData ItemCount=5}">
-                    <ListBox.Background>
-                        <StaticResource ResourceKey="ChatBackgroundLight" />
-                    </ListBox.Background>
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="ListBoxItem">
                             <Setter Property="Background" Value="Transparent" />
@@ -366,6 +517,18 @@
                             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                             <Setter Property="Padding" Value="0,3" />
+                            <!--  Голый шаблон без триггеров — убирает системную (синюю) подсветку
+                                  при наведении/выборе; клик по файлу продолжает работать  -->
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListBoxItem">
+                                        <ContentPresenter
+                                            Margin="{TemplateBinding Padding}"
+                                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
                         </Style>
                     </ListBox.ItemContainerStyle>
 
@@ -378,12 +541,12 @@
                                         Margin="0,8"
                                         HorizontalAlignment="Center"
                                         Padding="12,4"
-                                        Background="{StaticResource Light.BgSurfaceBrush}"
+                                        Background="{DynamicResource Light.BgSurfaceBrush}"
                                         CornerRadius="12">
                                         <TextBlock
                                             FontSize="12"
                                             FontWeight="SemiBold"
-                                            Foreground="{StaticResource Light.TextSecondaryBrush}"
+                                            Foreground="{DynamicResource Light.TextSecondaryBrush}"
                                             Text="{Binding Name, Converter={StaticResource DateKeyToLabel}}" />
                                     </Border>
                                 </DataTemplate>
@@ -393,29 +556,74 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <!--  Пузырь сообщения: свои — справа с акцентным фоном, чужие — слева  -->
-                            <Border MaxWidth="400">
+                            <Border MaxWidth="400" RenderTransformOrigin="0.5,0.5">
                                 <Border.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Click="DeleteMessage_ForMe_Click" Header="Удалить у себя" />
-                                        <MenuItem Click="DeleteMessage_ForAll_Click" Header="Удалить у всех" />
+                                    <ContextMenu Style="{StaticResource TbgContextMenuStyle}">
+                                        <!--  «Сохранить» — только у файлов/фото  -->
+                                        <MenuItem Click="SaveFile_Click" Header="Сохранить">
+                                            <MenuItem.Style>
+                                                <Style BasedOn="{StaticResource TbgMenuItemStyle}" TargetType="MenuItem">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding MessageType}" Value="File">
+                                                            <Setter Property="Visibility" Value="Visible" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </MenuItem.Style>
+                                        </MenuItem>
+                                        <MenuItem
+                                            Click="DeleteMessage_ForMe_Click"
+                                            Header="Удалить у себя"
+                                            Style="{StaticResource TbgMenuItemDangerStyle}" />
+                                        <MenuItem
+                                            Click="DeleteMessage_ForAll_Click"
+                                            Header="Удалить у всех"
+                                            Style="{StaticResource TbgMenuItemDangerStyle}" />
                                     </ContextMenu>
                                 </Border.ContextMenu>
+                                <!--  Плавное появление пузыря: fade + подъём снизу  -->
+                                <Border.RenderTransform>
+                                    <TranslateTransform Y="10" />
+                                </Border.RenderTransform>
+                                <Border.Triggers>
+                                    <EventTrigger RoutedEvent="Border.Loaded">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation
+                                                    Storyboard.TargetProperty="Opacity"
+                                                    From="0"
+                                                    To="1"
+                                                    Duration="0:0:0.22" />
+                                                <DoubleAnimation
+                                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                                    From="10"
+                                                    To="0"
+                                                    Duration="0:0:0.22">
+                                                    <DoubleAnimation.EasingFunction>
+                                                        <CubicEase EasingMode="EaseOut" />
+                                                    </DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </Border.Triggers>
                                 <Border.Style>
                                     <Style TargetType="Border">
-                                        <Setter Property="Background" Value="{StaticResource Light.MsgIncomingBrush}" />
+                                        <Setter Property="Background" Value="{DynamicResource Light.MsgIncomingBrush}" />
                                         <Setter Property="HorizontalAlignment" Value="Left" />
                                         <Setter Property="CornerRadius" Value="4,14,14,14" />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsOutgoing}" Value="True">
-                                                <Setter Property="Background" Value="{StaticResource Light.MsgOutgoingBrush}" />
+                                                <Setter Property="Background" Value="{DynamicResource Light.MsgOutgoingBrush}" />
                                                 <Setter Property="HorizontalAlignment" Value="Right" />
                                                 <Setter Property="CornerRadius" Value="14,4,14,14" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding Status}" Value="Pending">
-                                                <Setter Property="Background" Value="{StaticResource Light.MsgPendingBrush}" />
+                                                <Setter Property="Background" Value="{DynamicResource Light.MsgPendingBrush}" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding Status}" Value="Failed">
-                                                <Setter Property="Background" Value="{StaticResource Light.MsgFailedBrush}" />
+                                                <Setter Property="Background" Value="{DynamicResource Light.MsgFailedBrush}" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -437,7 +645,7 @@
                                         Text="{Binding Sender}">
                                         <TextBlock.Style>
                                             <Style TargetType="TextBlock">
-                                                <Setter Property="Foreground" Value="{StaticResource Light.AccentTextBrush}" />
+                                                <Setter Property="Foreground" Value="{DynamicResource Light.AccentTextBrush}" />
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsOutgoing}" Value="True">
                                                         <Setter Property="Visibility" Value="Collapsed" />
@@ -446,37 +654,104 @@
                                             </Style>
                                         </TextBlock.Style>
                                     </TextBlock>
-                                    <!--  Вложение (файл/изображение)  -->
-                                    <Image
-                                        MaxHeight="200"
+                                    <!--  Вложение-фото: скруглённое, без имени файла  -->
+                                    <Border
+                                        MaxWidth="320"
+                                        MaxHeight="220"
                                         Margin="0,0,0,4"
-                                        Source="{Binding ServerAdress}"
-                                        Stretch="UniformToFill" />
-                                    <!--  Текст сообщения  -->
-                                    <TextBlock
-                                        FontSize="14"
-                                        Text="{Binding Text}"
-                                        TextWrapping="Wrap">
-                                        <TextBlock.Style>
-                                            <Style TargetType="TextBlock">
-                                                <Setter Property="Foreground" Value="{StaticResource Light.TextPrimaryBrush}" />
+                                        HorizontalAlignment="Left"
+                                        CornerRadius="12"
+                                        Cursor="Hand">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Visibility" Value="Collapsed" />
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsOutgoing}" Value="True">
-                                                        <Setter Property="Foreground" Value="{StaticResource Light.TextInverseBrush}" />
+                                                    <DataTrigger Binding="{Binding MessageType}" Value="File">
+                                                        <Setter Property="Visibility" Value="Visible" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
-                                    <!--  Время  -->
+                                        </Border.Style>
+                                        <!--  FileImage: картинка скачивается нашим HttpClient с кэшем и
+                                              повтором — встроенный загрузчик WPF иногда молча не справлялся,
+                                              и фото выглядели пустыми сообщениями  -->
+                                        <Border.Background>
+                                            <ImageBrush ImageSource="{Binding FileImage}" Stretch="Uniform" />
+                                        </Border.Background>
+                                        <!--  Невидимый Image задаёт размер Border по картинке, фон скругляется рамкой  -->
+                                        <Image
+                                            MaxWidth="320"
+                                            MaxHeight="220"
+                                            Opacity="0"
+                                            Source="{Binding FileImage}"
+                                            Stretch="Uniform" />
+                                    </Border>
+                                    <!--  Текст + время: у коротких однострочных сообщений время
+                                          справа в той же строке, у длинных/файлов — снизу  -->
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <!--  Текст сообщения (у файлов-фото не показываем имя).
+                                              Read-only TextBox без рамки — текст можно выделять и копировать (Ctrl+C);
+                                              ContextMenu=null отключает системное меню TextBox, правый клик
+                                              показывает меню пузыря  -->
+                                        <TextBox
+                                            Padding="0"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            ContextMenu="{x:Null}"
+                                            Cursor="IBeam"
+                                            FontSize="14"
+                                            IsReadOnly="True"
+                                            IsTabStop="False"
+                                            Text="{Binding Text, Mode=OneWay}"
+                                            TextWrapping="Wrap">
+                                            <TextBox.Style>
+                                                <Style TargetType="TextBox">
+                                                    <Setter Property="Foreground" Value="{DynamicResource Light.TextPrimaryBrush}" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsOutgoing}" Value="True">
+                                                            <Setter Property="Foreground" Value="{DynamicResource Light.TextInverseBrush}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding MessageType}" Value="File">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBox.Style>
+                                        </TextBox>
+                                        <!--  Время в строке (короткие сообщения)  -->
+                                        <TextBlock
+                                            Grid.Column="1"
+                                            Margin="8,0,0,1"
+                                            VerticalAlignment="Bottom"
+                                            FontSize="10"
+                                            Text="{Binding TimeShort}"
+                                            Visibility="{Binding ., Converter={StaticResource InlineTime}, Mode=OneTime, ConverterParameter=Direct, FallbackValue=Collapsed}">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Foreground" Value="{DynamicResource Light.TextMutedBrush}" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsOutgoing}" Value="True">
+                                                            <Setter Property="Foreground" Value="#D6DBFF" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </Grid>
+                                    <!--  Время снизу (длинные сообщения и файлы)  -->
                                     <TextBlock
                                         Margin="0,5,0,0"
                                         HorizontalAlignment="Right"
                                         FontSize="10"
-                                        Text="{Binding TimeShort}">
+                                        Text="{Binding TimeShort}"
+                                        Visibility="{Binding ., Converter={StaticResource InlineTime}, Mode=OneTime, ConverterParameter=Invert, FallbackValue=Visible}">
                                         <TextBlock.Style>
                                             <Style TargetType="TextBlock">
-                                                <Setter Property="Foreground" Value="{StaticResource Light.TextMutedBrush}" />
+                                                <Setter Property="Foreground" Value="{DynamicResource Light.TextMutedBrush}" />
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsOutgoing}" Value="True">
                                                         <Setter Property="Foreground" Value="#D6DBFF" />
@@ -500,11 +775,11 @@
                     IsHitTestVisible="False">
                     <Border
                         Padding="14,6"
-                        Background="{StaticResource Light.BgSurfaceBrush}"
+                        Background="{DynamicResource Light.BgSurfaceBrush}"
                         CornerRadius="14">
                         <TextBlock
                             FontSize="14"
-                            Foreground="{StaticResource Light.TextSecondaryBrush}"
+                            Foreground="{DynamicResource Light.TextSecondaryBrush}"
                             Text="Выберите, кому хотите написать" />
                     </Border>
                 </StackPanel>
@@ -512,8 +787,8 @@
                 <!--  Поле ввода  -->
                 <Border
                     Grid.Row="2"
-                    Background="{StaticResource Light.BgSurfaceBrush}"
-                    BorderBrush="{StaticResource Light.BorderSubtleBrush}"
+                    Background="{DynamicResource Light.BgSurfaceBrush}"
+                    BorderBrush="{DynamicResource Light.BorderSubtleBrush}"
                     BorderThickness="0,1,0,0"
                     Padding="10,8">
                     <Grid x:Name="GridMessege" VerticalAlignment="Center">
@@ -528,14 +803,14 @@
                             Width="34"
                             Height="34"
                             Margin="0,0,8,0"
-                            Background="{StaticResource Light.BgElevatedBrush}"
+                            Background="{DynamicResource Light.BgElevatedBrush}"
                             Click="Button_Click_SelectFile"
                             Template="{StaticResource RoundIconButtonTemplate}"
                             ToolTip="Прикрепить файл">
                             <Viewbox Width="16" Height="16">
                                 <Path
                                     Data="{StaticResource IconAttach}"
-                                    Fill="{StaticResource Light.TextSecondaryBrush}"
+                                    Fill="{DynamicResource Light.TextSecondaryBrush}"
                                     Stretch="Uniform" />
                             </Viewbox>
                         </Button>
@@ -543,8 +818,8 @@
                         <!--  Поле ввода текста  -->
                         <Border
                             Grid.Column="1"
-                            Background="{StaticResource Light.BgInputBrush}"
-                            BorderBrush="{StaticResource Light.BorderDefaultBrush}"
+                            Background="{DynamicResource Light.BgInputBrush}"
+                            BorderBrush="{DynamicResource Light.BorderDefaultBrush}"
                             BorderThickness="1"
                             CornerRadius="12"
                             Padding="12,6">
@@ -557,7 +832,7 @@
                                     Background="Transparent"
                                     BorderThickness="0"
                                     FontSize="14"
-                                    Foreground="{StaticResource Light.TextPrimaryBrush}"
+                                    Foreground="{DynamicResource Light.TextPrimaryBrush}"
                                     KeyDown="TBMessage_KeyDown_SendMessage"
                                     TextWrapping="Wrap" />
                             </ScrollViewer>
@@ -569,7 +844,7 @@
                             Width="34"
                             Height="34"
                             Margin="8,0,0,0"
-                            Background="{StaticResource Light.AccentPrimaryBrush}"
+                            Background="{DynamicResource Light.AccentPrimaryBrush}"
                             Click="Button_Click_SendMessage"
                             Template="{StaticResource RoundIconButtonTemplate}"
                             ToolTip="Отправить">
@@ -586,5 +861,19 @@
 
             </Grid>
         </Border>
+
+        <!--  Перетаскиваемая граница списка чатов: влево до режима «только аватарки», вправо — шире.
+              Лежит на левом краю области чата (последним в разметке — поверх неё),
+              чтобы не перекрывать тонкий скроллбар списка чатов  -->
+        <GridSplitter
+            Grid.Column="2"
+            Width="6"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Stretch"
+            Background="Transparent"
+            Cursor="SizeWE"
+            DragCompleted="ChatSplitter_DragCompleted"
+            ResizeBehavior="PreviousAndCurrent"
+            ResizeDirection="Columns" />
     </Grid>
 </Window>
