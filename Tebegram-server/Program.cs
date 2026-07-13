@@ -26,7 +26,8 @@ app.UseWebSockets();
 
 var connections = new List<WebSocket>();
 
-Thread thread = new Thread(() => {
+Thread thread = new Thread(() =>
+{
     Console.WriteLine("Запущен поток чистки голосых каналов.");
     VoiceRoomsController.CheckEmptyVoices();
 });
@@ -128,6 +129,7 @@ app.MapGet("/avatars/{FileName}", async (HttpContext context, string FileName) =
 
 app.MapGet("/login/{UserLogin}-{UserPassword}", async (HttpContext Context, string UserLogin, string UserPassword) =>
 {
+    Console.WriteLine($"user: {UserLogin} try connect");
     if (!UsersData.IsExistUser(UserLogin))
     {
         await Context.Response.WriteAsync("Пользователь с таким логином не существует");
@@ -137,7 +139,9 @@ app.MapGet("/login/{UserLogin}-{UserPassword}", async (HttpContext Context, stri
         var user = UsersData.FindUserByLogin(UserLogin);
         if (user != null)
         {
-            await Context.Response.WriteAsync(user.ToClientSend());
+            Console.WriteLine($"chat count: {user.Chats.Count}");
+            string rs = user.ToClientSend();
+            await Context.Response.WriteAsync(rs);
             Logs.Save($"Пользователь {UserLogin} авторизировался");
         }
         else
@@ -183,9 +187,9 @@ app.MapGet("/messages/{id}", async (HttpContext Context, int id) =>
 
     user.NewMessages.Clear();
     string Messegas = string.Empty;
-    for (int i = 0; i < Folder.Contacts.Count; i++)
+    for (int i = 0; i < Folder.Chats.Count; i++)
     {
-        Messegas += $"{Folder.Contacts[i].GetAllMeseges()}";
+        Messegas += $"{Folder.Chats[i].GetAllMeseges()}";
     }
 
     await Context.Response.WriteAsync(Messegas);
@@ -202,18 +206,18 @@ app.MapPost("/messages", async (HttpContext Context) =>
     string Request = await reader.ReadToEndAsync();
     string[] messageData = Request.Split('▫');
     Message message = null;
-    if (messageData[2] == "Text")
+    if (messageData[3] == "Text")
     {
         string text = messageData[5];
         for (int i = 6; i < messageData.Length; i++)
         {
             text += messageData[i];
         }
-        message = new Message(messageData[0], messageData[1], text, messageData[3]);
+        message = new Message(int.Parse(messageData[0]), messageData[1], messageData[2], text, messageData[4]);
     }
     else if (messageData[2] == "File")
     {
-        message = new Message(messageData[0], messageData[1], messageData[5], messageData[3], MessageType.File, messageData[4]);
+        message = new Message(int.Parse(messageData[0]), messageData[1], messageData[2], messageData[6], messageData[4], MessageType.File, messageData[5]);
     }
     User ReciverUser = UsersData.FindUserByUsername(message.Reciver);
     User SenderUser = UsersData.FindUserByUsername(message.Sender);
@@ -279,7 +283,7 @@ app.MapGet("/Voice/CreateRoom/{userId}-{calledUserUsername}", async (HttpContext
     string token = VoiceRoomsController.CreateRoom(user.Username + calledUser.Username);
 
     user.CallToken = token;
-    calledUser.CallToken =$"{user.Username}▫{token}";
+    calledUser.CallToken = $"{user.Username}▫{token}";
 
     await Context.Response.WriteAsync(token);
 });
@@ -294,7 +298,8 @@ app.MapGet("/Voice/GetCallToken/{userId}", async (HttpContext Context, int userI
     {
         response = "NotFound";
     }
-    else {
+    else
+    {
         response = user.CallToken;
     }
 
@@ -422,7 +427,7 @@ app.Map("/Chat/ws", async context =>
                     Console.WriteLine($"Пользователь {user.Username} закрыл клиент");
                     for (int i = 0; i < user.ChatsSessions.Count; i++)
                     {
-                        if(user.ChatsSessions[i] == ws)
+                        if (user.ChatsSessions[i] == ws)
                         {
                             user.ChatsSessions[i].CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
                             user.ChatsSessions.RemoveAt(i);
@@ -435,6 +440,31 @@ app.Map("/Chat/ws", async context =>
     {
         context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
     }
+});
+
+app.MapGet("/Chat/Create/{userId}-{username}", async (HttpContext Context, int userId, string username) =>
+{
+    List<User> members = new List<User>();
+    members.Add(UsersData.FindUserById(userId));
+    members.Add(UsersData.FindUserByUsername(username));
+    int chatId = ChatsController.CreateChat(members);
+    Chat chat = ChatsController.Chats[chatId];
+
+    string owner = chat.Owner != null ? $"{chat.Owner?.Id}" : "None";
+
+    await Context.Response.WriteAsync($"{chat.Id}&{chat.Name}&{chat.IsGroup}&{chat.Avatar}&{owner}");
+});
+app.MapGet("/Chat/Get/{id}-{userId}-{pass}", async (HttpContext Context, int id, int userId, string pass) =>
+{
+    if (UsersData.FindUserById(userId).Password != pass) return;
+
+    if (!ChatsController.ContainsChat(id))
+    {
+        await Context.Response.WriteAsync("Not Found");
+        return;
+    }
+
+    await Context.Response.WriteAsync($"{ChatsController.Chats[id].ToString()}");
 });
 
 #endregion

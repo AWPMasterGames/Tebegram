@@ -27,5 +27,25 @@ namespace TebegramServer.Classes
             Avatar = avatar;
         }
 
+        public override string ToString()
+        {
+            string owner = Owner == null ? $"{Owner?.Id}" : "None";
+            string membersId = string.Empty;
+            foreach(User u in Members)
+            {
+                membersId += $"{u.Id},";
+            }
+            return $"{Id}▫{Name}▫{owner}▫{membersId}▫{IsGroup}▫{Avatar}";
+        }
+
+        public string GetAllMeseges()
+        {
+            string AllMessege = string.Empty;
+            foreach (var message in Messages)
+            {
+                AllMessege += $"{message.ToString()}❂";
+            }
+            return AllMessege;
+        }
     }
 }

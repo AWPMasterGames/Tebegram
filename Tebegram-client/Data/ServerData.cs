@@ -38,6 +38,7 @@ namespace Tebegrammmm.Data
         public static void GetServerAdress()
         {
             _readyTask = Task.Run(RefreshAdressAsync);
+            _readyTask.Wait();
         }
 
         private static async Task RefreshAdressAsync()

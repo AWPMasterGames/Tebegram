@@ -1,7 +1,9 @@
 #nullable disable
+using Microsoft.VisualBasic.ApplicationServices;
 using Microsoft.Win32;
 using NAudio.CoreAudioApi;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
@@ -35,6 +37,7 @@ namespace Tebegrammmm
         private ClientWebSocket ws = new ClientWebSocket();
         private static object thisLock = new();
         Contact Contact { get; set; }
+        Chat Chat { get; set; }
         Thread Thread { get; set; }
         Thread CaltokenThread { get; set; }
 
@@ -106,7 +109,7 @@ namespace Tebegrammmm
                     //распределение сообщений в чаты
                     try
                     {
-                            AddMessageToUser(textMessage);
+                        AddMessageToUser(textMessage);
                     }
                     catch (Exception ex)
                     {
@@ -195,7 +198,7 @@ namespace Tebegrammmm
             {
                 return;
             }
-            LBChats.ItemsSource = (LBChatsLoders.SelectedItem as ChatFolder).Contacts;
+            LBChats.ItemsSource = (LBChatsLoders.SelectedItem as ChatFolder).Chats;
             _IsInSearch = false;
             SearchContactBarTB.Text = string.Empty;
         }
@@ -203,10 +206,10 @@ namespace Tebegrammmm
         private void LBChats_SelectionChangedChat(object sender, SelectionChangedEventArgs e)
         {
             // Сохраняем черновик для предыдущего контакта
-            if (Contact != null && TBMessage != null)
+            if (Chat != null && TBMessage != null)
             {
-                Contact.Draft = TBMessage.Text;
-                Log.Save($"[LBChats_SelectionChanged] Saved draft for {Contact.Name}: '{Contact.Draft}'");
+                //Contact.Draft = TBMessage.Text;
+                //Log.Save($"[LBChats_SelectionChanged] Saved draft for {Contact.Name}: '{Contact.Draft}'");
             }
 
             if (LBChats.SelectedItem == null)
@@ -215,23 +218,79 @@ namespace Tebegrammmm
                 return;
             }
 
-            Contact = LBChats.SelectedItem as Contact;
-            Log.Save($"[LBChats_SelectionChanged] Selected contact: {Contact?.Name} ({Contact?.Username})");
+            Chat = LBChats.SelectedItem as Chat;
+            //Log.Save($"[LBChats_SelectionChanged] Selected contact: {Contact?.Name} ({Contact?.Username})");
 
-            GridChat.DataContext = Contact;
-            LBMessages.ItemsSource = Contact.Messages;
+            GridChat.DataContext = Chat;
+            LBMessages.ItemsSource = Chat.Messages;
             GridMessege.Visibility = Visibility.Visible;
             GridContactPanel.Visibility = Visibility.Visible;
 
             // Восстанавливаем черновик для нового контакта
             if (TBMessage != null)
             {
-                TBMessage.Text = Contact.Draft ?? string.Empty;
-                Log.Save($"[LBChats_SelectionChanged] Restored draft for {Contact.Name}: '{Contact.Draft}'");
+                //TBMessage.Text = Contact.Draft ?? string.Empty;
+                //Log.Save($"[LBChats_SelectionChanged] Restored draft for {Contact.Name}: '{Contact.Draft}'");
             }
         }
-
         private async void AddMessageToUser(string MessageData)
+        {
+            string[] messageData = MessageData.Split('▫');
+            Chat chat = UserData.User.FindChatbyId(int.Parse(messageData[0]));
+            if (chat == null)
+            {
+                using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/Chat/Get/{messageData[0]}-{UserData.User.Id}-{UserData.User.Password}");
+                using HttpResponseMessage response = await httpClient.SendAsync(request);
+                string content = await response.Content.ReadAsStringAsync();
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    string[] ChatData = content.Split('&');
+                    bool iOwner = false;
+                    if (ChatData[4] != "None")
+                        if (UserData.User.Id == int.Parse(ChatData[4])) iOwner = true;
+
+                    List<Contact> members = new List<Contact>();
+
+                    UserData.User.ChatsFolders[0].AddChat(new Chat(int.Parse(ChatData[0]), ChatData[1], Convert.ToBoolean(ChatData[2]), ChatData[3], iOwner));
+                    UserData.User.AddChat(chat);
+                }));
+            }
+            if (messageData[3] == "Text")
+            {
+                string text = messageData[6];
+                for (int i = 7; i < messageData.Length; i++)
+                {
+                    text += messageData[i];
+                }
+                Message message = new Message(int.Parse(messageData[0]), UserData.User.Name, UserData.User.Username, text, messageData[4]);
+                message.Status = MessageStatus.Sent; // Все сообщения просто сохраняются
+
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    chat.Messages.Add(message);
+                }));
+
+                // НЕ сохраняем на сервер - это уже сделал отправитель!
+                Log.Save($"[AddMessageToUser] Получено сообщение от {messageData[1]}: {text}");
+            }
+            else if (messageData[2] == "File")
+            {
+                Message message = new Message(int.Parse(messageData[0]), UserData.User.Name, messageData[2], messageData[6], messageData[3], MessageType.File, $"{ServerData.ServerAdress}/upload/{messageData[6]}");
+                message.Status = MessageStatus.Sent; // Файлы тоже просто сохраняются
+
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    chat.Messages.Add(message);
+                }));
+
+                // НЕ сохраняем на сервер - это уже сделал отправитель!
+                //Log.Save($"[AddMessageToUser] Получен файл от {messageData[1]}: {messageData[6]}");
+            }
+
+
+
+        }
+        /*private async void AddMessageToUser1(string MessageData)
         {
             string[] messageData = MessageData.Split('▫');
             if (messageData[0] == UserData.User.Username)
@@ -347,7 +406,7 @@ namespace Tebegrammmm
                         }
                     }
                 }
-        }
+        }*/
 
         async void GetMessages()
         {
@@ -508,25 +567,27 @@ namespace Tebegrammmm
                 return;
             }
 
-            if (Contact == null)
+            if (Chat == null)
             {
-                MessageBox.Show("Ошибка: не выбран получатель сообщения");
-                Log.Save("[SendMessage] Error: Contact is null");
+                MessageBox.Show("Ошибка: не выбран чат");
+                Log.Save("[SendMessage] Error: Chat is null");
                 return;
             }
 
-            Message Message = new Message(UserData.User.Username, Contact.Username, message, DateTime.Now.ToString("hh:mm"), messageType, ServerFilePath);
+            //Message Message = new Message(Chat.Id,UserData.User.Username, Contact.Username, message, DateTime.Now.ToString("hh:mm"), messageType, ServerFilePath);
+            Message Message = new Message(Chat.Id, UserData.User.Username, "", message, DateTime.Now.ToString("hh:mm"), messageType, ServerFilePath);
 
-            Log.Save($"[SendMessage] Message added to local contact. Sending to UserData.User...");
+            Log.Save($"[SendMessage] Message added to local chat. Sending to UserData.User...");
 
-            string request = $"SEND▫#▫0▫#▫{Contact.Username}▫#▫{Message.ToString()}";
+            //string request = $"SEND▫#▫0▫#▫{Contact.Username}▫#▫{Message.ToString()}";
+            string request = $"SEND▫#▫{Chat.Id}▫#▫_▫#▫{Message.ToString()}";
             //MessageBox.Show(Message.Text);
             ArraySegment<byte> buffer = new ArraySegment<byte>(Encoding.UTF8.GetBytes(request));
             await ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
 
-            await SendMessageToUserAsync(Message);
+            //await SendMessageToUserAsync(Message);
             TBMessage.Text = string.Empty;
-            Contact.Draft = string.Empty; // Очищаем черновик после отправки
+            //Contact.Draft = string.Empty; // Очищаем черновик после отправки
         }
 
         private void Button_Click_SendMessage(object sender, RoutedEventArgs e)
@@ -592,6 +653,29 @@ namespace Tebegrammmm
 
         private async void Button_Click_AddContact(object sender, RoutedEventArgs e)
         {
+            Contact contact = new();
+            while (true)
+            {
+                AddContact addContact = new AddContact(contact);
+                if (addContact.ShowDialog() == true)
+                {
+                    using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/Chat/Create/{UserData.User.Id}-{contact.Username}");
+                    using HttpResponseMessage response = await httpClient.SendAsync(request);
+                    string content = await response.Content.ReadAsStringAsync();
+
+                    string[] ChatData = content.Split('&');
+                    bool iOwner = false;
+                    if (ChatData[4] != "None")
+                        if (UserData.User.Id == int.Parse(ChatData[4])) iOwner = true;
+                    UserData.User.ChatsFolders[0].AddChat(new Chat(int.Parse(ChatData[0]), ChatData[1], Convert.ToBoolean(ChatData[2]), ChatData[3], iOwner));
+                    return;
+                }
+                else { return; }
+            }
+        }
+
+        /*private async void Button_Click_AddContact(object sender, RoutedEventArgs e)
+        {
             string data = $"{UserData.User.Id}";
             Contact contact = new();
             while (true)
@@ -618,7 +702,7 @@ namespace Tebegrammmm
                 }
                 else { return; }
             }
-        }
+        }*/
 
         private async void SendRemoveContactRequest(Contact contact)
         {

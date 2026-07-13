@@ -251,11 +251,11 @@ namespace TebegramServer.Data
                             {
                                 var messages = new ObservableCollection<Message>();
                                 
-                                foreach (var messageData in contactData.Messages)
+                                /*foreach (var messageData in contactData.Messages)
                                 {
                                     var messageType = Enum.TryParse<MessageType>(messageData.MessageType, out var type) ? type : MessageType.Text;
                                     messages.Add(new Message(messageData.Sender, messageData.Recipient, messageData.Text, messageData.Time, messageType));
-                                }
+                                }*/
                                 
                                 contacts.Add(new Contact(contactData.Id,contactData.Username, contactData.Name, messages));
                             }

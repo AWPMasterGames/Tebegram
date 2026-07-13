@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Net.WebSockets;
 using System.Text;
 using TebegramServer.Classes;
+using TebegramServer.Controllers;
 using TebegramServer.Data;
 
 namespace TebegramServer
@@ -70,13 +71,27 @@ namespace TebegramServer
             sb.Append($"{folder.IsCanRedact}▫");
             sb.Append($"{folder.Contacts.Count}▫");
 
-            // Для каждого контакта в папке
-            foreach (var contact in folder.Contacts)
+            // Для каждого Чата в папке
+            foreach (Chat chat in folder.Chats)
             {
-                sb.Append($"{contact.UserId}&{contact.Username}&{contact.Name}▫");
+                string owner = chat.Owner != null ? $"{chat.Owner?.Id}" : "None";
+                string membersId = string.Empty;
+                foreach (User u in chat.Members)
+                {
+                    membersId += $"{u.Id},";
+                }
+                sb.Append($"{chat.Id}&{chat.Name}&{chat.IsGroup}&{chat.Avatar}&{owner}&{membersId}▫");
                 // Вместо IP и порта используем имя пользователя
                 // sb.Append($"{contact.IPAddress}▫{contact.Port}▫");
             }
+
+            // Для каждого контакта в папке
+            //foreach (Chat chat in folder.Chats)
+            //{
+            //    sb.Append($"{chat.Id}&{chat.}&{contact.Name}▫");
+            //    // Вместо IP и порта используем имя пользователя
+            //    // sb.Append($"{contact.IPAddress}▫{contact.Port}▫");
+            //}
             //}
 
             return sb.ToString();
@@ -85,7 +100,7 @@ namespace TebegramServer
         public void AddChat(int chatId)
         {
             Chats.Add(chatId);
-
+            ChatsFolders[0].Chats.Add(ChatsController.Chats[chatId]);
         }
 
         public void AddContact(Contact contact)

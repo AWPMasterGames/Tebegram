@@ -42,13 +42,30 @@ namespace Tebegrammmm
             Contacts = contacts == null? new ObservableCollection<Contact>() : contacts;
         }
 
+        public ChatFolder(string folderName, ObservableCollection<Chat> chats, string icon = "📁", bool isCanRedact = true)
+        {
+            this._Icon = icon;
+            this._FolderName = folderName;
+            this.Chats = chats;
+            this._IsCanRedact = isCanRedact;
+            Chats = chats == null ? new ObservableCollection<Chat>() : chats;
+        }
+
         public void AddContact(Contact contact)
         {
             Contacts.Add(contact);
         }
+        public void AddChat(Chat chat)
+        {
+            Chats.Add(chat);
+        }
         public void RemoveContact(Contact contact)
         {
             Contacts.Remove(contact);
+        }
+        public void RemoveChat(Chat chat)
+        {
+            Chats.Remove(chat);
         }
         
         public void ChangeFolderName(string folderName)

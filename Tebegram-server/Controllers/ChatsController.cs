@@ -20,7 +20,9 @@ namespace TebegramServer.Controllers
             {
                 user.AddChat(chat.Id);
             }
+
             return chat.Id;
+
         }
 
 
@@ -28,18 +30,18 @@ namespace TebegramServer.Controllers
         {
             string[] messageData = messageD.Split('▫');
             Message message = null;
-            if (messageData[2] == "Text")
+            if (messageData[3] == "Text")
             {
-                string text = messageData[5];
-                for (int i = 6; i < messageData.Length; i++)
+                string text = messageData[6];
+                for (int i = 7; i < messageData.Length; i++)
                 {
                     text += messageData[i];
                 }
-                message = new Message(messageData[0], messageData[1], text, messageData[3]);
+                message = new Message(int.Parse(messageData[0]), messageData[1], messageData[2], text, messageData[4]);
             }
-            else if (messageData[2] == "File")
+            else if (messageData[3] == "File")
             {
-                message = new Message(messageData[0], messageData[1], messageData[5], messageData[3], MessageType.File, messageData[4]);
+                message = new Message(int.Parse(messageData[0]), messageData[1], messageData[2], messageData[6], messageData[4], MessageType.File, messageData[5]);
             }
             Chats[chatId].Messages.Add(message);
 

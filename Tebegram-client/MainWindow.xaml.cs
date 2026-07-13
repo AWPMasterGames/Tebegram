@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Net.Http;
@@ -31,6 +32,7 @@ namespace Tebegrammmm
         {
             ServerData.GetServerAdress();
             InitializeComponent();
+            MessageBox.Show(ServerData.ServerAdress);
             TBUserLogin.Focus();
             if (File.Exists("user.data"))
             {
@@ -95,14 +97,19 @@ namespace Tebegrammmm
                         userData[2],
                         userData[3],
                         new ObservableCollection<ChatFolder>{
-                            new ChatFolder(userData[5], new ObservableCollection<Contact> {}, userData[6], bool.Parse(userData[7]))},
+                            new ChatFolder(userData[5], new ObservableCollection<Chat> {}, userData[6], bool.Parse(userData[7]))},
                         $"{ServerData.ServerAdress}/avatars/{userData[4]}"
                     );
-
                     for (int i = 9; i < userData.Length - 1; i++)
                     {
-                        string[] ContactData = userData[i].Split('&');
-                        user.ChatsFolders[0].AddContact(new Contact(int.Parse(ContactData[0]), ContactData[1], ContactData[2]));
+                        string[] ChatData = userData[i].Split('&');
+                        bool iOwner = false;
+                        if (ChatData[4] != "None")
+                            if (user.Id == int.Parse(ChatData[4])) iOwner = true;
+                        
+                        List<Contact> members = new List<Contact>();
+
+                        user.ChatsFolders[0].AddChat(new Chat(int.Parse(ChatData[0]), ChatData[1], Convert.ToBoolean(ChatData[2]), ChatData[3], iOwner));
                     }
                     UserData.User = user;
                     Log.Save($"[Authorization] User object created, opening MessengerWindow");

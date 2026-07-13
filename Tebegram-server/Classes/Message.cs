@@ -8,6 +8,7 @@
     }
     public class Message
     {
+        private int _ChatId;
         private string _Sender;
         private string _Reciver;
         private string _Text;
@@ -16,6 +17,7 @@
         private MessageType _MessageType;
         private string _FilePath;
         private string _ServerAdress;
+        public int ChatId { get { return _ChatId; } }
         public string Sender { get { return _Sender; } }
         public string Reciver { get { return _Reciver; } }
         public string Text { get { return _Text; } }
@@ -23,8 +25,9 @@
         public MessageType MessageType { get { return _MessageType; } }
         public string ServerAdress { get { return _ServerAdress; } }
 
-        public Message(string sender,string reciver, string text, string time, MessageType messageType = MessageType.Text, string serverAdress = null)
+        public Message(int chatId,string sender,string reciver, string text, string time, MessageType messageType = MessageType.Text, string serverAdress = null)
         {
+            _ChatId = chatId;
             _Sender = sender;
             _Reciver = reciver;
             _Text = text;
@@ -34,7 +37,7 @@
         }
         public override string ToString()
         {
-            return $"{Sender}▫{Reciver}▫{MessageType}▫{Time}▫{ServerAdress}▫{Text}";
+            return $"{ChatId}▫{Sender}▫{Reciver}▫{MessageType}▫{Time}▫{ServerAdress}▫{Text}";
         }
     }
 }

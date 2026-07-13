@@ -22,6 +22,7 @@ namespace Tebegrammmm
     }
     public class Message
     {
+        private int _ChatId;
         private string _Sender;
         private string _Reciver;
         private string _Text;
@@ -31,6 +32,7 @@ namespace Tebegrammmm
         private string _FilePath;
         private string _ServerAdress;
         private MessageStatus _Status;
+        public int ChatId { get { return _ChatId; } }
         public string Sender { get { return _Sender; } }
         public string Reciver { get { return _Reciver; } }
         public string Text { get { return _Text; } }
@@ -40,8 +42,9 @@ namespace Tebegrammmm
         public string Message_FilePath { get { return _FilePath; } }
         public MessageStatus Status { get { return _Status; } set { _Status = value; } }
 
-        public Message(string sender, string reciver, string text, string time, MessageType messageType = MessageType.Text, string serverAdress = null, string filePath = null)
+        public Message(int chaID,string sender, string reciver, string text, string time, MessageType messageType = MessageType.Text, string serverAdress = null, string filePath = null)
         {
+            _ChatId = chaID;
             _Sender = sender;
             _Reciver = reciver;
             _Text = text;
@@ -53,7 +56,7 @@ namespace Tebegrammmm
         }
         public override string ToString()
         {
-            return $"{Sender}▫{Reciver}▫{MessageType}▫{Time}▫{ServerAdress}▫{Text}";
+            return $"{ChatId}▫{Sender}▫{Reciver}▫{MessageType}▫{Time}▫{ServerAdress}▫{Text}";
         }
     }
 }
