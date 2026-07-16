@@ -86,6 +86,13 @@ namespace TebegramServer
         {
             Chats.Add(chatId);
 
+            // Перенос из main-dev (коммит 311bff0): чат кладётся и в папку «Все чаты»,
+            // чтобы у пользователя была живая коллекция объектов, а не только id.
+            // С защитой TryGetValue — в оригинале голый индексатор кидал
+            // KeyNotFoundException, если комнаты с таким id нет в ChatsController
+            // (например, после рестарта сервера — чаты пока не сохраняются в базу).
+            if (Controllers.ChatsController.Chats.TryGetValue(chatId, out var chat))
+                ChatsFolders[0].AddChat(chat);
         }
 
         public const string FavoritesName = "Избранное";

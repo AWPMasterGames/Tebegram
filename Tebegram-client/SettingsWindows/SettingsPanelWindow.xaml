@@ -593,6 +593,34 @@
                                         x:Name="TBVersion"
                                         FontSize="15"
                                         Foreground="{DynamicResource Light.TextPrimaryBrush}" />
+                                    <!--  Переключатель сервера: туннель DrunkMan ↔ Adress.txt (авто)  -->
+                                    <TextBlock
+                                        Margin="0,10,0,0"
+                                        FontSize="11"
+                                        FontWeight="SemiBold"
+                                        Foreground="{DynamicResource Light.TextMutedBrush}"
+                                        Text="СЕРВЕР" />
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock
+                                            x:Name="TBServerChoice"
+                                            VerticalAlignment="Center"
+                                            FontSize="15"
+                                            Foreground="{DynamicResource Light.TextPrimaryBrush}"
+                                            Text="Adress.txt (авто)" />
+                                        <Button
+                                            Margin="10,0,0,0"
+                                            VerticalAlignment="Center"
+                                            Click="ToggleServer_Click"
+                                            Cursor="Hand"
+                                            Template="{StaticResource GhostButtonTemplate}"
+                                            ToolTip="Переключить сервер. Уже открытые соединения переподключатся сами; надёжнее — перезапустить приложение.">
+                                            <TextBlock
+                                                FontSize="13"
+                                                FontWeight="SemiBold"
+                                                Foreground="{DynamicResource Light.AccentTextBrush}"
+                                                Text="Переключить" />
+                                        </Button>
+                                    </StackPanel>
                                 </StackPanel>
                                 <Button
                                     Grid.Column="1"

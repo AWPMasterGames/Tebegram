@@ -26,6 +26,9 @@ namespace Tebegrammmm
             UserInfo.DataContext = UserData.User;
             CheckInputDevices();
 
+            // Текущий выбор сервера (DrunkMan / Adress.txt)
+            UpdateServerChoiceLabel();
+
             // Тумблер темы: выставляем без вызова обработчика
             ThemeToggle.Checked -= ThemeToggle_Changed;
             ThemeToggle.Unchecked -= ThemeToggle_Changed;
@@ -33,6 +36,21 @@ namespace Tebegrammmm
             ThemeLabel.Text = ThemeManager.IsDark ? "Тёмная тема" : "Светлая тема";
             ThemeToggle.Checked += ThemeToggle_Changed;
             ThemeToggle.Unchecked += ThemeToggle_Changed;
+        }
+
+        private void UpdateServerChoiceLabel()
+        {
+            TBServerChoice.Text = ServerData.ServerChoice == "drunkman"
+                ? "Туннель DrunkMan"
+                : "Adress.txt (авто)";
+        }
+
+        /// <summary>Переключение сервера: туннель DrunkMan ↔ обычная цепочка Adress.txt.</summary>
+        private void ToggleServer_Click(object sender, RoutedEventArgs e)
+        {
+            ServerData.SetServerChoice(ServerData.ServerChoice == "drunkman" ? "auto" : "drunkman");
+            UpdateServerChoiceLabel();
+            Log.Save($"[Settings] Сервер переключён: {ServerData.ServerChoice} → {ServerData.ServerAdress}");
         }
 
         private void ThemeToggle_Changed(object sender, RoutedEventArgs e)
