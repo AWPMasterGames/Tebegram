@@ -11,6 +11,12 @@ namespace Tebegrammmm.Data
         // (TLS терминирует devtunnel), поэтому здесь именно http, а не https.
         private const string DefaultAdress = "http://localhost:5000";
 
+        /// <summary>Постоянный туннель DrunkMan (для переключателя в настройках).</summary>
+        public const string DrunkManTunnel = "https://d6qdbhpn-5000.euw.devtunnels.ms";
+
+        /// <summary>Режим выбора сервера: "drunkman" — жёстко туннель DrunkMan, "auto" — Adress.txt.</summary>
+        public static string ServerChoice { get; private set; } = "auto";
+
         /// <summary>
         /// Файл рядом с exe для ручного переопределения адреса (для локальных тестов).
         /// В установщик не попадает (CopyToPublishDirectory=Never) — у пользователей
@@ -60,6 +66,15 @@ namespace Tebegrammmm.Data
 
         private static async Task RefreshAdressAsync()
         {
+            // Читаем сохранённый выбор сервера сразу (для корректной подписи в настройках),
+            // применяется он ниже — после проверки локального override
+            try
+            {
+                if (System.IO.File.Exists(AppPaths.ServerChoiceFile))
+                    ServerChoice = System.IO.File.ReadAllText(AppPaths.ServerChoiceFile).Trim();
+            }
+            catch { /* нет выбора — авто */ }
+
             // 1. Локальный override рядом с exe — высший приоритет (для тестов)
             try
             {
@@ -79,7 +94,14 @@ namespace Tebegrammmm.Data
                 // не смогли прочитать override — идём обычным путём
             }
 
-            // 2. Adress.txt на GitHub (несколько путей-кандидатов)
+            // 2. Выбор пользователя из настроек: жёстко туннель DrunkMan
+            if (ServerChoice == "drunkman")
+            {
+                _ServerAdress = DrunkManTunnel;
+                return;
+            }
+
+            // 3. Adress.txt на GitHub (несколько путей-кандидатов)
             foreach (string url in AdressUrls)
             {
                 try
@@ -100,6 +122,26 @@ namespace Tebegrammmm.Data
             }
 
             await CheckAdressValidAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Переключение сервера из настроек: "drunkman" — жёстко туннель DrunkMan,
+        /// "auto" — обычная цепочка (Adress.txt). Применяется сразу и сохраняется.
+        /// </summary>
+        public static void SetServerChoice(string choice)
+        {
+            ServerChoice = choice == "drunkman" ? "drunkman" : "auto";
+            try
+            {
+                AppPaths.EnsureDir();
+                System.IO.File.WriteAllText(AppPaths.ServerChoiceFile, ServerChoice);
+            }
+            catch { /* не сохранился выбор — применим хотя бы на эту сессию */ }
+
+            if (ServerChoice == "drunkman")
+                _ServerAdress = DrunkManTunnel;
+            else
+                GetServerAdress(); // перечитать Adress.txt в фоне
         }
 
         public static async Task CheckAdressValidAsync()

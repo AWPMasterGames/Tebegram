@@ -72,6 +72,17 @@ namespace Tebegrammmm
             CaltokenThread = new Thread(new ThreadStart(GetCallToken)) { IsBackground = true };
             CaltokenThread.Start();
 
+            // По завершении звонка (у звонившего) пишем в чат «📞 Аудиозвонок (м:сс)» —
+            // как запись в истории, видна обеим сторонам
+            VoiceRoom.CallEnded = (contact, duration) => Dispatcher.BeginInvoke(new Action(() =>
+            {
+                if (contact == null) return;
+                string text = duration.TotalSeconds < 1
+                    ? "📞 Пропущенный звонок"
+                    : $"📞 Аудиозвонок ({(int)duration.TotalMinutes}:{duration.Seconds:D2})";
+                _ = SendMessageToContactAsync(contact, text);
+            }));
+
             // Файл настроек устройства читаем из AppData; старый файл рядом с exe — для миграции
             string devicePath = File.Exists(AppPaths.DeviceDataFile) ? AppPaths.DeviceDataFile
                               : File.Exists("userDevice.data") ? "userDevice.data"
@@ -494,6 +505,33 @@ namespace Tebegrammmm
                 return; // Добавляем return, чтобы прекратить выполнение
             }
         }
+        /// <summary>
+        /// Отправка текстового сообщения КОНКРЕТНОМУ контакту (не зависит от выбранного
+        /// чата): WS-команда SEND (живая доставка) + POST /messages (сохранение) +
+        /// локальное добавление в чат. Используется для сообщений о звонках.
+        /// </summary>
+        private async Task SendMessageToContactAsync(Contact contact, string text)
+        {
+            try
+            {
+                Message message = new Message(UserData.User.Username, contact.Username, text,
+                    DateTime.Now.ToString("dd.MM.yyyy HH:mm"));
+                message.IsOutgoing = true;
+
+                if (ws != null && ws.State == WebSocketState.Open)
+                {
+                    string request = $"SEND▫#▫0▫#▫{contact.Username}▫#▫{message}";
+                    ArraySegment<byte> buffer = new ArraySegment<byte>(Encoding.UTF8.GetBytes(request));
+                    await ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+                }
+                await SendMessageToUserAsync(message);
+            }
+            catch (Exception ex)
+            {
+                Log.Save($"[SendMessageToContact] {ex.Message}");
+            }
+        }
+
         private async Task SendMessageToUserAsync(Message message)
         {
             try

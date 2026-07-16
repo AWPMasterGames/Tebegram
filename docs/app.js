@@ -6,7 +6,7 @@
    ═══════════════════════════════════════════════════════════════ */
 'use strict';
 
-const APP_VERSION = '1.0.10';
+const APP_VERSION = '1.0.14';
 const SEP = '▫';
 const MSG_SEP = '❂';
 const WS_SEP = '▫#▫';
@@ -242,14 +242,15 @@ const Voice = {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia)
       throw new Error('браузер не поддерживает доступ к микрофону');
 
-    // Пробуем от САМОГО простого запроса к более «умному». Ведём именно с {audio:true}:
-    // Samsung/Android-прошивки часто отвергают строгие ограничения (channelCount и т.п.),
-    // причём НЕ как OverconstrainedError, а как NotFoundError — и старый код тогда сразу
-    // говорил «микрофон не найден», ни разу не попробовав простой запрос.
-    // Worklet берёт только канал 0, поэтому стерео-поток из {audio:true} нам подходит.
+    // ВЕДЁМ с включённой БРАУЗЕРНОЙ обработкой (echoCancellation + noiseSuppression +
+    // autoGainControl) — это НАСТОЯЩее шумо-/эхоподавление и нормализация (тот же
+    // движок, что в FaceTime/видеозвонках). Раньше вели с {audio:true} → браузерная
+    // обработка ОТКЛЮЧАЛАСЬ, сырой микрофон с ветром/шорохами → «много помех».
+    // Эти три флага широко поддерживаются и Samsung их принимает (ронял только
+    // channelCount, которого тут НЕТ). {audio:true} — крайний фолбэк.
     const attempts = [
-      { audio: true },
       { audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } },
+      { audio: true },
     ];
 
     let lastErr = null;
@@ -319,6 +320,7 @@ const Voice = {
     try {
       this.stream = await this._getMic(); // до сетевых запросов — см. _getMic
       await this._ensureAudio();          // аудиоконтекст тоже создаём в жесте (iOS)
+      this._acquireWakeLock();            // экран не гаснет во время звонка
       this.token = await this.createRoom(contact.username);
       await this._connectAudio(this.token);
       // Таймер НЕ стартуем: держим «Вызов…», пока собеседник не принял.
@@ -341,6 +343,7 @@ const Voice = {
     try {
       this.stream = await this._getMic(); // до сетевых запросов — см. _getMic
       await this._ensureAudio();          // аудиоконтекст тоже создаём в жесте (iOS)
+      this._acquireWakeLock();            // экран не гаснет во время звонка
       await this._connectAudio(this.token);
       // Таймер стартует по первому аудио-кадру собеседника (синхронно на обоих)
       UI.showCall(this.contact, 'connecting');
@@ -395,6 +398,74 @@ const Voice = {
     }
   },
 
+  // ── Wake Lock: экран не гаснет во время звонка ──────────────────────────
+  // Без него iPhone блокировал экран посреди разговора и звонок «исчезал».
+  // Поддерживается iOS 16.4+ / Chrome / Samsung Internet; если API нет — просто
+  // пропускаем (хуже не станет). Система сама отпускает блокировку при уходе
+  // приложения в фон — возвращаем её на visibilitychange (см. bindEvents).
+  _wakeLock: null,
+  async _acquireWakeLock() {
+    try {
+      if ('wakeLock' in navigator && !this._wakeLock) {
+        this._wakeLock = await navigator.wakeLock.request('screen');
+        this._wakeLock.addEventListener('release', () => { this._wakeLock = null; });
+      }
+    } catch { /* нет API или запрещено — не критично */ }
+  },
+  _releaseWakeLock() {
+    try { this._wakeLock && this._wakeLock.release(); } catch {}
+    this._wakeLock = null;
+  },
+
+  // Адаптивный шумовой гейт для исходящих кадров (Float32, ~20 мс).
+  // ТОЛЬКО приглушает (коэффициент 0.35…1), НИКОГДА не усиливает.
+  // ПРОТИВ ОБРЕЗАНИЯ НАЧАЛА ФРАЗ — lookahead на один кадр: решение «речь/фон»
+  // принимается по ТЕКУЩЕМУ кадру, а наружу уходит ПРЕДЫДУЩИЙ с уже новым
+  // коэффициентом (задержка 20 мс, неощутимо). Против обрезания ХВОСТОВ —
+  // удержание увеличено до ~480 мс, порог закрытия снижен, спад плавнее.
+  _gateOutgoing(frame, rate) {
+    if (!this._gate) {
+      this._gate = {
+        floor: 0.02, gain: 1, hold: 0, init: false, pending: null,
+        attack: 1 - Math.exp(-1 / (0.004 * rate)),
+        release: 1 - Math.exp(-1 / (0.18 * rate)),
+      };
+    }
+    const g = this._gate;
+    let sum = 0;
+    for (let i = 0; i < frame.length; i++) sum += frame[i] * frame[i];
+    const rms = Math.sqrt(sum / frame.length);
+
+    if (!g.init) { g.floor = rms; g.init = true; }
+    // Оценка фона: вниз — мгновенно; вверх — быстро (~1 с), но ТОЛЬКО пока сигнал
+    // не похож на речь (ниже 1.5×порога открытия): речь «пол» не задирает, а шум,
+    // появившийся посреди звонка, выучивается и приглушается за ~секунду
+    const openPrev = Math.max(0.01, g.floor * 2.2);
+    if (rms < g.floor) g.floor = rms;
+    else if (rms < openPrev * 1.5) g.floor += (rms - g.floor) * 0.02;
+    g.floor = Math.max(1e-4, g.floor);
+
+    const open = Math.max(0.01, g.floor * 2.2);
+    const close = Math.max(0.006, g.floor * 1.3); // ниже — мягче к тихим хвостам слов
+    if (rms > open) g.hold = 24;                  // удержание ~480 мс
+    else if (rms > close && g.hold > 0) g.hold = Math.min(24, g.hold + 1);
+    else if (g.hold > 0) g.hold--;
+    const target = g.hold > 0 ? 1 : 0.35;         // фон приглушён, но не «в вакуум»
+
+    // Lookahead: обрабатываем и отдаём ПРЕДЫДУЩИЙ кадр с целью от ТЕКУЩЕГО —
+    // к моменту начала речи гейт уже открыт, первые слоги не съедаются
+    const prev = g.pending;
+    g.pending = frame;
+    if (!prev) return new Float32Array(frame.length); // первый кадр — 20 мс тишины
+
+    const out = new Float32Array(prev.length);
+    for (let i = 0; i < prev.length; i++) {
+      g.gain += (target - g.gain) * (target > g.gain ? g.attack : g.release);
+      out[i] = prev[i] * g.gain;
+    }
+    return out;
+  },
+
   async _connectAudio(token) {
     // 1. Микрофон (если не запрошен заранее в обработчике жеста) + аудиоконтекст
     if (!this.stream) this.stream = await this._getMic();
@@ -409,14 +480,47 @@ const Voice = {
       this.ws.onerror = () => rej(new Error('соединение не установлено'));
     });
 
-    // 3. Захват: Float32 (родная частота) → 48 кГц → Int16 → отправка
+    // 3. Захват + «подсластитель» голоса поверх браузерного NS/AEC/AGC.
+    // База (шумо-/эхоподавление, авто-громкость) — сам браузер (флаги в _getMic).
+    // Дальше — цепочка нативных узлов Web Audio, чтобы голос звучал приятнее и
+    // ровнее; всё работает на УЖЕ очищенном браузером сигнале, поэтому безопасно.
     const src = this.ctx.createMediaStreamSource(this.stream);
+
+    // (а) ФВЧ 90 Гц — убрать остаточный гул/бубнёж плозивов
+    const hpf = this.ctx.createBiquadFilter();
+    hpf.type = 'highpass'; hpf.frequency.value = 90; hpf.Q.value = 0.7;
+
+    // (б) немного «тела» голоса (тепло) + (в) присутствие/разборчивость
+    const warmth = this.ctx.createBiquadFilter();
+    warmth.type = 'peaking'; warmth.frequency.value = 220; warmth.Q.value = 1.0; warmth.gain.value = 1.5;
+    const presence = this.ctx.createBiquadFilter();
+    presence.type = 'peaking'; presence.frequency.value = 2800; presence.Q.value = 1.0; presence.gain.value = 4.0;
+
+    // (г) сглаживание резкости/шипения сверху
+    const deharsh = this.ctx.createBiquadFilter();
+    deharsh.type = 'lowpass'; deharsh.frequency.value = 7800; deharsh.Q.value = 0.7;
+
+    // (д) компрессор — СИЛЬНЕЕ выравнивает громкость (тихое↑, громкое↓)
+    const comp = this.ctx.createDynamicsCompressor();
+    comp.threshold.value = -28; comp.knee.value = 20; comp.ratio.value = 3.5;
+    comp.attack.value = 0.004; comp.release.value = 0.18;
+
+    // (е) makeup gain — общий подъём после компрессии (усиливает нормализацию).
+    // Умеренный (×1.7): сигнал уже очищен браузером, фон почти не поднимется.
+    const makeup = this.ctx.createGain();
+    makeup.gain.value = 1.7;
+
+    // (ж) шумовой гейт делаем в обработчике кадра — АДАПТИВНЫЙ и ТОЛЬКО приглушает
+    // (никогда не усиливает) → срезает остаточный фон между словами, безопасно.
+    this._gate = null;
     this.captureNode = new AudioWorkletNode(this.ctx, 'tbg-capture');
     this.captureNode.port.onmessage = e => {
       if (!this.micEnabled || !this.ws || this.ws.readyState !== WebSocket.OPEN) return;
-      this.ws.send(floatToInt16(resamplePcm(e.data, deviceRate, SAMPLE_RATE)).buffer);
+      const frame = this._gateOutgoing(e.data, deviceRate);
+      this.ws.send(floatToInt16(resamplePcm(frame, deviceRate, SAMPLE_RATE)).buffer);
     };
-    src.connect(this.captureNode);
+    src.connect(hpf).connect(warmth).connect(presence)
+       .connect(deharsh).connect(comp).connect(makeup).connect(this.captureNode);
     // подключаем к выходу через нулевую громкость, чтобы worklet работал (без эха себя)
     const mute = this.ctx.createGain();
     mute.gain.value = 0;
@@ -456,7 +560,14 @@ const Voice = {
   async hangup(notifyServer = true) {
     if (!this.active && !this.contact) return;
     this.active = false;
+
+    // Запись о звонке в чат пишет только ЗВОНИВШИЙ (без дублей с двух сторон);
+    // ловим данные до очистки состояния. Таймер идёт с первого аудио-кадра,
+    // поэтому 0 секунд = собеседник так и не подключился (пропущенный).
+    const reportContact = (this.role === 'caller' && this.token) ? this.contact : null;
+    const reportSeconds = this._peerJoined ? this.seconds : 0;
     this._stopTimer();
+    this._releaseWakeLock();
 
     if (notifyServer && this.token) this.decline(this.token);
 
@@ -469,11 +580,21 @@ const Voice = {
 
     this.ws = this.ctx = this.stream = this.captureNode = this.playbackNode = null;
     this.playbackDest = null;
+    this._gate = null;
     this._peerJoined = false;
     this._elPlaying = false;
     this.contact = this.token = this.role = null;
     this.micEnabled = true;
     UI.hideCall();
+
+    // Отправляем запись о звонке ПОСЛЕ очистки (обычным сообщением — попадает
+    // в историю и видна обеим сторонам; формат тот же, что на ПК)
+    if (reportContact) {
+      const text = reportSeconds < 1
+        ? '📞 Пропущенный звонок'
+        : `📞 Аудиозвонок (${Math.floor(reportSeconds / 60)}:${String(reportSeconds % 60).padStart(2, '0')})`;
+      sendMessage(reportContact, text).catch(() => {});
+    }
   },
 
   _startTimer() {
@@ -1439,6 +1560,12 @@ function bindEvents() {
   $('btn-hint-close').addEventListener('click', () => {
     $('install-hint').classList.add('hidden');
     localStorage.setItem('tbg.hintShown', '1');
+  });
+
+  // Wake lock отпускается системой при сворачивании — возвращаем его,
+  // когда приложение снова на экране и звонок ещё идёт
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && Voice.active) Voice._acquireWakeLock();
   });
 
   // Просмотр фото: крестик или клик по фону закрывают (клик по самому фото — нет)

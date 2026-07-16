@@ -37,18 +37,43 @@ namespace Tebegrammmm
         {
             this._Icon = icon;
             this._FolderName = folderName;
-            this.Contacts = contacts;
             this._IsCanRedact = isCanRedact;
             Contacts = contacts == null? new ObservableCollection<Contact>() : contacts;
+            // Chats инициализируем ВСЕГДА: раньше в этом конструкторе он оставался
+            // null, и любое обращение к folder.Chats падало бы NullReference'ом
+            Chats = new ObservableCollection<Chat>();
+        }
+
+        // ── Задел под групповые чаты (перенос из main-dev, коммит 311bff0) ──────
+        // Конструктор «папка из чатов». ВАЖНО: Contacts тоже инициализируем — в
+        // исходной версии main-dev он оставался null, и весь ТЕКУЩИЙ код, живущий
+        // на folder.Contacts (список чатов, вход, папки), упал бы при первом же
+        // использовании такой папки. Пока конструктором никто не пользуется —
+        // он ждёт миграции на протокол с ChatId (см. roadmap, Этап 23 п.5).
+        public ChatFolder(string folderName, ObservableCollection<Chat> chats, string icon = "📁", bool isCanRedact = true)
+        {
+            this._Icon = icon;
+            this._FolderName = folderName;
+            this._IsCanRedact = isCanRedact;
+            Chats = chats == null ? new ObservableCollection<Chat>() : chats;
+            Contacts = new ObservableCollection<Contact>();
         }
 
         public void AddContact(Contact contact)
         {
             Contacts.Add(contact);
         }
+        public void AddChat(Chat chat)
+        {
+            Chats.Add(chat);
+        }
         public void RemoveContact(Contact contact)
         {
             Contacts.Remove(contact);
+        }
+        public void RemoveChat(Chat chat)
+        {
+            Chats.Remove(chat);
         }
         
         public void ChangeFolderName(string folderName)

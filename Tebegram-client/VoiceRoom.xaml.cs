@@ -39,6 +39,15 @@ namespace Tebegrammmm
         private DispatcherTimer _callTimer;
         private TimeSpan _callDuration;
 
+        /// <summary>
+        /// Вызывается по завершении звонка у ЗВОНИВШЕГО (contact, длительность).
+        /// MessengerWindow подписывается и пишет в чат «📞 Аудиозвонок (м:сс)».
+        /// Только звонивший — чтобы сообщение не дублировалось с двух сторон.
+        /// </summary>
+        public static Action<Contact, TimeSpan> CallEnded;
+
+        private bool _isCaller;
+
         public VoiceRoom(Mode mode, Contact contact, string token)
         {
             InitializeComponent();
@@ -56,6 +65,7 @@ namespace Tebegrammmm
             _instance = this;
             Contact = contact;
             Token = token;
+            _isCaller = mode == Mode.ActiveCall;
             this.DataContext = contact;
 
             switch (mode)
@@ -102,22 +112,21 @@ namespace Tebegrammmm
 
             waveOut.Init(waveProvider);
 
+            // Шумоподавление + нормализация исходящего звука (как в веб-клиенте)
+            var dsp = new VoiceDsp(48000);
             waveIn.DataAvailable += async (s, e) =>
             {
                 if (ws.State == WebSocketState.Open)
                 {
                     try
                     {
+                        dsp.Process(e.Buffer, e.BytesRecorded);
                         await ws.SendAsync(new ArraySegment<byte>(e.Buffer, 0, e.BytesRecorded), WebSocketMessageType.Binary, true, CancellationToken.None);
-                        //Console.WriteLine($"Send {} Bytes");
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine(ex.ToString());
                     }
-
-                    //Thread.Sleep(200);
-                    //Console.WriteLine(e.Buffer[0]);
                 }
             };
 
@@ -333,6 +342,8 @@ namespace Tebegrammmm
             if (_instance != null && _instance != this) return;
 
             _callEnded = true;
+            // Запоминаем длительность ДО сброса таймера — для сообщения в чат
+            TimeSpan callLength = _callDuration;
             StopCallTimer();
             try
             {
@@ -366,6 +377,13 @@ namespace Tebegrammmm
                 Log.Save($"[VoiceRoom.Closing] DeclineCall: {ex.Message}");
             }
             UserData.User.InCall = false;
+
+            // Сообщение о звонке в чат пишет только ЗВОНИВШИЙ (без дублей)
+            if (_isCaller)
+            {
+                try { CallEnded?.Invoke(Contact, callLength); }
+                catch (Exception ex) { Log.Save($"[VoiceRoom.CallEnded] {ex.Message}"); }
+            }
         }
 
         private async void Button_Click_Decline(object sender, RoutedEventArgs e)
