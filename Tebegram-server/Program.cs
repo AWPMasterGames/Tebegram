@@ -442,16 +442,37 @@ app.Map("/Chat/ws", async context =>
     }
 });
 
-app.MapGet("/Chat/Create/{userId}-{username}", async (HttpContext Context, int userId, string username) =>
+app.MapGet("/Chat/Create/{userId}-{usernames}", async (HttpContext Context, int userId, string usernames) =>
 {
     List<User> members = new List<User>();
     members.Add(UsersData.FindUserById(userId));
-    members.Add(UsersData.FindUserByUsername(username));
+    string[] usersNames = usernames.Split('▫');
+    foreach (string username in usersNames)
+    {
+        members.Add(UsersData.FindUserByUsername(username));
+    }
+
     int chatId = ChatsController.CreateChat(members);
     Chat chat = ChatsController.Chats[chatId];
 
     string owner = chat.Owner != null ? $"{chat.Owner?.Id}" : "None";
+    if (!chat.IsGroup)
+    {
 
+        string avatar = string.Empty;
+        if (string.IsNullOrEmpty(chat.Avatar))
+        {
+            avatar = members[1].Avatar;
+        }
+
+        string name = string.Empty;
+        if (string.IsNullOrEmpty(chat.Name))
+        {
+            name = members[1].Name;
+        }
+        await Context.Response.WriteAsync($"{chat.Id}&{name}&{chat.IsGroup}&{avatar}&{owner}");
+        return;
+    }
     await Context.Response.WriteAsync($"{chat.Id}&{chat.Name}&{chat.IsGroup}&{chat.Avatar}&{owner}");
 });
 app.MapGet("/Chat/Get/{id}-{userId}-{pass}", async (HttpContext Context, int id, int userId, string pass) =>

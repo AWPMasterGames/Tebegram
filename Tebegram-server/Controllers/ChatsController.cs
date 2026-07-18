@@ -14,7 +14,22 @@ namespace TebegramServer.Controllers
 
         public static int CreateChat(List<User> members)
         {
-            Chat chat = new Chat(1000000 + new Random().Next(int.MaxValue-1000001), "", false, "", null, members, new ObservableCollection<Message>());
+            Chat chat;
+            if (members.Count < 3)
+            {
+                chat = new Chat(1000000 + new Random().Next(int.MaxValue - 1000001), "", false, "", null, members, new ObservableCollection<Message>());
+            }
+            else
+            {
+                string gName = string.Empty;
+                for (int i = 0; i < members.Count -1 ; i++)
+                {
+                    gName += $"{members[i].Name}, ";
+                }
+                gName += $"{members[members.Count - 1].Name}";
+                chat = new Chat(1000000 + new Random().Next(int.MaxValue - 1000001), gName, true, "", members[0], members, new ObservableCollection<Message>());
+            }
+
             Chats.Add(chat.Id, chat);
             foreach (User user in members)
             {
@@ -47,12 +62,12 @@ namespace TebegramServer.Controllers
 
             foreach (User user in Chats[chatId].Members)
             {
-                foreach(WebSocket session in user.ChatsSessions)
+                foreach (WebSocket session in user.ChatsSessions)
                 {
                     if (session.State == WebSocketState.Open)
                     {
                         Console.WriteLine($"Send to user: {user.Username} | message: {message.ToString()}");
-                        var arraySegment = new ArraySegment<byte>(Encoding.UTF8.GetBytes(message.ToString()));
+                        var arraySegment = new ArraySegment<byte>(Encoding.UTF8.GetBytes($"addMessage▫$▫{message.ToString()}"));
                         await session.SendAsync(arraySegment, WebSocketMessageType.Text, true, CancellationToken.None);
                     }
                 }

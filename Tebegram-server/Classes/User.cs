@@ -80,6 +80,27 @@ namespace TebegramServer
                 {
                     membersId += $"{u.Id},";
                 }
+                if (!chat.IsGroup)
+                {
+                    User otherUser;
+
+                    if (chat.Members[0].Id == this.Id) otherUser = chat.Members[1];
+                    else otherUser = chat.Members[0];
+                        string avatar = string.Empty;
+                    if (string.IsNullOrEmpty(chat.Avatar))
+                    {
+                        avatar = otherUser.Avatar;
+                    }
+
+                    string name = string.Empty;
+                    if (string.IsNullOrEmpty(chat.Name))
+                    {
+                        name = otherUser.Name;
+                    }
+
+                    sb.Append($"{chat.Id}&{name}&{chat.IsGroup}&{avatar}&{owner}&{membersId}▫");
+                    continue;
+                }
                 sb.Append($"{chat.Id}&{chat.Name}&{chat.IsGroup}&{chat.Avatar}&{owner}&{membersId}▫");
                 // Вместо IP и порта используем имя пользователя
                 // sb.Append($"{contact.IPAddress}▫{contact.Port}▫");

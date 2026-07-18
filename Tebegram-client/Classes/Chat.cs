@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using Tebegrammmm.Data;
@@ -35,7 +36,7 @@ namespace Tebegrammmm.Classes
             _Name = name;
             IsGroup = isGroup;
             IOwner = iOwner;
-            Avatar = avatar;
+            Avatar = $"{ServerData.ServerAdress}/avatars/{avatar}";
             Members = new ObservableCollection<Contact>();
             _Messages = new ObservableCollection<Message>();
             GetUserAvatar();
@@ -48,7 +49,7 @@ namespace Tebegrammmm.Classes
             IsGroup = isGroup;
             IOwner = iOwner;
             Members = members;
-            Avatar = avatar;
+            Avatar = $"{ServerData.ServerAdress}/avatars/{avatar}";
             GetUserAvatar();
         }
 
@@ -60,7 +61,7 @@ namespace Tebegrammmm.Classes
             {
                 if(member.UserId != UserData.User.Id) UserId = member.UserId;
             }
-
+            if(UserId == 0) return;
             try
             {
                 using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/avatarsFileName/{UserId}");

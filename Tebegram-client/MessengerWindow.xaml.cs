@@ -12,6 +12,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.WebSockets;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -105,18 +106,37 @@ namespace Tebegrammmm
                 var result = await ws.ReceiveAsync(receiveBuffer, CancellationToken.None);
                 if (result.MessageType == WebSocketMessageType.Text)
                 {
-                    string textMessage = Encoding.UTF8.GetString(receiveBuffer.Array, 0, result.Count);
-                    //распределение сообщений в чаты
-                    try
+                    string serverMesage = Encoding.UTF8.GetString(receiveBuffer.Array, 0, result.Count);
+                    string[] data = serverMesage.Split("▫$▫");
+                    switch (data[0])
                     {
-                        AddMessageToUser(textMessage);
+                        case "addMessage":
+                            //распределение сообщений в чаты
+                            try
+                            {
+                                AddMessageToUser(data[1]);
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Save($"[GetMessage] Error: {ex.Message}");
+                                MessageBox.Show("Ошибка при попытке получения сообщений\nПодробнее от ошибке можно узнать в краш логах");
+                                return;
+                            }
+                            break;
+
+                        case "addChat":
+                            string[] ChatData = data[1].Split('&');
+                            bool iOwner = false;
+                            if (ChatData[4] != "None")
+                                if (UserData.User.Id == int.Parse(ChatData[4])) iOwner = true;
+
+                            List<Contact> members = new List<Contact>();
+                            Chat chat = new Chat(int.Parse(ChatData[0]), ChatData[1], Convert.ToBoolean(ChatData[2]), ChatData[3], iOwner);
+                            UserData.User.ChatsFolders[0].AddChat(Chat);
+                            UserData.User.AddChat(chat);
+                            break;
                     }
-                    catch (Exception ex)
-                    {
-                        Log.Save($"[GetMessage] Error: {ex.Message}");
-                        MessageBox.Show("Ошибка при попытке получения сообщений\nПодробнее от ошибке можно узнать в краш логах");
-                        return;
-                    }
+
                 }
                 else if (result.MessageType == WebSocketMessageType.Close)
                 {
@@ -262,7 +282,7 @@ namespace Tebegrammmm
                 {
                     text += messageData[i];
                 }
-                Message message = new Message(int.Parse(messageData[0]), UserData.User.Name, UserData.User.Username, text, messageData[4]);
+                Message message = new Message(int.Parse(messageData[0]), messageData[1], UserData.User.Username, text, messageData[4]);
                 message.Status = MessageStatus.Sent; // Все сообщения просто сохраняются
 
                 Dispatcher.Invoke(new Action(() =>

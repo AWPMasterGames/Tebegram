@@ -1,4 +1,6 @@
-﻿namespace TebegramServer
+﻿using TebegramServer.Data;
+
+namespace TebegramServer
 {
     public enum MessageType
     {
@@ -37,7 +39,7 @@
         }
         public override string ToString()
         {
-            return $"{ChatId}▫{Sender}▫{Reciver}▫{MessageType}▫{Time}▫{ServerAdress}▫{Text}";
+            return $"{ChatId}▫{UsersData.FindUserByUsername(Sender).Name}▫{Reciver}▫{MessageType}▫{Time}▫{ServerAdress}▫{Text}";
         }
     }
 }
