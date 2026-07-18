@@ -26,7 +26,20 @@ namespace TebegramServer.Controllers
                     id = 1000000 + _random.Next(int.MaxValue - 1000001);
                 } while (Chats.ContainsKey(id));
 
-                Chat chat = new Chat(id, "", false, "", null, members, new ObservableCollection<Message>());
+                Chat chat;
+                if (members.Count < 3)
+                {
+                    // Личный чат (или чат с собой — «Избранное»)
+                    chat = new Chat(id, "", false, "", null, members, new ObservableCollection<Message>());
+                }
+                else
+                {
+                    // Группа (перенос из main-dev, коммит 64bc1ab): имя по умолчанию —
+                    // перечисление имён участников, владелец — создатель (первый в списке)
+                    string gName = string.Join(", ", members.Select(m => m.Name));
+                    chat = new Chat(id, gName, true, "", members[0], members, new ObservableCollection<Message>());
+                }
+
                 Chats.Add(chat.Id, chat);
                 foreach (User user in members)
                 {

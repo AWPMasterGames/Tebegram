@@ -159,6 +159,21 @@ namespace Tebegrammmm
                             HandleDeleteNotification(textMessage);
                             continue;
                         }
+
+                        // Конверт команд из main-dev (64bc1ab): «команда▫$▫данные».
+                        // Наш сервер пока шлёт сообщения БЕЗ конверта — понимаем оба
+                        // формата: старый не ломается, к новому серверу уже готовы
+                        if (textMessage.StartsWith("addMessage▫$▫"))
+                        {
+                            AddMessageToUser(textMessage.Substring("addMessage▫$▫".Length));
+                            continue;
+                        }
+                        if (textMessage.StartsWith("addChat▫$▫"))
+                        {
+                            HandleAddChat(textMessage.Substring("addChat▫$▫".Length));
+                            continue;
+                        }
+
                         AddMessageToUser(textMessage);
                     }
                     catch (Exception ex)
@@ -290,6 +305,38 @@ namespace Tebegrammmm
             {
                 TBMessage.Text = Contact.Draft ?? string.Empty;
                 Log.Save($"[LBChats_SelectionChanged] Restored draft for {Contact.Name}: '{Contact.Draft}'");
+            }
+        }
+
+        /// <summary>
+        /// Приём нового чата от сервера (перенос из main-dev, коммит 64bc1ab, с фиксами:
+        /// в оригинале в AddChat передавался ТИП Chat вместо переменной chat — это даже
+        /// не компилируется, — а сам чат добавлялся дважды: и в папку напрямую, и через
+        /// User.AddChat, который кладёт в ту же коллекцию).
+        /// Формат данных: id&name&isGroup&avatar&ownerId. Чаты пока «спящая» сущность
+        /// (переписка живёт в Contact.Messages), поэтому просто кладём в коллекцию.
+        /// </summary>
+        private void HandleAddChat(string payload)
+        {
+            try
+            {
+                string[] chatData = payload.Split('&');
+                bool iOwner = chatData.Length > 4 && chatData[4] != "None" &&
+                              int.TryParse(chatData[4], out int ownerId) && ownerId == UserData.User.Id;
+
+                var chat = new Classes.Chat(int.Parse(chatData[0]), chatData[1],
+                    bool.Parse(chatData[2]), chatData[3], iOwner);
+
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    // Дедуп: сервер может продублировать уведомление при переподключении
+                    if (UserData.User.FindChatById(chat.Id) == null)
+                        UserData.User.AddChat(chat);
+                }));
+            }
+            catch (Exception ex)
+            {
+                Log.Save($"[HandleAddChat] {ex.GetType().Name}: {ex.Message}");
             }
         }
 

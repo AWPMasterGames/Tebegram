@@ -29,13 +29,12 @@ namespace Tebegrammmm
             // Текущий выбор сервера (DrunkMan / Adress.txt)
             UpdateServerChoiceLabel();
 
-            // Тумблер темы: выставляем без вызова обработчика
-            ThemeToggle.Checked -= ThemeToggle_Changed;
-            ThemeToggle.Unchecked -= ThemeToggle_Changed;
-            ThemeToggle.IsChecked = ThemeManager.IsDark;
-            ThemeLabel.Text = ThemeManager.IsDark ? "Тёмная тема" : "Светлая тема";
-            ThemeToggle.Checked += ThemeToggle_Changed;
-            ThemeToggle.Unchecked += ThemeToggle_Changed;
+            // Список тем — тот же ComboBox, что и выбор микрофона.
+            // Текущую тему выставляем без вызова обработчика (иначе лишняя запись файла)
+            ThemeCB.SelectionChanged -= ThemeCB_SelectionChanged;
+            ThemeCB.ItemsSource = new[] { "Светлая тема", "Тёмная тема" };
+            ThemeCB.SelectedIndex = ThemeManager.IsDark ? 1 : 0;
+            ThemeCB.SelectionChanged += ThemeCB_SelectionChanged;
         }
 
         private void UpdateServerChoiceLabel()
@@ -53,10 +52,10 @@ namespace Tebegrammmm
             Log.Save($"[Settings] Сервер переключён: {ServerData.ServerChoice} → {ServerData.ServerAdress}");
         }
 
-        private void ThemeToggle_Changed(object sender, RoutedEventArgs e)
+        private void ThemeCB_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            bool isDark = ThemeToggle.IsChecked == true;
-            ThemeLabel.Text = isDark ? "Тёмная тема" : "Светлая тема";
+            // Индекс 1 = «Тёмная тема» (порядок элементов задан в конструкторе)
+            bool isDark = ThemeCB.SelectedIndex == 1;
             ThemeManager.Apply(isDark);
             try
             {

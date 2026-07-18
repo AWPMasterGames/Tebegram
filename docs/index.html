@@ -20,7 +20,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
 
   <!-- ?v= обходит HTTP-кэш браузера: без него телефоны неделями держат старый код -->
-  <link rel="stylesheet" href="./styles.css?v=1.0.14">
+  <link rel="stylesheet" href="./styles.css?v=1.0.15">
 </head>
 <body>
 
@@ -116,10 +116,17 @@
         </div>
 
         <div class="card">
-          <button id="btn-theme" class="settings-row">
+          <!-- Выбор темы — выпадающий список в стиле остальных полей (как выбор микрофона на ПК) -->
+          <div class="settings-row settings-row--column">
             <span>Тема</span>
-            <span id="theme-label" class="settings-value">Авто</span>
-          </button>
+            <div class="select-wrap">
+              <select id="theme-select" aria-label="Тема оформления">
+                <option value="auto">Авто (как в системе)</option>
+                <option value="light">Светлая</option>
+                <option value="dark">Тёмная</option>
+              </select>
+            </div>
+          </div>
         </div>
 
         <div class="card">
@@ -266,6 +273,6 @@
 
   <div id="toast" class="toast hidden"></div>
 
-  <script src="./app.js?v=1.0.14"></script>
+  <script src="./app.js?v=1.0.15"></script>
 </body>
 </html>

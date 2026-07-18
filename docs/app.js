@@ -6,7 +6,7 @@
    ═══════════════════════════════════════════════════════════════ */
 'use strict';
 
-const APP_VERSION = '1.0.14';
+const APP_VERSION = '1.0.15';
 const SEP = '▫';
 const MSG_SEP = '❂';
 const WS_SEP = '▫#▫';
@@ -799,10 +799,14 @@ const Chat = {
       this.ws = ws;
       ws.onopen = () => UI.setConnected(true);
       ws.onmessage = e => {
-        const data = String(e.data);
+        let data = String(e.data);
         // Команда удаления сообщения у собеседника
-        if (data.startsWith(`DEL${WS_SEP}`)) handleDeleteNotification(data);
-        else routeMessage(data);
+        if (data.startsWith(`DEL${WS_SEP}`)) { handleDeleteNotification(data); return; }
+        // Конверт команд сервера из main-dev (64bc1ab): «команда▫$▫данные».
+        // Наш сервер пока шлёт сообщения без конверта — понимаем оба формата.
+        if (data.startsWith('addMessage▫$▫')) data = data.slice('addMessage▫$▫'.length);
+        else if (data.startsWith('addChat▫$▫')) return; // групповых чатов на вебе пока нет
+        routeMessage(data);
       };
       ws.onerror = () => reject(new Error('ws error'));
       ws.onclose = () => resolve();
@@ -1529,7 +1533,7 @@ function bindEvents() {
     b.addEventListener('click', () => UI.switchTab(b.dataset.tab)));
 
   $('btn-logout').addEventListener('click', doLogout);
-  $('btn-theme').addEventListener('click', () => Theme.cycle());
+  $('theme-select').addEventListener('change', e => Theme.apply(e.target.value));
 
   $('server-override').addEventListener('change', e => {
     const v = e.target.value.trim();
@@ -1600,7 +1604,6 @@ function bindEvents() {
 /* ─────────────── Тема: Авто (системная) / Светлая / Тёмная ─────────────── */
 const Theme = {
   MODES: ['auto', 'light', 'dark'],
-  LABELS: { auto: 'Авто', light: 'Светлая', dark: 'Тёмная' },
 
   current() { return localStorage.getItem('tbg.theme') || 'auto'; },
 
@@ -1609,12 +1612,9 @@ const Theme = {
     if (mode === 'auto') document.documentElement.removeAttribute('data-theme');
     else document.documentElement.setAttribute('data-theme', mode);
     localStorage.setItem('tbg.theme', mode);
-    const lbl = $('theme-label');
-    if (lbl) lbl.textContent = this.LABELS[mode];
-  },
-
-  cycle() {
-    this.apply(this.MODES[(this.MODES.indexOf(this.current()) + 1) % this.MODES.length]);
+    // Синхронизируем список в настройках (при старте select ещё не тронут)
+    const sel = $('theme-select');
+    if (sel) sel.value = mode;
   },
 };
 

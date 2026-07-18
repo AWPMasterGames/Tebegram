@@ -655,6 +655,35 @@ html, body {
   color: var(--text-primary);
   outline: none;
 }
+/* Выпадающий список (тема и т.п.) — в стиле полей ввода, со своей стрелкой,
+   т.к. системная у select не красится под тему */
+.select-wrap { position: relative; }
+.select-wrap select {
+  width: 100%;
+  font-size: 16px;
+  padding: 10px 36px 10px 12px;
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+.select-wrap::after {
+  content: "";
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  margin-top: -6px;
+  border-right: 1.5px solid var(--text-muted);
+  border-bottom: 1.5px solid var(--text-muted);
+  transform: rotate(45deg);
+  pointer-events: none; /* клик проходит в сам select */
+}
 .settings-hint { color: var(--text-muted); font-size: 12px; }
 .settings-value { color: var(--text-secondary); font-size: 15px; }
 .settings-version { text-align: center; color: var(--text-muted); font-size: 12px; margin-top: 8px; }

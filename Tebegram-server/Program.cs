@@ -671,6 +671,58 @@ static async Task ReceiveMessage(WebSocket socket, Func<WebSocketReceiveResult, 
 
 #region Chat
 
+// Создание чата (перенос из main-dev, коммит 64bc1ab, с фиксами).
+// {usernames} — один или несколько логинов через ▫: до двух участников — личный чат,
+// три и больше — группа (владелец — создатель, имя — из имён участников).
+// Наши клиенты этот эндпоинт пока не вызывают (чаты — «спящая» сущность),
+// но клиент из main-dev уже умеет. Фиксы против оригинала:
+// — FindUserByUsername может вернуть null: в оригинале null попадал в members
+//   и ронял CreateChat (NRE), здесь — понятная ошибка 400;
+// — при НЕпустых Name/Avatar чата в ответ шли пустые строки (переменные
+//   инициализировались empty и заполнялись только когда поля чата пусты);
+// — для чата с собой после дедупа участник один — оригинальный members[1]
+//   кидал ArgumentOutOfRangeException.
+app.MapGet("/Chat/Create/{userId}-{usernames}", async (HttpContext Context, int userId, string usernames) =>
+{
+    User? creator = UsersData.FindUserById(userId);
+    if (creator == null)
+    {
+        Context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+        await Context.Response.WriteAsync("Пользователь не найден");
+        return;
+    }
+
+    List<User> members = new List<User> { creator };
+    foreach (string username in usernames.Split('▫'))
+    {
+        User? member = UsersData.FindUserByUsername(username);
+        if (member == null)
+        {
+            Context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            await Context.Response.WriteAsync($"Пользователь {username} не найден");
+            return;
+        }
+        members.Add(member);
+    }
+
+    int chatId = ChatsController.CreateChat(members);
+    Chat chat = ChatsController.Chats[chatId];
+    string owner = chat.Owner != null ? $"{chat.Owner.Id}" : "None";
+
+    // Личный чат в ответе показываем как собеседника (у самого чата имя/аватар пустые);
+    // чат с собой («Избранное») — как себя
+    string name = chat.Name;
+    string avatar = chat.Avatar;
+    if (!chat.IsGroup)
+    {
+        User other = chat.Members.FirstOrDefault(m => m.Id != creator.Id) ?? creator;
+        if (string.IsNullOrEmpty(name)) name = other.Name;
+        if (string.IsNullOrEmpty(avatar)) avatar = other.Avatar;
+    }
+
+    await Context.Response.WriteAsync($"{chat.Id}&{name}&{chat.IsGroup}&{avatar}&{owner}");
+});
+
 app.Map("/Chat/ws", async context =>
 {
     if (!context.WebSockets.IsWebSocketRequest)

@@ -78,63 +78,6 @@
             </ControlTemplate.Triggers>
         </ControlTemplate>
 
-        <!--  Переключатель-тумблер (iOS-стиль)  -->
-        <ControlTemplate x:Key="ToggleSwitchTemplate" TargetType="ToggleButton">
-            <Border
-                x:Name="Track"
-                Width="46"
-                Height="26"
-                Background="{DynamicResource Light.BorderStrongBrush}"
-                CornerRadius="13">
-                <Ellipse
-                    x:Name="Thumb"
-                    Width="20"
-                    Height="20"
-                    Margin="3,0,0,0"
-                    HorizontalAlignment="Left"
-                    Fill="White">
-                    <Ellipse.RenderTransform>
-                        <TranslateTransform x:Name="ThumbShift" X="0" />
-                    </Ellipse.RenderTransform>
-                </Ellipse>
-            </Border>
-            <ControlTemplate.Triggers>
-                <Trigger Property="IsChecked" Value="True">
-                    <Setter TargetName="Track" Property="Background" Value="{DynamicResource Light.AccentPrimaryBrush}" />
-                    <Trigger.EnterActions>
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <DoubleAnimation
-                                    Storyboard.TargetName="ThumbShift"
-                                    Storyboard.TargetProperty="X"
-                                    To="20"
-                                    Duration="0:0:0.18">
-                                    <DoubleAnimation.EasingFunction>
-                                        <CubicEase EasingMode="EaseOut" />
-                                    </DoubleAnimation.EasingFunction>
-                                </DoubleAnimation>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </Trigger.EnterActions>
-                    <Trigger.ExitActions>
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <DoubleAnimation
-                                    Storyboard.TargetName="ThumbShift"
-                                    Storyboard.TargetProperty="X"
-                                    To="0"
-                                    Duration="0:0:0.18">
-                                    <DoubleAnimation.EasingFunction>
-                                        <CubicEase EasingMode="EaseOut" />
-                                    </DoubleAnimation.EasingFunction>
-                                </DoubleAnimation>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </Trigger.ExitActions>
-                </Trigger>
-            </ControlTemplate.Triggers>
-        </ControlTemplate>
-
         <!--  ComboBox: контейнер элемента (скруглённый, в теме)  -->
         <Style x:Key="DeviceComboBoxItemStyle" TargetType="ComboBoxItem">
             <Setter Property="Background" Value="Transparent" />
@@ -534,39 +477,33 @@
                             </Grid>
                         </Border>
 
-                        <!--  Оформление: переключатель тёмной темы  -->
+                        <!--  Оформление: выбор темы — список в том же стиле, что выбор микрофона  -->
                         <Border
                             Margin="0,0,0,20"
-                            Padding="16,12"
+                            Padding="16,14"
                             Background="{DynamicResource Light.BgSurfaceBrush}"
                             BorderBrush="{DynamicResource Light.BorderSubtleBrush}"
                             BorderThickness="1"
                             CornerRadius="14">
                             <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock
-                                        FontSize="11"
-                                        FontWeight="SemiBold"
-                                        Foreground="{DynamicResource Light.TextMutedBrush}"
-                                        Text="ОФОРМЛЕНИЕ" />
-                                    <TextBlock
-                                        x:Name="ThemeLabel"
-                                        FontSize="15"
-                                        Foreground="{DynamicResource Light.TextPrimaryBrush}"
-                                        Text="Светлая тема" />
-                                </StackPanel>
-                                <ToggleButton
-                                    x:Name="ThemeToggle"
-                                    Grid.Column="1"
-                                    VerticalAlignment="Center"
-                                    Checked="ThemeToggle_Changed"
-                                    Cursor="Hand"
-                                    Template="{StaticResource ToggleSwitchTemplate}"
-                                    Unchecked="ThemeToggle_Changed" />
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <TextBlock
+                                    Margin="0,0,0,8"
+                                    FontSize="11"
+                                    FontWeight="SemiBold"
+                                    Foreground="{DynamicResource Light.TextMutedBrush}"
+                                    Text="ОФОРМЛЕНИЕ" />
+                                <ComboBox
+                                    x:Name="ThemeCB"
+                                    Grid.Row="1"
+                                    FontSize="13"
+                                    Foreground="{DynamicResource Light.TextPrimaryBrush}"
+                                    ItemContainerStyle="{StaticResource DeviceComboBoxItemStyle}"
+                                    SelectionChanged="ThemeCB_SelectionChanged"
+                                    Template="{StaticResource DeviceComboBoxTemplate}" />
                             </Grid>
                         </Border>
 
@@ -578,63 +515,79 @@
                             BorderBrush="{DynamicResource Light.BorderSubtleBrush}"
                             BorderThickness="1"
                             CornerRadius="14">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock
-                                        FontSize="11"
-                                        FontWeight="SemiBold"
-                                        Foreground="{DynamicResource Light.TextMutedBrush}"
-                                        Text="ПРИЛОЖЕНИЕ" />
-                                    <TextBlock
-                                        x:Name="TBVersion"
-                                        FontSize="15"
-                                        Foreground="{DynamicResource Light.TextPrimaryBrush}" />
-                                    <!--  Переключатель сервера: туннель DrunkMan ↔ Adress.txt (авто)  -->
-                                    <TextBlock
-                                        Margin="0,10,0,0"
-                                        FontSize="11"
-                                        FontWeight="SemiBold"
-                                        Foreground="{DynamicResource Light.TextMutedBrush}"
-                                        Text="СЕРВЕР" />
-                                    <StackPanel Orientation="Horizontal">
+                            <StackPanel>
+                                <!--  Версия + проверка обновлений  -->
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock
+                                            FontSize="11"
+                                            FontWeight="SemiBold"
+                                            Foreground="{DynamicResource Light.TextMutedBrush}"
+                                            Text="ПРИЛОЖЕНИЕ" />
+                                        <TextBlock
+                                            x:Name="TBVersion"
+                                            FontSize="15"
+                                            Foreground="{DynamicResource Light.TextPrimaryBrush}" />
+                                    </StackPanel>
+                                    <Button
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Click="CheckUpdates_Click"
+                                        Cursor="Hand"
+                                        Template="{StaticResource GhostButtonTemplate}">
+                                        <TextBlock
+                                            FontSize="13"
+                                            FontWeight="SemiBold"
+                                            Foreground="{DynamicResource Light.AccentTextBrush}"
+                                            Text="Проверить обновления" />
+                                    </Button>
+                                </Grid>
+
+                                <!--  Разделитель строк  -->
+                                <Border
+                                    Height="1"
+                                    Margin="0,12"
+                                    Background="{DynamicResource Light.BorderSubtleBrush}" />
+
+                                <!--  Переключатель сервера: туннель DrunkMan ↔ Adress.txt (авто).
+                                      Отдельной строкой на всю ширину карточки — раньше эта пара
+                                      делила колонку с «Проверить обновления» и обрезалась  -->
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock
+                                            FontSize="11"
+                                            FontWeight="SemiBold"
+                                            Foreground="{DynamicResource Light.TextMutedBrush}"
+                                            Text="СЕРВЕР" />
                                         <TextBlock
                                             x:Name="TBServerChoice"
-                                            VerticalAlignment="Center"
                                             FontSize="15"
                                             Foreground="{DynamicResource Light.TextPrimaryBrush}"
                                             Text="Adress.txt (авто)" />
-                                        <Button
-                                            Margin="10,0,0,0"
-                                            VerticalAlignment="Center"
-                                            Click="ToggleServer_Click"
-                                            Cursor="Hand"
-                                            Template="{StaticResource GhostButtonTemplate}"
-                                            ToolTip="Переключить сервер. Уже открытые соединения переподключатся сами; надёжнее — перезапустить приложение.">
-                                            <TextBlock
-                                                FontSize="13"
-                                                FontWeight="SemiBold"
-                                                Foreground="{DynamicResource Light.AccentTextBrush}"
-                                                Text="Переключить" />
-                                        </Button>
                                     </StackPanel>
-                                </StackPanel>
-                                <Button
-                                    Grid.Column="1"
-                                    VerticalAlignment="Center"
-                                    Click="CheckUpdates_Click"
-                                    Cursor="Hand"
-                                    Template="{StaticResource GhostButtonTemplate}">
-                                    <TextBlock
-                                        FontSize="13"
-                                        FontWeight="SemiBold"
-                                        Foreground="{DynamicResource Light.AccentTextBrush}"
-                                        Text="Проверить обновления" />
-                                </Button>
-                            </Grid>
+                                    <Button
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Click="ToggleServer_Click"
+                                        Cursor="Hand"
+                                        Template="{StaticResource GhostButtonTemplate}"
+                                        ToolTip="Переключить сервер. Уже открытые соединения переподключатся сами; надёжнее — перезапустить приложение.">
+                                        <TextBlock
+                                            FontSize="13"
+                                            FontWeight="SemiBold"
+                                            Foreground="{DynamicResource Light.AccentTextBrush}"
+                                            Text="Переключить" />
+                                    </Button>
+                                </Grid>
+                            </StackPanel>
                         </Border>
 
                         <!--  Кнопка выйти  -->
