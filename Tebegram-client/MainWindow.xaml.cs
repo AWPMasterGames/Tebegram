@@ -40,6 +40,11 @@ namespace Tebegrammmm
             this.Closed += (_, __) => _connMonitorRunning = false;
             StartConnectionMonitor();
 
+            // Подпись переключателя сервера. Сохранённый выбор читается фоном
+            // внутри GetServerAdress, поэтому после Ready обновляем ещё раз
+            UpdateServerChoiceLabels();
+            _ = RefreshServerChoiceLabelsAsync();
+
             // Данные храним в AppData (AppPaths) — в Program Files запись запрещена.
             // Старый файл рядом с exe читаем для миграции.
             string userDataPath = File.Exists(AppPaths.UserDataFile) ? AppPaths.UserDataFile
@@ -80,6 +85,7 @@ namespace Tebegrammmm
         private static readonly Brush ConnBrushFailed = new SolidColorBrush(Color.FromRgb(0xEF, 0x44, 0x44));
 
         private bool _connMonitorRunning;
+        private CancellationTokenSource _connDelayCts;
 
         private async void StartConnectionMonitor()
         {
@@ -99,9 +105,41 @@ namespace Tebegrammmm
                 else
                     SetConnStatus(ConnBrushFailed, "Сервер не отвечает");
 
-                // Пауза перед следующей проверкой (индикатор остаётся «живым»)
-                try { await Task.Delay(5000); } catch { }
+                // Пауза перед следующей проверкой (индикатор остаётся «живым»).
+                // Отменяемая: переключение сервера дёргает Cancel, чтобы точка
+                // перепроверила соединение сразу, а не через 5 секунд
+                try
+                {
+                    _connDelayCts = new CancellationTokenSource();
+                    await Task.Delay(5000, _connDelayCts.Token);
+                }
+                catch { }
             }
+        }
+
+        // ── Переключатель сервера до входа: Adress.txt (авто) ↔ туннель DrunkMan ──
+        // Выбор общий с настройками (serverChoice.data в AppData); по умолчанию,
+        // пока файла нет, — Adress.txt (авто).
+        private void UpdateServerChoiceLabels()
+        {
+            string label = ServerData.ServerChoice == "drunkman" ? "Туннель DrunkMan" : "Adress.txt (авто)";
+            // Подписи на обоих экранах (вход и регистрация) — как точки соединения
+            if (LoginServerLabel != null) LoginServerLabel.Text = label;
+            if (RegServerLabel != null) RegServerLabel.Text = label;
+        }
+
+        private async Task RefreshServerChoiceLabelsAsync()
+        {
+            try { await ServerData.Ready; } catch { }
+            UpdateServerChoiceLabels();
+        }
+
+        private void ServerChoiceBtn_Click(object sender, RoutedEventArgs e)
+        {
+            ServerData.SetServerChoice(ServerData.ServerChoice == "drunkman" ? "auto" : "drunkman");
+            UpdateServerChoiceLabels();
+            Log.Save($"[MainWindow] Сервер переключён до входа: {ServerData.ServerChoice}");
+            _connDelayCts?.Cancel(); // индикатор соединения перепроверит новый адрес сразу
         }
 
         private void SetConnStatus(Brush brush, string tooltip)

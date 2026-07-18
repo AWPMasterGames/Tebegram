@@ -6,6 +6,12 @@
       "runtimeExecutable": "cmd",
       "runtimeArgs": ["/c", "set DOTNET_ROLL_FORWARD=LatestMajor&& dotnet run --project Tebegram-server\\TebegramServer.csproj --no-build"],
       "port": 5000
+    },
+    {
+      "name": "web-docs",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8090", "--directory", "docs"],
+      "port": 8090
     }
   ]
 }

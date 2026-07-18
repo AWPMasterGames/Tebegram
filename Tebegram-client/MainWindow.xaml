@@ -96,6 +96,25 @@
             </ControlTemplate.Triggers>
         </ControlTemplate>
 
+        <!--  «Тихая» текстовая кнопка (как в настройках) — для переключателя сервера  -->
+        <ControlTemplate x:Key="GhostButtonTemplate" TargetType="Button">
+            <Border
+                x:Name="Bd"
+                Padding="6,3"
+                Background="Transparent"
+                CornerRadius="6">
+                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.AccentMutedBrush}" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter TargetName="Bd" Property="Opacity" Value="0.7" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
         <!-- Вторичная кнопка со скруглением и hover -->
         <ControlTemplate x:Key="SecondaryButtonTemplate" TargetType="Button">
             <Border
@@ -187,16 +206,34 @@
                             Template="{StaticResource CloseButtonTemplate}" />
                     </StackPanel>
 
-                    <!-- Индикатор связи с сервером: зелёный — есть, серый — проверка, красный — нет ответа -->
-                    <Ellipse
-                        x:Name="LoginConnDot"
-                        Width="9"
-                        Height="9"
-                        Margin="4,9,0,0"
+                    <!-- Индикатор связи с сервером + переключатель источника адреса.
+                         Кнопка меняет Adress.txt (авто) ↔ туннель DrunkMan ещё до входа -->
+                    <StackPanel
+                        Margin="4,6,0,0"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
-                        Fill="#9CA3AF"
-                        ToolTip="Проверка соединения с сервером…" />
+                        Orientation="Horizontal">
+                        <Ellipse
+                            x:Name="LoginConnDot"
+                            Width="9"
+                            Height="9"
+                            VerticalAlignment="Center"
+                            Fill="#9CA3AF"
+                            ToolTip="Проверка соединения с сервером…" />
+                        <Button
+                            Margin="2,0,0,0"
+                            VerticalAlignment="Center"
+                            Click="ServerChoiceBtn_Click"
+                            Cursor="Hand"
+                            Template="{StaticResource GhostButtonTemplate}"
+                            ToolTip="Сервер, к которому подключается приложение. Нажми, чтобы переключить: Adress.txt (авто) ↔ туннель DrunkMan.">
+                            <TextBlock
+                                x:Name="LoginServerLabel"
+                                FontSize="11"
+                                Foreground="{DynamicResource Light.TextMutedBrush}"
+                                Text="Adress.txt (авто)" />
+                        </Button>
+                    </StackPanel>
 
                     <!-- Микро-анимация появления формы -->
                     <StackPanel
@@ -405,16 +442,33 @@
                             Template="{StaticResource CloseButtonTemplate}" />
                     </StackPanel>
 
-                    <!-- Индикатор связи с сервером: зелёный — есть, серый — проверка, красный — нет ответа -->
-                    <Ellipse
-                        x:Name="RegConnDot"
-                        Width="9"
-                        Height="9"
-                        Margin="4,9,0,0"
+                    <!-- Индикатор связи с сервером + переключатель источника адреса (как на экране входа) -->
+                    <StackPanel
+                        Margin="4,6,0,0"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
-                        Fill="#9CA3AF"
-                        ToolTip="Проверка соединения с сервером…" />
+                        Orientation="Horizontal">
+                        <Ellipse
+                            x:Name="RegConnDot"
+                            Width="9"
+                            Height="9"
+                            VerticalAlignment="Center"
+                            Fill="#9CA3AF"
+                            ToolTip="Проверка соединения с сервером…" />
+                        <Button
+                            Margin="2,0,0,0"
+                            VerticalAlignment="Center"
+                            Click="ServerChoiceBtn_Click"
+                            Cursor="Hand"
+                            Template="{StaticResource GhostButtonTemplate}"
+                            ToolTip="Сервер, к которому подключается приложение. Нажми, чтобы переключить: Adress.txt (авто) ↔ туннель DrunkMan.">
+                            <TextBlock
+                                x:Name="RegServerLabel"
+                                FontSize="11"
+                                Foreground="{DynamicResource Light.TextMutedBrush}"
+                                Text="Adress.txt (авто)" />
+                        </Button>
+                    </StackPanel>
 
                     <!--  Баннер успешной регистрации  -->
                     <Border
