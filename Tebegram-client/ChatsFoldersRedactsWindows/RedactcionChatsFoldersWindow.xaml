@@ -339,6 +339,35 @@
                             </StackPanel>
                         </Button>
 
+                        <!--  Создать групповой чат (пока только UI — логику подключает Максим)  -->
+                        <Button
+                            Height="40"
+                            Margin="0,0,0,12"
+                            BorderBrush="{DynamicResource Light.AccentPrimaryBrush}"
+                            BorderThickness="1"
+                            Click="CreateGroupChat_Click"
+                            FontSize="14"
+                            Template="{StaticResource SecondaryButtonTemplate}">
+                            <StackPanel Orientation="Horizontal">
+                                <Viewbox
+                                    Width="15"
+                                    Height="15"
+                                    Margin="0,0,7,0"
+                                    VerticalAlignment="Center">
+                                    <Path
+                                        Data="{StaticResource IconAddUser}"
+                                        Fill="{DynamicResource Light.AccentTextBrush}"
+                                        Stretch="Uniform" />
+                                </Viewbox>
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    FontSize="14"
+                                    FontWeight="SemiBold"
+                                    Foreground="{DynamicResource Light.AccentTextBrush}"
+                                    Text="Создать групповой чат" />
+                            </StackPanel>
+                        </Button>
+
                         <!--  Закрыть  -->
                         <Button
                             Height="38"

@@ -83,6 +83,11 @@ namespace TebegramServer.Controllers
                         try
                         {
                             Console.WriteLine($"Send to user: {user.Username} | message: {message}");
+                            // ПЕРЕХОД НА ChatId: в v2 сообщение оборачивается в конверт
+                            // $"addMessage▫$▫{message}" (win-клиент и веб УЖЕ понимают
+                            // оба формата — см. GetMessage / ws.onmessage), а само
+                            // message.ToString() начнёт включать ChatId первым полем.
+                            // Включать конверт можно только когда все клиенты обновятся.
                             var arraySegment = new ArraySegment<byte>(Encoding.UTF8.GetBytes(message.ToString()));
                             await session.SendAsync(arraySegment, WebSocketMessageType.Text, true, CancellationToken.None);
                         }
@@ -100,6 +105,9 @@ namespace TebegramServer.Controllers
         /// ищет существующий личный чат между этими двумя пользователями
         /// (раньше на каждое сообщение создавался новый чат, т.к. клиент всегда шлёт chatId=0).
         /// Если и его нет — создаёт новый. Возвращает -1, если получатель не найден.
+        /// ПЕРЕХОД НА ChatId: когда клиенты начнут слать реальный chatId в SEND,
+        /// весь поиск по username здесь станет фолбэком для старых клиентов —
+        /// основной путь сведётся к первой проверке ContainsChat(chatId).
         /// </summary>
         public static int CheckIsExist(int chatId, User user, string receiver)
         {

@@ -32,6 +32,13 @@
             _MessageType = messageType;
             _ServerAdress = serverAdress;
         }
+        // ПЕРЕХОД НА ChatId: в v2 (main-dev) сюда добавляется поле ChatId и оно идёт
+        // ПЕРВЫМ в ToString: $"{ChatId}▫{Sender}▫…". Менять только вместе с клиентами
+        // (win: Classes/Message.ToString + MessengerWindow.AddMessageToUser;
+        // веб: docs/app.js parseMessage/buildRaw) — иначе у выпущенных клиентов
+        // ломается разбор. ВАЖНО: в main-dev вместо Sender шлётся
+        // UsersData.FindUserByUsername(Sender).Name — так делать нельзя: клиенты ищут
+        // контакт ПО USERNAME в этом поле, плюс NRE, если пользователь удалён.
         public override string ToString()
         {
             return $"{Sender}▫{Reciver}▫{MessageType}▫{Time}▫{ServerAdress}▫{Text}";

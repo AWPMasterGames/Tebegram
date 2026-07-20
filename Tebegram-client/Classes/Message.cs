@@ -71,12 +71,36 @@ namespace Tebegrammmm
         private System.Windows.Media.ImageSource _fileImage;
         private bool _fileImageRequested;
 
+        /// <summary>Файл-картинка? По расширению из Text (там лежит имя файла на сервере).</summary>
+        public bool IsImageFile
+        {
+            get
+            {
+                if (_MessageType != MessageType.File) return false;
+                string ext = System.IO.Path.GetExtension(_Text ?? "").ToLowerInvariant();
+                return ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp"
+                    || ext == ".gif" || ext == ".webp";
+            }
+        }
+
+        /// <summary>
+        /// Файл НЕ-картинка (видео/аудио/документ). Рисуется чипом с именем файла —
+        /// раньше такой файл шёл в путь картинки, декодирование молча падало и
+        /// пузырь оставался пустым («видосы не отображаются»).
+        /// </summary>
+        public bool IsPlainFile => _MessageType == MessageType.File && !IsImageFile;
+
+        /// <summary>Имя файла для чипа.</summary>
+        public string FileName => System.IO.Path.GetFileName(_Text ?? "");
+
         /// <summary>Готовая картинка для превью в пузыре (null, пока грузится или не фото).</summary>
         public System.Windows.Media.ImageSource FileImage
         {
             get
             {
-                if (_fileImage == null && !_fileImageRequested && _MessageType == MessageType.File)
+                // Только для картинок: видео/аудио раньше скачивались целиком
+                // ради заведомо провального декодирования в BitmapImage
+                if (_fileImage == null && !_fileImageRequested && IsImageFile)
                 {
                     _fileImageRequested = true;
                     _ = LoadFileImageAsync();
@@ -145,6 +169,12 @@ namespace Tebegrammmm
             _FilePath = filePath;
             _Status = MessageStatus.Sent; // По умолчанию
         }
+        // ПЕРЕХОД НА ChatId: в протоколе v2 (main-dev) первым полем добавляется
+        // {ChatId}▫ — тогда же нужно синхронно сдвинуть индексы разбора в
+        // MessengerWindow.AddMessageToUser и добавить поле ChatId в этот класс.
+        // Менять только ВМЕСТЕ с сервером (Tebegram-server/Classes/Message.ToString)
+        // и вебом (docs/app.js: parseMessage/buildRaw) — иначе ломается доставка
+        // у всех уже установленных клиентов.
         public override string ToString()
         {
             return $"{Sender}▫{Reciver}▫{MessageType}▫{Time}▫{ServerAdress}▫{Text}";
