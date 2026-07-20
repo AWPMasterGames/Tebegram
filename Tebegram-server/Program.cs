@@ -755,6 +755,10 @@ app.Map("/Chat/ws", async context =>
 
                     switch (data[0].ToUpper())
                     {
+                        // ПЕРЕХОД НА ChatId: клиенты сейчас шлют SEND▫#▫0▫#▫username▫#▫payload
+                        // (chatId всегда 0, чат ищется по username в CheckIsExist).
+                        // В v2 клиент шлёт реальный chatId — поле username останется
+                        // фолбэком для старых клиентов, ломать формат кадра не нужно.
                         case "SEND":
                             if (data.Length < 4 || !int.TryParse(data[1], out int requestedChatId)) break;
                             int chatId = ChatsController.CheckIsExist(requestedChatId, user, data[2]);

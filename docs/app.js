@@ -6,7 +6,7 @@
    ═══════════════════════════════════════════════════════════════ */
 'use strict';
 
-const APP_VERSION = '1.0.15';
+const APP_VERSION = '1.0.16';
 const SEP = '▫';
 const MSG_SEP = '❂';
 const WS_SEP = '▫#▫';
@@ -43,19 +43,35 @@ const Server = {
       } catch { /* не тот хост — идём дальше */ }
     }
 
-    // 3. Adress.txt на GitHub
+    // 3. Adress.txt на GitHub. Кандидат берётся, только если его сервер ЖИВ
+    // (/Test отвечает «HI!»): раньше побеждал первый успешно скачанный адрес,
+    // и мёртвый туннель в файле «закупоривал» цепочку, хотя дальше по ней лежал
+    // рабочий. Если не жив ни один — берём первый скачанный (прежнее поведение).
+    let firstFetched = null;
     for (const src of this.ADDRESS_SOURCES) {
+      let line = '';
       try {
         const r = await fetchWithTimeout(`${src}?t=${Date.now()}`, 5000);
         if (!r.ok) continue;
-        const line = (await r.text()).split('\n')[0].trim();
-        if (line) {
-          this.address = line.replace(/\/+$/, '');
+        line = (await r.text()).split('\n')[0].trim().replace(/\/+$/, '');
+      } catch { continue; /* источник недоступен — следующий */ }
+      if (!line) continue;
+
+      if (firstFetched === null) firstFetched = line;
+
+      try {
+        const t = await fetchWithTimeout(`${line}/Test`, 2500);
+        if ((await t.text()).trim() === 'HI!') {
+          this.address = line;
           return this.address;
         }
-      } catch { /* пробуем следующий источник */ }
+      } catch { /* кандидат не отвечает — пробуем следующий */ }
     }
 
+    if (firstFetched) {
+      this.address = firstFetched;
+      return this.address;
+    }
     throw new Error('Не удалось определить адрес сервера');
   },
 
@@ -662,7 +678,13 @@ function int16ToFloat32(i16) {
   return f32;
 }
 
-/* ─────────────────────── Разбор сообщений ─────────────────────── */
+/* ─────────────────────── Разбор сообщений ───────────────────────
+   ПЕРЕХОД НА ChatId: в протоколе v2 (main-dev) ПЕРВЫМ полем добавляется chatId —
+   тогда здесь появляется chatId: p[0], все индексы сдвигаются на +1, а раскладка
+   входящих меняется с поиска контакта по sender на поиск чата по chatId.
+   Менять только СИНХРОННО с сервером (Tebegram-server/Classes/Message.ToString)
+   и win-клиентом (Classes/Message.ToString + AddMessageToUser) — иначе ломается
+   доставка у всех уже установленных клиентов. */
 function parseMessage(raw) {
   const p = raw.split(SEP);
   if (p.length < 6) return null;
@@ -676,6 +698,7 @@ function parseMessage(raw) {
   };
 }
 
+// ПЕРЕХОД НА ChatId: v2 добавит `${m.chatId}${SEP}` в начало (синхронно с parseMessage)
 function serializeMessage(m) {
   return `${m.sender}${SEP}${m.receiver}${SEP}${m.type}${SEP}${m.time}${SEP}${m.serverAddress || ''}${SEP}${m.text}`;
 }
@@ -878,6 +901,8 @@ async function sendMessage(contact, text, type = 'Text', serverAddress = '') {
   };
   const raw = serializeMessage(m);
 
+  // ПЕРЕХОД НА ChatId: вместо 0 подставить реальный id чата
+  // (сервер пока сам ищет/создаёт чат по username в CheckIsExist)
   if (!Chat.send(`SEND${WS_SEP}0${WS_SEP}${contact.username}${WS_SEP}${raw}`)) {
     UI.toast('Нет соединения с сервером — попробуй ещё раз');
     return false;

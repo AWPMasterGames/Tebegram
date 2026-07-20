@@ -654,7 +654,8 @@
                                             </Style>
                                         </TextBlock.Style>
                                     </TextBlock>
-                                    <!--  Вложение-фото: скруглённое, без имени файла  -->
+                                    <!--  Вложение-фото: скруглённое, без имени файла.
+                                          Только для картинок (IsImageFile) — видео/аудио идут чипом ниже  -->
                                     <Border
                                         MaxWidth="320"
                                         MaxHeight="220"
@@ -666,7 +667,7 @@
                                             <Style TargetType="Border">
                                                 <Setter Property="Visibility" Value="Collapsed" />
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding MessageType}" Value="File">
+                                                    <DataTrigger Binding="{Binding IsImageFile}" Value="True">
                                                         <Setter Property="Visibility" Value="Visible" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
@@ -685,6 +686,85 @@
                                             Opacity="0"
                                             Source="{Binding FileImage}"
                                             Stretch="Uniform" />
+                                    </Border>
+
+                                    <!--  Вложение-файл (видео/аудио/документ): чип с именем файла,
+                                          клик открывает файл системным приложением. Раньше такие файлы
+                                          шли в путь картинки и пузырь оставался пустым  -->
+                                    <Border
+                                        MaxWidth="320"
+                                        Margin="0,0,0,4"
+                                        Padding="10,8"
+                                        HorizontalAlignment="Left"
+                                        CornerRadius="12"
+                                        Cursor="Hand"
+                                        MouseLeftButtonUp="FileChip_Click">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Background" Value="{DynamicResource Light.BgElevatedBrush}" />
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsPlainFile}" Value="True">
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                    </DataTrigger>
+                                                    <!--  На акцентном фоне своего пузыря — полупрозрачная плашка  -->
+                                                    <DataTrigger Binding="{Binding IsOutgoing}" Value="True">
+                                                        <Setter Property="Background" Value="#33FFFFFF" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Viewbox
+                                                Width="16"
+                                                Height="16"
+                                                Margin="0,0,8,0"
+                                                VerticalAlignment="Center">
+                                                <Path Data="{StaticResource IconAttach}" Stretch="Uniform">
+                                                    <Path.Style>
+                                                        <Style TargetType="Path">
+                                                            <Setter Property="Fill" Value="{DynamicResource Light.AccentTextBrush}" />
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsOutgoing}" Value="True">
+                                                                    <Setter Property="Fill" Value="{DynamicResource Light.TextInverseBrush}" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Path.Style>
+                                                </Path>
+                                            </Viewbox>
+                                            <StackPanel VerticalAlignment="Center">
+                                                <TextBlock
+                                                    MaxWidth="230"
+                                                    FontSize="13"
+                                                    FontWeight="SemiBold"
+                                                    Text="{Binding FileName}"
+                                                    TextTrimming="CharacterEllipsis">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Foreground" Value="{DynamicResource Light.TextPrimaryBrush}" />
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsOutgoing}" Value="True">
+                                                                    <Setter Property="Foreground" Value="{DynamicResource Light.TextInverseBrush}" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                                <TextBlock FontSize="11" Text="Файл · открыть">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Foreground" Value="{DynamicResource Light.TextMutedBrush}" />
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsOutgoing}" Value="True">
+                                                                    <Setter Property="Foreground" Value="#D6DBFF" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </StackPanel>
+                                        </StackPanel>
                                     </Border>
                                     <!--  Текст + время: у коротких однострочных сообщений время
                                           справа в той же строке, у длинных/файлов — снизу  -->

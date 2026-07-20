@@ -1,5 +1,4 @@
 using Microsoft.Win32;
-using NAudio.CoreAudioApi;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -148,29 +147,21 @@ namespace Tebegrammmm
 
         private void CheckInputDevices()
         {
-            MMDeviceCollection DeviceCollector = (new MMDeviceEnumerator()).EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active);
-            InputDeviceCB.ItemsSource = DeviceCollector;
-            if (UserData.User.SelectedDeviceName != null)
-            {
-                foreach (MMDevice device in InputDeviceCB.Items)
-                {
-                    if (device.DeviceFriendlyName == UserData.User.SelectedDeviceName)
-                    {
-                        InputDeviceCB.SelectedItem = device;
-                    }
-                }
-            }
-            else
-            {
-                InputDeviceCB.SelectedIndex = 0;
-            }
+            // Список в нумерации WaveInEvent — той же, что использует VoiceRoom
+            // (waveIn.DeviceNumber). Раньше список брался из MMDeviceEnumerator
+            // (WASAPI), а там ДРУГОЙ порядок устройств — выбранный индекс в звонке
+            // мог указывать на другой микрофон («используется не тот микро»)
+            InputDeviceCB.ItemsSource = Classes.AudioDevices.GetInputNames();
+            int saved = Classes.AudioDevices.FindByName(UserData.User.SelectedDeviceName);
+            InputDeviceCB.SelectedIndex = saved >= 0 ? saved
+                : (InputDeviceCB.Items.Count > 0 ? 0 : -1);
         }
 
         private void InputDeviceCB_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            if (InputDeviceCB.SelectedItem is not MMDevice device) return;
+            if (InputDeviceCB.SelectedIndex < 0) return;
             UserData.User.SelectedDeviceNum = InputDeviceCB.SelectedIndex;
-            UserData.User.SelectedDeviceName = device.DeviceFriendlyName;
+            UserData.User.SelectedDeviceName = InputDeviceCB.SelectedItem as string;
             try
             {
                 // Настройки пишем в AppData — в Program Files запись запрещена

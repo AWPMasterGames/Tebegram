@@ -1,6 +1,5 @@
 #nullable disable
 using Microsoft.Win32;
-using NAudio.CoreAudioApi;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -90,19 +89,11 @@ namespace Tebegrammmm
             if (devicePath != null)
             {
                 UserData.User.SelectedDeviceName = File.ReadAllText(devicePath);
-                MMDeviceCollection DeviceCollector = (new MMDeviceEnumerator()).EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active);
-                if (UserData.User.SelectedDeviceName != null)
-                {
-                    for (int i = 0; i < DeviceCollector.Count; i++)
-                    {
-                        if (DeviceCollector[i].DeviceFriendlyName == UserData.User.SelectedDeviceName)
-                        {
-                            // Раньше всегда ставилась 1 — выбранное устройство игнорировалось
-                            UserData.User.SelectedDeviceNum = i;
-                            break;
-                        }
-                    }
-                }
+                // Индекс ищем в нумерации WaveInEvent — той же, что у VoiceRoom.
+                // Раньше индекс брался из списка MMDeviceEnumerator (WASAPI), а его
+                // порядок ДРУГОЙ — в звонок мог уходить не тот микрофон
+                int deviceIdx = Classes.AudioDevices.FindByName(UserData.User.SelectedDeviceName);
+                if (deviceIdx >= 0) UserData.User.SelectedDeviceNum = deviceIdx;
             }
         }
 
@@ -340,6 +331,12 @@ namespace Tebegrammmm
             }
         }
 
+        // ПЕРЕХОД НА ChatId: сейчас поле [0] — username отправителя, и сообщение
+        // раскладывается ПОИСКОМ КОНТАКТА по нему. В протоколе v2 первым полем
+        // придёт ChatId — тогда: 1) все индексы ниже сдвигаются на +1;
+        // 2) маршрутизация меняется на UserData.User.FindChatById(chatId) и
+        // chat.Messages.Add(...) — поиск контакта останется только как фолбэк
+        // для старых сообщений без ChatId (см. историю в GetMessages).
         private async void AddMessageToUser(string MessageData)
         {
             string[] messageData = MessageData.Split('▫');
@@ -567,6 +564,8 @@ namespace Tebegrammmm
 
                 if (ws != null && ws.State == WebSocketState.Open)
                 {
+                    // ПЕРЕХОД НА ChatId: вместо 0 подставить реальный chat.Id
+                    // (сервер сейчас сам ищет/создаёт чат в CheckIsExist по username)
                     string request = $"SEND▫#▫0▫#▫{contact.Username}▫#▫{message}";
                     ArraySegment<byte> buffer = new ArraySegment<byte>(Encoding.UTF8.GetBytes(request));
                     await ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
@@ -678,6 +677,7 @@ namespace Tebegrammmm
 
             try
             {
+                // ПЕРЕХОД НА ChatId: вместо 0 подставить реальный chat.Id (см. комментарий выше)
                 string request = $"SEND▫#▫0▫#▫{Contact.Username}▫#▫{Message.ToString()}";
                 ArraySegment<byte> buffer = new ArraySegment<byte>(Encoding.UTF8.GetBytes(request));
                 await ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
@@ -914,7 +914,11 @@ namespace Tebegrammmm
                 using var response = await httpClient.SendAsync(request);
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    // Изменяем имя контакта на новое
+                    // Изменяем имя контакта на новое — ChangeName шлёт PropertyChanged,
+                    // список и шапка обновятся через binding.
+                    // ВАЖНО: НЕ присваивать TBChat_Name.Text напрямую — локальное значение
+                    // затирает binding {Binding Name}, и после первого переименования
+                    // заголовок чата переставал меняться при переключении чатов
                     Contact.ChangeName(newName);
 
                     // Обновляем интерфейс
@@ -922,7 +926,6 @@ namespace Tebegrammmm
                     UserData.User.ChatsFolders[0].AddContact(Contact);
                     LBChats.SelectedIndex = LBChats.Items.Count - 1;
                     GridChat.DataContext = Contact;
-                    TBChat_Name.Text = Contact.Name;
 
                     // Системное окно «Имя контакта изменено» убрано — новое имя сразу видно в списке
                     Log.Save($"[ContactEdit] Контакт изменен: {oldName} -> {Contact.Name}");
@@ -1136,6 +1139,25 @@ namespace Tebegrammmm
         /// <summary>ПКМ по фото/файлу → «Сохранить»: выбор папки и скачивание.</summary>
         private void SaveFile_Click(object sender, RoutedEventArgs e)
             => _ = DownloadFileAsync(MessageFromMenu(sender));
+
+        /// <summary>
+        /// Клик по чипу файла (видео/аудио/документ) — открываем ссылку системе:
+        /// браузер проиграет или скачает файл. «Сохранить» остаётся в ПКМ-меню.
+        /// </summary>
+        private void FileChip_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.DataContext is not Message msg) return;
+            string url = msg.FileUrl;
+            if (string.IsNullOrEmpty(url)) return;
+            try
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true });
+            }
+            catch (Exception ex)
+            {
+                Log.Save($"[FileChip_Click] {ex.Message}");
+            }
+        }
 
         private async Task DownloadFileAsync(Message msg)
         {
