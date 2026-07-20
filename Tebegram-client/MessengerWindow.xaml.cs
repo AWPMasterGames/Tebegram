@@ -1141,12 +1141,21 @@ namespace Tebegrammmm
             => _ = DownloadFileAsync(MessageFromMenu(sender));
 
         /// <summary>
-        /// Клик по чипу файла (видео/аудио/документ) — открываем ссылку системе:
-        /// браузер проиграет или скачает файл. «Сохранить» остаётся в ПКМ-меню.
+        /// Клик по чипу файла. Видео/аудио открываем системой (браузер или плеер их
+        /// покажет), а НЕИЗВЕСТНЫЙ файл (архив, документ, exe, редкий контейнер)
+        /// сразу предлагаем скачать: открывать его нечем — в браузере это дало бы
+        /// пустую вкладку. «Сохранить» в ПКМ-меню работает для любых файлов.
         /// </summary>
         private void FileChip_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if ((sender as FrameworkElement)?.DataContext is not Message msg) return;
+
+            if (msg.IsUnknownFile)
+            {
+                _ = DownloadFileAsync(msg);
+                return;
+            }
+
             string url = msg.FileUrl;
             if (string.IsNullOrEmpty(url)) return;
             try

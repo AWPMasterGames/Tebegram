@@ -720,11 +720,16 @@
                                                 Height="16"
                                                 Margin="0,0,8,0"
                                                 VerticalAlignment="Center">
-                                                <Path Data="{StaticResource IconAttach}" Stretch="Uniform">
+                                                <!--  Скрепка у медиа, стрелка «скачать» — у неизвестных файлов  -->
+                                                <Path Stretch="Uniform">
                                                     <Path.Style>
                                                         <Style TargetType="Path">
+                                                            <Setter Property="Data" Value="{StaticResource IconAttach}" />
                                                             <Setter Property="Fill" Value="{DynamicResource Light.AccentTextBrush}" />
                                                             <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsUnknownFile}" Value="True">
+                                                                    <Setter Property="Data" Value="{StaticResource IconDownload}" />
+                                                                </DataTrigger>
                                                                 <DataTrigger Binding="{Binding IsOutgoing}" Value="True">
                                                                     <Setter Property="Fill" Value="{DynamicResource Light.TextInverseBrush}" />
                                                                 </DataTrigger>
@@ -751,7 +756,7 @@
                                                         </Style>
                                                     </TextBlock.Style>
                                                 </TextBlock>
-                                                <TextBlock FontSize="11" Text="Файл · открыть">
+                                                <TextBlock FontSize="11" Text="{Binding FileCaption}">
                                                     <TextBlock.Style>
                                                         <Style TargetType="TextBlock">
                                                             <Setter Property="Foreground" Value="{DynamicResource Light.TextMutedBrush}" />

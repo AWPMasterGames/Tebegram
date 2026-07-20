@@ -6,7 +6,7 @@
    ═══════════════════════════════════════════════════════════════ */
 'use strict';
 
-const APP_VERSION = '1.0.16';
+const APP_VERSION = '1.0.17';
 const SEP = '▫';
 const MSG_SEP = '❂';
 const WS_SEP = '▫#▫';
@@ -710,6 +710,40 @@ function nowFull() {
   return `${p(d.getDate())}.${p(d.getMonth() + 1)}.${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
 }
 
+/* ─── Классификация вложений по расширению ───────────────────────────────
+   Списки согласованы с win-клиентом (Classes/Message.cs) и сервером
+   (Program.cs, выбор inline/attachment): «открыть» предлагаем только для того,
+   что браузер реально показывает сам. Всё прочее — архивы, документы, exe,
+   редкие контейнеры вроде mkv/avi — считается неизвестным файлом, и для него
+   используется универсальная карточка со скачиванием. */
+const FILE_KINDS = {
+  image: ['png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp'],
+  video: ['mp4', 'webm', 'ogv', 'mov'],
+  audio: ['mp3', 'wav', 'ogg', 'm4a', 'aac', 'opus'],
+};
+
+function fileExt(fileName) {
+  const m = /\.([a-z0-9]+)$/i.exec(fileName || '');
+  return m ? m[1].toLowerCase() : '';
+}
+
+function fileKind(fileName) {
+  const ext = fileExt(fileName);
+  if (FILE_KINDS.image.includes(ext)) return 'image';
+  if (FILE_KINDS.video.includes(ext)) return 'video';
+  if (FILE_KINDS.audio.includes(ext)) return 'audio';
+  return 'other';
+}
+
+// Подпись под именем файла: что это и что произойдёт по клику
+function fileCaption(fileName) {
+  const kind = fileKind(fileName);
+  if (kind === 'video') return 'Видео · открыть';
+  if (kind === 'audio') return 'Аудио · открыть';
+  const ext = fileExt(fileName).toUpperCase();
+  return ext ? `${ext}-файл · скачать` : 'Файл · скачать';
+}
+
 // Из строки времени вытаскиваем только ЧЧ:ММ (для показа в пузыре)
 function timeShort(t) {
   const m = /(\d{1,2}:\d{2})\s*$/.exec(t || '');
@@ -1166,6 +1200,7 @@ const UI = {
       const url = m.serverAddress && m.serverAddress.startsWith('http')
         ? m.serverAddress
         : Api.fileUrl(m.text);
+      const kind = fileKind(m.text);
       el = document.createElement('a');
       el.href = url;
       el.target = '_blank';
@@ -1174,9 +1209,11 @@ const UI = {
       const name = document.createElement('span');
       name.className = 'file-name';
       name.textContent = `📎 ${m.text}`;
+      let meta = null; // вторая строка карточки: что за файл и что будет по клику
+
       // Фото — инлайн-превью, как в десктопном клиенте; при ошибке загрузки
       // остаётся обычная ссылка с именем файла
-      if (/\.(png|jpe?g|gif|bmp|webp)$/i.test(m.text || '')) {
+      if (kind === 'image') {
         // bubble--photo: узкая рамка + время плашкой поверх фото
         el.classList.add('bubble--photo');
         const img = document.createElement('img');
@@ -1187,14 +1224,28 @@ const UI = {
         name.style.display = 'none';
         img.onerror = () => { img.remove(); name.style.display = ''; el.classList.remove('bubble--photo'); };
         el.appendChild(img);
-        // Клик по фото — просмотр в лайтбоксе, а не скачивание
-        // (сервер отдаёт /upload с Content-Disposition: attachment)
+        // Клик по фото — просмотр в лайтбоксе, а не переход по ссылке
+        // (медиа сервер отдаёт с Content-Disposition: inline, но лайтбокс удобнее)
         el.addEventListener('click', e => {
           e.preventDefault();
           PhotoViewer.open(url, m.text);
         });
+      } else {
+        // Видео/аудио открываются в браузере (сервер отдаёт их inline).
+        // НЕИЗВЕСТНЫЙ файл (архив, документ, exe, редкий контейнер) — универсальная
+        // карточка: открывать его нечем, поэтому единственное действие «скачать».
+        // Атрибут download просит браузер сохранить файл, а не уходить на вкладку
+        if (kind === 'other') {
+          el.classList.add('bubble--doc');
+          el.download = m.text || '';
+          name.textContent = `⬇ ${m.text}`;
+        }
+        meta = document.createElement('span');
+        meta.className = 'file-meta';
+        meta.textContent = fileCaption(m.text);
       }
       el.appendChild(name);
+      if (meta) el.appendChild(meta);
     } else {
       el = document.createElement('div');
       el.className = `bubble ${m.outgoing ? 'bubble--out' : 'bubble--in'}`;
