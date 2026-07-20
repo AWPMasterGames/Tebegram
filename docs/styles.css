@@ -443,6 +443,19 @@ html, body {
 }
 .bubble--file { text-decoration: none; display: block; }
 .bubble--file .file-name { font-weight: 600; text-decoration: underline; }
+/* Вторая строка карточки файла: «MP4-файл · скачать» */
+.file-meta { display: block; font-size: 12px; opacity: .7; margin-top: 2px; }
+/* Универсальная карточка неизвестного файла — плашка вместо простой ссылки */
+.bubble--doc .file-name { text-decoration: none; }
+.bubble--doc {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+}
+.bubble--doc.bubble--out {
+  /* На акцентном фоне своего пузыря — полупрозрачная плашка, как в win-клиенте */
+  background: rgba(255, 255, 255, .18);
+  border-color: rgba(255, 255, 255, .28);
+}
 /* ═══════════ Глобальный поиск (@логин) ═══════════ */
 .gs-header {
   padding: 14px 16px 6px;

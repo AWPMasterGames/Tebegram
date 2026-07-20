@@ -66,6 +66,56 @@ if (webRoot != null)
     Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Веб-клиент доступен по /app (папка: {webRoot})");
 }
 
+// Определение MIME-типа по расширению. Провайдер строит словарь на ~380 записей,
+// поэтому создаём его один раз, а не на каждый запрос файла.
+var contentTypeProvider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
+
+// Типы, которые браузер показывает САМ — только они отдаются как inline.
+// Список согласован с клиентами (win: Classes/Message.cs, веб: docs/app.js FILE_KINDS):
+// там такие файлы предлагают «открыть», а всё прочее — «скачать», и заголовок
+// не должен обещать иного. Редкие контейнеры (mkv, avi, wmv) сюда НЕ входят:
+// браузер их не проигрывает, честнее сразу отдать вложением.
+// SVG намеренно вне списка: inline-SVG с пользовательским содержимым — это
+// исполнение скрипта в контексте нашего домена (XSS), отдаём только вложением.
+var inlineTypes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+{
+    "image/png", "image/jpeg", "image/gif", "image/bmp", "image/webp",
+    "video/mp4", "video/webm", "video/ogg", "video/quicktime",
+    "audio/mpeg", "audio/wav", "audio/x-wav", "audio/ogg", "audio/mp4", "audio/aac", "audio/webm",
+    "application/pdf"
+};
+
+// Отдача файла клиенту (общая для /upload/{имя} и /avatars/{имя}).
+//
+// Значение заголовка Content-Disposition обязано быть ASCII. Раньше имя файла
+// подставлялось как есть, и на кириллице («Без_названия_(2).jpg») Kestrel кидал
+// InvalidOperationException: Invalid non-ASCII character in header — запрос падал,
+// файл не доходил вообще (у фото с русскими именами были пустые пузыри, у видео —
+// ошибка загрузки). По RFC 6266 отдаём два варианта имени: ASCII-фолбэк в filename=
+// и UTF-8 в filename*= — второй понимают все актуальные браузеры.
+//
+// Медиа помечаем inline, чтобы браузер ПОКАЗЫВАЛ фото/видео/аудио (клик по чипу
+// файла в win-клиенте и открытие ссылки в вебе), остальное остаётся attachment.
+async Task SendFileToClientAsync(HttpContext context, Microsoft.Extensions.FileProviders.IFileInfo fileInfo, string fileName)
+{
+    // Неизвестное расширение → application/octet-stream: браузер не станет гадать
+    // и просто скачает файл (тот же сценарий, что показывают клиенты в карточке)
+    if (!contentTypeProvider.TryGetContentType(fileName, out string? contentType))
+        contentType = "application/octet-stream";
+
+    bool showInline = inlineTypes.Contains(contentType);
+    // Не-ASCII, кавычки и обратные слэши в фолбэке заменяем подчёркиванием
+    string asciiName = new string(fileName.Select(ch => ch > 127 || ch == '"' || ch == '\\' ? '_' : ch).ToArray());
+
+    context.Response.Headers.ContentDisposition =
+        $"{(showInline ? "inline" : "attachment")}; filename=\"{asciiName}\"; filename*=UTF-8''{Uri.EscapeDataString(fileName)}";
+    // Запрет MIME-угадывания: без него браузер может «передумать» и выполнить файл
+    // с чужим типом. Для неизвестных файлов это ещё и гарантия скачивания.
+    context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+    context.Response.ContentType = contentType;
+    await context.Response.SendFileAsync(fileInfo);
+}
+
 app.MapGet("/", async (HttpContext context) =>
 {
     await context.Response.WriteAsync("HI!");
@@ -111,8 +161,7 @@ app.MapGet("/upload/{FileName}", async (HttpContext context, string FileName) =>
         return;
     }
 
-    context.Response.Headers.ContentDisposition = $"attachment; filename={safeName}";
-    await context.Response.SendFileAsync(fileInfo);
+    await SendFileToClientAsync(context, fileInfo, safeName);
 });
 
 app.MapPost("/avatars/{UserId:int}", async (HttpContext context, int UserId) =>
@@ -172,8 +221,7 @@ app.MapGet("/avatars/{FileName}", async (HttpContext context, string FileName) =
         return;
     }
 
-    context.Response.Headers.ContentDisposition = $"attachment; filename={safeName}";
-    await context.Response.SendFileAsync(fileInfo);
+    await SendFileToClientAsync(context, fileInfo, safeName);
 });
 
 app.MapGet("/login/{UserLogin}-{UserPassword}", async (HttpContext Context, string UserLogin, string UserPassword) =>
