@@ -101,27 +101,55 @@ namespace Tebegrammmm.Data
                 return;
             }
 
-            // 3. Adress.txt на GitHub (несколько путей-кандидатов)
+            // 3. Adress.txt на GitHub (несколько путей-кандидатов).
+            // Кандидат берётся, только если его сервер ЖИВ (/Test отвечает «HI!»).
+            // Раньше побеждал первый успешно СКАЧАННЫЙ адрес: мёртвый туннель в
+            // файле «закупоривал» авто-режим, хотя дальше по цепочке лежал рабочий
+            // адрес (жалоба «не заходит через Adress.txt»). Если не жив ни один —
+            // оставляем первый скачанный (прежнее поведение: пусть индикатор честно
+            // покажет «сервер не отвечает», а не молча уйдёт на localhost).
+            string firstFetched = null;
             foreach (string url in AdressUrls)
             {
+                string adress;
                 try
                 {
                     using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(4));
                     string raw = await _http.GetStringAsync(url, cts.Token).ConfigureAwait(false);
-                    string adress = raw.Split('\n')[0].Trim();
-                    if (!string.IsNullOrWhiteSpace(adress))
-                    {
-                        _ServerAdress = adress.TrimEnd('/');
-                        break;
-                    }
+                    adress = raw.Split('\n')[0].Trim().TrimEnd('/');
                 }
                 catch
                 {
                     // этот источник недоступен — пробуем следующий
+                    continue;
+                }
+                if (string.IsNullOrWhiteSpace(adress)) continue;
+
+                firstFetched ??= adress;
+
+                if (await IsAliveAsync(adress).ConfigureAwait(false))
+                {
+                    _ServerAdress = adress;
+                    return;
                 }
             }
 
-            await CheckAdressValidAsync().ConfigureAwait(false);
+            if (firstFetched != null) _ServerAdress = firstFetched;
+        }
+
+        /// <summary>Быстрая проверка живости кандидата: /Test отвечает «HI!» за 2.5 с.</summary>
+        private static async Task<bool> IsAliveAsync(string adress)
+        {
+            try
+            {
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2.5));
+                string a = await _http.GetStringAsync($"{adress}/Test", cts.Token).ConfigureAwait(false);
+                return a.Trim() == "HI!";
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -142,20 +170,6 @@ namespace Tebegrammmm.Data
                 _ServerAdress = DrunkManTunnel;
             else
                 GetServerAdress(); // перечитать Adress.txt в фоне
-        }
-
-        public static async Task CheckAdressValidAsync()
-        {
-            try
-            {
-                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
-                string a = await _http.GetStringAsync($"{_ServerAdress}/Test", cts.Token).ConfigureAwait(false);
-                if (a == "HI!") return;
-            }
-            catch
-            {
-                // адрес недоступен — не подменяем, чтобы не нарушить ранее работавший сценарий
-            }
         }
 
         /// <summary>

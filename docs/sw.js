@@ -4,7 +4,7 @@
    Запросы к API (другой origin) не трогаем. */
 'use strict';
 
-const CACHE = 'tebegram-shell-v1.0.15';
+const CACHE = 'tebegram-shell-v1.0.17';
 const SHELL = [
   './',
   './index.html',

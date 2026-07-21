@@ -6,7 +6,7 @@
    ═══════════════════════════════════════════════════════════════ */
 'use strict';
 
-const APP_VERSION = '1.0.15';
+const APP_VERSION = '1.0.17';
 const SEP = '▫';
 const MSG_SEP = '❂';
 const WS_SEP = '▫#▫';
@@ -43,19 +43,35 @@ const Server = {
       } catch { /* не тот хост — идём дальше */ }
     }
 
-    // 3. Adress.txt на GitHub
+    // 3. Adress.txt на GitHub. Кандидат берётся, только если его сервер ЖИВ
+    // (/Test отвечает «HI!»): раньше побеждал первый успешно скачанный адрес,
+    // и мёртвый туннель в файле «закупоривал» цепочку, хотя дальше по ней лежал
+    // рабочий. Если не жив ни один — берём первый скачанный (прежнее поведение).
+    let firstFetched = null;
     for (const src of this.ADDRESS_SOURCES) {
+      let line = '';
       try {
         const r = await fetchWithTimeout(`${src}?t=${Date.now()}`, 5000);
         if (!r.ok) continue;
-        const line = (await r.text()).split('\n')[0].trim();
-        if (line) {
-          this.address = line.replace(/\/+$/, '');
+        line = (await r.text()).split('\n')[0].trim().replace(/\/+$/, '');
+      } catch { continue; /* источник недоступен — следующий */ }
+      if (!line) continue;
+
+      if (firstFetched === null) firstFetched = line;
+
+      try {
+        const t = await fetchWithTimeout(`${line}/Test`, 2500);
+        if ((await t.text()).trim() === 'HI!') {
+          this.address = line;
           return this.address;
         }
-      } catch { /* пробуем следующий источник */ }
+      } catch { /* кандидат не отвечает — пробуем следующий */ }
     }
 
+    if (firstFetched) {
+      this.address = firstFetched;
+      return this.address;
+    }
     throw new Error('Не удалось определить адрес сервера');
   },
 
@@ -662,7 +678,13 @@ function int16ToFloat32(i16) {
   return f32;
 }
 
-/* ─────────────────────── Разбор сообщений ─────────────────────── */
+/* ─────────────────────── Разбор сообщений ───────────────────────
+   ПЕРЕХОД НА ChatId: в протоколе v2 (main-dev) ПЕРВЫМ полем добавляется chatId —
+   тогда здесь появляется chatId: p[0], все индексы сдвигаются на +1, а раскладка
+   входящих меняется с поиска контакта по sender на поиск чата по chatId.
+   Менять только СИНХРОННО с сервером (Tebegram-server/Classes/Message.ToString)
+   и win-клиентом (Classes/Message.ToString + AddMessageToUser) — иначе ломается
+   доставка у всех уже установленных клиентов. */
 function parseMessage(raw) {
   const p = raw.split(SEP);
   if (p.length < 6) return null;
@@ -676,6 +698,7 @@ function parseMessage(raw) {
   };
 }
 
+// ПЕРЕХОД НА ChatId: v2 добавит `${m.chatId}${SEP}` в начало (синхронно с parseMessage)
 function serializeMessage(m) {
   return `${m.sender}${SEP}${m.receiver}${SEP}${m.type}${SEP}${m.time}${SEP}${m.serverAddress || ''}${SEP}${m.text}`;
 }
@@ -685,6 +708,40 @@ function nowFull() {
   const d = new Date();
   const p = n => String(n).padStart(2, '0');
   return `${p(d.getDate())}.${p(d.getMonth() + 1)}.${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+
+/* ─── Классификация вложений по расширению ───────────────────────────────
+   Списки согласованы с win-клиентом (Classes/Message.cs) и сервером
+   (Program.cs, выбор inline/attachment): «открыть» предлагаем только для того,
+   что браузер реально показывает сам. Всё прочее — архивы, документы, exe,
+   редкие контейнеры вроде mkv/avi — считается неизвестным файлом, и для него
+   используется универсальная карточка со скачиванием. */
+const FILE_KINDS = {
+  image: ['png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp'],
+  video: ['mp4', 'webm', 'ogv', 'mov'],
+  audio: ['mp3', 'wav', 'ogg', 'm4a', 'aac', 'opus'],
+};
+
+function fileExt(fileName) {
+  const m = /\.([a-z0-9]+)$/i.exec(fileName || '');
+  return m ? m[1].toLowerCase() : '';
+}
+
+function fileKind(fileName) {
+  const ext = fileExt(fileName);
+  if (FILE_KINDS.image.includes(ext)) return 'image';
+  if (FILE_KINDS.video.includes(ext)) return 'video';
+  if (FILE_KINDS.audio.includes(ext)) return 'audio';
+  return 'other';
+}
+
+// Подпись под именем файла: что это и что произойдёт по клику
+function fileCaption(fileName) {
+  const kind = fileKind(fileName);
+  if (kind === 'video') return 'Видео · открыть';
+  if (kind === 'audio') return 'Аудио · открыть';
+  const ext = fileExt(fileName).toUpperCase();
+  return ext ? `${ext}-файл · скачать` : 'Файл · скачать';
 }
 
 // Из строки времени вытаскиваем только ЧЧ:ММ (для показа в пузыре)
@@ -878,6 +935,8 @@ async function sendMessage(contact, text, type = 'Text', serverAddress = '') {
   };
   const raw = serializeMessage(m);
 
+  // ПЕРЕХОД НА ChatId: вместо 0 подставить реальный id чата
+  // (сервер пока сам ищет/создаёт чат по username в CheckIsExist)
   if (!Chat.send(`SEND${WS_SEP}0${WS_SEP}${contact.username}${WS_SEP}${raw}`)) {
     UI.toast('Нет соединения с сервером — попробуй ещё раз');
     return false;
@@ -1141,6 +1200,7 @@ const UI = {
       const url = m.serverAddress && m.serverAddress.startsWith('http')
         ? m.serverAddress
         : Api.fileUrl(m.text);
+      const kind = fileKind(m.text);
       el = document.createElement('a');
       el.href = url;
       el.target = '_blank';
@@ -1149,9 +1209,11 @@ const UI = {
       const name = document.createElement('span');
       name.className = 'file-name';
       name.textContent = `📎 ${m.text}`;
+      let meta = null; // вторая строка карточки: что за файл и что будет по клику
+
       // Фото — инлайн-превью, как в десктопном клиенте; при ошибке загрузки
       // остаётся обычная ссылка с именем файла
-      if (/\.(png|jpe?g|gif|bmp|webp)$/i.test(m.text || '')) {
+      if (kind === 'image') {
         // bubble--photo: узкая рамка + время плашкой поверх фото
         el.classList.add('bubble--photo');
         const img = document.createElement('img');
@@ -1162,14 +1224,28 @@ const UI = {
         name.style.display = 'none';
         img.onerror = () => { img.remove(); name.style.display = ''; el.classList.remove('bubble--photo'); };
         el.appendChild(img);
-        // Клик по фото — просмотр в лайтбоксе, а не скачивание
-        // (сервер отдаёт /upload с Content-Disposition: attachment)
+        // Клик по фото — просмотр в лайтбоксе, а не переход по ссылке
+        // (медиа сервер отдаёт с Content-Disposition: inline, но лайтбокс удобнее)
         el.addEventListener('click', e => {
           e.preventDefault();
           PhotoViewer.open(url, m.text);
         });
+      } else {
+        // Видео/аудио открываются в браузере (сервер отдаёт их inline).
+        // НЕИЗВЕСТНЫЙ файл (архив, документ, exe, редкий контейнер) — универсальная
+        // карточка: открывать его нечем, поэтому единственное действие «скачать».
+        // Атрибут download просит браузер сохранить файл, а не уходить на вкладку
+        if (kind === 'other') {
+          el.classList.add('bubble--doc');
+          el.download = m.text || '';
+          name.textContent = `⬇ ${m.text}`;
+        }
+        meta = document.createElement('span');
+        meta.className = 'file-meta';
+        meta.textContent = fileCaption(m.text);
       }
       el.appendChild(name);
+      if (meta) el.appendChild(meta);
     } else {
       el = document.createElement('div');
       el.className = `bubble ${m.outgoing ? 'bubble--out' : 'bubble--in'}`;
