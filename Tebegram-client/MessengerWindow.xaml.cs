@@ -56,7 +56,6 @@ namespace Tebegrammmm
 
             // Подтягиваем папки контактов, сохранённые на сервере
             _ = LoadFoldersFromServerAsync();
-
             // Загружаем историю сообщений с сервера
             InitChatWebSocket();
 
