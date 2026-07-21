@@ -71,12 +71,73 @@ namespace Tebegrammmm
         private System.Windows.Media.ImageSource _fileImage;
         private bool _fileImageRequested;
 
+        // ── Классификация вложений по расширению ────────────────────────────
+        // Три группы: картинка (превью в пузыре), «проигрываемое» медиа (открываем —
+        // браузер/плеер это покажет) и ВСЁ ОСТАЛЬНОЕ — неизвестный файл, для которого
+        // используется универсальная карточка со скачиванием. В список playable
+        // попадают только форматы, которые браузер реально умеет открыть: mkv/avi/
+        // архивы/документы туда не входят, иначе клик открывал бы пустую вкладку.
+        // Списки согласованы с сервером (Program.cs, выбор inline/attachment)
+        // и веб-клиентом (docs/app.js, FILE_KINDS).
+        private static readonly HashSet<string> ImageExt = new()
+            { ".png", ".jpg", ".jpeg", ".bmp", ".gif", ".webp" };
+        private static readonly HashSet<string> VideoExt = new()
+            { ".mp4", ".webm", ".ogv", ".mov" };
+        private static readonly HashSet<string> AudioExt = new()
+            { ".mp3", ".wav", ".ogg", ".m4a", ".aac", ".opus" };
+
+        private string Ext => _MessageType != MessageType.File
+            ? string.Empty
+            : System.IO.Path.GetExtension(_Text ?? "").ToLowerInvariant();
+
+        /// <summary>Файл-картинка? По расширению из Text (там лежит имя файла на сервере).</summary>
+        public bool IsImageFile => ImageExt.Contains(Ext);
+
+        /// <summary>Видео или аудио, которое открывается плеером/браузером.</summary>
+        public bool IsPlayableFile => VideoExt.Contains(Ext) || AudioExt.Contains(Ext);
+
+        /// <summary>
+        /// Неизвестный файл (архив, документ, exe, редкий контейнер видео…).
+        /// Показывается универсальной карточкой: открыть его нечем, поэтому
+        /// единственное действие — скачать.
+        /// </summary>
+        public bool IsUnknownFile => _MessageType == MessageType.File && !IsImageFile && !IsPlayableFile;
+
+        /// <summary>
+        /// Файл НЕ-картинка (видео/аудио/документ). Рисуется чипом с именем файла —
+        /// раньше такой файл шёл в путь картинки, декодирование молча падало и
+        /// пузырь оставался пустым («видосы не отображаются»).
+        /// </summary>
+        public bool IsPlainFile => _MessageType == MessageType.File && !IsImageFile;
+
+        /// <summary>
+        /// Подпись под именем файла в чипе: что это и что произойдёт по клику.
+        /// Для неизвестных типов показываем расширение («ZIP-файл»), чтобы было
+        /// понятно, что скачивается.
+        /// </summary>
+        public string FileCaption
+        {
+            get
+            {
+                if (_MessageType != MessageType.File) return string.Empty;
+                if (VideoExt.Contains(Ext)) return "Видео · открыть";
+                if (AudioExt.Contains(Ext)) return "Аудио · открыть";
+                string ext = Ext.TrimStart('.').ToUpperInvariant();
+                return string.IsNullOrEmpty(ext) ? "Файл · скачать" : $"{ext}-файл · скачать";
+            }
+        }
+
+        /// <summary>Имя файла для чипа.</summary>
+        public string FileName => System.IO.Path.GetFileName(_Text ?? "");
+
         /// <summary>Готовая картинка для превью в пузыре (null, пока грузится или не фото).</summary>
         public System.Windows.Media.ImageSource FileImage
         {
             get
             {
-                if (_fileImage == null && !_fileImageRequested && _MessageType == MessageType.File)
+                // Только для картинок: видео/аудио раньше скачивались целиком
+                // ради заведомо провального декодирования в BitmapImage
+                if (_fileImage == null && !_fileImageRequested && IsImageFile)
                 {
                     _fileImageRequested = true;
                     _ = LoadFileImageAsync();
@@ -145,6 +206,12 @@ namespace Tebegrammmm
             _FilePath = filePath;
             _Status = MessageStatus.Sent; // По умолчанию
         }
+        // ПЕРЕХОД НА ChatId: в протоколе v2 (main-dev) первым полем добавляется
+        // {ChatId}▫ — тогда же нужно синхронно сдвинуть индексы разбора в
+        // MessengerWindow.AddMessageToUser и добавить поле ChatId в этот класс.
+        // Менять только ВМЕСТЕ с сервером (Tebegram-server/Classes/Message.ToString)
+        // и вебом (docs/app.js: parseMessage/buildRaw) — иначе ломается доставка
+        // у всех уже установленных клиентов.
         public override string ToString()
         {
             return $"{Sender}▫{Reciver}▫{MessageType}▫{Time}▫{ServerAdress}▫{Text}";

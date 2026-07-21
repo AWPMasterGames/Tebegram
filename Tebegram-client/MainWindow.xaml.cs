@@ -24,7 +24,9 @@ namespace Tebegrammmm
             {
                 ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
             };
-            httpClient = new HttpClient(handler);
+            // Без явного таймаута HttpClient ждёт 100 секунд — при недоступном сервере
+            // «Входим…» выглядел бесконечным, а кнопка всё это время была заблокирована
+            httpClient = new HttpClient(handler) { Timeout = TimeSpan.FromSeconds(15) };
         }
 
         public MainWindow()
@@ -232,6 +234,12 @@ namespace Tebegrammmm
             {
                 Log.Save($"[Authorization] Error: {ex.Message}");
                 MessageBox.Show("Ошибка при попытке авторизации\nПодробнее от ошибке можно узнать в краш логах");
+            }
+            catch (TaskCanceledException)
+            {
+                // Сработал таймаут HttpClient (15 с) — без этого catch async void уронил бы приложение
+                Log.Save("[Authorization] Таймаут: сервер не ответил за 15 секунд");
+                MessageBox.Show("Сервер не ответил за 15 секунд.\nПроверь выбор сервера (кнопка в левом верхнем углу окна) и соединение.");
             }
             finally
             {

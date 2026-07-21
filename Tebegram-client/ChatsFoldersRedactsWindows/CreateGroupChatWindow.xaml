@@ -1,0 +1,417 @@
+<Window
+    x:Class="Tebegrammmm.ChatsFoldersRedactsWindows.CreateGroupChatWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local1="clr-namespace:Tebegrammmm.Controls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="Новая группа"
+    Width="460"
+    SizeToContent="Height"
+    AllowsTransparency="True"
+    Background="Transparent"
+    MouseDown="Window_MouseDown"
+    WindowStartupLocation="CenterScreen"
+    WindowStyle="None"
+    mc:Ignorable="d">
+
+    <!--  Поверхностный UI создания ГРУППОВОГО чата (стилистика — как у создания папки).
+          Логика создания (запрос /Chat/Create и приём addChat) намеренно не подключена —
+          её пишет Максим; окно только собирает название и участников.  -->
+
+    <Window.Resources>
+
+        <ControlTemplate x:Key="CloseButtonTemplate" TargetType="Button">
+            <Border x:Name="Bd" Background="Transparent" CornerRadius="6">
+                <TextBlock
+                    x:Name="Txt"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontSize="{TemplateBinding FontSize}"
+                    Foreground="{DynamicResource Light.TextMutedBrush}"
+                    Text="{TemplateBinding Content}" />
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.DangerBrush}" />
+                    <Setter TargetName="Txt" Property="Foreground" Value="White" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.DangerHoverBrush}" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <ControlTemplate x:Key="MinimizeButtonTemplate" TargetType="Button">
+            <Border x:Name="Bd" Background="Transparent" CornerRadius="6">
+                <TextBlock
+                    x:Name="Txt"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontSize="{TemplateBinding FontSize}"
+                    Foreground="{DynamicResource Light.TextMutedBrush}"
+                    Text="{TemplateBinding Content}" />
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.BgElevatedBrush}" />
+                    <Setter TargetName="Txt" Property="Foreground" Value="{DynamicResource Light.TextPrimaryBrush}" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.BgDeepBrush}" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <ControlTemplate x:Key="PrimaryButtonTemplate" TargetType="Button">
+            <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="8">
+                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.AccentHoverBrush}" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.AccentPressedBrush}" />
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter TargetName="Bd" Property="Opacity" Value="0.45" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <ControlTemplate x:Key="SecondaryButtonTemplate" TargetType="Button">
+            <Border
+                x:Name="Bd"
+                Background="Transparent"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="8">
+                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.BgElevatedBrush}" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.BgDeepBrush}" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <Style x:Key="ContactListItemStyle" TargetType="ListBoxItem">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="8,5" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource Light.BgElevatedBrush}" />
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource Light.AccentMutedBrush}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="RemoveListItemStyle" TargetType="ListBoxItem">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="8,5" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource Light.DangerMutedBrush}" />
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource Light.DangerMutedBrush}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+    </Window.Resources>
+
+    <Grid Background="Transparent">
+        <Grid>
+            <Grid.Triggers>
+                <EventTrigger RoutedEvent="UIElement.MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation
+                                Storyboard.TargetName="WindowControls"
+                                Storyboard.TargetProperty="Opacity"
+                                To="1"
+                                Duration="0:0:0.15" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="UIElement.MouseLeave">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation
+                                Storyboard.TargetName="WindowControls"
+                                Storyboard.TargetProperty="Opacity"
+                                To="0"
+                                Duration="0:0:0.25" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Grid.Triggers>
+
+            <Border
+                Padding="24"
+                Background="{DynamicResource Light.BgPrimaryBrush}"
+                BorderBrush="{DynamicResource Light.BorderDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="20">
+                <Border.Effect>
+                    <DropShadowEffect
+                        BlurRadius="20"
+                        Opacity="0.12"
+                        ShadowDepth="4"
+                        Color="#000000" />
+                </Border.Effect>
+
+                <Grid>
+                    <StackPanel
+                        x:Name="WindowControls"
+                        Margin="0,4,4,0"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Top"
+                        Opacity="0"
+                        Orientation="Horizontal">
+                        <Button
+                            Width="28"
+                            Height="28"
+                            Click="MinimizeBtn_Click"
+                            Content="─"
+                            FontSize="14"
+                            Template="{StaticResource MinimizeButtonTemplate}" />
+                        <Button
+                            Width="28"
+                            Height="28"
+                            Margin="2,0,0,0"
+                            Click="CloseBtn_Click"
+                            Content="✕"
+                            FontSize="14"
+                            Template="{StaticResource CloseButtonTemplate}" />
+                    </StackPanel>
+
+                    <StackPanel
+                        x:Name="FormPanel"
+                        Opacity="0"
+                        d:Opacity="1">
+                        <StackPanel.RenderTransform>
+                            <TranslateTransform />
+                        </StackPanel.RenderTransform>
+                        <StackPanel.Triggers>
+                            <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation
+                                            Storyboard.TargetProperty="Opacity"
+                                            To="1"
+                                            Duration="0:0:0.4">
+                                            <DoubleAnimation.EasingFunction>
+                                                <CubicEase EasingMode="EaseOut" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <DoubleAnimation
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                            From="12"
+                                            To="0"
+                                            Duration="0:0:0.4">
+                                            <DoubleAnimation.EasingFunction>
+                                                <CubicEase EasingMode="EaseOut" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </StackPanel.Triggers>
+
+                        <!--  Заголовок  -->
+                        <TextBlock
+                            Margin="0,0,0,20"
+                            HorizontalAlignment="Center"
+                            FontSize="22"
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource Light.TextPrimaryBrush}"
+                            Text="Новая группа" />
+
+                        <!--  Название группы  -->
+                        <TextBlock
+                            Margin="0,0,0,5"
+                            FontSize="12"
+                            Foreground="{DynamicResource Light.TextMutedBrush}"
+                            Text="Название группы" />
+                        <TextBox
+                            x:Name="TBoxGroupName"
+                            Height="36"
+                            Margin="0,0,0,20"
+                            Background="{DynamicResource Light.BgInputBrush}"
+                            BorderBrush="{DynamicResource Light.BorderDefaultBrush}"
+                            BorderThickness="1"
+                            FontSize="14"
+                            Foreground="{DynamicResource Light.TextPrimaryBrush}"
+                            Template="{StaticResource TextBoxBaseControlTemplate}" />
+
+                        <!--  Двухколоночные списки участников (как у папок)  -->
+                        <Grid Height="220" Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="14" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+
+                            <!--  Все контакты  -->
+                            <Border
+                                Grid.Column="0"
+                                Background="{DynamicResource Light.BgSurfaceBrush}"
+                                BorderBrush="{DynamicResource Light.BorderSubtleBrush}"
+                                BorderThickness="1"
+                                CornerRadius="12">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock
+                                        Margin="0,8"
+                                        HorizontalAlignment="Center"
+                                        FontSize="11"
+                                        FontWeight="SemiBold"
+                                        Foreground="{DynamicResource Light.TextMutedBrush}"
+                                        Text="ВСЕ КОНТАКТЫ" />
+                                    <ListBox
+                                        x:Name="LBMyContacts"
+                                        Grid.Row="1"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        ItemContainerStyle="{StaticResource ContactListItemStyle}"
+                                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                        SelectionChanged="LBMyContacts_SelectionChanged">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <local1:UserControl1 Avatar="{Binding Avatar}" />
+                                                    <TextBlock
+                                                        Margin="8,0,0,0"
+                                                        VerticalAlignment="Center"
+                                                        FontSize="13"
+                                                        Foreground="{DynamicResource Light.TextPrimaryBrush}"
+                                                        Text="{Binding Name}" />
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                </Grid>
+                            </Border>
+
+                            <!--  Разделитель  -->
+                            <TextBlock
+                                Grid.Column="1"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                FontSize="16"
+                                Foreground="{DynamicResource Light.TextMutedBrush}"
+                                Text="⇄" />
+
+                            <!--  В группе  -->
+                            <Border
+                                Grid.Column="2"
+                                Background="{DynamicResource Light.BgSurfaceBrush}"
+                                BorderBrush="{DynamicResource Light.AccentMutedBrush}"
+                                BorderThickness="1"
+                                CornerRadius="12">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock
+                                        Margin="0,8"
+                                        HorizontalAlignment="Center"
+                                        FontSize="11"
+                                        FontWeight="SemiBold"
+                                        Foreground="{DynamicResource Light.AccentTextBrush}"
+                                        Text="В ГРУППЕ" />
+                                    <ListBox
+                                        x:Name="LBGroupMembers"
+                                        Grid.Row="1"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        ItemContainerStyle="{StaticResource RemoveListItemStyle}"
+                                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                        SelectionChanged="LBGroupMembers_SelectionChanged">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <local1:UserControl1 Avatar="{Binding Avatar}" />
+                                                    <TextBlock
+                                                        Margin="8,0,0,0"
+                                                        VerticalAlignment="Center"
+                                                        FontSize="13"
+                                                        Foreground="{DynamicResource Light.TextPrimaryBrush}"
+                                                        Text="{Binding Name}" />
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                </Grid>
+                            </Border>
+                        </Grid>
+
+                        <!--  Подсказка  -->
+                        <TextBlock
+                            Margin="0,0,0,6"
+                            HorizontalAlignment="Center"
+                            FontSize="11"
+                            Foreground="{DynamicResource Light.TextMutedBrush}"
+                            Text="Слева — добавить в группу · Справа — убрать из группы" />
+
+                        <!--  Ошибка валидации (пустое имя / мало участников)  -->
+                        <TextBlock
+                            x:Name="TBValidation"
+                            Margin="0,0,0,14"
+                            HorizontalAlignment="Center"
+                            FontSize="11"
+                            Foreground="{DynamicResource Light.DangerBrush}"
+                            Text=""
+                            Visibility="Collapsed" />
+
+                        <!--  Кнопки  -->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="12" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Button
+                                Grid.Column="0"
+                                Height="40"
+                                BorderBrush="{DynamicResource Light.BorderDefaultBrush}"
+                                BorderThickness="1"
+                                Click="CancelBtn_Click"
+                                Content="Отмена"
+                                FontSize="14"
+                                Foreground="{DynamicResource Light.TextSecondaryBrush}"
+                                Template="{StaticResource SecondaryButtonTemplate}" />
+                            <Button
+                                Grid.Column="2"
+                                Height="40"
+                                Background="{DynamicResource Light.AccentPrimaryBrush}"
+                                Click="CreateBtn_Click"
+                                Content="Создать группу"
+                                FontSize="14"
+                                FontWeight="SemiBold"
+                                Foreground="White"
+                                Template="{StaticResource PrimaryButtonTemplate}" />
+                        </Grid>
+
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

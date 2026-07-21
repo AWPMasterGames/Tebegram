@@ -169,6 +169,13 @@ namespace TebegramServer.Data
                 string jsonContent = JsonSerializer.Serialize(usersData, options);
                 File.WriteAllText(filePath, jsonContent);
 
+                // Резервная копия рядом: Users.backup.json не является артефактом сборки,
+                // поэтому переживает пересборки/чистки. Если основной файл пропадёт
+                // (msbuild разово удаляет бывший Content при переходе на Never) или
+                // побьётся — LoadUserList восстановится из копии
+                try { File.Copy(filePath, Path.ChangeExtension(filePath, ".backup.json"), overwrite: true); }
+                catch { /* не удалось скопировать бэкап — не мешаем основному сохранению */ }
+
                 //Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Автосохранение: {Users.Count} пользователей сохранено в файл");
             }
             catch (Exception ex)
@@ -231,7 +238,11 @@ namespace TebegramServer.Data
                 };
                 string jsonContent = JsonSerializer.Serialize(usersData, options);
                 File.WriteAllText(filePath, jsonContent);
-                
+
+                // Та же резервная копия, что и в автосохранении
+                try { File.Copy(filePath, Path.ChangeExtension(filePath, ".backup.json"), overwrite: true); }
+                catch { /* бэкап не критичен */ }
+
                 Console.WriteLine($"Все пользователи ({Users.Count}) сохранены в файл");
             }
             catch (Exception ex)
@@ -245,11 +256,24 @@ namespace TebegramServer.Data
             try
             {
                 string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Users.json");
-                
+
                 if (!File.Exists(filePath))
                 {
-                    Console.WriteLine($"Файл пользователей не найден: {filePath}");
-                    return;
+                    // Основного файла нет — пробуем восстановиться из резервной копии
+                    // (Users.backup.json пишется при каждом автосохранении и не
+                    // затирается сборкой, в отличие от бывшего Content-файла)
+                    string backupPath = Path.ChangeExtension(filePath, ".backup.json");
+                    if (File.Exists(backupPath))
+                    {
+                        Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
+                        File.Copy(backupPath, filePath);
+                        Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Users.json не найден — восстановлен из резервной копии {backupPath}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Файл пользователей не найден: {filePath}");
+                        return;
+                    }
                 }
 
                 string jsonContent = File.ReadAllText(filePath);
