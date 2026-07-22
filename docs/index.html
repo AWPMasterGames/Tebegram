@@ -20,7 +20,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
 
   <!-- ?v= обходит HTTP-кэш браузера: без него телефоны неделями держат старый код -->
-  <link rel="stylesheet" href="./styles.css?v=1.0.17">
+  <link rel="stylesheet" href="./styles.css?v=1.0.22">
 </head>
 <body>
 
@@ -251,6 +251,8 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
     </button>
     <img id="pv-img" alt="">
+    <!-- Видео в том же просмотрщике: controls даёт паузу и перемотку силами браузера -->
+    <video id="pv-video" class="hidden" controls playsinline preload="metadata"></video>
     <a id="pv-download" class="pv-btn pv-download" download>Скачать</a>
   </div>
 
@@ -273,6 +275,6 @@
 
   <div id="toast" class="toast hidden"></div>
 
-  <script src="./app.js?v=1.0.17"></script>
+  <script src="./app.js?v=1.0.22"></script>
 </body>
 </html>

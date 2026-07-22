@@ -5,18 +5,32 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Tebegrammmm"
     xmlns:local1="clr-namespace:Tebegrammmm.Controls"
+    xmlns:classes="clr-namespace:Tebegrammmm.Classes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="Tebegrammmm"
-    Width="800"
-    Height="550"
-    MinWidth="600"
-    MinHeight="350"
+    Width="{x:Static classes:UiSizes.MessengerWidth}"
+    Height="{x:Static classes:UiSizes.MessengerHeight}"
+    MinWidth="{x:Static classes:UiSizes.MessengerMinWidth}"
+    MinHeight="{x:Static classes:UiSizes.MessengerMinHeight}"
     Background="{DynamicResource Light.BgDeepBrush}"
     Closing="Window_Closing"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
 
     <Window.Resources>
+
+        <!--  Плашка времени поверх фото/видео в чате: полупрозрачный пузырёк
+              в правом нижнем углу самого вложения (как в веб-клиенте)  -->
+        <Style x:Key="MediaTimeBadgeStyle" TargetType="Border">
+            <Setter Property="Margin" Value="0,0,7,7" />
+            <Setter Property="Padding" Value="7,2" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="VerticalAlignment" Value="Bottom" />
+            <Setter Property="Background" Value="#8C000000" />
+            <Setter Property="CornerRadius" Value="9" />
+            <!--  Клик проходит сквозь плашку — открывается фото/видео  -->
+            <Setter Property="IsHitTestVisible" Value="False" />
+        </Style>
 
         <!--  Тонкий скроллбар для всего окна  -->
         <Style TargetType="ScrollBar">
@@ -178,11 +192,7 @@
                         Fill="{DynamicResource Light.TextMutedBrush}"
                         Stretch="Uniform" />
                 </Viewbox>
-                <Ellipse>
-                    <Ellipse.Fill>
-                        <ImageBrush ImageSource="{Binding Avatar}" Stretch="UniformToFill" />
-                    </Ellipse.Fill>
-                </Ellipse>
+                <Ellipse Fill="{Binding Avatar, Converter={StaticResource ImageToBrush}}" />
                 <!--  «Избранное» — всегда постоянная закладка (поверх любого аватара)  -->
                 <Grid Visibility="{Binding IsFavorites, Converter={StaticResource BoolToVis}}">
                     <Ellipse Fill="{DynamicResource Light.AccentPrimaryBrush}" />
@@ -397,11 +407,7 @@
                                         Fill="{DynamicResource Light.TextMutedBrush}"
                                         Stretch="Uniform" />
                                 </Viewbox>
-                                <Ellipse>
-                                    <Ellipse.Fill>
-                                        <ImageBrush ImageSource="{Binding Avatar}" Stretch="UniformToFill" />
-                                    </Ellipse.Fill>
-                                </Ellipse>
+                                <Ellipse Fill="{Binding Avatar, Converter={StaticResource ImageToBrush}}" />
                                 <!--  «Избранное» — всегда постоянная закладка (поверх любого аватара)  -->
                                 <Grid Visibility="{Binding IsFavorites, Converter={StaticResource BoolToVis}}">
                                     <Ellipse Fill="{DynamicResource Light.AccentPrimaryBrush}" />
@@ -414,20 +420,45 @@
                                 </Grid>
                                 <Ellipse Stroke="{DynamicResource Light.BorderSubtleBrush}" StrokeThickness="1" />
                             </Grid>
-                            <TextBlock
+                            <StackPanel
                                 Grid.RowSpan="2"
                                 Grid.Column="1"
-                                Height="50"
                                 Margin="10,0"
-                                FontSize="15"
-                                Foreground="{DynamicResource Light.TextPrimaryBrush}"
-                                Text="{Binding Name}"
-                                TextTrimming="CharacterEllipsis"
-                                TextWrapping="NoWrap" />
+                                VerticalAlignment="Center">
+                                <TextBlock
+                                    FontSize="15"
+                                    Foreground="{DynamicResource Light.TextPrimaryBrush}"
+                                    Text="{Binding Name}"
+                                    TextTrimming="CharacterEllipsis"
+                                    TextWrapping="NoWrap" />
+                                <!--  Подсказка у результатов глобального поиска (@логин):
+                                      их ещё нет в контактах, клик добавит и откроет чат  -->
+                                <TextBlock
+                                    FontSize="12"
+                                    Foreground="{DynamicResource Light.TextMutedBrush}"
+                                    Text="{Binding GlobalHint}"
+                                    TextTrimming="CharacterEllipsis"
+                                    TextWrapping="NoWrap"
+                                    Visibility="{Binding IsGlobalResult, Converter={StaticResource BoolToVis}}" />
+                            </StackPanel>
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
+
+            <!--  Подсказка при поиске: видно, что поиск отработал и никого нет,
+                  иначе пустой список выглядит как «поиск не работает»  -->
+            <TextBlock
+                x:Name="SearchEmptyHint"
+                Grid.Row="1"
+                Margin="16,24,16,0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                FontSize="12"
+                Foreground="{DynamicResource Light.TextMutedBrush}"
+                TextAlignment="Center"
+                TextWrapping="Wrap"
+                Visibility="Collapsed" />
         </Grid>
 
         <!--  Область чата  -->
@@ -499,12 +530,19 @@
                 <Rectangle Grid.Row="1" Fill="{StaticResource ChatPatternBrush}" />
 
                 <!--  Сообщения  -->
+                <!--  IsSynchronizedWithCurrentItem=False обязателен: ItemsSource — это
+                      ICollectionView, и по умолчанию WPF синхронизирует выделение с его
+                      текущим элементом. При открытии чата список САМ выделял первое
+                      сообщение, срабатывал SelectionChanged — и вложение открывалось
+                      без участия пользователя (у test1 сразу запускалось видео).
+                      Вложения теперь открываются только по явному клику мышью.  -->
                 <ListBox
                     x:Name="LBMessages"
                     Grid.Row="1"
                     Background="Transparent"
                     BorderThickness="0"
                     Padding="12,8"
+                    IsSynchronizedWithCurrentItem="False"
                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                     ScrollViewer.VerticalScrollBarVisibility="Auto"
                     SelectionChanged="LBMessages_SelectionChangeMessage"
@@ -662,7 +700,8 @@
                                         Margin="0,0,0,4"
                                         HorizontalAlignment="Left"
                                         CornerRadius="12"
-                                        Cursor="Hand">
+                                        Cursor="Hand"
+                                        MouseLeftButtonUp="Attachment_Click">
                                         <Border.Style>
                                             <Style TargetType="Border">
                                                 <Setter Property="Visibility" Value="Collapsed" />
@@ -675,22 +714,95 @@
                                         </Border.Style>
                                         <!--  FileImage: картинка скачивается нашим HttpClient с кэшем и
                                               повтором — встроенный загрузчик WPF иногда молча не справлялся,
-                                              и фото выглядели пустыми сообщениями  -->
+                                              и фото выглядели пустыми сообщениями.
+                                              Привязка на Background (а не внутри ImageBrush) — иначе, пока
+                                              картинка грузится, FileImage=null уходил в ImageSourceConverter
+                                              и сыпал ошибками привязки  -->
                                         <Border.Background>
-                                            <ImageBrush ImageSource="{Binding FileImage}" Stretch="Uniform" />
+                                            <Binding Path="FileImage" Converter="{StaticResource ImageToBrush}" ConverterParameter="Uniform" />
                                         </Border.Background>
-                                        <!--  Невидимый Image задаёт размер Border по картинке, фон скругляется рамкой  -->
-                                        <Image
-                                            MaxWidth="320"
-                                            MaxHeight="220"
-                                            Opacity="0"
-                                            Source="{Binding FileImage}"
-                                            Stretch="Uniform" />
+                                        <Grid>
+                                            <!--  Невидимый Image задаёт размер Border по картинке, фон скругляется рамкой  -->
+                                            <Image
+                                                MaxWidth="320"
+                                                MaxHeight="220"
+                                                Opacity="0"
+                                                Source="{Binding FileImage}"
+                                                Stretch="Uniform" />
+                                            <!--  Время — полупрозрачной плашкой прямо на фото (как в вебе)  -->
+                                            <Border Style="{StaticResource MediaTimeBadgeStyle}">
+                                                <TextBlock
+                                                    FontSize="10"
+                                                    Foreground="White"
+                                                    Text="{Binding TimeShort}" />
+                                            </Border>
+                                        </Grid>
                                     </Border>
 
-                                    <!--  Вложение-файл (видео/аудио/документ): чип с именем файла,
-                                          клик открывает файл системным приложением. Раньше такие файлы
-                                          шли в путь картинки и пузырь оставался пустым  -->
+                                    <!--  Вложение-видео: первый кадр + значок play по центру.
+                                          Кадр снимается MediaPlayer'ом (Message.VideoThumbnail);
+                                          пока он не готов или нет кодека — показывается чип ниже  -->
+                                    <Grid
+                                        Margin="0,0,0,4"
+                                        HorizontalAlignment="Left"
+                                        Visibility="{Binding ShowVideoPreview, Converter={StaticResource BoolToVis}}">
+                                        <Border
+                                            MaxWidth="320"
+                                            MaxHeight="220"
+                                            CornerRadius="12"
+                                            Cursor="Hand"
+                                            MouseLeftButtonUp="FileChip_Click">
+                                            <Border.Background>
+                                                <Binding Path="VideoThumbnail" Converter="{StaticResource ImageToBrush}" ConverterParameter="Uniform" />
+                                            </Border.Background>
+                                            <!--  Невидимый Image задаёт размер по кадру  -->
+                                            <Image
+                                                MaxWidth="320"
+                                                MaxHeight="220"
+                                                Opacity="0"
+                                                Source="{Binding VideoThumbnail}"
+                                                Stretch="Uniform" />
+                                        </Border>
+                                        <!--  Время — плашкой в углу кадра, как у фото  -->
+                                        <Border Style="{StaticResource MediaTimeBadgeStyle}">
+                                            <TextBlock
+                                                FontSize="10"
+                                                Foreground="White"
+                                                Text="{Binding TimeShort}" />
+                                        </Border>
+                                        <!--  Кнопка play поверх кадра (клик проходит к превью)  -->
+                                        <Border
+                                            Width="54"
+                                            Height="54"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Background="#99000000"
+                                            CornerRadius="27"
+                                            IsHitTestVisible="False">
+                                            <!--  Stretch=Uniform обязателен: без него Path занимает
+                                                  область от начала координат вместе с пустотой слева
+                                                  и сверху от геометрии (у IconPlay это 8 и 5 единиц),
+                                                  и значок уезжал вправо-вниз на ~2 пикселя.
+                                                  Сдвиг 2.6/0.5 доводит ЦЕНТР МАСС треугольника до
+                                                  центра круга — у треугольника он левее середины рамки  -->
+                                            <Viewbox
+                                                Width="20"
+                                                Height="20"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center">
+                                                <Viewbox.RenderTransform>
+                                                    <TranslateTransform X="2.6" Y="0.5" />
+                                                </Viewbox.RenderTransform>
+                                                <Path
+                                                    Data="{StaticResource IconPlay}"
+                                                    Fill="White"
+                                                    Stretch="Uniform" />
+                                            </Viewbox>
+                                        </Border>
+                                    </Grid>
+
+                                    <!--  Вложение-файл (аудио/документ/видео без превью): чип с именем.
+                                          Раньше такие файлы шли в путь картинки и пузырь оставался пустым  -->
                                     <Border
                                         MaxWidth="320"
                                         Margin="0,0,0,4"
@@ -704,7 +816,9 @@
                                                 <Setter Property="Background" Value="{DynamicResource Light.BgElevatedBrush}" />
                                                 <Setter Property="Visibility" Value="Collapsed" />
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsPlainFile}" Value="True">
+                                                    <!--  ShowFileChip, а не IsPlainFile: у видео с готовым
+                                                          превью чип не нужен — там кадр с кнопкой play  -->
+                                                    <DataTrigger Binding="{Binding ShowFileChip}" Value="True">
                                                         <Setter Property="Visibility" Value="Visible" />
                                                     </DataTrigger>
                                                     <!--  На акцентном фоне своего пузыря — полупрозрачная плашка  -->
@@ -827,19 +941,26 @@
                                             </TextBlock.Style>
                                         </TextBlock>
                                     </Grid>
-                                    <!--  Время снизу (длинные сообщения и файлы)  -->
+                                    <!--  Время снизу (длинные сообщения и файлы).
+                                          У фото и видео его не показываем: там время нарисовано
+                                          плашкой поверх картинки, иначе дублировалось бы  -->
                                     <TextBlock
                                         Margin="0,5,0,0"
                                         HorizontalAlignment="Right"
                                         FontSize="10"
-                                        Text="{Binding TimeShort}"
-                                        Visibility="{Binding ., Converter={StaticResource InlineTime}, Mode=OneTime, ConverterParameter=Invert, FallbackValue=Visible}">
+                                        Text="{Binding TimeShort}">
                                         <TextBlock.Style>
                                             <Style TargetType="TextBlock">
                                                 <Setter Property="Foreground" Value="{DynamicResource Light.TextMutedBrush}" />
+                                                <!--  Visibility задаётся сеттером, а не атрибутом: локальное
+                                                      значение перебило бы триггер ниже  -->
+                                                <Setter Property="Visibility" Value="{Binding ., Converter={StaticResource InlineTime}, Mode=OneTime, ConverterParameter=Invert, FallbackValue=Visible}" />
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsOutgoing}" Value="True">
                                                         <Setter Property="Foreground" Value="#D6DBFF" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding ShowMediaTimeOverlay}" Value="True">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>

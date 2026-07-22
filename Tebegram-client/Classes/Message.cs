@@ -146,6 +146,148 @@ namespace Tebegrammmm
             }
         }
 
+        // ── Превью видео: первый кадр ────────────────────────────────────────
+        // Кадр рисуется MediaPlayer'ом в RenderTargetBitmap. Всё на UI-потоке:
+        // MediaPlayer и RenderTargetBitmap требуют STA, из фонового потока падают.
+        private static readonly Dictionary<string, System.Windows.Media.ImageSource> _videoThumbCache = new();
+        private System.Windows.Media.ImageSource _videoThumb;
+        private bool _videoThumbRequested;
+
+        /// <summary>Первый кадр видео для превью в чате (null, пока не готов).</summary>
+        public System.Windows.Media.ImageSource VideoThumbnail
+        {
+            get
+            {
+                if (_videoThumb == null && !_videoThumbRequested && IsVideoFile)
+                {
+                    _videoThumbRequested = true;
+                    LoadVideoThumbnail();
+                }
+                return _videoThumb;
+            }
+        }
+
+        /// <summary>Видеофайл? (для превью-кадра и открытия во встроенном плеере)</summary>
+        public bool IsVideoFile => VideoExt.Contains(Ext);
+
+        /// <summary>
+        /// Показывать превью видео (кадр + значок play)? Обращение к VideoThumbnail
+        /// заодно запускает выборку кадра. Пока кадра нет (грузится или нет кодека),
+        /// сообщение выглядит как обычный файловый чип.
+        /// </summary>
+        public bool ShowVideoPreview => IsVideoFile && VideoThumbnail != null;
+
+        /// <summary>Чип с именем файла — для всего, кроме картинок и видео с готовым превью.</summary>
+        public bool ShowFileChip => IsPlainFile && !ShowVideoPreview;
+
+        /// <summary>
+        /// У фото и превью видео время рисуется полупрозрачной плашкой прямо на
+        /// картинке (как в веб-клиенте), поэтому обычная строка времени под пузырём
+        /// в этом случае не нужна — иначе время показывалось бы дважды.
+        /// </summary>
+        public bool ShowMediaTimeOverlay => IsImageFile || ShowVideoPreview;
+
+        private void LoadVideoThumbnail()
+        {
+            string url = FileUrl;
+            if (string.IsNullOrEmpty(url)) return;
+
+            lock (_imageCacheLock)
+            {
+                if (_videoThumbCache.TryGetValue(url, out var cached))
+                {
+                    _videoThumb = cached;
+                    foreach (string prop in new[] { nameof(VideoThumbnail), nameof(ShowVideoPreview), nameof(ShowFileChip), nameof(ShowMediaTimeOverlay) })
+                        PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(prop));
+                    return;
+                }
+            }
+
+            var dispatcher = System.Windows.Application.Current?.Dispatcher;
+            if (dispatcher == null) return;
+
+            dispatcher.BeginInvoke(new Action(() =>
+            {
+                try
+                {
+                    // ScrubbingEnabled + Play/Pause — иначе кадр не декодируется и
+                    // в RenderTargetBitmap попадает пустота
+                    var player = new System.Windows.Media.MediaPlayer { Volume = 0, ScrubbingEnabled = true };
+                    var timeout = new System.Windows.Threading.DispatcherTimer
+                    { Interval = TimeSpan.FromSeconds(15) };
+
+                    void Cleanup()
+                    {
+                        timeout.Stop();
+                        try { player.Close(); } catch { }
+                    }
+
+                    player.MediaOpened += (_, _) =>
+                    {
+                        // Небольшой отступ от нуля: самый первый кадр часто чёрный
+                        player.Position = TimeSpan.FromMilliseconds(300);
+                        player.Play();
+                        player.Pause();
+
+                        // Даём декодеру отрисовать кадр, потом снимаем его
+                        var grab = new System.Windows.Threading.DispatcherTimer
+                        { Interval = TimeSpan.FromMilliseconds(400) };
+                        grab.Tick += (_, _) =>
+                        {
+                            grab.Stop();
+                            try
+                            {
+                                int w = player.NaturalVideoWidth, h = player.NaturalVideoHeight;
+                                if (w <= 0 || h <= 0) { Cleanup(); return; }
+
+                                // Уменьшаем до ширины превью — незачем держать полный кадр
+                                double scale = Math.Min(1.0, 320.0 / w);
+                                int tw = Math.Max(1, (int)(w * scale)), th = Math.Max(1, (int)(h * scale));
+
+                                var visual = new System.Windows.Media.DrawingVisual();
+                                using (var dc = visual.RenderOpen())
+                                    dc.DrawVideo(player, new System.Windows.Rect(0, 0, tw, th));
+
+                                var rtb = new System.Windows.Media.Imaging.RenderTargetBitmap(
+                                    tw, th, 96, 96, System.Windows.Media.PixelFormats.Pbgra32);
+                                rtb.Render(visual);
+                                rtb.Freeze();
+
+                                lock (_imageCacheLock) _videoThumbCache[url] = rtb;
+                                _videoThumb = rtb;
+                                // Уведомляем и о видимости: пузырь переключается
+                                // с файлового чипа на кадр с кнопкой play
+                                foreach (string prop in new[] { nameof(VideoThumbnail), nameof(ShowVideoPreview), nameof(ShowFileChip), nameof(ShowMediaTimeOverlay) })
+                                    PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(prop));
+                            }
+                            catch (Exception ex)
+                            {
+                                Classes.Log.Save($"[Message.VideoThumbnail] {ex.GetType().Name}: {ex.Message}");
+                            }
+                            finally { Cleanup(); }
+                        };
+                        grab.Start();
+                    };
+
+                    player.MediaFailed += (_, args) =>
+                    {
+                        // Нет кодека (mkv/avi и пр.) — превью не будет, покажем чип файла
+                        Classes.Log.Save($"[Message.VideoThumbnail] не открылось: {args.ErrorException?.Message}");
+                        Cleanup();
+                    };
+
+                    timeout.Tick += (_, _) => Cleanup(); // видео недоступно — не висим вечно
+                    timeout.Start();
+
+                    player.Open(new Uri(url, UriKind.Absolute));
+                }
+                catch (Exception ex)
+                {
+                    Classes.Log.Save($"[Message.VideoThumbnail] {ex.GetType().Name}: {ex.Message}");
+                }
+            }), System.Windows.Threading.DispatcherPriority.Background);
+        }
+
         private async Task LoadFileImageAsync()
         {
             string url = FileUrl;

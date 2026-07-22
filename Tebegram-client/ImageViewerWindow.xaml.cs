@@ -7,6 +7,7 @@ using System.Windows.Input;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using Tebegrammmm.Classes;
 
 namespace Tebegrammmm
 {
@@ -20,6 +21,9 @@ namespace Tebegrammmm
         private const double TitleBarH        = 36;
         private const double HorizChrome = (ShadowMargin + ScrollSideMargin) * 2; // 40
         private const double VertChrome  = TitleBarH + ScrollSideMargin + ShadowMargin * 2; // 68
+        // Панель управления видео (слайдер + кнопка) с отступами — резервируем под неё высоту,
+        // иначе она перекрывает нижнюю часть кадра
+        private const double VideoBarH = 92;
 
         // _minZoom и _maxZoom вычисляются относительно _fitZoom в FitToScreen.
         // 100% = изображение полностью вписано в окно (_fitZoom).
@@ -49,12 +53,32 @@ namespace Tebegrammmm
 
         public string ImageUrl { get; }
 
+        // ── Видео ────────────────────────────────────────────────────────────────
+        // Тот же просмотрщик показывает и видео: снизу кнопка паузы и полоса перемотки.
+        private readonly bool _isVideo;
+        private DispatcherTimer _videoTimer;   // тикает, пока идёт воспроизведение
+        private bool _videoSliderDragging;     // пользователь тащит ползунок — не перебиваем его позицией
+        private bool _videoPlaying;
+
+        /// <summary>Расширения, которые открываем как видео (их играет MediaElement/WMP).</summary>
+        public static bool IsVideoFile(string name)
+        {
+            string ext = Path.GetExtension(name ?? "").ToLowerInvariant();
+            return ext == ".mp4" || ext == ".webm" || ext == ".mov"
+                || ext == ".avi" || ext == ".mkv" || ext == ".wmv" || ext == ".m4v";
+        }
+
         public ImageViewerWindow(string imageUrl, string fileName)
         {
             InitializeComponent();
             ImageUrl = imageUrl;
             TitleText.Text = fileName;
             Title = fileName;
+            _isVideo = IsVideoFile(fileName);
+
+            // Один и тот же размер для фото и для видео, на любом мониторе,
+            // и строго по центру экрана (см. UiSizes)
+            UiSizes.ApplyAndCenter(this, UiSizes.ViewerWidth, UiSizes.ViewerHeight);
 
             _zoomBadgeTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
             _zoomBadgeTimer.Tick += (_, _) =>
@@ -64,7 +88,145 @@ namespace Tebegrammmm
                     new DoubleAnimation(0.0, TimeSpan.FromMilliseconds(300)));
             };
 
-            Loaded += async (_, _) => await LoadImageAsync(imageUrl);
+            if (_isVideo)
+                Loaded += (_, _) => StartVideo(imageUrl);
+            else
+                Loaded += async (_, _) => await LoadImageAsync(imageUrl);
+        }
+
+        // ── Видео: запуск, перемотка, пауза ──────────────────────────────────────
+
+        private void StartVideo(string url)
+        {
+            try
+            {
+                MainVideo.Visibility = Visibility.Visible;
+                VideoBar.Visibility = Visibility.Visible;
+                // Полосы прокрутки для видео не нужны (кадр всегда вписан), но сам
+                // ScrollViewer оставляем видимым — внутри него живёт LoadingText,
+                // который показывает «Загрузка…» и ошибку кодека
+                ImageScrollViewer.HorizontalScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility.Disabled;
+                ImageScrollViewer.VerticalScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility.Disabled;
+                LoadingText.Text = "Загрузка видео...";
+
+                // Полоса перемотки обновляется 4 раза в секунду — этого хватает
+                // и не грузит UI лишними перерисовками
+                _videoTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(250) };
+                _videoTimer.Tick += (_, _) => UpdateVideoProgress();
+                _videoTimer.Start();
+
+                MainVideo.Source = new Uri(url);
+                MainVideo.Play();
+                SetPlaying(true);
+            }
+            catch (Exception ex)
+            {
+                LoadingText.Text = $"Не удалось открыть видео:\n{ex.Message}";
+                LoadingText.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void Video_MediaOpened(object sender, RoutedEventArgs e)
+        {
+            LoadingText.Visibility = Visibility.Collapsed;
+
+            // Подгоняем окно под пропорции видео, чтобы кадр был виден ЦЕЛИКОМ:
+            // окно = размер кадра + рамки окна + высота панели управления.
+            // Панель занимает свою строку Grid, поэтому её высоту нужно учесть,
+            // иначе кадр «уезжает» под неё.
+            // Размер окна НЕ подгоняется под ролик: он задан константами (UiSizes),
+            // как и у фото — чтобы просмотрщик всегда открывался одинаково.
+            // Кадр вписывается в доступную область сам (Stretch=Uniform).
+            if (MainVideo.NaturalDuration.HasTimeSpan)
+                VideoSlider.Maximum = MainVideo.NaturalDuration.TimeSpan.TotalSeconds;
+
+            UpdateVideoProgress();
+        }
+
+        /// <summary>Клик по кадру — пауза/продолжить (окно двигается за верхнюю панель).</summary>
+        private void Video_Click(object sender, MouseButtonEventArgs e) => TogglePlayPause();
+
+        private void Video_MediaFailed(object sender, ExceptionRoutedEventArgs e)
+        {
+            // Нет кодека (частый случай для mkv/avi) — предлагаем открыть системным плеером
+            Log.Save($"[ImageViewer.Video] {e.ErrorException?.Message}");
+            VideoBar.Visibility = Visibility.Collapsed;
+            MainVideo.Visibility = Visibility.Collapsed;
+            LoadingText.Visibility = Visibility.Visible;
+            LoadingText.Text = "Не удалось воспроизвести это видео —\nв системе нет подходящего кодека.\n" +
+                               "Сохрани файл и открой его своим плеером.";
+            _videoTimer?.Stop();
+        }
+
+        private void Video_MediaEnded(object sender, RoutedEventArgs e)
+        {
+            // Возвращаемся в начало и показываем «play» — можно пересмотреть
+            MainVideo.Pause();
+            MainVideo.Position = TimeSpan.Zero;
+            SetPlaying(false);
+            UpdateVideoProgress();
+        }
+
+        private void UpdateVideoProgress()
+        {
+            if (!_isVideo) return;
+
+            TimeSpan pos = MainVideo.Position;
+            TimeSpan dur = MainVideo.NaturalDuration.HasTimeSpan
+                ? MainVideo.NaturalDuration.TimeSpan
+                : TimeSpan.Zero;
+
+            // Пока тащат ползунок — позицию не перезаписываем, иначе он «убегает» из-под курсора
+            if (!_videoSliderDragging)
+            {
+                _videoSliderSyncing = true;
+                VideoSlider.Value = pos.TotalSeconds;
+                _videoSliderSyncing = false;
+            }
+
+            VideoTimeText.Text = $"{Format(pos)} / {Format(dur)}";
+
+            static string Format(TimeSpan t) =>
+                t.Hours > 0 ? t.ToString(@"h\:mm\:ss") : t.ToString(@"m\:ss");
+        }
+
+        private bool _videoSliderSyncing; // отличает программное обновление от пользовательского
+
+        private void SetPlaying(bool playing)
+        {
+            _videoPlaying = playing;
+            PlayPauseIcon.Data = (System.Windows.Media.Geometry)FindResource(playing ? "IconPause" : "IconPlay");
+        }
+
+        private void TogglePlayPause()
+        {
+            if (!_isVideo) return;
+
+            if (_videoPlaying) MainVideo.Pause();
+            else MainVideo.Play();
+            SetPlaying(!_videoPlaying);
+        }
+
+        private void PlayPauseBtn_Click(object sender, RoutedEventArgs e) => TogglePlayPause();
+
+        private void VideoSlider_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
+            => _videoSliderDragging = true;
+
+        private void VideoSlider_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        {
+            _videoSliderDragging = false;
+            MainVideo.Position = TimeSpan.FromSeconds(VideoSlider.Value);
+            UpdateVideoProgress();
+        }
+
+        private void VideoSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (!_isVideo || _videoSliderSyncing) return;
+
+            // Клик по дорожке (IsMoveToPointEnabled) приходит сюда без Drag-событий —
+            // перематываем сразу; во время перетаскивания даём «живую» перемотку
+            MainVideo.Position = TimeSpan.FromSeconds(e.NewValue);
+            if (_videoSliderDragging) UpdateVideoProgress();
         }
 
         // ── Загрузка ─────────────────────────────────────────────────────────────
@@ -96,27 +258,81 @@ namespace Tebegrammmm
 
         // ── Масштабирование и размер окна ────────────────────────────────────────
 
-        // Подбирает начальный зум и размер окна под реальный размер фото.
+        /// <summary>
+        /// Вписывает снимок в окно. Размер самого окна БОЛЬШЕ не зависит от размера
+        /// фото и от разрешения монитора — он задан константами (UiSizes) в
+        /// конструкторе, поэтому просмотрщик всегда открывается одинаково.
+        /// </summary>
         private void FitToScreen(BitmapImage bitmap)
         {
-            var workArea = SystemParameters.WorkArea;
-            double maxW = workArea.Width  * 0.92;
-            double maxH = workArea.Height * 0.92;
+            // Область просмотра могла ещё не перемериться — вписываем после раскладки
+            Dispatcher.BeginInvoke(new Action(() => FitToViewport(resetZoom: true)),
+                DispatcherPriority.Loaded);
+        }
 
-            double imgW = bitmap.Width;
-            double imgH = bitmap.Height;
+        /// <summary>
+        /// Вписывает фото в ФАКТИЧЕСКУЮ область просмотра, чтобы прокрутки не было
+        /// вовсе. Раньше зум считался по «прикидке» из констант хрома, а они не
+        /// учитывали, например, полосы прокрутки — фото оказывалось на десяток
+        /// пикселей больше области, появлялся скролл и снимок можно было таскать.
+        /// </summary>
+        private void FitToViewport(bool resetZoom)
+        {
+            if (MainImage.Source is not BitmapSource bitmap) return;
 
-            _fitZoom = Math.Min(1.0, Math.Min(
-                (maxW - HorizChrome) / imgW,
-                (maxH - VertChrome)  / imgH));
+            double areaW = ImageScrollViewer.ViewportWidth;
+            double areaH = ImageScrollViewer.ViewportHeight;
+            if (areaW < 1 || areaH < 1) return; // окно ещё не разложено
 
-            _minZoom = _fitZoom * 0.5;   // 50% от «вписать»
-            _maxZoom = _fitZoom * 10.0;  // 1000% от «вписать»
+            double imgW = bitmap.Width, imgH = bitmap.Height;
+            if (imgW < 1 || imgH < 1) return;
+
+            bool wasFitted = Math.Abs(_zoom - _fitZoom) < 0.001; // пользователь не менял масштаб
+
+            // Без ограничения «не больше 1.0»: снимок должен занимать всю доступную
+            // область, даже если он мельче окна
+            _fitZoom = Math.Min(areaW / imgW, areaH / imgH);
+            _minZoom = _fitZoom * 0.5;
+            _maxZoom = _fitZoom * 10.0;
+
+            if (!resetZoom && !wasFitted) return;
 
             SetZoom(_fitZoom);
 
-            Width  = Math.Clamp(imgW * _zoom + HorizChrome, 420, maxW);
-            Height = Math.Clamp(imgH * _zoom + VertChrome,  320, maxH);
+            // Доводка. Область просмотра сама зависит от полос прокрутки: пока они
+            // видны, ViewportWidth/Height меньше на их толщину, и посчитанный по
+            // ним масштаб оставлял снимок на несколько пикселей больше области —
+            // фото опять можно было тянуть. Один проход после раскладки убирает
+            // остаток: ужимаем ровно во столько, во сколько содержимое вылезло.
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                if (Math.Abs(_zoom - _fitZoom) > 0.0001) return; // масштаб уже сменили вручную
+
+                if (ImageScrollViewer.ScrollableWidth < 0.5 && ImageScrollViewer.ScrollableHeight < 0.5)
+                    return; // всё вписано
+
+                double kx = ImageScrollViewer.ViewportWidth  / Math.Max(1.0, ImageScrollViewer.ExtentWidth);
+                double ky = ImageScrollViewer.ViewportHeight / Math.Max(1.0, ImageScrollViewer.ExtentHeight);
+                double k = Math.Min(kx, ky);
+                if (k <= 0 || k >= 1) return;
+
+                _fitZoom *= k;
+                _minZoom = _fitZoom * 0.5;
+                _maxZoom = _fitZoom * 10.0;
+                SetZoom(_fitZoom);
+            }), DispatcherPriority.Loaded);
+        }
+
+        // Пользователь потянул за край окна — перевписываем фото под новый размер.
+        // ВАЖНО: считаем не сразу, а после раскладки. В момент SizeChanged
+        // ViewportWidth/Height у ScrollViewer ещё СТАРЫЕ, и масштаб получался
+        // рассчитанным под прежний размер окна: после «поиграть с размерами и
+        // вернуться на 100%» фото снова оказывалось больше области и прокручивалось.
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (_isVideo) return;   // видео вписывает сам Stretch=Uniform
+            Dispatcher.BeginInvoke(new Action(() => FitToViewport(resetZoom: false)),
+                DispatcherPriority.Loaded);
         }
 
         private void SetZoom(double zoom)
@@ -141,6 +357,9 @@ namespace Tebegrammmm
 
         private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
+            // У видео масштабирования нет: кадр всегда вписан в окно целиком
+            if (_isVideo) return;
+
             bool ctrl  = Keyboard.IsKeyDown(Key.LeftCtrl)  || Keyboard.IsKeyDown(Key.RightCtrl);
             bool shift = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
 
@@ -175,6 +394,8 @@ namespace Tebegrammmm
 
         private void Image_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            // Видео живёт вне ScrollViewer (вписывается целиком, без зума и панорамирования),
+            // поэтому сюда попадают только клики по фото
             bool canPan = ImageScrollViewer.ScrollableWidth > 1.0
                        || ImageScrollViewer.ScrollableHeight > 1.0;
 
@@ -321,5 +542,51 @@ namespace Tebegrammmm
 
         private void CloseBtn_Click(object sender, RoutedEventArgs e) =>
             Close();
+
+        // ── Изменение размера окна ручками по краям ──────────────────────────
+        // MinWidth/MinHeight не дают схлопнуть окно; фото после ресайза
+        // перевписывается само (Window_SizeChanged → FitToViewport).
+
+        private void ResizeRight_DragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+            => Width = Math.Max(MinWidth, Width + e.HorizontalChange);
+
+        private void ResizeBottom_DragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+            => Height = Math.Max(MinHeight, Height + e.VerticalChange);
+
+        private void ResizeCorner_DragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+        {
+            Width  = Math.Max(MinWidth,  Width  + e.HorizontalChange);
+            Height = Math.Max(MinHeight, Height + e.VerticalChange);
+        }
+
+        // Пробел — привычная пауза/продолжить, как в любом плеере
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            if (e.Key == Key.Escape) { Close(); return; }
+            if (_isVideo && e.Key == Key.Space)
+            {
+                TogglePlayPause();
+                e.Handled = true;
+            }
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            // Без этого звук ролика продолжал играть после закрытия окна
+            _videoTimer?.Stop();
+            _videoTimer = null;
+            try
+            {
+                MainVideo.Stop();
+                MainVideo.Close();
+                MainVideo.Source = null;
+            }
+            catch (Exception ex)
+            {
+                Log.Save($"[ImageViewer.Closed] {ex.Message}");
+            }
+            base.OnClosed(e);
+        }
     }
 }
