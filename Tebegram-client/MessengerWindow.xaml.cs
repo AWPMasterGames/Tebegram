@@ -338,7 +338,7 @@ namespace Tebegrammmm
         {
             try
             {
-                string[] chatData = payload.Split('&');
+                string[] chatData = payload.Replace("addChat▫$▫", "").Split('&');
                 bool iOwner = chatData.Length > 4 && chatData[4] != "None" &&
                               int.TryParse(chatData[4], out int ownerId) && ownerId == UserData.User.Id;
 
