@@ -45,8 +45,32 @@ namespace TebegramServer.Controllers
                 {
                     user.AddChat(chat.Id);
                 }
+
+                if (chat.IsGroup)
+                {
+                    SendGroupsToUsers(chat);
+                }
+
                 return chat.Id;
             }
+        }
+
+        private static async void SendGroupsToUsers(Chat chat)
+        {
+            string owner = chat.Owner != null ? $"{chat.Owner?.Id}" : "None";
+            foreach (User user in chat.Members)
+            {
+                foreach (WebSocket session in user.ChatsSessions)
+                {
+                    if (session.State == WebSocketState.Open)
+                    {
+                        string ServerMessage = $"addChat▫$▫{chat.Id}&{chat.Name}&{chat.IsGroup}&{chat.Avatar}&{owner}";
+                        var arraySegment = new ArraySegment<byte>(Encoding.UTF8.GetBytes($"addChat▫$▫{ServerMessage}"));
+                        await session.SendAsync(arraySegment, WebSocketMessageType.Text, true, CancellationToken.None);
+                    }
+                }
+            }
+            Console.WriteLine("Group Created");
         }
 
         public static async Task SendMessage(int chatId, string messageD)
@@ -82,7 +106,7 @@ namespace TebegramServer.Controllers
                     {
                         try
                         {
-                            Console.WriteLine($"Send to user: {user.Username} | message: {message}");
+                            //Console.WriteLine($"Send to user: {user.Username} | message: {message}");
                             // ПЕРЕХОД НА ChatId: в v2 сообщение оборачивается в конверт
                             // $"addMessage▫$▫{message}" (win-клиент и веб УЖЕ понимают
                             // оба формата — см. GetMessage / ws.onmessage), а само
