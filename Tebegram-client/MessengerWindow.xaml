@@ -8,8 +8,6 @@
     xmlns:classes="clr-namespace:Tebegrammmm.Classes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="Tebegrammmm"
-    Width="{x:Static classes:UiSizes.MessengerWidth}"
-    Height="{x:Static classes:UiSizes.MessengerHeight}"
     MinWidth="{x:Static classes:UiSizes.MessengerMinWidth}"
     MinHeight="{x:Static classes:UiSizes.MessengerMinHeight}"
     Background="{DynamicResource Light.BgDeepBrush}"
