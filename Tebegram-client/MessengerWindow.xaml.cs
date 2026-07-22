@@ -41,6 +41,11 @@ namespace Tebegrammmm
         public MessengerWindow()
         {
             InitializeComponent();
+
+            // Размер главного окна — от рабочей области монитора, но в разумной
+            // вилке (см. UiSizes): не во весь экран на ноутбуке и не «марка» на 4K
+            UiSizes.ApplyAndCenter(this, UiSizes.MessengerWidth, UiSizes.MessengerHeight);
+
             LoadStyle();
             _fullChatsTemplate = LBChats.ItemTemplate; // сохраняем полный шаблон для переключения режимов
             GridMessege.Visibility = Visibility.Collapsed;

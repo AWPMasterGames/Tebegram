@@ -1,58 +1,152 @@
 using System;
+using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Interop;
 
 namespace Tebegrammmm.Classes
 {
     /// <summary>
-    /// Единые размеры окон приложения.
+    /// Размеры и положение окон приложения — в одном месте.
     ///
-    /// Зачем: раньше просмотрщик считал свой размер от разрешения монитора
-    /// (0.92 рабочей области), поэтому на 4K-экране открывался почти во весь
-    /// экран, а на маленьком — крошечным. Теперь у каждого окна ФИКСИРОВАННЫЙ
-    /// размер в независимых от устройства единицах: на любом мониторе окно
-    /// выглядит одинаково. Рабочая область учитывается только как потолок —
-    /// чтобы окно не оказалось больше экрана на маленьких разрешениях.
+    /// Как считается размер. Раньше просмотрщик брал размер прямо от разрешения
+    /// (0.92 рабочей области) и подгонялся под каждое фото: на 4K открывался почти
+    /// во весь экран, на ноутбуке — как придётся. Чисто фиксированный размер тоже
+    /// плох: на маленьком ноутбуке 1000x680 занимает 92% высоты (снова «во весь
+    /// экран»), а на 4K@100% — жалкие 26% ширины.
+    ///
+    /// Поэтому здесь ГИБРИД: у каждого окна есть базовый комфортный размер, но он
+    /// зажат в вилку долей рабочей области (<see cref="MinFraction"/>..<see cref="MaxFraction"/>).
+    /// На обычных мониторах работает базовый размер, на маленьких окно ужимается,
+    /// на больших — растёт вместе с экраном, никогда не занимая его целиком.
+    ///
+    /// Все размеры — в единицах WPF (DIP), то есть с уже учтённым масштабированием
+    /// Windows: при 150% «1000» превращается в 1500 физических пикселей.
     /// </summary>
     public static class UiSizes
     {
+        // ── Базовые размеры окон ────────────────────────────────────────────
         // Главное окно мессенджера
         public const double MessengerWidth  = 900;
         public const double MessengerHeight = 620;
         public const double MessengerMinWidth  = 600;
         public const double MessengerMinHeight = 350;
 
-        // Просмотрщик фото и видео — одинаковый размер для обоих
+        // Просмотрщик фото и видео — одинаковый для обоих
         public const double ViewerWidth  = 1000;
         public const double ViewerHeight = 680;
         public const double ViewerMinWidth  = 480;
         public const double ViewerMinHeight = 360;
 
-        // Вспомогательные окна (настройки, папки, группы, диалоги) — их высота
-        // подбирается содержимым (SizeToContent), фиксируется только ширина
-        public const double DialogWidth       = 380;
-        public const double FormWidth         = 400;
-        public const double WideFormWidth     = 460;
+        // Вспомогательные окна: высоту подбирает содержимое (SizeToContent),
+        // фиксируется только ширина
+        public const double DialogWidth   = 380;
+        public const double FormWidth     = 400;
+        public const double WideFormWidth = 460;
 
-        /// <summary>Доля рабочей области, которую окно не должно превышать.</summary>
-        private const double MaxWorkAreaFraction = 0.92;
+        // ── Вилка размеров относительно рабочей области ─────────────────────
+        /// <summary>Ниже этой доли экрана окно не опускается (иначе теряется на 4K).</summary>
+        private const double MinFraction = 0.55;
+        /// <summary>Выше этой доли не поднимается (иначе «во весь экран»).</summary>
+        private const double MaxFraction = 0.80;
 
         /// <summary>
-        /// Ставит окну размер из констант, ужимая его под рабочую область экрана
-        /// (на маленьких мониторах), и ставит по центру этой области.
-        /// Центрируем вручную: WindowStartupLocation=CenterScreen срабатывает
-        /// в момент показа, а если размер меняется позже — окно уезжает от центра.
+        /// Размер окна для заданной рабочей области. Вынесен отдельно и без
+        /// зависимостей от WPF-окна, чтобы поведение можно было проверить
+        /// расчётом для любых разрешений.
         /// </summary>
-        public static void ApplyAndCenter(Window window, double width, double height)
+        public static Size Resolve(double baseWidth, double baseHeight, Size workArea)
         {
-            Rect work = SystemParameters.WorkArea;
+            return new Size(
+                Clamp(baseWidth,  workArea.Width),
+                Clamp(baseHeight, workArea.Height));
 
-            double w = Math.Min(width,  work.Width  * MaxWorkAreaFraction);
-            double h = Math.Min(height, work.Height * MaxWorkAreaFraction);
-
-            window.Width  = w;
-            window.Height = h;
-            window.Left   = work.Left + (work.Width  - w) / 2;
-            window.Top    = work.Top  + (work.Height - h) / 2;
+            static double Clamp(double value, double available)
+            {
+                double min = available * MinFraction;
+                double max = available * MaxFraction;
+                // На совсем узких экранах вилка может «схлопнуться» — max главнее:
+                // окно никогда не должно быть больше экрана
+                if (min > max) return max;
+                return Math.Min(Math.Max(value, min), max);
+            }
         }
+
+        /// <summary>
+        /// Ставит окну размер по правилам выше и центрирует его на том мониторе,
+        /// где находится окно-владелец (или главное окно). Центрируем вручную:
+        /// WindowStartupLocation=CenterScreen срабатывает в момент показа, а размер
+        /// нередко выставляется позже — и окно уезжает от центра.
+        /// </summary>
+        public static void ApplyAndCenter(Window window, double baseWidth, double baseHeight)
+        {
+            Rect work = WorkAreaFor(window);
+            Size size = Resolve(baseWidth, baseHeight, new Size(work.Width, work.Height));
+
+            window.Width  = size.Width;
+            window.Height = size.Height;
+            window.Left   = work.Left + (work.Width  - size.Width)  / 2;
+            window.Top    = work.Top  + (work.Height - size.Height) / 2;
+        }
+
+        /// <summary>
+        /// Рабочая область монитора, на котором открыто окно-владелец. При одном
+        /// мониторе это то же, что SystemParameters.WorkArea, но при нескольких
+        /// окно больше не улетает на основной экран.
+        /// </summary>
+        private static Rect WorkAreaFor(Window window)
+        {
+            try
+            {
+                Window anchor = window?.Owner ?? Application.Current?.MainWindow;
+                IntPtr handle = anchor != null ? new WindowInteropHelper(anchor).Handle : IntPtr.Zero;
+                if (handle == IntPtr.Zero) return SystemParameters.WorkArea;
+
+                IntPtr monitor = MonitorFromWindow(handle, MONITOR_DEFAULTTONEAREST);
+                var info = new MONITORINFO { cbSize = Marshal.SizeOf<MONITORINFO>() };
+                if (monitor == IntPtr.Zero || !GetMonitorInfo(monitor, ref info))
+                    return SystemParameters.WorkArea;
+
+                // Windows отдаёт физические пиксели — переводим в единицы WPF,
+                // иначе при масштабировании 125/150% окно оказалось бы больше экрана
+                var source = PresentationSource.FromVisual(anchor);
+                double scaleX = source?.CompositionTarget?.TransformToDevice.M11 ?? 1.0;
+                double scaleY = source?.CompositionTarget?.TransformToDevice.M22 ?? 1.0;
+                if (scaleX <= 0) scaleX = 1.0;
+                if (scaleY <= 0) scaleY = 1.0;
+
+                return new Rect(
+                    info.rcWork.Left / scaleX,
+                    info.rcWork.Top / scaleY,
+                    (info.rcWork.Right - info.rcWork.Left) / scaleX,
+                    (info.rcWork.Bottom - info.rcWork.Top) / scaleY);
+            }
+            catch (Exception ex)
+            {
+                // Любая неожиданность с WinAPI не должна мешать открыть окно
+                Log.Save($"[UiSizes.WorkAreaFor] {ex.GetType().Name}: {ex.Message}");
+                return SystemParameters.WorkArea;
+            }
+        }
+
+        // ── WinAPI: рабочая область конкретного монитора ────────────────────
+        private const int MONITOR_DEFAULTTONEAREST = 2;
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct RECT { public int Left, Top, Right, Bottom; }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct MONITORINFO
+        {
+            public int cbSize;
+            public RECT rcMonitor;
+            public RECT rcWork;
+            public int dwFlags;
+        }
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr MonitorFromWindow(IntPtr hwnd, int flags);
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        private static extern bool GetMonitorInfo(IntPtr hMonitor, ref MONITORINFO lpmi);
     }
 }
