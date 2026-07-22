@@ -280,6 +280,14 @@ namespace Tebegrammmm
             Contact = LBChats.SelectedItem as Contact;
             Log.Save($"[LBChats_SelectionChanged] Selected contact: {Contact?.Name} ({Contact?.Username})");
 
+            // Результат глобального поиска: пользователя ещё нет в контактах —
+            // сначала добавляем его на сервере, потом открываем чат
+            if (Contact != null && Contact.IsGlobalResult)
+            {
+                _ = AddGlobalResultAsync(Contact);
+                return;
+            }
+
             GridChat.DataContext = Contact;
             SetMessagesSource(Contact);
             GridMessege.Visibility = Visibility.Visible;
@@ -296,6 +304,21 @@ namespace Tebegrammmm
                 TBMessage.Text = Contact.Draft ?? string.Empty;
                 Log.Save($"[LBChats_SelectionChanged] Restored draft for {Contact.Name}: '{Contact.Draft}'");
             }
+        }
+
+        /// <summary>
+        /// Клик по результату глобального поиска: добавляем пользователя в контакты
+        /// и открываем с ним чат. Поиск при этом сбрасывается — контакт уже «свой».
+        /// </summary>
+        private async Task AddGlobalResultAsync(Contact found)
+        {
+            string username = found.Username;
+            bool ok = await SendAddNewContactRequest($"{UserData.User.Id}▫{username}▫");
+            if (!ok) return; // при 404 SendAddNewContactRequest сам покажет сообщение
+
+            Contact added = UserData.User.FindContactByUsername(username);
+            SearchContactBarTB.Text = string.Empty; // выходим из режима поиска
+            if (added != null) OpenContact(added);
         }
 
         /// <summary>
@@ -1097,57 +1120,25 @@ namespace Tebegrammmm
                 || ext == ".gif" || ext == ".bmp" || ext == ".webp";
         }
 
-        private async void LBMessages_SelectionChangeMessage(object sender, SelectionChangedEventArgs e)
+        /// <summary>
+        /// Выделение в списке сообщений нам не нужно — только сбрасываем его.
+        /// Вложения открываются по КЛИКУ (Attachment_Click): выделение может
+        /// меняться и программно (например, при смене чата), и тогда файл
+        /// открывался бы сам собой.
+        /// </summary>
+        private void LBMessages_SelectionChangeMessage(object sender, SelectionChangedEventArgs e)
         {
-            if (LBMessages.SelectedItem == null)
-            {
-                LBMessages.SelectedIndex = -1;
-                return;
-            }
-
-            Message msg = LBMessages.SelectedItem as Message;
-            LBMessages.SelectedIndex = -1; // сбрасываем выделение, чтобы повторный клик срабатывал
-
-            if (msg == null || msg.MessageType != MessageType.File) return;
-
-            // ПКМ тоже выделяет элемент ListBox — но правый клик должен открывать
-            // только контекстное меню, а не просмотрщик/скачивание
-            if (Mouse.RightButton == MouseButtonState.Pressed) return;
-
-            // Фото — открываем во встроенном просмотрщике (зум, вписывание)
-            if (IsImageFile(msg.Text))
-            {
-                string fileUrl = msg.FileUrl;
-                if (_openImageViewers.TryGetValue(fileUrl, out var existing))
-                {
-                    if (existing.WindowState == WindowState.Minimized) existing.WindowState = WindowState.Normal;
-                    existing.Activate();
-                    return;
-                }
-                var viewer = new ImageViewerWindow(fileUrl, msg.Text);
-                viewer.Closed += (_, __) => _openImageViewers.Remove(fileUrl);
-                _openImageViewers[fileUrl] = viewer;
-                viewer.Show();
-                return;
-            }
-
-            // Прочие файлы — скачиваем в выбранную папку
-            await DownloadFileAsync(msg);
+            if (LBMessages.SelectedIndex != -1) LBMessages.SelectedIndex = -1;
         }
 
-        /// <summary>ПКМ по фото/файлу → «Сохранить»: выбор папки и скачивание.</summary>
-        private void SaveFile_Click(object sender, RoutedEventArgs e)
-            => _ = DownloadFileAsync(MessageFromMenu(sender));
-
         /// <summary>
-        /// Клик по чипу файла. Видео/аудио открываем системой (браузер или плеер их
-        /// покажет), а НЕИЗВЕСТНЫЙ файл (архив, документ, exe, редкий контейнер)
-        /// сразу предлагаем скачать: открывать его нечем — в браузере это дало бы
-        /// пустую вкладку. «Сохранить» в ПКМ-меню работает для любых файлов.
+        /// Клик по вложению в пузыре: фото и видео открываем во встроенном
+        /// просмотрщике, аудио — системным плеером, неизвестный файл — скачиваем.
         /// </summary>
-        private void FileChip_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void Attachment_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if ((sender as FrameworkElement)?.DataContext is not Message msg) return;
+            if (msg.MessageType != MessageType.File) return;
 
             if (msg.IsUnknownFile)
             {
@@ -1155,6 +1146,13 @@ namespace Tebegrammmm
                 return;
             }
 
+            if (msg.IsImageFile || ImageViewerWindow.IsVideoFile(msg.Text))
+            {
+                OpenInViewer(msg);
+                return;
+            }
+
+            // Аудио — системным приложением
             string url = msg.FileUrl;
             if (string.IsNullOrEmpty(url)) return;
             try
@@ -1163,9 +1161,39 @@ namespace Tebegrammmm
             }
             catch (Exception ex)
             {
-                Log.Save($"[FileChip_Click] {ex.Message}");
+                Log.Save($"[Attachment_Click] {ex.Message}");
             }
         }
+
+        /// <summary>
+        /// Открывает фото или видео в просмотрщике. Одно и то же вложение не
+        /// открывается дважды — повторный клик поднимает уже открытое окно.
+        /// </summary>
+        private void OpenInViewer(Message msg)
+        {
+            string fileUrl = msg.FileUrl;
+            if (string.IsNullOrEmpty(fileUrl)) return;
+
+            if (_openImageViewers.TryGetValue(fileUrl, out var existing))
+            {
+                if (existing.WindowState == WindowState.Minimized) existing.WindowState = WindowState.Normal;
+                existing.Activate();
+                return;
+            }
+
+            var viewer = new ImageViewerWindow(fileUrl, msg.Text);
+            viewer.Closed += (_, __) => _openImageViewers.Remove(fileUrl);
+            _openImageViewers[fileUrl] = viewer;
+            viewer.Show();
+        }
+
+        /// <summary>ПКМ по фото/файлу → «Сохранить»: выбор папки и скачивание.</summary>
+        private void SaveFile_Click(object sender, RoutedEventArgs e)
+            => _ = DownloadFileAsync(MessageFromMenu(sender));
+
+        /// <summary>Клик по чипу файла — та же логика, что и по превью (см. Attachment_Click).</summary>
+        private void FileChip_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+            => Attachment_Click(sender, e);
 
         private async Task DownloadFileAsync(Message msg)
         {
@@ -1215,13 +1243,32 @@ namespace Tebegrammmm
 
         private async void Button_Click_CallContact(object sender, RoutedEventArgs e)
         {
-            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/Voice/CreateRoom/{UserData.User.Id}-{Contact.Username}");
-            using HttpResponseMessage response = await httpClient.SendAsync(request);
-            string token = await response.Content.ReadAsStringAsync();
+            if (Contact == null) return;
 
-            VoiceRoom VR = new VoiceRoom(Mode.ActiveCall, Contact, token);
-            UserData.User.InCall = true;
-            VR.Show();
+            // async void: недоступный сервер кидал здесь HttpRequestException и приложение
+            // падало при попытке позвонить. Теперь — понятное сообщение вместо краша
+            try
+            {
+                using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/Voice/CreateRoom/{UserData.User.Id}-{Contact.Username}");
+                using HttpResponseMessage response = await httpClient.SendAsync(request);
+                string token = (await response.Content.ReadAsStringAsync()).Trim();
+
+                if (!response.IsSuccessStatusCode || string.IsNullOrEmpty(token))
+                {
+                    Log.Save($"[CallContact] Сервер не выдал токен: {(int)response.StatusCode}");
+                    TbgDialogWindow.Show("Не удалось начать звонок — сервер не ответил. Проверь соединение.", "Звонок");
+                    return;
+                }
+
+                VoiceRoom VR = new VoiceRoom(Mode.ActiveCall, Contact, token);
+                UserData.User.InCall = true;
+                VR.Show();
+            }
+            catch (Exception ex)
+            {
+                Log.Save($"[CallContact] {ex.GetType().Name}: {ex.Message}");
+                TbgDialogWindow.Show("Не удалось начать звонок. Проверь соединение с сервером.", "Звонок");
+            }
         }
 
         ObservableCollection<Contact> TempContacts;
@@ -1240,11 +1287,15 @@ namespace Tebegrammmm
                     LBChats.ItemsSource = TempContacts;
                     _IsInSearch = false;
                 }
+                SetSearchHint(null);
             }
             else
             {
                 _IsInSearch = true;
-                TempContacts = (LBChatsLoders.SelectedItem as ChatFolder).Contacts;
+                // Папка может быть не выбрана — раньше здесь падало исключение,
+                // и до глобального поиска ниже дело уже не доходило
+                TempContacts = (LBChatsLoders.SelectedItem as ChatFolder)?.Contacts
+                               ?? UserData.User.ChatsFolders[0].Contacts;
 
                 string q = SearchContactBarTB.Text.ToLower().TrimStart('@');
 
@@ -1266,7 +1317,105 @@ namespace Tebegrammmm
 
                 FindedContacts = new ObservableCollection<Contact>(exact.Concat(prefix).Concat(rest));
                 LBChats.ItemsSource = FindedContacts;
+
+                // Запрос с @ — ищем ещё и среди ВСЕХ пользователей сервера (как в вебе)
+                ScheduleGlobalSearch();
             }
+        }
+
+        // ── Живой глобальный поиск по @логину (как в веб-клиенте) ───────────────
+        // Пока пользователь печатает, ждём паузу в 300 мс и только потом идём на
+        // сервер: иначе на каждый символ уходил бы отдельный запрос.
+        private System.Windows.Threading.DispatcherTimer _globalSearchTimer;
+        private int _globalSearchSeq;
+
+        /// <summary>Подсказка под списком чатов (null — спрятать).</summary>
+        private void SetSearchHint(string text)
+        {
+            if (SearchEmptyHint == null) return;
+            SearchEmptyHint.Text = text ?? string.Empty;
+            SearchEmptyHint.Visibility = string.IsNullOrEmpty(text) ? Visibility.Collapsed : Visibility.Visible;
+        }
+
+        private void ScheduleGlobalSearch()
+        {
+            string raw = SearchContactBarTB.Text.Trim();
+            // Ищем только по явному @ и минимум двум символам — как на сервере
+            // (/Users/find отвечает пустотой на запрос короче двух символов)
+            if (!raw.StartsWith("@") || raw.Length < 3)
+            {
+                _globalSearchTimer?.Stop();
+                SetSearchHint(raw.StartsWith("@") && raw.Length == 2
+                    ? "Введи ещё хотя бы один символ" : null);
+                return;
+            }
+
+            SetSearchHint("Ищем на сервере…");
+
+            if (_globalSearchTimer == null)
+            {
+                _globalSearchTimer = new System.Windows.Threading.DispatcherTimer
+                { Interval = TimeSpan.FromMilliseconds(300) };
+                _globalSearchTimer.Tick += (_, __) =>
+                {
+                    _globalSearchTimer.Stop();
+                    _ = RunGlobalSearchAsync(SearchContactBarTB.Text.Trim().TrimStart('@'));
+                };
+            }
+
+            _globalSearchTimer.Stop();  // сбрасываем отсчёт на каждый новый символ
+            _globalSearchTimer.Start();
+        }
+
+        private async Task RunGlobalSearchAsync(string query)
+        {
+            int seq = ++_globalSearchSeq;
+            string raw;
+            try
+            {
+                using var request = new HttpRequestMessage(HttpMethod.Get,
+                    $"{ServerData.ServerAdress}/Users/find/{Uri.EscapeDataString(query)}");
+                using var response = await httpClient.SendAsync(request);
+                if (!response.IsSuccessStatusCode)
+                {
+                    if (seq == _globalSearchSeq) SetSearchHint("Сервер не ответил на поиск");
+                    return;
+                }
+                raw = (await response.Content.ReadAsStringAsync()).Trim();
+            }
+            catch (Exception ex)
+            {
+                Log.Save($"[GlobalSearch] {ex.GetType().Name}: {ex.Message}");
+                if (seq == _globalSearchSeq) SetSearchHint("Нет связи с сервером");
+                return;
+            }
+
+            // Пока ждали ответ, запрос мог смениться — не рисуем устаревшее
+            if (seq != _globalSearchSeq) return;
+            string current = SearchContactBarTB.Text.Trim();
+            if (!current.StartsWith("@") || current.TrimStart('@') != query) return;
+
+            int added = 0;
+            foreach (string entry in string.IsNullOrEmpty(raw)
+                     ? Array.Empty<string>() : raw.Split('❂'))
+            {
+                string[] parts = entry.Split('▫');
+                if (parts.Length < 3 || !int.TryParse(parts[0], out int id)) continue;
+
+                string username = parts[1];
+                if (username == UserData.User.Username) continue;                 // себя не предлагаем
+                if (UserData.User.FindContactByUsername(username) != null) continue; // уже в контактах — он выше
+                if (FindedContacts.Any(c => c.Username == username)) continue;    // не дублируем
+
+                FindedContacts.Add(new Contact(id, username, parts[2]) { IsGlobalResult = true });
+                added++;
+            }
+
+            // Итог поиска показываем явно — иначе пустой список читается как «не работает»
+            if (FindedContacts.Count > 0)
+                SetSearchHint(null);
+            else
+                SetSearchHint($"На сервере нет пользователей с «{query}» в логине или имени");
         }
 
         /// <summary>

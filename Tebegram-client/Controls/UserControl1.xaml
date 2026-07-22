@@ -24,12 +24,11 @@
                 Stretch="Uniform" />
         </Viewbox>
 
-        <!--  Фото аватара: заполняет ВЕСЬ круг (UniformToFill + без отступов)  -->
-        <Ellipse>
-            <Ellipse.Fill>
-                <ImageBrush ImageSource="{Binding Avatar, ElementName=Root}" Stretch="UniformToFill" />
-            </Ellipse.Fill>
-        </Ellipse>
+        <!--  Фото аватара: заполняет ВЕСЬ круг (UniformToFill + без отступов).
+              Привязка стоит на Ellipse.Fill, а не внутри ImageBrush: ElementName
+              внутри Freezable не резолвится (ошибка «не удается найти управляющий
+              FrameworkElement»), поэтому кисть собирает конвертер  -->
+        <Ellipse Fill="{Binding Avatar, ElementName=Root, Converter={StaticResource ImageToBrush}}" />
 
         <!--  Тонкая граница  -->
         <Ellipse Stroke="{DynamicResource Light.BorderSubtleBrush}" StrokeThickness="1" />

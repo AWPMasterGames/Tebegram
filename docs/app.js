@@ -6,7 +6,7 @@
    ═══════════════════════════════════════════════════════════════ */
 'use strict';
 
-const APP_VERSION = '1.0.17';
+const APP_VERSION = '1.0.22';
 const SEP = '▫';
 const MSG_SEP = '❂';
 const WS_SEP = '▫#▫';
@@ -738,7 +738,7 @@ function fileKind(fileName) {
 // Подпись под именем файла: что это и что произойдёт по клику
 function fileCaption(fileName) {
   const kind = fileKind(fileName);
-  if (kind === 'video') return 'Видео · открыть';
+  if (kind === 'video') return 'Видео · смотреть';
   if (kind === 'audio') return 'Аудио · открыть';
   const ext = fileExt(fileName).toUpperCase();
   return ext ? `${ext}-файл · скачать` : 'Файл · скачать';
@@ -1239,10 +1239,61 @@ const UI = {
           el.classList.add('bubble--doc');
           el.download = m.text || '';
           name.textContent = `⬇ ${m.text}`;
+        } else if (kind === 'video') {
+          // Превью-кадр вместо скрепки: preload=metadata + #t=0.3 заставляет браузер
+          // показать кадр с 0.3 секунды (нулевой часто чёрный), сам ролик не грузится.
+          // Поверх — круглая кнопка play, как в десктопном клиенте
+          el.classList.add('bubble--video');
+          const prev = document.createElement('video');
+          prev.className = 'bubble-video-preview';
+          prev.preload = 'metadata';
+          prev.muted = true;
+          prev.playsInline = true;
+          // Медиафрагмент #t= браузеры применяют не всегда (Chromium показывает кадр
+          // с нуля, а он у многих роликов чёрный) — пробуем довести позицию руками.
+          // Подписка ДО присвоения src: из кэша метаданные приходят мгновенно,
+          // и подписка после src уже опаздывала на событие.
+          // У файлов без индекса (например, записанных MediaRecorder) перемотка
+          // может «схлопнуться» обратно в 0 — тогда просто останется нулевой кадр
+          const seekToFrame = () => {
+            if (prev.currentTime < 0.05 && prev.duration > 0.5) {
+              try { prev.currentTime = Math.min(0.3, prev.duration / 2); } catch {}
+            }
+          };
+          prev.addEventListener('loadedmetadata', seekToFrame, { once: true });
+          prev.src = `${url}#t=0.3`;
+          if (prev.readyState >= 1) seekToFrame(); // метаданные уже были готовы
+          const play = document.createElement('span');
+          play.className = 'video-play';
+          // SVG вместо символа ▶: у текстового глифа свои поля внутри шрифта,
+          // из-за них треугольник не попадал в центр кружка.
+          // viewBox подобран так, чтобы в центре SVG оказался ЦЕНТР МАСС
+          // треугольника (вершины 8,5 / 8,19 / 19,12 → центроид 11.67, 12),
+          // а не середина его рамки — иначе значок выглядит смещённым влево
+          play.innerHTML = '<svg viewBox="4.17 4.5 15 15" aria-hidden="true">' +
+                           '<path fill="currentColor" d="M8 5v14l11-7z"/></svg>';
+          el.appendChild(prev);
+          el.appendChild(play);
+          name.style.display = 'none';   // имя файла на превью не нужно
+          // Если кадр не отрисовался (нет кодека) — возвращаем обычный вид с именем
+          prev.addEventListener('error', () => {
+            prev.remove(); play.remove();
+            name.style.display = '';
+            name.textContent = `▶ ${m.text}`;
+            el.classList.remove('bubble--video');
+          });
+          el.addEventListener('click', e => {
+            e.preventDefault();
+            PhotoViewer.open(url, m.text);
+          });
         }
-        meta = document.createElement('span');
-        meta.className = 'file-meta';
-        meta.textContent = fileCaption(m.text);
+        // У видео подпись не нужна: на превью и так есть кнопка play и время.
+        // Без этого пузырь был выше кадра, и плашка времени с play съезжали вниз
+        if (kind !== 'video') {
+          meta = document.createElement('span');
+          meta.className = 'file-meta';
+          meta.textContent = fileCaption(m.text);
+        }
       }
       el.appendChild(name);
       if (meta) el.appendChild(meta);
@@ -1696,8 +1747,29 @@ const Theme = {
 
 /* ─────────────── Просмотр фото (как ImageViewerWindow на ПК) ─────────────── */
 const PhotoViewer = {
+  // Один просмотрщик на фото и видео: для видео показываем <video controls>
+  // (пауза и перемотка — штатные средства браузера), для фото — <img>
   open(url, name) {
-    $('pv-img').src = url;
+    const isVideo = fileKind(name) === 'video';
+    const img = $('pv-img');
+    const video = $('pv-video');
+
+    img.classList.toggle('hidden', isVideo);
+    video.classList.toggle('hidden', !isVideo);
+
+    if (isVideo) {
+      img.src = '';
+      video.src = url;
+      // Автостарт может быть заблокирован автоплей-политикой — тогда просто
+      // останется первый кадр с кнопкой воспроизведения, это нормально
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+      video.removeAttribute('src');
+      video.load();
+      img.src = url;
+    }
+
     const dl = $('pv-download');
     dl.href = url;
     dl.setAttribute('download', name || 'photo');
@@ -1706,6 +1778,11 @@ const PhotoViewer = {
   close() {
     $('photo-viewer').classList.add('hidden');
     $('pv-img').src = '';
+    // Без остановки звук ролика продолжает играть после закрытия просмотрщика
+    const video = $('pv-video');
+    video.pause();
+    video.removeAttribute('src');
+    video.load();
   },
   isOpen() { return !$('photo-viewer').classList.contains('hidden'); },
 };

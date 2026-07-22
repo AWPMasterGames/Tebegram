@@ -87,22 +87,39 @@ namespace Tebegrammmm
 
         private ClientWebSocket ws;
         private WaveInEvent waveIn;
-        private WaveOutEvent waveOut = new WaveOutEvent();
+        // Создаётся в Init вместе с проверкой наличия устройства: раньше объект жил в поле
+        // и waveOut.Init/Play падали на машине без колонок/наушников, роняя приложение
+        private WaveOutEvent waveOut;
 
         byte[] buffer;
         BufferedWaveProvider waveProvider;
 
+        /// <summary>
+        /// Запуск звонка. Обёртка над InitAsync: это async void (обработчик кнопки),
+        /// поэтому НИ ОДНО исключение не должно из него вылететь — необработанное
+        /// исключение в async void убивает всё приложение. Так и падало в аудитории
+        /// при принятии звонка на машинах без микрофона/наушников.
+        /// </summary>
         private async void Init()
         {
+            try
+            {
+                await InitAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Save($"[VoiceRoom.Init] {ex.GetType().Name}: {ex.Message}");
+                TbgDialogWindow.Show("Не удалось начать звонок. Проверь подключение к серверу и звуковые устройства.", "Звонок");
+                try { Close(); } catch { }
+            }
+        }
 
+        private async Task InitAsync()
+        {
             ws = new ClientWebSocket();
-            waveIn = new WaveInEvent();
-            waveIn.DeviceNumber = UserData.User.SelectedDeviceNum;
-            // Общий формат для всех платформ (ПК/веб/Android): PCM 16 бит, 48 кГц, моно.
-            // Это родная частота браузера и Android — звук совместим между устройствами.
-            waveIn.WaveFormat = new WaveFormat(48000, 16, 1);
-            waveIn.BufferMilliseconds = 20; // короткие пакеты — меньше задержка
 
+            // Приёмный буфер нужен всегда — в него пишет ReceiveVoice, даже если
+            // воспроизводить нечем (тогда звук просто отбрасывается)
             waveProvider = new BufferedWaveProvider(new WaveFormat(48000, 16, 1))
             {
                 BufferDuration = TimeSpan.FromSeconds(3),
@@ -110,34 +127,112 @@ namespace Tebegrammmm
             };
             buffer = new byte[8192];
 
-            waveOut.Init(waveProvider);
+            SetupMicrophone();
+            SetupSpeaker();
 
-            // Шумоподавление + нормализация исходящего звука (как в веб-клиенте)
-            var dsp = new VoiceDsp(48000);
-            waveIn.DataAvailable += async (s, e) =>
+            // Совсем без звука звонок бессмысленен — честно говорим об этом и выходим
+            if (waveIn == null && waveOut == null)
             {
-                if (ws.State == WebSocketState.Open)
-                {
-                    try
-                    {
-                        dsp.Process(e.Buffer, e.BytesRecorded);
-                        await ws.SendAsync(new ArraySegment<byte>(e.Buffer, 0, e.BytesRecorded), WebSocketMessageType.Binary, true, CancellationToken.None);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.ToString());
-                    }
-                }
-            };
+                TbgDialogWindow.Show("Не найдено ни микрофона, ни устройства воспроизведения. " +
+                                     "Подключи наушники или гарнитуру и попробуй снова.", "Звонок");
+                Close();
+                return;
+            }
 
             string wsAddress = ServerData.ServerAdress.Replace("https:", "wss:").Replace("http:", "ws:");
             await ws.ConnectAsync(new Uri($"{wsAddress}/Voice/ws?userId={UserData.User.Id}&roomToken={Token}"),
                 CancellationToken.None);
 
-            IsMicrophoneOn = true;
+            IsMicrophoneOn = waveIn != null;
             StartCallTimer();
             StartSVT();
             StartRVT();
+        }
+
+        /// <summary>
+        /// Микрофон: устройств может не быть вовсе, а сохранённый индекс — указывать
+        /// на отключённую гарнитуру (после переподключения нумерация WaveIn меняется).
+        /// Без микрофона звонок продолжается в режиме «только слушать».
+        /// </summary>
+        private void SetupMicrophone()
+        {
+            try
+            {
+                if (WaveInEvent.DeviceCount == 0)
+                {
+                    Log.Save("[VoiceRoom] Микрофон не найден — звонок только на приём");
+                    TbgDialogWindow.Show("Микрофон не найден — собеседник тебя не услышит. " +
+                                         "Слышать его ты сможешь.", "Звонок");
+                    return;
+                }
+
+                // Сначала ищем сохранённое устройство ПО ИМЕНИ (индекс мог сдвинуться),
+                // и только если не нашли — берём первое доступное
+                int deviceNumber = Classes.AudioDevices.FindByName(UserData.User.SelectedDeviceName);
+                if (deviceNumber < 0 || deviceNumber >= WaveInEvent.DeviceCount)
+                    deviceNumber = 0;
+
+                waveIn = new WaveInEvent { DeviceNumber = deviceNumber };
+                // Общий формат для всех платформ (ПК/веб/Android): PCM 16 бит, 48 кГц, моно.
+                // Это родная частота браузера и Android — звук совместим между устройствами.
+                waveIn.WaveFormat = new WaveFormat(48000, 16, 1);
+                waveIn.BufferMilliseconds = 20; // короткие пакеты — меньше задержка
+
+                // Шумоподавление + нормализация исходящего звука (как в веб-клиенте)
+                var dsp = new VoiceDsp(48000);
+                waveIn.DataAvailable += async (s, e) =>
+                {
+                    if (ws.State == WebSocketState.Open)
+                    {
+                        try
+                        {
+                            dsp.Process(e.Buffer, e.BytesRecorded);
+                            await ws.SendAsync(new ArraySegment<byte>(e.Buffer, 0, e.BytesRecorded), WebSocketMessageType.Binary, true, CancellationToken.None);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Save($"[VoiceRoom.Send] {ex.Message}");
+                        }
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                // Устройство занято другим приложением или отвалилось между проверкой и открытием
+                Log.Save($"[VoiceRoom.SetupMicrophone] {ex.GetType().Name}: {ex.Message}");
+                waveIn = null;
+                TbgDialogWindow.Show("Не удалось включить микрофон — возможно, он занят другим приложением. " +
+                                     "Звонок продолжится без него.", "Звонок");
+            }
+        }
+
+        /// <summary>
+        /// Воспроизведение. Без устройства вывода звонок продолжается «только на передачу»,
+        /// раньше waveOut.Init на такой машине ронял приложение.
+        /// </summary>
+        private void SetupSpeaker()
+        {
+            try
+            {
+                if (WaveOut.DeviceCount == 0)
+                {
+                    Log.Save("[VoiceRoom] Устройство воспроизведения не найдено — звонок только на передачу");
+                    TbgDialogWindow.Show("Устройство воспроизведения не найдено — ты не услышишь собеседника. " +
+                                         "Он тебя услышит.", "Звонок");
+                    return;
+                }
+
+                waveOut = new WaveOutEvent();
+                waveOut.Init(waveProvider);
+            }
+            catch (Exception ex)
+            {
+                Log.Save($"[VoiceRoom.SetupSpeaker] {ex.GetType().Name}: {ex.Message}");
+                try { waveOut?.Dispose(); } catch { }
+                waveOut = null;
+                TbgDialogWindow.Show("Не удалось включить воспроизведение звука. " +
+                                     "Звонок продолжится без него.", "Звонок");
+            }
         }
 
         private void StartCallTimer()
@@ -169,6 +264,8 @@ namespace Tebegrammmm
 
         private void StartSVT()
         {
+            if (waveIn == null) return; // без микрофона переключать нечего
+
             SendVoiceThread = new Thread(() =>
             {
                 bool isOn = false;
@@ -176,8 +273,17 @@ namespace Tebegrammmm
                 {
                     if (IsMicrophoneOn != isOn)
                     {
-                        if (IsMicrophoneOn) waveIn.StartRecording();
-                        else waveIn.StopRecording();
+                        // Устройство могут выдернуть прямо во время разговора — исключение
+                        // в фоновом потоке роняет приложение целиком, поэтому глушим здесь
+                        try
+                        {
+                            if (IsMicrophoneOn) waveIn.StartRecording();
+                            else waveIn.StopRecording();
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Save($"[VoiceRoom.SVT] {ex.GetType().Name}: {ex.Message}");
+                        }
                         isOn = IsMicrophoneOn;
                     }
                     // Раньше цикл крутился без задержки и съедал целое ядро процессора,
@@ -193,13 +299,29 @@ namespace Tebegrammmm
         {
             ReceiveVoiceThread = new Thread(() =>
             {
-                waveOut.Play();
+                // waveOut == null — устройства вывода нет, слушаем сокет вхолостую
+                // (иначе звонок оборвался бы у обеих сторон)
+                try { waveOut?.Play(); }
+                catch (Exception ex) { Log.Save($"[VoiceRoom.RVT] {ex.GetType().Name}: {ex.Message}"); }
                 ReceiveVoice();
             }) { IsBackground = true };
             ReceiveVoiceThread.Start();
         }
 
         private async void ReceiveVoice()
+        {
+            try
+            {
+                await ReceiveVoiceLoop();
+            }
+            catch (Exception ex)
+            {
+                // async void: без этого catch любая ошибка приёма убивала приложение
+                Log.Save($"[VoiceRoom.ReceiveVoice] {ex.GetType().Name}: {ex.Message}");
+            }
+        }
+
+        private async Task ReceiveVoiceLoop()
         {
             while (ws.State == WebSocketState.Open && !_callEnded)
             {
@@ -349,6 +471,12 @@ namespace Tebegrammmm
             {
                 waveIn?.StopRecording();
                 waveOut?.Stop();
+                // Освобождаем устройства: без Dispose микрофон оставался занятым нашим
+                // процессом, и следующий звонок (или другое приложение) его не получал
+                waveIn?.Dispose();
+                waveOut?.Dispose();
+                waveIn = null;
+                waveOut = null;
             }
             catch (Exception ex)
             {
@@ -388,11 +516,21 @@ namespace Tebegrammmm
 
         private async void Button_Click_Decline(object sender, RoutedEventArgs e)
         {
-            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/Voice/DeclineCall/{UserData.User.Id}-{Token}");
-            using HttpResponseMessage response = await httpClient.SendAsync(request);
-            string Content = await response.Content.ReadAsStringAsync();
+            // async void: недоступный сервер (обрыв связи, туннель выключен) кидал здесь
+            // HttpRequestException — и приложение падало прямо при отклонении звонка.
+            // Окно закрываем в любом случае: Window_Closing сам повторит DeclineCall
+            try
+            {
+                using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/Voice/DeclineCall/{UserData.User.Id}-{Token}");
+                using HttpResponseMessage response = await httpClient.SendAsync(request);
+                await response.Content.ReadAsStringAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Save($"[VoiceRoom.Decline] {ex.GetType().Name}: {ex.Message}");
+            }
 
-            this.Close();
+            try { this.Close(); } catch { }
         }
 
         private void Button_Click_OffOnMicrofon(object sender, RoutedEventArgs e)

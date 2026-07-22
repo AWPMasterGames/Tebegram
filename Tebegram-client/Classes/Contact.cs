@@ -45,6 +45,16 @@ namespace Tebegrammmm
         public bool IsFavorites =>
             UserData.User != null && Username == UserData.User.Username;
 
+        /// <summary>
+        /// Найден глобальным поиском (@логин) и ЕЩЁ НЕ в контактах: показывается
+        /// в списке с подсказкой, а по клику сначала добавляется в контакты.
+        /// Флаг живёт только в UI, на сервер и в файл не сохраняется.
+        /// </summary>
+        public bool IsGlobalResult { get; set; }
+
+        /// <summary>Подпись под именем для результата глобального поиска.</summary>
+        public string GlobalHint => $"@{Username} · начать чат";
+
         public Contact()
         {
             _Messages = new ObservableCollection<Message>();

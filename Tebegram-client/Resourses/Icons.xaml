@@ -34,6 +34,14 @@
         M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z
     </Geometry>
 
+    <!--  Воспроизведение / пауза — просмотрщик видео  -->
+    <Geometry x:Key="IconPlay">
+        M8 5v14l11-7z
+    </Geometry>
+    <Geometry x:Key="IconPause">
+        M6 19h4V5H6v14zm8-14v14h4V5h-4z
+    </Geometry>
+
     <Geometry x:Key="IconClose">
         M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z
     </Geometry>

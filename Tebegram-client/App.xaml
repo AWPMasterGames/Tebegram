@@ -15,6 +15,10 @@
             <classes:InlineTimeConverter x:Key="InlineTime" />
             <BooleanToVisibilityConverter x:Key="BoolToVis" />
 
+            <!--  URL/ImageSource → ImageBrush. Нужен, чтобы Binding стоял на элементе,
+                  а не внутри ImageBrush (Freezable не наследует DataContext)  -->
+            <classes:ImageToBrushConverter x:Key="ImageToBrush" />
+
             <!--  Единый шрифт приложения: Segoe UI Variable (Win11), Segoe UI (Win10)  -->
             <Style TargetType="TextBlock">
                 <Setter Property="FontFamily" Value="Segoe UI Variable, Segoe UI" />
