@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Net.Http;
 using System.Windows;
 using Tebegrammmm.Data;
 
@@ -18,6 +19,10 @@ namespace Tebegrammmm.ChatsFoldersRedactsWindows
     /// </summary>
     public partial class CreateGroupChatWindow : Window
     {
+        static HttpClient httpClient = new HttpClient(new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback = (m, c, ch, e) => true
+        });
         /// <summary>Название группы (после успешного закрытия окна).</summary>
         public string GroupName { get; private set; } = string.Empty;
 
@@ -51,7 +56,7 @@ namespace Tebegrammmm.ChatsFoldersRedactsWindows
         }
 
         // Клик справа — контакт возвращается в общий список
-        private void LBGroupMembers_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private async void LBGroupMembers_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             if (LBGroupMembers.SelectedItem is not Contact contact) return;
             _members.Remove(contact);
@@ -83,8 +88,17 @@ namespace Tebegrammmm.ChatsFoldersRedactsWindows
             // Название группы (GroupName) сервер пока не принимает — в его CreateChat
             // имя собирается из имён участников; поле уже есть в UI на вырост.
 
+            SendCreateGroupRequest(SelectedUsernames);
+
             DialogResult = true;
             Close();
+        }
+
+        private async void SendCreateGroupRequest(string[] members)
+        {
+            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/Chat/Create/{UserData.User.Id}-{string.Join('▫', SelectedUsernames)}");
+            using HttpResponseMessage response = await httpClient.SendAsync(request);
+            string content = await response.Content.ReadAsStringAsync();
         }
 
         private void ShowValidation(string text)
