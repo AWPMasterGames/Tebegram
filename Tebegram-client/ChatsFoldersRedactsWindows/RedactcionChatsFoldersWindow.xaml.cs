@@ -21,11 +21,6 @@ namespace Tebegrammmm.ChatsFoldersRedactsWindows
                 this.DragMove();
         }
 
-        private void MinimizeBtn_Click(object sender, RoutedEventArgs e)
-        {
-            this.WindowState = WindowState.Minimized;
-        }
-
         private void CloseBtn_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
@@ -70,11 +65,6 @@ namespace Tebegrammmm.ChatsFoldersRedactsWindows
                     $"[CreateGroupChat] Собраны данные группы «{createWindow.GroupName}»: " +
                     string.Join(", ", createWindow.SelectedUsernames) + " — логика создания ещё не подключена");
             }
-        }
-
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-            this.Close();
         }
 
         private void Delete_Folder_Click(object sender, RoutedEventArgs e)

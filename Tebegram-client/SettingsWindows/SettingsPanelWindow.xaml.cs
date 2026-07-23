@@ -159,11 +159,6 @@ namespace Tebegrammmm
                 this.DragMove();
         }
 
-        private void MinimizeBtn_Click(object sender, RoutedEventArgs e)
-        {
-            this.WindowState = WindowState.Minimized;
-        }
-
         private void CloseBtn_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
