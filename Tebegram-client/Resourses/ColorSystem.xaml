@@ -151,6 +151,11 @@
     <SolidColorBrush x:Key="Light.BgElevatedBrush" Color="{StaticResource Light.ColorBgElevated}" />
     <SolidColorBrush x:Key="Light.BgInputBrush" Color="{StaticResource Light.ColorBgInput}" />
 
+    <!--  Цвет точек узора на фоне чата. Фактическое значение задаёт ThemeManager
+          (своё для светлой и тёмной темы); здесь дефолт, чтобы ресурс существовал
+          до первого применения темы и в дизайнере  -->
+    <SolidColorBrush x:Key="Light.ChatDotBrush" Color="#2B5A6A86" />
+
     <!--
         ══════════════════════════════════════════════
         СВЕТЛАЯ ТЕМА — АКЦЕНТ

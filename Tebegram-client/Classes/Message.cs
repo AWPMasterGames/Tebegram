@@ -17,9 +17,9 @@ namespace Tebegrammmm
 
     public enum MessageStatus
     {
-        Sent,      // Доставлено
-        Pending,   // Не доставлено (серый фон)
-        Failed     // Ошибка отправки
+        Sent,      // Сервер принял (галочка)
+        Pending,   // Отправляется / ждёт подтверждения (часики)
+        Failed     // Ошибка отправки (красный «!»)
     }
     public class Message : System.ComponentModel.INotifyPropertyChanged
     {
@@ -91,6 +91,9 @@ namespace Tebegrammmm
         /// <summary>Файл-картинка? По расширению из Text (там лежит имя файла на сервере).</summary>
         public bool IsImageFile => ImageExt.Contains(Ext);
 
+        /// <summary>Показывать превью фото? Во время заливки — нет (файла ещё нет на сервере).</summary>
+        public bool ShowImagePreview => IsImageFile && !IsUploading;
+
         /// <summary>Видео или аудио, которое открывается плеером/браузером.</summary>
         public bool IsPlayableFile => VideoExt.Contains(Ext) || AudioExt.Contains(Ext);
 
@@ -133,9 +136,9 @@ namespace Tebegrammmm
         {
             get
             {
-                // Только для картинок: видео/аудио раньше скачивались целиком
-                // ради заведомо провального декодирования в BitmapImage
-                if (_fileImage == null && !_fileImageRequested && IsImageFile)
+                // Только для картинок и только когда файл уже на сервере:
+                // у заглушки-загрузки настоящего URL ещё нет
+                if (_fileImage == null && !_fileImageRequested && IsImageFile && !IsUploading)
                 {
                     _fileImageRequested = true;
                     _ = LoadFileImageAsync();
@@ -156,7 +159,7 @@ namespace Tebegrammmm
         {
             get
             {
-                if (_videoThumb == null && !_videoThumbRequested && IsVideoFile)
+                if (_videoThumb == null && !_videoThumbRequested && IsVideoFile && !IsUploading)
                 {
                     _videoThumbRequested = true;
                     LoadVideoThumbnail();
@@ -173,17 +176,21 @@ namespace Tebegrammmm
         /// заодно запускает выборку кадра. Пока кадра нет (грузится или нет кодека),
         /// сообщение выглядит как обычный файловый чип.
         /// </summary>
-        public bool ShowVideoPreview => IsVideoFile && VideoThumbnail != null;
+        public bool ShowVideoPreview => IsVideoFile && !IsUploading && VideoThumbnail != null;
 
-        /// <summary>Чип с именем файла — для всего, кроме картинок и видео с готовым превью.</summary>
-        public bool ShowFileChip => IsPlainFile && !ShowVideoPreview;
+        /// <summary>
+        /// Чип с именем файла. Показывается для всего, кроме картинок и видео с
+        /// готовым превью, А ТАКЖЕ для любого файла, пока он заливается — тогда в
+        /// чипе рисуется полоска прогресса вместо подписи.
+        /// </summary>
+        public bool ShowFileChip => IsUploading || (IsPlainFile && !ShowVideoPreview);
 
         /// <summary>
         /// У фото и превью видео время рисуется полупрозрачной плашкой прямо на
         /// картинке (как в веб-клиенте), поэтому обычная строка времени под пузырём
         /// в этом случае не нужна — иначе время показывалось бы дважды.
         /// </summary>
-        public bool ShowMediaTimeOverlay => IsImageFile || ShowVideoPreview;
+        public bool ShowMediaTimeOverlay => ShowImagePreview || ShowVideoPreview;
 
         /// <summary>
         /// Сообщает интерфейсу, что кадр готов. Уведомляем не только о самом кадре,
@@ -424,8 +431,106 @@ namespace Tebegrammmm
         }
 
         public string Message_FilePath { get { return _FilePath; } }
-        public MessageStatus Status { get { return _Status; } set { _Status = value; } }
+
+        // ── Статус доставки (как галочки в Telegram) ─────────────────────────
+        // Пузырь показывает статус СВОИХ сообщений: часики — пока сервер не
+        // подтвердил, галочка — подтвердил, красный «!» — не отправилось.
+        // Уведомление обязательно: статус меняется УЖЕ ПОСЛЕ появления пузыря
+        // (сообщение показывается сразу, а подтверждение приходит по WS позже).
+        public MessageStatus Status
+        {
+            get { return _Status; }
+            set
+            {
+                if (_Status == value) return;
+                _Status = value;
+                Notify(nameof(Status));
+                Notify(nameof(ShowClock));
+                Notify(nameof(ShowCheck));
+                Notify(nameof(ShowFailed));
+            }
+        }
         public bool IsOutgoing { get; set; } = false;
+
+        /// <summary>Показывать индикатор статуса? Только у своих сообщений.</summary>
+        public bool ShowStatus => IsOutgoing;
+        public bool ShowClock => IsOutgoing && _Status == MessageStatus.Pending;
+        public bool ShowCheck => IsOutgoing && _Status == MessageStatus.Sent;
+        public bool ShowFailed => IsOutgoing && _Status == MessageStatus.Failed;
+
+        private void Notify(string prop) =>
+            PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(prop));
+
+        // ── Загрузка файла на сервер ─────────────────────────────────────────
+        // Пока файл заливается, пузырь показывает полоску прогресса вместо
+        // подписи «Видео · открыть». Так видно, что отправка ИДЁТ, а не зависла.
+        private bool _isUploading;
+        private int _uploadPercent;
+
+        /// <summary>Файл сейчас заливается на сервер?</summary>
+        public bool IsUploading
+        {
+            get { return _isUploading; }
+            private set
+            {
+                if (_isUploading == value) return;
+                _isUploading = value;
+                Notify(nameof(IsUploading));
+                Notify(nameof(ShowFileChip));
+                Notify(nameof(ShowVideoPreview));
+                Notify(nameof(FileImage));
+                Notify(nameof(VideoThumbnail));
+            }
+        }
+
+        /// <summary>Процент загрузки 0..100 (для полоски и подписи).</summary>
+        public int UploadPercent
+        {
+            get { return _uploadPercent; }
+            private set
+            {
+                if (_uploadPercent == value) return;
+                _uploadPercent = value;
+                Notify(nameof(UploadPercent));
+                Notify(nameof(UploadText));
+            }
+        }
+
+        public string UploadText => $"Загрузка… {_uploadPercent}%";
+
+        /// <summary>Помечает сообщение как «идёт загрузка файла» (сбрасывает прогресс в 0).</summary>
+        public void BeginUpload()
+        {
+            UploadPercent = 0;
+            IsUploading = true;
+        }
+
+        public void ReportUpload(int percent)
+        {
+            if (percent < 0) percent = 0;
+            if (percent > 100) percent = 100;
+            UploadPercent = percent;
+        }
+
+        /// <summary>
+        /// Загрузка окончена: имя файла на сервере могло смениться (photo_1.jpg
+        /// при совпадении имён), поэтому заодно обновляем адрес — по нему потом
+        /// строятся превью и открывается просмотрщик.
+        /// </summary>
+        public void FinishUpload(string serverFileName, string url)
+        {
+            _Text = serverFileName;
+            _ServerAdress = url;
+            // Сбрасываем флаги ленивой загрузки: превью надо построить уже для
+            // реального файла, а не для локального имени-заглушки
+            _fileImageRequested = false;
+            _videoThumbRequested = false;
+            _fileImage = null;
+            _videoThumb = null;
+            IsUploading = false;
+            // Разом обновляем все производные (имя, подпись, флаги видимости)
+            PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(null));
+        }
 
         public Message(string sender, string reciver, string text, string time, MessageType messageType = MessageType.Text, string serverAdress = null, string filePath = null)
         {

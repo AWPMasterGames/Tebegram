@@ -30,6 +30,52 @@
             <Setter Property="IsHitTestVisible" Value="False" />
         </Style>
 
+        <!--  Индикатор статуса своего сообщения (как галочки в Telegram):
+              часики — сервер ещё не подтвердил, галочка — подтвердил, «!» — ошибка.
+              Общий шаблон, чтобы не повторять разметку у времени в строке, снизу и
+              на плашке поверх фото. DataContext = Message (см. Classes/Message.cs).  -->
+        <DataTemplate x:Key="MsgStatusTemplate">
+            <Grid
+                Margin="4,0,0,0"
+                VerticalAlignment="Bottom"
+                Visibility="{Binding ShowStatus, Converter={StaticResource BoolToVis}}">
+                <!--  Часики: рисуем сами (кружок + две стрелки) — так глиф есть на любой системе  -->
+                <Canvas
+                    Width="11"
+                    Height="11"
+                    Visibility="{Binding ShowClock, Converter={StaticResource BoolToVis}}">
+                    <Ellipse
+                        Width="11"
+                        Height="11"
+                        Stroke="#D6DBFF"
+                        StrokeThickness="1.2" />
+                    <Line
+                        Stroke="#D6DBFF"
+                        StrokeThickness="1"
+                        X1="5.5" Y1="5.5" X2="5.5" Y2="2.6" />
+                    <Line
+                        Stroke="#D6DBFF"
+                        StrokeThickness="1"
+                        X1="5.5" Y1="5.5" X2="8.2" Y2="5.5" />
+                </Canvas>
+                <!--  Галочка «сервер принял»  -->
+                <Viewbox
+                    Width="13"
+                    Height="13"
+                    Visibility="{Binding ShowCheck, Converter={StaticResource BoolToVis}}">
+                    <Path Data="{StaticResource IconCheck}" Fill="#D6DBFF" />
+                </Viewbox>
+                <!--  Ошибка отправки  -->
+                <TextBlock
+                    VerticalAlignment="Bottom"
+                    FontSize="11"
+                    FontWeight="Bold"
+                    Foreground="#FFB4B4"
+                    Text="!"
+                    Visibility="{Binding ShowFailed, Converter={StaticResource BoolToVis}}" />
+            </Grid>
+        </DataTemplate>
+
         <!--  Тонкий скроллбар для всего окна  -->
         <Style TargetType="ScrollBar">
             <Setter Property="Width" Value="5" />
@@ -721,7 +767,8 @@
                                             <Style TargetType="Border">
                                                 <Setter Property="Visibility" Value="Collapsed" />
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsImageFile}" Value="True">
+                                                    <!--  ShowImagePreview: во время заливки картинки нет (файла ещё нет на сервере)  -->
+                                                    <DataTrigger Binding="{Binding ShowImagePreview}" Value="True">
                                                         <Setter Property="Visibility" Value="Visible" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
@@ -744,12 +791,16 @@
                                                 Opacity="0"
                                                 Source="{Binding FileImage}"
                                                 Stretch="Uniform" />
-                                            <!--  Время — полупрозрачной плашкой прямо на фото (как в вебе)  -->
+                                            <!--  Время + статус — полупрозрачной плашкой прямо на фото (как в вебе)  -->
                                             <Border Style="{StaticResource MediaTimeBadgeStyle}">
-                                                <TextBlock
-                                                    FontSize="10"
-                                                    Foreground="White"
-                                                    Text="{Binding TimeShort}" />
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock
+                                                        VerticalAlignment="Bottom"
+                                                        FontSize="10"
+                                                        Foreground="White"
+                                                        Text="{Binding TimeShort}" />
+                                                    <ContentControl Content="{Binding}" ContentTemplate="{StaticResource MsgStatusTemplate}" />
+                                                </StackPanel>
                                             </Border>
                                         </Grid>
                                     </Border>
@@ -778,12 +829,16 @@
                                                 Source="{Binding VideoThumbnail}"
                                                 Stretch="Uniform" />
                                         </Border>
-                                        <!--  Время — плашкой в углу кадра, как у фото  -->
+                                        <!--  Время + статус — плашкой в углу кадра, как у фото  -->
                                         <Border Style="{StaticResource MediaTimeBadgeStyle}">
-                                            <TextBlock
-                                                FontSize="10"
-                                                Foreground="White"
-                                                Text="{Binding TimeShort}" />
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock
+                                                    VerticalAlignment="Bottom"
+                                                    FontSize="10"
+                                                    Foreground="White"
+                                                    Text="{Binding TimeShort}" />
+                                                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource MsgStatusTemplate}" />
+                                            </StackPanel>
                                         </Border>
                                         <!--  Кнопка play поверх кадра (клик проходит к превью)  -->
                                         <Border
@@ -885,6 +940,8 @@
                                                         </Style>
                                                     </TextBlock.Style>
                                                 </TextBlock>
+                                                <!--  Подпись «Видео · открыть» / «ZIP-файл · скачать».
+                                                      Во время заливки прячется — вместо неё полоска прогресса ниже  -->
                                                 <TextBlock FontSize="11" Text="{Binding FileCaption}">
                                                     <TextBlock.Style>
                                                         <Style TargetType="TextBlock">
@@ -893,10 +950,39 @@
                                                                 <DataTrigger Binding="{Binding IsOutgoing}" Value="True">
                                                                     <Setter Property="Foreground" Value="#D6DBFF" />
                                                                 </DataTrigger>
+                                                                <DataTrigger Binding="{Binding IsUploading}" Value="True">
+                                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                                </DataTrigger>
                                                             </Style.Triggers>
                                                         </Style>
                                                     </TextBlock.Style>
                                                 </TextBlock>
+                                                <!--  Индикатор заливки файла: «Загрузка… NN%» + тонкая полоска.
+                                                      Видно, что отправка идёт, а не зависла (см. Message.IsUploading)  -->
+                                                <StackPanel
+                                                    Width="200"
+                                                    Margin="0,2,0,0"
+                                                    Visibility="{Binding IsUploading, Converter={StaticResource BoolToVis}}">
+                                                    <TextBlock
+                                                        FontSize="11"
+                                                        Foreground="#D6DBFF"
+                                                        Text="{Binding UploadText}" />
+                                                    <Border
+                                                        Height="4"
+                                                        Margin="0,3,0,0"
+                                                        Background="#33FFFFFF"
+                                                        CornerRadius="2">
+                                                        <Border
+                                                            HorizontalAlignment="Left"
+                                                            Background="White"
+                                                            CornerRadius="2">
+                                                            <Border.Width>
+                                                                <!--  Ширина полоски = 200 * процент/100 (см. PercentToWidth)  -->
+                                                                <Binding Converter="{StaticResource PercentToWidth}" ConverterParameter="200" Path="UploadPercent" />
+                                                            </Border.Width>
+                                                        </Border>
+                                                    </Border>
+                                                </StackPanel>
                                             </StackPanel>
                                         </StackPanel>
                                     </Border>
@@ -936,14 +1022,54 @@
                                                 </Style>
                                             </TextBox.Style>
                                         </TextBox>
-                                        <!--  Время в строке (короткие сообщения)  -->
-                                        <TextBlock
+                                        <!--  Время + статус в строке (короткие сообщения)  -->
+                                        <StackPanel
                                             Grid.Column="1"
                                             Margin="8,0,0,1"
                                             VerticalAlignment="Bottom"
-                                            FontSize="10"
-                                            Text="{Binding TimeShort}"
+                                            Orientation="Horizontal"
                                             Visibility="{Binding ., Converter={StaticResource InlineTime}, Mode=OneTime, ConverterParameter=Direct, FallbackValue=Collapsed}">
+                                            <TextBlock
+                                                VerticalAlignment="Bottom"
+                                                FontSize="10"
+                                                Text="{Binding TimeShort}">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Foreground" Value="{DynamicResource Light.TextMutedBrush}" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsOutgoing}" Value="True">
+                                                                <Setter Property="Foreground" Value="#D6DBFF" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                            <ContentControl Content="{Binding}" ContentTemplate="{StaticResource MsgStatusTemplate}" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <!--  Время + статус снизу (длинные сообщения и файлы).
+                                          У фото и видео с готовым превью не показываем: там время
+                                          нарисовано плашкой поверх картинки, иначе дублировалось бы  -->
+                                    <StackPanel
+                                        Margin="0,5,0,0"
+                                        HorizontalAlignment="Right"
+                                        Orientation="Horizontal">
+                                        <StackPanel.Style>
+                                            <Style TargetType="StackPanel">
+                                                <!--  Visibility задаётся сеттером, а не атрибутом: локальное
+                                                      значение перебило бы триггер ниже  -->
+                                                <Setter Property="Visibility" Value="{Binding ., Converter={StaticResource InlineTime}, Mode=OneTime, ConverterParameter=Invert, FallbackValue=Visible}" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ShowMediaTimeOverlay}" Value="True">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </StackPanel.Style>
+                                        <TextBlock
+                                            VerticalAlignment="Bottom"
+                                            FontSize="10"
+                                            Text="{Binding TimeShort}">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
                                                     <Setter Property="Foreground" Value="{DynamicResource Light.TextMutedBrush}" />
@@ -955,32 +1081,8 @@
                                                 </Style>
                                             </TextBlock.Style>
                                         </TextBlock>
-                                    </Grid>
-                                    <!--  Время снизу (длинные сообщения и файлы).
-                                          У фото и видео его не показываем: там время нарисовано
-                                          плашкой поверх картинки, иначе дублировалось бы  -->
-                                    <TextBlock
-                                        Margin="0,5,0,0"
-                                        HorizontalAlignment="Right"
-                                        FontSize="10"
-                                        Text="{Binding TimeShort}">
-                                        <TextBlock.Style>
-                                            <Style TargetType="TextBlock">
-                                                <Setter Property="Foreground" Value="{DynamicResource Light.TextMutedBrush}" />
-                                                <!--  Visibility задаётся сеттером, а не атрибутом: локальное
-                                                      значение перебило бы триггер ниже  -->
-                                                <Setter Property="Visibility" Value="{Binding ., Converter={StaticResource InlineTime}, Mode=OneTime, ConverterParameter=Invert, FallbackValue=Visible}" />
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsOutgoing}" Value="True">
-                                                        <Setter Property="Foreground" Value="#D6DBFF" />
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding ShowMediaTimeOverlay}" Value="True">
-                                                        <Setter Property="Visibility" Value="Collapsed" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
+                                        <ContentControl Content="{Binding}" ContentTemplate="{StaticResource MsgStatusTemplate}" />
+                                    </StackPanel>
                                 </StackPanel>
                             </Border>
                         </DataTemplate>

@@ -89,6 +89,21 @@ namespace Tebegrammmm.Classes
         }
 
         /// <summary>
+        /// Ставит окно по центру монитора, на котором оно сейчас находится, не
+        /// трогая его размер. Нужно, чтобы вернуть модальное окно (настройки) в
+        /// центр экрана по клику по чату.
+        /// </summary>
+        public static void CenterOnScreen(Window window)
+        {
+            if (window == null) return;
+            Rect work = WorkAreaFor(window);
+            double w = double.IsNaN(window.Width) ? window.ActualWidth : window.Width;
+            double h = double.IsNaN(window.Height) ? window.ActualHeight : window.Height;
+            window.Left = work.Left + (work.Width - w) / 2;
+            window.Top = work.Top + (work.Height - h) / 2;
+        }
+
+        /// <summary>
         /// Рабочая область монитора, на котором открыто окно (без панели задач).
         /// При одном мониторе это то же, что SystemParameters.WorkArea, но при
         /// нескольких окно больше не улетает на основной экран.

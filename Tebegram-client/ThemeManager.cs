@@ -20,11 +20,14 @@ namespace Tebegrammmm
         // меньше видимых рамок. Значения — источник истины для рантайма (см. Apply).
         private static readonly Dictionary<string, Color> LightColors = new()
         {
-            ["Light.BgDeepBrush"]        = Color.FromRgb(0xEE, 0xF1, 0xF7), // фон приложения
-            ["Light.BgPrimaryBrush"]     = Color.FromRgb(0xFF, 0xFF, 0xFF), // карточки/панели
-            ["Light.BgSurfaceBrush"]     = Color.FromRgb(0xF7, 0xF8, 0xFC), // список чатов, шапки
-            ["Light.BgElevatedBrush"]    = Color.FromRgb(0xED, 0xF0, 0xF7), // ховер
-            ["Light.BgInputBrush"]       = Color.FromRgb(0xF0, 0xF3, 0xF9),
+            // Светлая тема сделана заметно СЕРЕЕ и темнее: раньше была почти белой
+            // и слепила. Карточки уже не чисто-белые, фон чата — прохладный серый,
+            // на нём читаются точки узора (см. Light.ChatDotBrush).
+            ["Light.BgDeepBrush"]        = Color.FromRgb(0xD9, 0xDD, 0xE7), // фон приложения / область чата
+            ["Light.BgPrimaryBrush"]     = Color.FromRgb(0xF1, 0xF3, 0xF8), // карточки/панели (не чисто-белые)
+            ["Light.BgSurfaceBrush"]     = Color.FromRgb(0xE7, 0xEA, 0xF2), // список чатов, шапки
+            ["Light.BgElevatedBrush"]    = Color.FromRgb(0xDD, 0xE1, 0xEB), // ховер
+            ["Light.BgInputBrush"]       = Color.FromRgb(0xE7, 0xEA, 0xF2),
             ["Light.AccentPrimaryBrush"] = Color.FromRgb(0x5B, 0x6B, 0xF5),
             ["Light.AccentHoverBrush"]   = Color.FromRgb(0x6B, 0x7B, 0xFF),
             ["Light.AccentPressedBrush"] = Color.FromRgb(0x4A, 0x5A, 0xE0),
@@ -40,14 +43,17 @@ namespace Tebegrammmm
             ["Light.TextMutedBrush"]     = Color.FromRgb(0x99, 0xA0, 0xB0),
             ["Light.TextDisabledBrush"]  = Color.FromRgb(0xC6, 0xCB, 0xD6),
             ["Light.TextInverseBrush"]   = Color.FromRgb(0xFF, 0xFF, 0xFF),
-            ["Light.BorderSubtleBrush"]  = Color.FromRgb(0xEE, 0xF0, 0xF5), // почти невидимая
-            ["Light.BorderDefaultBrush"] = Color.FromRgb(0xE4, 0xE7, 0xEF), // мягкая
-            ["Light.BorderStrongBrush"]  = Color.FromRgb(0xCD, 0xD3, 0xDF),
+            ["Light.BorderSubtleBrush"]  = Color.FromRgb(0xDC, 0xE0, 0xEA), // почти невидимая
+            ["Light.BorderDefaultBrush"] = Color.FromRgb(0xCF, 0xD4, 0xE0), // мягкая
+            ["Light.BorderStrongBrush"]  = Color.FromRgb(0xBD, 0xC4, 0xD2),
             ["Light.BorderFocusBrush"]   = Color.FromRgb(0x5B, 0x6B, 0xF5),
             ["Light.MsgOutgoingBrush"]   = Color.FromRgb(0x5B, 0x6B, 0xF5),
-            ["Light.MsgIncomingBrush"]   = Color.FromRgb(0xFF, 0xFF, 0xFF),
+            ["Light.MsgIncomingBrush"]   = Color.FromRgb(0xFF, 0xFF, 0xFF), // белые пузыри ярко читаются на сером фоне
             ["Light.MsgFailedBrush"]     = Color.FromRgb(0xFD, 0xEC, 0xEC),
             ["Light.MsgPendingBrush"]    = Color.FromRgb(0xEE, 0xF1, 0xFA),
+            // Точки узора на фоне чата: на светлой теме — прохладно-серые, заметные
+            // (раньше узор был общий и на белом фоне пропадал)
+            ["Light.ChatDotBrush"]       = Color.FromArgb(0x2B, 0x5A, 0x6A, 0x86),
         };
 
         private static readonly Dictionary<string, Color> DarkColors = new()
@@ -80,6 +86,8 @@ namespace Tebegrammmm
             ["Light.MsgIncomingBrush"]   = Color.FromRgb(0x23, 0x28, 0x34),
             ["Light.MsgFailedBrush"]     = Color.FromRgb(0x3A, 0x1A, 0x1A),
             ["Light.MsgPendingBrush"]    = Color.FromRgb(0x1C, 0x21, 0x2B),
+            // Точки узора в тёмной теме оставляем как были — они и так видны
+            ["Light.ChatDotBrush"]       = Color.FromArgb(0x12, 0x8A, 0x93, 0xA6),
         };
 
         public static void Apply(bool isDark, bool animate = true)
