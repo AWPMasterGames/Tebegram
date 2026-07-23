@@ -56,6 +56,10 @@ namespace Tebegrammmm
             LBChatsLoders.ItemsSource = UserData.User.ChatsFolders;
             LBChatsLoders.SelectedIndex = 0;
 
+            // Раз за запуск прибираемся в кэше медиа: удаляем хвосты прерванных
+            // загрузок и вытесняем самое старое, если кэш перерос потолок
+            Data.MediaCache.ScheduleTrim();
+
             TempContacts = UserData.User.Contacts;
 
             // Подтягиваем папки контактов, сохранённые на сервере
@@ -270,12 +274,15 @@ namespace Tebegrammmm
             SearchContactBarTB.Text = string.Empty;
         }
 
+        // Готовые источники списка по папкам. Кэшируем: ChatListSource подписан на
+        // коллекции папки, и создавать его заново при каждом переключении значило бы
+        // копить подписки (утечка + лишние пересборки на каждое изменение).
+        private readonly System.Collections.Generic.Dictionary<ChatFolder, Classes.ChatListSource> _chatListSources = new();
+
         /// <summary>
-        /// Наполняет список чатов: сверху ГРУППЫ, ниже контакты.
+        /// Наполняет список чатов: «Избранное» → группы → остальные контакты
+        /// (порядок держит ChatListSource).
         ///
-        /// CompositeCollection, а не одна склеенная коллекция: она слушает обе
-        /// исходные ObservableCollection, поэтому новая группа (пришла по WS) или
-        /// новый контакт появляются в списке сами, без ручной перерисовки.
         /// Раньше сюда подставлялись только Contacts, а коллекция Chats не
         /// использовалась в интерфейсе НИГДЕ — из-за этого созданные группы
         /// приходили с сервера, но на экране не появлялись.
@@ -284,12 +291,34 @@ namespace Tebegrammmm
         {
             if (folder == null) return;
 
-            var composite = new System.Windows.Data.CompositeCollection
+            if (!_chatListSources.TryGetValue(folder, out var source))
             {
-                new System.Windows.Data.CollectionContainer { Collection = folder.Chats },
-                new System.Windows.Data.CollectionContainer { Collection = folder.Contacts },
-            };
-            LBChats.ItemsSource = composite;
+                PruneChatListSources();
+                source = new Classes.ChatListSource(folder);
+                _chatListSources[folder] = source;
+            }
+
+            // Тот же источник уже стоит — не трогаем, иначе слетит выделение
+            // (после поиска сюда приходят с тем же списком)
+            if (!ReferenceEquals(LBChats.ItemsSource, source))
+                LBChats.ItemsSource = source;
+        }
+
+        /// <summary>
+        /// Убирает источники папок, которых больше нет: LoadFoldersFromServerAsync
+        /// пересоздаёт список папок целиком, и подписки старых объектов иначе
+        /// висели бы до конца сеанса.
+        /// </summary>
+        private void PruneChatListSources()
+        {
+            if (_chatListSources.Count == 0 || UserData.User == null) return;
+
+            var alive = new System.Collections.Generic.HashSet<ChatFolder>(UserData.User.ChatsFolders);
+            foreach (var pair in _chatListSources.Where(p => !alive.Contains(p.Key)).ToList())
+            {
+                pair.Value.Detach();
+                _chatListSources.Remove(pair.Key);
+            }
         }
 
         private void LBChats_SelectionChangedChat(object sender, SelectionChangedEventArgs e)
@@ -398,6 +427,8 @@ namespace Tebegrammmm
             // на сервере, а клиент при входе получает только список чатов
             _ = LoadGroupHistoryAsync(chat);
 
+            PrefetchChatMedia(chat.Messages);
+
             Log.Save($"[OpenGroupChat] Открыт групповой чат {chat.Id} «{chat.Name}»");
         }
 
@@ -424,6 +455,9 @@ namespace Tebegrammmm
                         Message message = ParseGroupMessage(entry);
                         if (message != null) chat.Messages.Add(message);
                     }
+
+                    // История пришла — можно докладывать её вложения в кэш
+                    PrefetchChatMedia(chat.Messages);
                 }));
             }
             catch (Exception ex)
@@ -1093,6 +1127,34 @@ namespace Tebegrammmm
             var view = new System.Windows.Data.CollectionViewSource { Source = contact.Messages };
             view.GroupDescriptions.Add(new System.Windows.Data.PropertyGroupDescription("DateKey"));
             LBMessages.ItemsSource = view.View;
+
+            PrefetchChatMedia(contact.Messages);
+        }
+
+        // Сколько последних сообщений чата просматриваем на предмет вложений.
+        // Больше и не нужно: до старых фото ещё надо долистать, а качать всю
+        // переписку целиком при каждом открытии чата — неуважение к трафику.
+        private const int PrefetchLimit = 60;
+
+        /// <summary>
+        /// Тихо докладывает фото открытого чата в локальный кэш, чтобы при прокрутке
+        /// вверх они уже лежали на диске (список виртуализован — сам он грузит только
+        /// то, что видно на экране).
+        ///
+        /// Видео целиком не тянем: ролик может весить сотни мегабайт. Он попадает в
+        /// кэш после первого просмотра, а в списке показывается сохранённый кадр —
+        /// так же устроена автозагрузка в Telegram, где у видео свой потолок размера.
+        /// </summary>
+        private static void PrefetchChatMedia(System.Collections.Generic.IEnumerable<Message> messages)
+        {
+            if (messages == null) return;
+
+            // С конца: свежие сообщения пользователь увидит первыми
+            foreach (Message message in messages.Reverse().Take(PrefetchLimit))
+            {
+                if (message != null && message.IsImageFile)
+                    Data.MediaCache.Prefetch(message.FileUrl);
+            }
         }
 
         // ── Удаление сообщений ───────────────────────────────────────────────
@@ -1327,10 +1389,23 @@ namespace Tebegrammmm
             multipar.Add(fileStream, name: "file", fileName: Path.GetFileName(filePath));
 
             using var response = await httpClient.PostAsync($"{ServerData.ServerAdress}/upload", multipar);
-            var ResponseText = await response.Content.ReadAsStringAsync();
-            this.Dispatcher.Invoke(new Action(() => { SendMessage(Path.GetFileName(filePath).Replace(" ", "_"), MessageType.File, $"{ServerData.ServerAdress}/upload/{Path.GetFileName(filePath).Replace(" ", "_")}"); }));
+            string savedName = (await response.Content.ReadAsStringAsync()).Trim();
+
+            if (!response.IsSuccessStatusCode || string.IsNullOrEmpty(savedName))
+            {
+                Log.Save($"[SendFileToServer] Сервер не принял файл: {(int)response.StatusCode} {savedName}");
+                Dispatcher.Invoke(new Action(() =>
+                    TbgDialogWindow.Show("Не удалось загрузить файл на сервер.", "Отправка файла")));
+                return;
+            }
+
+            // Имя берём ИЗ ОТВЕТА сервера, а не из локального пути: при совпадении
+            // имён сервер сохраняет файл как photo_1.jpg, и сообщение с локальным
+            // именем показало бы у собеседника чужую, ранее загруженную картинку
+            this.Dispatcher.Invoke(new Action(() =>
+                SendMessage(savedName, MessageType.File, $"{ServerData.ServerAdress}/upload/{savedName}")));
             // Системное окно с ответом сервера (именем файла) убрано — файл и так появляется в чате
-            Log.Save($"[SendFileToServer] Загружен файл: {ResponseText}");
+            Log.Save($"[SendFileToServer] Загружен файл: {savedName}");
         }
 
         private async void Button_Click_SelectFile(object sender, RoutedEventArgs e)

@@ -584,6 +584,47 @@
                                             Text="Переключить" />
                                     </Button>
                                 </Grid>
+
+                                <!--  Разделитель строк  -->
+                                <Border
+                                    Height="1"
+                                    Margin="0,12"
+                                    Background="{DynamicResource Light.BorderSubtleBrush}" />
+
+                                <!--  Кэш медиа: сколько занимают скачанные фото и видео.
+                                      Как «Управление памятью» в Telegram — кэш растёт сам,
+                                      и у пользователя должен быть способ его увидеть и сбросить  -->
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock
+                                            FontSize="11"
+                                            FontWeight="SemiBold"
+                                            Foreground="{DynamicResource Light.TextMutedBrush}"
+                                            Text="ПАМЯТЬ" />
+                                        <TextBlock
+                                            x:Name="TBCacheSize"
+                                            FontSize="15"
+                                            Foreground="{DynamicResource Light.TextPrimaryBrush}"
+                                            Text="Кэш медиа: —" />
+                                    </StackPanel>
+                                    <Button
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Click="ClearCache_Click"
+                                        Cursor="Hand"
+                                        Template="{StaticResource GhostButtonTemplate}"
+                                        ToolTip="Удалить скачанные фото и видео. Они не пропадут — просто загрузятся заново при следующем открытии.">
+                                        <TextBlock
+                                            FontSize="13"
+                                            FontWeight="SemiBold"
+                                            Foreground="{DynamicResource Light.AccentTextBrush}"
+                                            Text="Очистить" />
+                                    </Button>
+                                </Grid>
                             </StackPanel>
                         </Border>
 

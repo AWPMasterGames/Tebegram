@@ -59,12 +59,10 @@ namespace Tebegrammmm
         }
 
         // ── Инлайн-превью фото ───────────────────────────────────────────────
-        // Картинка грузится нашим HttpClient (как в просмотрщике) — WPF-загрузчик
-        // по URI иногда молча не справлялся, и фото выглядели пустыми сообщениями.
-        private static readonly System.Net.Http.HttpClient _imageHttp = new(new System.Net.Http.HttpClientHandler
-        {
-            ServerCertificateCustomValidationCallback = (m, c, ch, e) => true
-        });
+        // Картинка грузится своими руками через MediaCache (а не WPF-загрузчиком по
+        // URI): загрузчик иногда молча не справлялся, и фото выглядели пустыми
+        // сообщениями, а кроме того он не умеет складывать файлы на диск.
+        // _imageCache — кэш В ПАМЯТИ процесса (диск отдельно, см. MediaCache).
         private static readonly Dictionary<string, System.Windows.Media.Imaging.BitmapImage> _imageCache = new();
         private static readonly object _imageCacheLock = new();
 
@@ -187,6 +185,17 @@ namespace Tebegrammmm
         /// </summary>
         public bool ShowMediaTimeOverlay => IsImageFile || ShowVideoPreview;
 
+        /// <summary>
+        /// Сообщает интерфейсу, что кадр готов. Уведомляем не только о самом кадре,
+        /// но и о видимостях: пузырь переключается с файлового чипа на превью.
+        /// </summary>
+        private void NotifyVideoPreview()
+        {
+            foreach (string prop in new[] { nameof(VideoThumbnail), nameof(ShowVideoPreview),
+                                            nameof(ShowFileChip), nameof(ShowMediaTimeOverlay) })
+                PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(prop));
+        }
+
         private void LoadVideoThumbnail()
         {
             string url = FileUrl;
@@ -197,8 +206,7 @@ namespace Tebegrammmm
                 if (_videoThumbCache.TryGetValue(url, out var cached))
                 {
                     _videoThumb = cached;
-                    foreach (string prop in new[] { nameof(VideoThumbnail), nameof(ShowVideoPreview), nameof(ShowFileChip), nameof(ShowMediaTimeOverlay) })
-                        PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(prop));
+                    NotifyVideoPreview();
                     return;
                 }
             }
@@ -206,6 +214,34 @@ namespace Tebegrammmm
             var dispatcher = System.Windows.Application.Current?.Dispatcher;
             if (dispatcher == null) return;
 
+            // Дальше — работа с диском, поэтому уходим с потока интерфейса: сюда
+            // попадают из привязки, а чтение файлов на нём даёт рывки при прокрутке
+            _ = Task.Run(() =>
+            {
+                // Кадр с прошлого запуска: раньше он снимался заново КАЖДЫЙ раз, а для
+                // этого MediaPlayer вытягивал с сервера начало ролика — из-за этого чат
+                // с видео открывался медленно и на пустом месте тратил трафик
+                if (Data.MediaCache.TryLoadPreview(url, out var savedFrame))
+                {
+                    lock (_imageCacheLock) { _videoThumbCache[url] = savedFrame; }
+                    _videoThumb = savedFrame;
+                    NotifyVideoPreview();
+                    return;
+                }
+
+                // Ролик уже скачан — снимаем кадр с ЛОКАЛЬНОГО файла, без сети.
+                // url остаётся ключом кэша: он один и тот же для памяти и для диска.
+                string source = Data.MediaCache.TryGetLocalPath(url, out string localPath) ? localPath : url;
+                GrabVideoFrame(dispatcher, url, source);
+            });
+        }
+
+        /// <summary>
+        /// Снимает кадр из видео (MediaPlayer + RenderTargetBitmap). Всё на потоке
+        /// интерфейса: и то, и другое требует STA, из фонового потока падает.
+        /// </summary>
+        private void GrabVideoFrame(System.Windows.Threading.Dispatcher dispatcher, string url, string source)
+        {
             dispatcher.BeginInvoke(new Action(() =>
             {
                 try
@@ -255,10 +291,11 @@ namespace Tebegrammmm
 
                                 lock (_imageCacheLock) _videoThumbCache[url] = rtb;
                                 _videoThumb = rtb;
+                                // Кадр на диск: следующий запуск возьмёт его готовым
+                                Data.MediaCache.SavePreview(url, rtb);
                                 // Уведомляем и о видимости: пузырь переключается
                                 // с файлового чипа на кадр с кнопкой play
-                                foreach (string prop in new[] { nameof(VideoThumbnail), nameof(ShowVideoPreview), nameof(ShowFileChip), nameof(ShowMediaTimeOverlay) })
-                                    PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(prop));
+                                NotifyVideoPreview();
                             }
                             catch (Exception ex)
                             {
@@ -279,7 +316,7 @@ namespace Tebegrammmm
                     timeout.Tick += (_, _) => Cleanup(); // видео недоступно — не висим вечно
                     timeout.Start();
 
-                    player.Open(new Uri(url, UriKind.Absolute));
+                    player.Open(new Uri(source, UriKind.Absolute));
                 }
                 catch (Exception ex)
                 {
@@ -288,6 +325,12 @@ namespace Tebegrammmm
             }), System.Windows.Threading.DispatcherPriority.Background);
         }
 
+        /// <summary>
+        /// Готовит картинку для пузыря. Порядок источников — от самого быстрого:
+        /// память процесса → превью на диске → оригинал (тоже из дискового кэша,
+        /// и только при промахе — из сети). Подробнее об устройстве кэша см.
+        /// Data/MediaCache.cs.
+        /// </summary>
         private async Task LoadFileImageAsync()
         {
             string url = FileUrl;
@@ -303,21 +346,31 @@ namespace Tebegrammmm
                 }
             }
 
+            // Превью с прошлого запуска: ни сети, ни разбора полноразмерного файла.
+            // Чтение и распаковка — в фоне: этот метод запускается из привязки, то
+            // есть на потоке интерфейса, и десяток фото подряд дал бы заметный рывок
+            var saved = await Task.Run(() =>
+                Data.MediaCache.TryLoadPreview(url, out var image) ? image : null).ConfigureAwait(false);
+            if (saved != null)
+            {
+                lock (_imageCacheLock) { _imageCache[url] = saved; }
+                _fileImage = saved;
+                PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(nameof(FileImage)));
+                return;
+            }
+
             // До двух попыток: сервер мог быть занят/сеть моргнула
             for (int attempt = 0; attempt < 2; attempt++)
             {
                 try
                 {
-                    byte[] bytes = await _imageHttp.GetByteArrayAsync(url).ConfigureAwait(false);
-                    var bitmap = new System.Windows.Media.Imaging.BitmapImage();
-                    using (var ms = new System.IO.MemoryStream(bytes))
-                    {
-                        bitmap.BeginInit();
-                        bitmap.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
-                        bitmap.StreamSource = ms;
-                        bitmap.EndInit();
-                    }
-                    bitmap.Freeze(); // можно использовать из любого потока
+                    byte[] bytes = await Data.MediaCache.GetBytesAsync(url).ConfigureAwait(false);
+                    if (bytes == null) throw new System.IO.IOException("файл не получен");
+
+                    var bitmap = DecodePreview(bytes);
+                    // Кладём рядом с оригиналом: в следующий раз чат откроется
+                    // с готовыми картинками, без декодирования полного кадра
+                    Data.MediaCache.SavePreview(url, bitmap);
 
                     lock (_imageCacheLock) { _imageCache[url] = bitmap; }
                     _fileImage = bitmap;
@@ -331,6 +384,43 @@ namespace Tebegrammmm
                 }
             }
             _fileImageRequested = false; // не вышло — позволим повторить при следующем обращении
+        }
+
+        /// <summary>
+        /// Разбирает фото в размер пузыря. Уменьшаем при декодировании, а не при
+        /// показе: снимок с телефона занимает в памяти десятки мегабайт, и на
+        /// чате с полусотней фото это заметно и по памяти, и по задержке отрисовки.
+        /// Маленькие картинки не трогаем — DecodePixelWidth задаёт ТОЧНУЮ ширину,
+        /// и превью 200 px растянулось бы в мыло на 640.
+        /// </summary>
+        private static System.Windows.Media.Imaging.BitmapImage DecodePreview(byte[] bytes)
+        {
+            using var ms = new System.IO.MemoryStream(bytes);
+
+            int width = 0;
+            try
+            {
+                // DelayCreation: читается только заголовок, пиксели не разбираются
+                var decoder = System.Windows.Media.Imaging.BitmapDecoder.Create(ms,
+                    System.Windows.Media.Imaging.BitmapCreateOptions.DelayCreation,
+                    System.Windows.Media.Imaging.BitmapCacheOption.None);
+                if (decoder.Frames.Count > 0) width = decoder.Frames[0].PixelWidth;
+            }
+            catch (Exception ex)
+            {
+                Classes.Log.Save($"[Message.DecodePreview] размер не прочитан: {ex.Message}");
+            }
+            ms.Position = 0;
+
+            var bitmap = new System.Windows.Media.Imaging.BitmapImage();
+            bitmap.BeginInit();
+            bitmap.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
+            if (width > Data.MediaCache.PreviewWidth)
+                bitmap.DecodePixelWidth = Data.MediaCache.PreviewWidth;
+            bitmap.StreamSource = ms;
+            bitmap.EndInit();
+            bitmap.Freeze(); // можно использовать из любого потока
+            return bitmap;
         }
 
         public string Message_FilePath { get { return _FilePath; } }

@@ -13,7 +13,11 @@ namespace Tebegrammmm
 {
     public partial class ImageViewerWindow : Window
     {
-        private static readonly HttpClient _http = new();
+        // Сертификат сервера самоподписанный — как и в остальных клиентских запросах
+        private static readonly HttpClient _http = new(new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback = (m, c, ch, e) => true
+        });
 
         // Хром: тень 8px + отступы ScrollViewer 12px с каждой стороны
         private const double ShadowMargin     = 8;
@@ -68,6 +72,9 @@ namespace Tebegrammmm
         private bool _isFullscreen;
         private Rect _preFullscreenBounds;
 
+        // Ролик играли потоком с сервера — после закрытия окна докачаем его в кэш
+        private bool _cacheAfterClose;
+
         /// <summary>Расширения, которые открываем как видео (их играет MediaElement/WMP).</summary>
         public static bool IsVideoFile(string name)
         {
@@ -104,10 +111,21 @@ namespace Tebegrammmm
 
         // ── Видео: запуск, перемотка, пауза ──────────────────────────────────────
 
+        /// <summary>
+        /// Запускает ролик. Если он уже в кэше — играем ФАЙЛ С ДИСКА: старт без
+        /// ожидания и перемотка мгновенная. Если нет — играем потоком с сервера,
+        /// как раньше, а копию в кэш докачиваем после закрытия окна (см. Window_Closed),
+        /// чтобы загрузка не отбирала канал у самого воспроизведения.
+        /// </summary>
         private void StartVideo(string url)
         {
             try
             {
+                if (Tebegrammmm.Data.MediaCache.TryGetLocalPath(url, out string localPath))
+                    url = localPath;
+                else
+                    _cacheAfterClose = true;
+
                 MainVideo.Visibility = Visibility.Visible;
                 VideoBar.Visibility = Visibility.Visible;
                 // Полосы прокрутки для видео не нужны (кадр всегда вписан), но сам
@@ -328,11 +346,17 @@ namespace Tebegrammmm
 
         // ── Загрузка ─────────────────────────────────────────────────────────────
 
+        /// <summary>
+        /// Показывает фото в полном размере. Байты берутся через MediaCache: если
+        /// снимок уже смотрели (или он просто был виден в чате), он лежит на диске
+        /// и открывается мгновенно; при промахе скачивается и остаётся в кэше.
+        /// </summary>
         private async Task LoadImageAsync(string url)
         {
             try
             {
-                var bytes = await _http.GetByteArrayAsync(url);
+                var bytes = await Tebegrammmm.Data.MediaCache.GetBytesAsync(url)
+                            ?? await _http.GetByteArrayAsync(url); // кэш не смог — пробуем напрямую
                 var bitmap = new BitmapImage();
                 using var ms = new MemoryStream(bytes);
                 bitmap.BeginInit();
@@ -713,6 +737,11 @@ namespace Tebegrammmm
             {
                 Log.Save($"[ImageViewer.Closed] {ex.Message}");
             }
+
+            // Ролик смотрели потоком — теперь тихо забираем копию в кэш, чтобы
+            // в следующий раз он открылся сразу и без сети
+            if (_cacheAfterClose) Tebegrammmm.Data.MediaCache.Prefetch(ImageUrl);
+
             base.OnClosed(e);
         }
     }
