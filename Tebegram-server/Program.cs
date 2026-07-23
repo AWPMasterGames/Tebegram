@@ -248,10 +248,20 @@ app.MapGet("/login/{UserLogin}-{UserPassword}", async (HttpContext Context, stri
 
 app.MapGet("/register/{UserLogin}-{UserPassword}-{Username}-{Name}", async (HttpContext Context, string UserLogin, string UserPassword, string Username, string Name) =>
 {
+    // Проверка ДО создания пользователя: поля подставляются прямо в адрес запроса,
+    // где разделителем служит дефис, поэтому опасные символы должны отсекаться
+    // здесь — на клиенте это лишь удобство, старый клиент проверку не сделает
+    string? validationError = Tebegram.Shared.UserValidation.CheckRegistration(UserLogin, UserPassword, Username, Name);
+
     if (string.IsNullOrWhiteSpace(UserLogin) || string.IsNullOrWhiteSpace(UserPassword) ||
         string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Name))
     {
         await Context.Response.WriteAsync("Все поля должны быть заполнены");
+    }
+    else if (validationError != null)
+    {
+        Logs.Save($"Регистрация отклонена ({UserLogin}): {validationError}");
+        await Context.Response.WriteAsync($"Ошибка: {validationError}");
     }
     else if (UsersData.IsExistUser(UserLogin))
     {

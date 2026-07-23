@@ -89,22 +89,41 @@ namespace Tebegrammmm.Classes
         }
 
         /// <summary>
-        /// Рабочая область монитора, на котором открыто окно-владелец. При одном
-        /// мониторе это то же, что SystemParameters.WorkArea, но при нескольких
-        /// окно больше не улетает на основной экран.
+        /// Рабочая область монитора, на котором открыто окно (без панели задач).
+        /// При одном мониторе это то же, что SystemParameters.WorkArea, но при
+        /// нескольких окно больше не улетает на основной экран.
         /// </summary>
-        private static Rect WorkAreaFor(Window window)
+        public static Rect WorkAreaFor(Window window) => MonitorRect(window, workArea: true);
+
+        /// <summary>
+        /// ПОЛНЫЕ границы монитора, включая область панели задач — для режима
+        /// «во весь экран» в просмотрщике.
+        /// </summary>
+        public static Rect MonitorBoundsFor(Window window) => MonitorRect(window, workArea: false);
+
+        private static Rect MonitorRect(Window window, bool workArea)
         {
+            Rect fallback = workArea
+                ? SystemParameters.WorkArea
+                : new Rect(0, 0, SystemParameters.PrimaryScreenWidth, SystemParameters.PrimaryScreenHeight);
             try
             {
-                Window anchor = window?.Owner ?? Application.Current?.MainWindow;
+                // Ориентируемся на само окно, если оно уже создано, иначе на владельца
+                Window anchor = window;
                 IntPtr handle = anchor != null ? new WindowInteropHelper(anchor).Handle : IntPtr.Zero;
-                if (handle == IntPtr.Zero) return SystemParameters.WorkArea;
+                if (handle == IntPtr.Zero)
+                {
+                    anchor = window?.Owner ?? Application.Current?.MainWindow;
+                    handle = anchor != null ? new WindowInteropHelper(anchor).Handle : IntPtr.Zero;
+                }
+                if (handle == IntPtr.Zero) return fallback;
 
                 IntPtr monitor = MonitorFromWindow(handle, MONITOR_DEFAULTTONEAREST);
                 var info = new MONITORINFO { cbSize = Marshal.SizeOf<MONITORINFO>() };
                 if (monitor == IntPtr.Zero || !GetMonitorInfo(monitor, ref info))
-                    return SystemParameters.WorkArea;
+                    return fallback;
+
+                RECT r = workArea ? info.rcWork : info.rcMonitor;
 
                 // Windows отдаёт физические пиксели — переводим в единицы WPF,
                 // иначе при масштабировании 125/150% окно оказалось бы больше экрана
@@ -114,17 +133,14 @@ namespace Tebegrammmm.Classes
                 if (scaleX <= 0) scaleX = 1.0;
                 if (scaleY <= 0) scaleY = 1.0;
 
-                return new Rect(
-                    info.rcWork.Left / scaleX,
-                    info.rcWork.Top / scaleY,
-                    (info.rcWork.Right - info.rcWork.Left) / scaleX,
-                    (info.rcWork.Bottom - info.rcWork.Top) / scaleY);
+                return new Rect(r.Left / scaleX, r.Top / scaleY,
+                                (r.Right - r.Left) / scaleX, (r.Bottom - r.Top) / scaleY);
             }
             catch (Exception ex)
             {
                 // Любая неожиданность с WinAPI не должна мешать открыть окно
-                Log.Save($"[UiSizes.WorkAreaFor] {ex.GetType().Name}: {ex.Message}");
-                return SystemParameters.WorkArea;
+                Log.Save($"[UiSizes.MonitorRect] {ex.GetType().Name}: {ex.Message}");
+                return fallback;
             }
         }
 
