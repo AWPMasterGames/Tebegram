@@ -98,7 +98,7 @@ var inlineTypes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
 //
 // Медиа помечаем inline, чтобы браузер ПОКАЗЫВАЛ фото/видео/аудио (клик по чипу
 // файла в win-клиенте и открытие ссылки в вебе), остальное остаётся attachment.
-async Task SendFileToClientAsync(HttpContext context, Microsoft.Extensions.FileProviders.IFileInfo fileInfo, string fileName)
+async Task SendFileToClientAsync(HttpContext context, Microsoft.Extensions.FileProviders.IFileInfo fileInfo, string fileName, bool longLived = false)
 {
     // Неизвестное расширение → application/octet-stream: браузер не станет гадать
     // и просто скачает файл (тот же сценарий, что показывают клиенты в карточке)
@@ -114,8 +114,54 @@ async Task SendFileToClientAsync(HttpContext context, Microsoft.Extensions.FileP
     // Запрет MIME-угадывания: без него браузер может «передумать» и выполнить файл
     // с чужим типом. Для неизвестных файлов это ещё и гарантия скачивания.
     context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+
+    // Вложения из /upload лежат под УНИКАЛЬНЫМ именем (см. CreateUniqueFile) и
+    // никогда не меняются, поэтому их можно кэшировать «навсегда»: браузер и
+    // веб-клиент перестают перекачивать одно и то же фото при каждом открытии
+    // чата. Для app.js/index.html так делать нельзя — там стоит no-cache, иначе
+    // обновления не доезжают до пользователей.
+    if (longLived)
+        context.Response.Headers.CacheControl = "public, max-age=31536000, immutable";
+
     context.Response.ContentType = contentType;
     await context.Response.SendFileAsync(fileInfo);
+}
+
+// Создаёт файл с УНИКАЛЬНЫМ именем и возвращает открытый поток (имя — в savedName).
+//
+// Раньше файл сохранялся под исходным именем, и второй «photo.jpg» затирал первый:
+// у старого сообщения внезапно менялась картинка, а у пользователей с одинаковыми
+// названиями снимков (IMG_0001.jpg с телефона — обычное дело) фото перемешивались.
+// Уникальность нужна и клиентскому кэшу: он хранит файлы по имени, и повторное
+// использование имени означало бы, что на экране остаётся устаревшая картинка.
+//
+// FileMode.CreateNew с повтором, а не «проверил Exists и создал»: два одновременных
+// запроса успевают выбрать одно и то же свободное имя между проверкой и созданием.
+FileStream CreateUniqueFile(string directory, string originalName, out string savedName)
+{
+    // Path.GetFileName отрезает возможные пути в имени файла (защита от ../)
+    string name = Path.GetFileName(originalName).Replace(" ", "_");
+    if (string.IsNullOrWhiteSpace(name)) name = "file";
+
+    string stem = Path.GetFileNameWithoutExtension(name);
+    string ext = Path.GetExtension(name);
+
+    for (int n = 0; n < 10000; n++)
+    {
+        string candidate = n == 0 ? name : $"{stem}_{n}{ext}";
+        try
+        {
+            FileStream stream = new FileStream(Path.Combine(directory, candidate), FileMode.CreateNew);
+            savedName = candidate;
+            return stream;
+        }
+        catch (IOException)
+        {
+            // Имя занято — пробуем следующее
+        }
+    }
+
+    throw new IOException($"Не удалось подобрать свободное имя для {name}");
 }
 
 app.MapGet("/", async (HttpContext context) =>
@@ -137,11 +183,9 @@ app.MapPost("/upload", async (HttpContext context) =>
 
     foreach (var file in files)
     {
-        // Path.GetFileName отрезает возможные пути в имени файла (защита от ../)
-        FName = Path.GetFileName(file.FileName).Replace(" ", "_");
-        string filePath = $"{uploadFiles}/{FName}";
-
-        using var fileStream = new FileStream(filePath, FileMode.Create);
+        // Имя подбирается свободное: одинаковые названия снимков больше не затирают
+        // друг друга (клиенту возвращается то имя, под которым файл реально лёг)
+        using var fileStream = CreateUniqueFile(uploadFiles, file.FileName, out FName);
         await file.CopyToAsync(fileStream);
         Logs.Save($"Загружен файл {FName}");
     }
@@ -163,7 +207,9 @@ app.MapGet("/upload/{FileName}", async (HttpContext context, string FileName) =>
         return;
     }
 
-    await SendFileToClientAsync(context, fileInfo, safeName);
+    // longLived: имя файла уникально и содержимое неизменно — пусть браузер
+    // и веб-клиент держат его у себя и не качают повторно
+    await SendFileToClientAsync(context, fileInfo, safeName, longLived: true);
 });
 
 app.MapPost("/avatars/{UserId:int}", async (HttpContext context, int UserId) =>
@@ -184,10 +230,9 @@ app.MapPost("/avatars/{UserId:int}", async (HttpContext context, int UserId) =>
 
     foreach (var file in files)
     {
-        FName = Path.GetFileName(file.FileName).Replace(" ", "_");
-        string filePath = $"{uploadFiles}/{FName}";
-
-        using var fileStream = new FileStream(filePath, FileMode.Create);
+        // Уникальное имя важно и здесь: раньше два пользователя, залившие «me.jpg»,
+        // получали ОДИН файл на двоих — второй затирал аватарку первого
+        using var fileStream = CreateUniqueFile(uploadFiles, file.FileName, out FName);
         await file.CopyToAsync(fileStream);
         Logs.Save($"Загружен файл {FName}");
         avatarUser.Avatar = FName;
