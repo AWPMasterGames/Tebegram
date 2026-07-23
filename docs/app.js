@@ -6,7 +6,7 @@
    ═══════════════════════════════════════════════════════════════ */
 'use strict';
 
-const APP_VERSION = '1.0.24';
+const APP_VERSION = '1.0.25';
 const SEP = '▫';
 const MSG_SEP = '❂';
 const WS_SEP = '▫#▫';
@@ -179,7 +179,12 @@ const Api = {
     const fd = new FormData();
     fd.append('file', file, file.name);
     const r = await fetch(`${Server.address}/upload`, { method: 'POST', body: fd });
-    return r.text(); // сервер возвращает сохранённое имя файла
+    // Раньше ответ брался как есть: при отказе сервера (например, 413 — файл
+    // больше лимита) в чат уходило сообщение с пустым или мусорным именем файла
+    if (!r.ok) throw new Error(`upload ${r.status}`);
+    const stored = (await r.text()).trim();
+    if (!stored) throw new Error('upload: пустой ответ');
+    return stored; // сервер возвращает сохранённое имя файла
   },
 
   async uploadAvatar(userId, file) {
@@ -1549,15 +1554,27 @@ async function normalizePhoto(file) {
   }
 }
 
+/* Предел размера файла — тот же, что у сервера (Program.cs, MaxUploadBytes)
+   и у win-клиента. Проверяем до отправки: иначе телефон полчаса заливает
+   файл по мобильной сети, чтобы получить 413. */
+const MAX_UPLOAD_BYTES = 256 * 1024 * 1024;
+
 async function doSendFile(file) {
   const contact = Store.activeContact;
   if (!file || !contact) return;
+
+  if (file.size > MAX_UPLOAD_BYTES) {
+    UI.toast(`Файл больше ${MAX_UPLOAD_BYTES / 1024 / 1024} МБ — сервер такой не примет`);
+    return;
+  }
+
   UI.toast('Загружаем файл…');
   try {
     file = await normalizePhoto(file);
     const stored = await Api.uploadFile(file);
     await sendMessage(contact, stored, 'File', Api.fileUrl(stored));
-  } catch {
+  } catch (e) {
+    console.warn('[doSendFile]', e);
     UI.toast('Не удалось загрузить файл');
   }
 }
