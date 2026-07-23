@@ -6,7 +6,7 @@
    ═══════════════════════════════════════════════════════════════ */
 'use strict';
 
-const APP_VERSION = '1.0.23';
+const APP_VERSION = '1.0.24';
 const SEP = '▫';
 const MSG_SEP = '❂';
 const WS_SEP = '▫#▫';
@@ -859,10 +859,14 @@ const Chat = {
         let data = String(e.data);
         // Команда удаления сообщения у собеседника
         if (data.startsWith(`DEL${WS_SEP}`)) { handleDeleteNotification(data); return; }
-        // Конверт команд сервера из main-dev (64bc1ab): «команда▫$▫данные».
-        // Наш сервер пока шлёт сообщения без конверта — понимаем оба формата.
-        if (data.startsWith('addMessage▫$▫')) data = data.slice('addMessage▫$▫'.length);
-        else if (data.startsWith('addChat▫$▫')) return; // групповых чатов на вебе пока нет
+        // Конверты команд сервера. Оба относятся к ГРУППОВЫМ чатам, которых на
+        // вебе пока нет, поэтому просто пропускаем:
+        //   addChat▫$▫    — создана группа;
+        //   addMessage▫$▫ — сообщение группы (внутри первым полем идёт ChatId).
+        // Раньше здесь конверт снимался и payload шёл в обычный разбор — тогда
+        // ChatId принимался за отправителя и сообщение уходило «в никуда».
+        // Личные сообщения приходят без конверта и обрабатываются как прежде.
+        if (data.startsWith('addChat▫$▫') || data.startsWith('addMessage▫$▫')) return;
         routeMessage(data);
       };
       ws.onerror = () => reject(new Error('ws error'));

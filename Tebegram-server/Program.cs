@@ -33,6 +33,8 @@ app.UseWebSockets();
 // ВАЖНО: Инициализируем данные пользователей ПЕРЕД запуском основной логики
 Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Запуск сервера TebegramServer...");
 UsersData.Initialize(); // Принудительно инициализируем данные
+// Чаты грузим СТРОГО после пользователей: участники ищутся по Id среди загруженных
+ChatsData.Load();
 Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Данные пользователей загружены, запускаем веб-сервер...");
 
 Thread thread = new Thread(() => {
@@ -226,8 +228,13 @@ app.MapGet("/avatars/{FileName}", async (HttpContext context, string FileName) =
 
 app.MapGet("/login/{UserLogin}-{UserPassword}", async (HttpContext Context, string UserLogin, string UserPassword) =>
 {
+    // Коды ответов: раньше ЛЮБАЯ ошибка отдавалась с кодом 200 и текстом в теле,
+    // и клиенту приходилось угадывать её по началу строки. Теперь код честный
+    // (401 — неверные данные), а ТЕКСТ остался прежним — иначе сломались бы
+    // выпущенные клиенты, которые опознают ошибку именно по тексту.
     if (!UsersData.IsExistUser(UserLogin))
     {
+        Context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
         await Context.Response.WriteAsync("Пользователь с таким логином не существует");
     }
     else if (UsersData.Authorize(UserLogin, UserPassword) != null)
@@ -240,10 +247,15 @@ app.MapGet("/login/{UserLogin}-{UserPassword}", async (HttpContext Context, stri
         }
         else
         {
+            Context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             await Context.Response.WriteAsync("Ошибка при поиске пользователя");
         }
     }
-    else await Context.Response.WriteAsync("Неверный пароль");
+    else
+    {
+        Context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+        await Context.Response.WriteAsync("Неверный пароль");
+    }
 });
 
 app.MapGet("/register/{UserLogin}-{UserPassword}-{Username}-{Name}", async (HttpContext Context, string UserLogin, string UserPassword, string Username, string Name) =>
@@ -253,22 +265,28 @@ app.MapGet("/register/{UserLogin}-{UserPassword}-{Username}-{Name}", async (Http
     // здесь — на клиенте это лишь удобство, старый клиент проверку не сделает
     string? validationError = Tebegram.Shared.UserValidation.CheckRegistration(UserLogin, UserPassword, Username, Name);
 
+    // Как и во входе: код ответа честный (400 — данные не годятся, 409 — занято),
+    // текст прежний, чтобы выпущенные клиенты продолжали его понимать
     if (string.IsNullOrWhiteSpace(UserLogin) || string.IsNullOrWhiteSpace(UserPassword) ||
         string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Name))
     {
+        Context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
         await Context.Response.WriteAsync("Все поля должны быть заполнены");
     }
     else if (validationError != null)
     {
         Logs.Save($"Регистрация отклонена ({UserLogin}): {validationError}");
+        Context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
         await Context.Response.WriteAsync($"Ошибка: {validationError}");
     }
     else if (UsersData.IsExistUser(UserLogin))
     {
+        Context.Response.StatusCode = (int)HttpStatusCode.Conflict;
         await Context.Response.WriteAsync("Пользователь с таким логином уже существует");
     }
     else if (UsersData.FindUserByUsername(Username) != null)
     {
+        Context.Response.StatusCode = (int)HttpStatusCode.Conflict;
         await Context.Response.WriteAsync("Пользователь с таким именем уже существует");
     }
     else
@@ -740,6 +758,9 @@ static async Task ReceiveMessage(WebSocket socket, Func<WebSocketReceiveResult, 
 //   инициализировались empty и заполнялись только когда поля чата пусты);
 // — для чата с собой после дедупа участник один — оригинальный members[1]
 //   кидал ArgumentOutOfRangeException.
+// Название группы приходит ОТДЕЛЬНЫМ параметром запроса (?name=…), а не в пути:
+// в пути разделителем служит дефис, и любое имя с дефисом сдвинуло бы разбор —
+// ровно так рождались мусорные аккаунты при регистрации.
 app.MapGet("/Chat/Create/{userId}-{usernames}", async (HttpContext Context, int userId, string usernames) =>
 {
     User? creator = UsersData.FindUserById(userId);
@@ -763,7 +784,8 @@ app.MapGet("/Chat/Create/{userId}-{usernames}", async (HttpContext Context, int 
         members.Add(member);
     }
 
-    int chatId = ChatsController.CreateChat(members);
+    string groupName = Context.Request.Query["name"].ToString();
+    int chatId = ChatsController.CreateChat(members, groupName);
     Chat chat = ChatsController.Chats[chatId];
     string owner = chat.Owner != null ? $"{chat.Owner.Id}" : "None";
 
@@ -779,6 +801,52 @@ app.MapGet("/Chat/Create/{userId}-{usernames}", async (HttpContext Context, int 
     }
 
     await Context.Response.WriteAsync($"{chat.Id}&{name}&{chat.IsGroup}&{avatar}&{owner}");
+});
+
+// Список чатов пользователя. ОТДЕЛЬНЫЙ эндпоинт, а не расширение ответа логина:
+// формат /login разбирают все выпущенные клиенты (контакты читаются с индекса 9
+// до конца), и дописать туда чаты — значит сломать их. Новый клиент просто
+// делает ещё один запрос, старый про него не знает.
+// Формат: чаты через ❂, поля чата — id&имя&группа?&аватар&владелец&участники.
+app.MapGet("/Chats/{userId:int}", async (HttpContext Context, int userId) =>
+{
+    User? user = UsersData.FindUserById(userId);
+    if (user == null)
+    {
+        Context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+        await Context.Response.WriteAsync("Пользователь не найден");
+        return;
+    }
+
+    StringBuilder sb = new StringBuilder();
+    foreach (int chatId in user.Chats.ToList())
+    {
+        if (!ChatsController.Chats.TryGetValue(chatId, out Chat? chat)) continue;
+        if (!chat.IsGroup) continue; // личные чаты клиент уже видит как контакты
+        if (sb.Length > 0) sb.Append('❂');
+        sb.Append(ChatsController.ChatToLine(chat));
+    }
+    await Context.Response.WriteAsync(sb.ToString());
+});
+
+// История группового чата: сообщения через ❂ в том же виде, что приходят по WS
+// (без конверта — конверт нужен только чтобы отличить чат в живом потоке).
+app.MapGet("/Chat/History/{chatId:int}", async (HttpContext Context, int chatId) =>
+{
+    if (!ChatsController.Chats.TryGetValue(chatId, out Chat? chat))
+    {
+        Context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+        await Context.Response.WriteAsync("Чат не найден");
+        return;
+    }
+
+    StringBuilder sb = new StringBuilder();
+    foreach (Message message in chat.Messages.ToList())
+    {
+        if (sb.Length > 0) sb.Append('❂');
+        sb.Append(message.ToString());
+    }
+    await Context.Response.WriteAsync(sb.ToString());
 });
 
 app.Map("/Chat/ws", async context =>
