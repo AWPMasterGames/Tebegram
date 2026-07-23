@@ -462,6 +462,10 @@ namespace Tebegrammmm
 
             if (TBMessage != null) TBMessage.Text = chat.Draft ?? string.Empty;
 
+            // Открываем чат внизу переписки, как и обычный (см. ScrollMessagesToEnd)
+            Dispatcher.BeginInvoke(new Action(ScrollMessagesToEnd),
+                System.Windows.Threading.DispatcherPriority.Loaded);
+
             // История подтягивается с сервера один раз: сообщения группы живут
             // на сервере, а клиент при входе получает только список чатов
             _ = LoadGroupHistoryAsync(chat);
@@ -497,6 +501,9 @@ namespace Tebegrammmm
 
                     // История пришла — можно докладывать её вложения в кэш
                     PrefetchChatMedia(chat.Messages);
+
+                    // …и встать в конец переписки, если открыта именно эта группа
+                    if (ReferenceEquals(chat, _openGroup)) ScrollMessagesToEnd();
                 }));
             }
             catch (Exception ex)
@@ -1153,11 +1160,34 @@ namespace Tebegrammmm
             ScrollMessagesToEnd();
         }
 
+        // Прилипание к низу переписки: пока пользователь стоит внизу, догрузка
+        // фото и видео не должна утаскивать его вверх (см. Classes/BottomSticker.cs)
+        private ScrollViewer _messagesScroll;
+        private readonly Classes.BottomSticker _sticker = new();
+
+        private void LBMessages_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            if (e.OriginalSource is not ScrollViewer scroll) return;
+            _messagesScroll = scroll;
+            _sticker.Handle(scroll, e.ExtentHeightChange);
+        }
+
         /// <summary>Прокручивает список сообщений к последнему (общее для чатов и групп).</summary>
         private void ScrollMessagesToEnd()
         {
-            if (LBMessages.Items.Count > 0)
+            if (LBMessages.Items.Count == 0) return;
+
+            if (_messagesScroll != null)
+            {
+                // Снова «липнем» к низу: дальше досмотрит BottomSticker, когда
+                // догрузятся картинки и высота списка изменится
+                _sticker.Stick(_messagesScroll);
+            }
+            else
+            {
+                // ScrollViewer появляется только после первой отрисовки списка
                 LBMessages.ScrollIntoView(LBMessages.Items[LBMessages.Items.Count - 1]);
+            }
         }
 
         /// <summary>Привязывает сообщения контакта с группировкой по дням (для разделителей-дат).</summary>
