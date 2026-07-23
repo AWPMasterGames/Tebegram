@@ -60,6 +60,9 @@ namespace Tebegrammmm
 
             // Подтягиваем папки контактов, сохранённые на сервере
             _ = LoadFoldersFromServerAsync();
+            // И групповые чаты: ответ логина их не содержит (его формат разбирают
+            // все выпущенные клиенты), поэтому список приходит отдельным запросом
+            _ = LoadGroupChatsAsync();
             // Загружаем историю сообщений с сервера
             InitChatWebSocket();
 
@@ -155,12 +158,12 @@ namespace Tebegrammmm
                             continue;
                         }
 
-                        // Конверт команд из main-dev (64bc1ab): «команда▫$▫данные».
-                        // Наш сервер пока шлёт сообщения БЕЗ конверта — понимаем оба
-                        // формата: старый не ломается, к новому серверу уже готовы
+                        // Конверт «addMessage▫$▫» = сообщение ГРУППОВОГО чата, внутри
+                        // первым полем идёт ChatId. Личные сообщения приходят без
+                        // конверта в старом формате — так выпущенные клиенты не ломаются.
                         if (textMessage.StartsWith("addMessage▫$▫"))
                         {
-                            AddMessageToUser(textMessage.Substring("addMessage▫$▫".Length));
+                            HandleGroupMessage(textMessage.Substring("addMessage▫$▫".Length));
                             continue;
                         }
                         if (textMessage.StartsWith("addChat▫$▫"))
@@ -262,18 +265,40 @@ namespace Tebegrammmm
             {
                 return;
             }
-            LBChats.ItemsSource = (LBChatsLoders.SelectedItem as ChatFolder).Contacts;
+            SetChatListSource(LBChatsLoders.SelectedItem as ChatFolder);
             _IsInSearch = false;
             SearchContactBarTB.Text = string.Empty;
         }
 
+        /// <summary>
+        /// Наполняет список чатов: сверху ГРУППЫ, ниже контакты.
+        ///
+        /// CompositeCollection, а не одна склеенная коллекция: она слушает обе
+        /// исходные ObservableCollection, поэтому новая группа (пришла по WS) или
+        /// новый контакт появляются в списке сами, без ручной перерисовки.
+        /// Раньше сюда подставлялись только Contacts, а коллекция Chats не
+        /// использовалась в интерфейсе НИГДЕ — из-за этого созданные группы
+        /// приходили с сервера, но на экране не появлялись.
+        /// </summary>
+        private void SetChatListSource(ChatFolder folder)
+        {
+            if (folder == null) return;
+
+            var composite = new System.Windows.Data.CompositeCollection
+            {
+                new System.Windows.Data.CollectionContainer { Collection = folder.Chats },
+                new System.Windows.Data.CollectionContainer { Collection = folder.Contacts },
+            };
+            LBChats.ItemsSource = composite;
+        }
+
         private void LBChats_SelectionChangedChat(object sender, SelectionChangedEventArgs e)
         {
-            // Сохраняем черновик для предыдущего контакта
-            if (Contact != null && TBMessage != null)
+            // Сохраняем черновик для предыдущего чата — им мог быть и контакт, и группа
+            if (TBMessage != null)
             {
-                Contact.Draft = TBMessage.Text;
-                Log.Save($"[LBChats_SelectionChanged] Saved draft for {Contact.Name}: '{Contact.Draft}'");
+                if (Contact != null) Contact.Draft = TBMessage.Text;
+                else if (_openGroup != null) _openGroup.Draft = TBMessage.Text;
             }
 
             if (LBChats.SelectedItem == null)
@@ -282,6 +307,14 @@ namespace Tebegrammmm
                 return;
             }
 
+            // В списке теперь два типа элементов: группы (Chat) и контакты (Contact)
+            if (LBChats.SelectedItem is Classes.Chat selectedChat)
+            {
+                OpenGroupChat(selectedChat);
+                return;
+            }
+
+            _openGroup = null;   // выбрали контакт — групповой чат больше не открыт
             Contact = LBChats.SelectedItem as Contact;
             Log.Save($"[LBChats_SelectionChanged] Selected contact: {Contact?.Name} ({Contact?.Username})");
 
@@ -311,6 +344,119 @@ namespace Tebegrammmm
             }
         }
 
+        // ── Групповые чаты ───────────────────────────────────────────────────
+        // Открытая сейчас группа (null, если открыт обычный чат с контактом).
+        // Хранится отдельно от Contact: маршрутизация у них разная — контакту
+        // сообщение адресуется по нику, группе по её Id.
+        private Classes.Chat _openGroup;
+
+        /// <summary>
+        /// Загружает список групповых чатов пользователя (GET /Chats/{userId}).
+        /// Формат: чаты через ❂, поля — id&amp;имя&amp;группа?&amp;аватар&amp;владелец&amp;участники.
+        /// </summary>
+        private async Task LoadGroupChatsAsync()
+        {
+            try
+            {
+                await ServerData.Ready;
+                using var request = new HttpRequestMessage(HttpMethod.Get,
+                    $"{ServerData.ServerAdress}/Chats/{UserData.User.Id}");
+                using var response = await httpClient.SendAsync(request);
+                if (!response.IsSuccessStatusCode) return;
+
+                string raw = (await response.Content.ReadAsStringAsync()).Trim();
+                if (string.IsNullOrEmpty(raw)) return;
+
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    foreach (string entry in raw.Split('❂'))
+                        HandleAddChat(entry);   // тот же разбор, что у WS-уведомления
+                }));
+                Log.Save($"[LoadGroupChats] Загружено групп: {UserData.User.Chats.Count}");
+            }
+            catch (Exception ex)
+            {
+                Log.Save($"[LoadGroupChats] {ex.GetType().Name}: {ex.Message}");
+            }
+        }
+
+        /// <summary>Открывает групповой чат: шапка, история сообщений, поле ввода.</summary>
+        private void OpenGroupChat(Classes.Chat chat)
+        {
+            _openGroup = chat;
+            Contact = null;
+
+            GridChat.DataContext = chat;
+            LBMessages.ItemsSource = chat.Messages;
+            GridMessege.Visibility = Visibility.Visible;
+            GridContactPanel.Visibility = Visibility.Visible;
+            EmptyChatPlaceholder.Visibility = Visibility.Collapsed;
+
+            if (TBMessage != null) TBMessage.Text = chat.Draft ?? string.Empty;
+
+            // История подтягивается с сервера один раз: сообщения группы живут
+            // на сервере, а клиент при входе получает только список чатов
+            _ = LoadGroupHistoryAsync(chat);
+
+            Log.Save($"[OpenGroupChat] Открыт групповой чат {chat.Id} «{chat.Name}»");
+        }
+
+        /// <summary>Догружает историю группы (сообщения через ❂, как в /messages).</summary>
+        private async Task LoadGroupHistoryAsync(Classes.Chat chat)
+        {
+            if (chat.HistoryLoaded) return;
+            chat.HistoryLoaded = true;
+
+            try
+            {
+                using var request = new HttpRequestMessage(HttpMethod.Get,
+                    $"{ServerData.ServerAdress}/Chat/History/{chat.Id}");
+                using var response = await httpClient.SendAsync(request);
+                if (!response.IsSuccessStatusCode) return;
+
+                string raw = (await response.Content.ReadAsStringAsync()).Trim();
+                if (string.IsNullOrEmpty(raw)) return;
+
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    foreach (string entry in raw.Split('❂'))
+                    {
+                        Message message = ParseGroupMessage(entry);
+                        if (message != null) chat.Messages.Add(message);
+                    }
+                }));
+            }
+            catch (Exception ex)
+            {
+                chat.HistoryLoaded = false; // дадим повторить при следующем открытии
+                Log.Save($"[LoadGroupHistory] {ex.GetType().Name}: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Разбирает сообщение группы: Sender▫Reciver▫Type▫Time▫ServerAdress▫Text —
+        /// тот же формат, что и у личных сообщений (конверт с ChatId снимается выше).
+        /// </summary>
+        private Message ParseGroupMessage(string raw)
+        {
+            string[] parts = raw.Split('▫');
+            if (parts.Length < 6) return null;
+
+            bool outgoing = parts[0] == UserData.User.Username;
+            string senderName = outgoing ? UserData.User.Name : parts[0];
+
+            if (parts[2] == "File")
+            {
+                return new Message(senderName, parts[1], parts[5], parts[3],
+                    MessageType.File, parts[4]) { IsOutgoing = outgoing, Status = MessageStatus.Sent };
+            }
+
+            // Текст мог содержать разделитель — склеиваем хвост обратно
+            string text = string.Join('▫', parts.Skip(5));
+            return new Message(senderName, parts[1], text, parts[3])
+            { IsOutgoing = outgoing, Status = MessageStatus.Sent };
+        }
+
         /// <summary>
         /// Клик по результату глобального поиска: добавляем пользователя в контакты
         /// и открываем с ним чат. Поиск при этом сбрасывается — контакт уже «свой».
@@ -338,12 +484,17 @@ namespace Tebegrammmm
         {
             try
             {
-                string[] chatData = payload.Replace("addChat▫$▫", "").Split('&');
+                // Replace здесь больше не нужен: сервер добавляет конверт РОВНО ОДИН
+                // раз (раньше он клеился дважды, и это гасилось здесь — две ошибки
+                // компенсировали друг друга, а односторонняя правка всё ломала)
+                string[] chatData = payload.Split('&');
+                if (chatData.Length < 3 || !int.TryParse(chatData[0], out int chatId)) return;
+
                 bool iOwner = chatData.Length > 4 && chatData[4] != "None" &&
                               int.TryParse(chatData[4], out int ownerId) && ownerId == UserData.User.Id;
 
-                var chat = new Classes.Chat(int.Parse(chatData[0]), chatData[1],
-                    bool.Parse(chatData[2]), chatData[3], iOwner);
+                var chat = new Classes.Chat(chatId, chatData[1],
+                    bool.Parse(chatData[2]), chatData.Length > 3 ? chatData[3] : "", iOwner);
 
                 Dispatcher.Invoke(new Action(() =>
                 {
@@ -355,6 +506,39 @@ namespace Tebegrammmm
             catch (Exception ex)
             {
                 Log.Save($"[HandleAddChat] {ex.GetType().Name}: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Сообщение ГРУППОВОГО чата: payload = ChatId▫Sender▫Reciver▫Type▫Time▫Server▫Text.
+        /// Именно ради этого первого поля и нужен конверт: в личном чате клиент
+        /// понимает, куда класть сообщение, по собеседнику, а в группе — не может.
+        /// </summary>
+        private void HandleGroupMessage(string payload)
+        {
+            try
+            {
+                int sep = payload.IndexOf('▫');
+                if (sep <= 0) return;
+                if (!int.TryParse(payload.Substring(0, sep), out int chatId)) return;
+
+                string raw = payload.Substring(sep + 1);
+                Message message = ParseGroupMessage(raw);
+                if (message == null) return;
+
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    Classes.Chat chat = UserData.User.FindChatById(chatId);
+                    if (chat == null) return; // группа ещё не пришла — придёт вместе с addChat
+
+                    chat.Messages.Add(message);
+                    if (_openGroup != null && _openGroup.Id == chatId)
+                        ScrollMessagesToEnd();
+                }));
+            }
+            catch (Exception ex)
+            {
+                Log.Save($"[HandleGroupMessage] {ex.GetType().Name}: {ex.Message}");
             }
         }
 
@@ -684,6 +868,13 @@ namespace Tebegrammmm
                 return;
             }
 
+            // Открыт групповой чат — у него своя маршрутизация (по Id чата)
+            if (_openGroup != null)
+            {
+                await SendGroupMessageAsync(_openGroup, message, messageType, ServerFilePath);
+                return;
+            }
+
             if (Contact == null)
             {
                 MessageBox.Show("Ошибка: не выбран получатель сообщения");
@@ -719,6 +910,43 @@ namespace Tebegrammmm
             await SendMessageToUserAsync(Message);
             TBMessage.Text = string.Empty;
             Contact.Draft = string.Empty; // Очищаем черновик после отправки
+        }
+
+        /// <summary>
+        /// Отправка в ГРУППУ. Отличие от личного чата одно: в команде SEND идёт
+        /// реальный Id чата, а поле получателя серверу не нужно — по существующему
+        /// Id он находит чат сразу (CheckIsExist возвращает его первой же проверкой)
+        /// и рассылает сообщение всем участникам.
+        /// Своё сообщение в список НЕ добавляем: сервер вернёт его нам же по WS
+        /// вместе с остальными участниками, иначе оно задвоится.
+        /// </summary>
+        private async Task SendGroupMessageAsync(Classes.Chat chat, string message,
+            MessageType messageType, string ServerFilePath)
+        {
+            if (ws == null || ws.State != WebSocketState.Open)
+            {
+                MessageBox.Show("Нет соединения с сервером. Сообщение не отправлено — попробуйте ещё раз через пару секунд.");
+                return;
+            }
+
+            var outgoing = new Message(UserData.User.Username, chat.Name, message,
+                DateTime.Now.ToString("dd.MM.yyyy HH:mm"), messageType, ServerFilePath);
+
+            try
+            {
+                string request = $"SEND▫#▫{chat.Id}▫#▫{UserData.User.Username}▫#▫{outgoing}";
+                await ws.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes(request)),
+                    WebSocketMessageType.Text, true, CancellationToken.None);
+            }
+            catch (Exception ex)
+            {
+                Log.Save($"[SendGroupMessage] {ex.GetType().Name}: {ex.Message}");
+                MessageBox.Show("Не удалось отправить сообщение — соединение прервано. Попробуйте ещё раз.");
+                return;
+            }
+
+            TBMessage.Text = string.Empty;
+            chat.Draft = string.Empty;
         }
 
         private void Button_Click_SendMessage(object sender, RoutedEventArgs e)
@@ -849,6 +1077,12 @@ namespace Tebegrammmm
         private void ScrollToLastMessageIfCurrent(Contact contact)
         {
             if (!ReferenceEquals(contact, Contact)) return;
+            ScrollMessagesToEnd();
+        }
+
+        /// <summary>Прокручивает список сообщений к последнему (общее для чатов и групп).</summary>
+        private void ScrollMessagesToEnd()
+        {
             if (LBMessages.Items.Count > 0)
                 LBMessages.ScrollIntoView(LBMessages.Items[LBMessages.Items.Count - 1]);
         }
@@ -1289,7 +1523,9 @@ namespace Tebegrammmm
             {
                 if (_IsInSearch)
                 {
-                    LBChats.ItemsSource = TempContacts;
+                    // Возвращаем полный список — вместе с группами, а не только контакты
+                    SetChatListSource(LBChatsLoders.SelectedItem as ChatFolder
+                                      ?? UserData.User.ChatsFolders[0]);
                     _IsInSearch = false;
                 }
                 SetSearchHint(null);
@@ -1499,7 +1735,7 @@ namespace Tebegrammmm
         {
             _IsInSearch = false;
             LBChatsLoders.SelectedIndex = 0; // «Все чаты» — там точно есть новый контакт
-            LBChats.ItemsSource = UserData.User.ChatsFolders[0].Contacts;
+            SetChatListSource(UserData.User.ChatsFolders[0]);
             LBChats.SelectedItem = contact;
             LBChats.ScrollIntoView(contact);
         }

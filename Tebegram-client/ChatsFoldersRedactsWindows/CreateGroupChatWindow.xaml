@@ -402,6 +402,7 @@
                                 Grid.Column="2"
                                 Height="40"
                                 Background="{DynamicResource Light.AccentPrimaryBrush}"
+                                x:Name="CreateBtn"
                                 Click="CreateBtn_Click"
                                 Content="Создать группу"
                                 FontSize="14"

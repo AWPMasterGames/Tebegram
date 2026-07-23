@@ -1,3 +1,4 @@
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
@@ -56,7 +57,7 @@ namespace Tebegrammmm.ChatsFoldersRedactsWindows
         }
 
         // Клик справа — контакт возвращается в общий список
-        private async void LBGroupMembers_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void LBGroupMembers_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             if (LBGroupMembers.SelectedItem is not Contact contact) return;
             _members.Remove(contact);
@@ -64,7 +65,7 @@ namespace Tebegrammmm.ChatsFoldersRedactsWindows
             LBGroupMembers.SelectedItem = null;
         }
 
-        private void CreateBtn_Click(object sender, RoutedEventArgs e)
+        private async void CreateBtn_Click(object sender, RoutedEventArgs e)
         {
             string name = TBoxGroupName.Text.Trim();
             if (string.IsNullOrEmpty(name))
@@ -82,23 +83,53 @@ namespace Tebegrammmm.ChatsFoldersRedactsWindows
             GroupName = name;
             SelectedUsernames = _members.Select(m => m.Username).ToArray();
 
-            // TODO(Максим): здесь вызвать создание группы на сервере —
-            // GET {ServerData.ServerAdress}/Chat/Create/{UserData.User.Id}-{string.Join('▫', SelectedUsernames)}
-            // — и обработать ответ (или дождаться WS «addChat▫$▫…»).
-            // Название группы (GroupName) сервер пока не принимает — в его CreateChat
-            // имя собирается из имён участников; поле уже есть в UI на вырост.
-
-            SendCreateGroupRequest(SelectedUsernames);
+            // Окно закрываем ТОЛЬКО после успешного ответа: раньше запрос уходил
+            // «в никуда» (async void без обработки), окно закрывалось сразу, и при
+            // ошибке пользователь ничего не узнавал
+            CreateBtn.IsEnabled = false;
+            bool ok = await SendCreateGroupRequestAsync();
+            CreateBtn.IsEnabled = true;
+            if (!ok) return;
 
             DialogResult = true;
             Close();
         }
 
-        private async void SendCreateGroupRequest(string[] members)
+        /// <summary>
+        /// Создаёт группу на сервере. Название передаём отдельным параметром запроса
+        /// (?name=…), а не в пути: в пути разделителем служит дефис, и название с
+        /// дефисом сдвинуло бы разбор — так уже рождались мусорные аккаунты.
+        /// </summary>
+        private async System.Threading.Tasks.Task<bool> SendCreateGroupRequestAsync()
         {
-            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/Chat/Create/{UserData.User.Id}-{string.Join('▫', SelectedUsernames)}");
-            using HttpResponseMessage response = await httpClient.SendAsync(request);
-            string content = await response.Content.ReadAsStringAsync();
+            try
+            {
+                string members = string.Join('▫', SelectedUsernames);
+                string url = $"{ServerData.ServerAdress}/Chat/Create/{UserData.User.Id}-" +
+                             $"{Uri.EscapeDataString(members)}?name={Uri.EscapeDataString(GroupName)}";
+
+                using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, url);
+                using HttpResponseMessage response = await httpClient.SendAsync(request);
+                string content = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    ShowValidation(string.IsNullOrWhiteSpace(content)
+                        ? "Сервер не смог создать группу" : content);
+                    Classes.Log.Save($"[CreateGroup] Отказ сервера {(int)response.StatusCode}: {content}");
+                    return false;
+                }
+
+                Classes.Log.Save($"[CreateGroup] Группа создана: {content}");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // async void без try/catch ронял приложение при недоступном сервере
+                Classes.Log.Save($"[CreateGroup] {ex.GetType().Name}: {ex.Message}");
+                ShowValidation("Нет связи с сервером — группа не создана");
+                return false;
+            }
         }
 
         private void ShowValidation(string text)

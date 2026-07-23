@@ -21,7 +21,11 @@ namespace TebegramServer.Data
             // Настраиваем таймер для автоматического сохранения каждые 10 секунд
             // Только если есть пользователи для сохранения
             saveTimer = new System.Timers.Timer(10000); // 10 секунд
-            saveTimer.Elapsed += (sender, e) => SaveUserToFile();
+            saveTimer.Elapsed += (sender, e) =>
+            {
+                SaveUserToFile();
+                ChatsData.Save(); // групповые чаты лежат отдельным файлом
+            };
             saveTimer.AutoReset = true;
             saveTimer.Start();
             Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Автосохранение запущено (каждые 10 секунд)");

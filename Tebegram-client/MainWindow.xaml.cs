@@ -168,18 +168,21 @@ namespace Tebegrammmm
                 using HttpResponseMessage response = await httpClient.SendAsync(request);
                 string content = await response.Content.ReadAsStringAsync();
 
+                // Сервер теперь отвечает честными кодами (401 — неверные данные),
+                // но ТЕКСТ ошибки по-прежнему в теле — показываем именно его,
+                // иначе пользователь видел бы безликое «Сервер вернул ошибку (401)»
                 if (!response.IsSuccessStatusCode || string.IsNullOrEmpty(content))
                 {
                     Log.Save($"[Authorization] Bad response: status={(int)response.StatusCode} len={content.Length}");
-                    MessageBox.Show($"Сервер вернул ошибку ({(int)response.StatusCode}). Проверьте логин/пароль и соединение.");
+                    MessageBox.Show(string.IsNullOrWhiteSpace(content)
+                        ? $"Сервер вернул ошибку ({(int)response.StatusCode}). Проверьте логин/пароль и соединение."
+                        : content);
                     return;
                 }
 
-                if (content.StartsWith("Пользователь с таким логином не существует") ||
-                    content.StartsWith("Неверный пароль") ||
-                    content.StartsWith("Ошибка"))
+                if (Tebegram.Shared.UserValidation.IsErrorResponse(content))
                 {
-                    MessageBox.Show($"Ошибка авторизации: {content}");
+                    MessageBox.Show(content);
                     return;
                 }
 
