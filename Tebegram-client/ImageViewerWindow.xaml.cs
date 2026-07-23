@@ -60,6 +60,14 @@ namespace Tebegrammmm
         private bool _videoSliderDragging;     // пользователь тащит ползунок — не перебиваем его позицией
         private bool _videoPlaying;
 
+        // Автоскрытие панели управления: секунда без движения мыши — и она уходит
+        private DispatcherTimer _barHideTimer;
+        private bool _barVisible = true;
+
+        // Полноэкранный режим (кнопка справа снизу): запоминаем, куда вернуться
+        private bool _isFullscreen;
+        private Rect _preFullscreenBounds;
+
         /// <summary>Расширения, которые открываем как видео (их играет MediaElement/WMP).</summary>
         public static bool IsVideoFile(string name)
         {
@@ -109,6 +117,10 @@ namespace Tebegrammmm
                 ImageScrollViewer.VerticalScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility.Disabled;
                 LoadingText.Text = "Загрузка видео...";
 
+                SetFullscreenIcon();
+                // Панель видна сразу после открытия, дальше живёт по движению мыши
+                ShowVideoBar();
+
                 // Полоса перемотки обновляется 4 раза в секунду — этого хватает
                 // и не грузит UI лишними перерисовками
                 _videoTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(250) };
@@ -145,6 +157,91 @@ namespace Tebegrammmm
 
         /// <summary>Клик по кадру — пауза/продолжить (окно двигается за верхнюю панель).</summary>
         private void Video_Click(object sender, MouseButtonEventArgs e) => TogglePlayPause();
+
+        // ── Панель управления: показ по движению мыши, скрытие через секунду ──
+
+        /// <summary>Показать панель и завести таймер скрытия заново.</summary>
+        private void ShowVideoBar()
+        {
+            if (!_isVideo) return;
+
+            if (!_barVisible)
+            {
+                _barVisible = true;
+                VideoBar.IsHitTestVisible = true;
+                VideoBar.BeginAnimation(OpacityProperty,
+                    new DoubleAnimation(1.0, TimeSpan.FromMilliseconds(120)));
+            }
+
+            _barHideTimer ??= CreateBarHideTimer();
+            _barHideTimer.Stop();
+            _barHideTimer.Start();
+        }
+
+        private DispatcherTimer CreateBarHideTimer()
+        {
+            var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+            timer.Tick += (_, _) =>
+            {
+                timer.Stop();
+
+                // Прячем независимо от того, где стоит курсор — важно именно
+                // ОТСУТСТВИЕ ДВИЖЕНИЯ (любое движение вернёт панель мгновенно).
+                // Единственное исключение — пока тянут ползунок перемотки:
+                // выдёргивать его из-под пальца нельзя
+                if (_videoSliderDragging) { timer.Start(); return; }
+
+                _barVisible = false;
+                VideoBar.IsHitTestVisible = false;   // невидимая панель не должна ловить клики
+                VideoBar.BeginAnimation(OpacityProperty,
+                    new DoubleAnimation(0.0, TimeSpan.FromMilliseconds(250)));
+            };
+            return timer;
+        }
+
+        // ── Полноэкранный режим ──────────────────────────────────────────────
+
+        private void FullscreenBtn_Click(object sender, RoutedEventArgs e) => ToggleFullscreen();
+
+        /// <summary>
+        /// Во весь экран и обратно. Запоминаем прежние границы окна, чтобы повторное
+        /// нажатие вернуло ровно тот размер и положение, что были до переключения.
+        /// Занимаем ВЕСЬ монитор (а не рабочую область) — панель задач тоже скрывается.
+        /// </summary>
+        private void ToggleFullscreen()
+        {
+            if (_isFullscreen)
+            {
+                Left   = _preFullscreenBounds.Left;
+                Top    = _preFullscreenBounds.Top;
+                Width  = _preFullscreenBounds.Width;
+                Height = _preFullscreenBounds.Height;
+                OuterGrid.Margin = new Thickness(8);   // возвращаем поля с тенью
+                _isFullscreen = false;
+            }
+            else
+            {
+                _preFullscreenBounds = new Rect(Left, Top, Width, Height);
+
+                Rect screen = UiSizes.MonitorBoundsFor(this);
+                Left   = screen.Left;
+                Top    = screen.Top;
+                Width  = screen.Width;
+                Height = screen.Height;
+                OuterGrid.Margin = new Thickness(0);   // без полей — кадр во весь экран
+                _isFullscreen = true;
+            }
+
+            SetFullscreenIcon();
+            ShowVideoBar();   // после переключения панель снова на виду
+        }
+
+        private void SetFullscreenIcon()
+        {
+            if (FullscreenIcon == null) return;
+            FullscreenIcon.Data = (System.Windows.Media.Geometry)FindResource(
+                _isFullscreen ? "IconFullscreenExit" : "IconFullscreen");
+        }
 
         private void Video_MediaFailed(object sender, ExceptionRoutedEventArgs e)
         {
@@ -439,10 +536,24 @@ namespace Tebegrammmm
 
         // ── Заголовок: fade по позиции курсора ───────────────────────────────────
 
+        private Point _lastMousePos = new(double.NaN, double.NaN);
+
         protected override void OnMouseMove(MouseEventArgs e)
         {
             base.OnMouseMove(e);
-            SetTitleBarVisible(e.GetPosition(this).Y < 50);
+            Point pos = e.GetPosition(this);
+            SetTitleBarVisible(pos.Y < 50);
+
+            // Панель возвращает только РЕАЛЬНОЕ движение курсора. WPF шлёт MouseMove
+            // и когда картинка под курсором просто перерисовалась (а видео
+            // перерисовывается каждый кадр) — такие события сбрасывали таймер,
+            // и панель не скрывалась никогда.
+            if (!double.IsNaN(_lastMousePos.X) &&
+                Math.Abs(pos.X - _lastMousePos.X) < 1 && Math.Abs(pos.Y - _lastMousePos.Y) < 1)
+                return;
+
+            _lastMousePos = pos;
+            ShowVideoBar();
         }
 
         protected override void OnMouseLeave(MouseEventArgs e)
@@ -563,10 +674,26 @@ namespace Tebegrammmm
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
-            if (e.Key == Key.Escape) { Close(); return; }
-            if (_isVideo && e.Key == Key.Space)
+
+            // Esc: сначала выходим из полного экрана, и только потом закрываем окно
+            if (e.Key == Key.Escape)
+            {
+                if (_isFullscreen) { ToggleFullscreen(); e.Handled = true; return; }
+                Close();
+                return;
+            }
+
+            if (!_isVideo) return;
+
+            if (e.Key == Key.Space)
             {
                 TogglePlayPause();
+                ShowVideoBar();
+                e.Handled = true;
+            }
+            else if (e.Key == Key.F11)
+            {
+                ToggleFullscreen();
                 e.Handled = true;
             }
         }

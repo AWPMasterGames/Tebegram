@@ -21,6 +21,13 @@
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
   </ItemGroup>
 
+  <!-- Правила проверки логина/пароля/имени — ОДИН файл на клиент и сервер.
+       Подключён ссылкой, а не скопирован: иначе проверки разъезжаются и клиент
+       пропускает то, что сервер потом отклоняет. -->
+  <ItemGroup>
+    <Compile Include="..\Tebegram-server\Classes\UserValidation.cs" Link="Classes\UserValidation.cs" />
+  </ItemGroup>
+
   <!-- Локальный override адреса сервера: копируется к exe при сборке,
        но НЕ попадает в publish/установщик — у пользователей работает Adress.txt с GitHub -->
   <ItemGroup Condition="Exists('Adress.override.txt')">

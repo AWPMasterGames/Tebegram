@@ -252,16 +252,17 @@
                     <!--  Grip изменения размера — помещён внутрь видимой области,
                           т.к. с AllowsTransparency=True стандартный grip попадает в прозрачную тень  -->
 
-                    <!--  Панель управления видео: кнопка паузы по центру снизу
-                          и полоса перемотки. Показывается только для видеофайлов  -->
+                    <!--  Панель управления видео ЛЕЖИТ ПОВЕРХ кадра (та же строка Grid)
+                          и полупрозрачна. Перекрытия не мешают: без движения мыши она
+                          скрывается через секунду и возвращается при первом же движении  -->
                     <Border
                         x:Name="VideoBar"
-                        Grid.Row="1"
-                        Margin="12,0,12,12"
-                        Padding="16,10"
+                        Grid.Row="0"
+                        Margin="24,0,24,20"
+                        Padding="14,8"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Bottom"
-                        Background="#D9000000"
+                        Background="#A6000000"
                         CornerRadius="12"
                         Visibility="Collapsed">
                         <StackPanel>
@@ -277,28 +278,56 @@
                                 ValueChanged="VideoSlider_ValueChanged" />
 
                             <Grid>
-                                <!--  Кнопка паузы/воспроизведения — по центру  -->
-                                <Button
-                                    x:Name="PlayPauseBtn"
-                                    Width="44"
-                                    Height="34"
-                                    HorizontalAlignment="Center"
-                                    Click="PlayPauseBtn_Click"
-                                    Template="{StaticResource CaptionBtnTemplate}"
-                                    ToolTip="Пауза / продолжить (пробел)">
-                                    <Viewbox Width="18" Height="18">
-                                        <Path x:Name="PlayPauseIcon" Fill="White" />
-                                    </Viewbox>
-                                </Button>
-
-                                <!--  Текущее время / длительность — справа  -->
+                                <!--  Текущее время / длительность — слева  -->
                                 <TextBlock
                                     x:Name="VideoTimeText"
-                                    HorizontalAlignment="Right"
+                                    HorizontalAlignment="Left"
                                     VerticalAlignment="Center"
                                     FontSize="12"
                                     Foreground="#CCFFFFFF"
                                     Text="0:00 / 0:00" />
+
+                                <!--  Пауза/воспроизведение — по центру, кнопка КВАДРАТНАЯ  -->
+                                <Button
+                                    x:Name="PlayPauseBtn"
+                                    Width="36"
+                                    Height="36"
+                                    HorizontalAlignment="Center"
+                                    Click="PlayPauseBtn_Click"
+                                    Template="{StaticResource CaptionBtnTemplate}"
+                                    ToolTip="Пауза / продолжить (пробел)">
+                                    <Viewbox
+                                        Width="18"
+                                        Height="18"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center">
+                                        <Path
+                                            x:Name="PlayPauseIcon"
+                                            Fill="White"
+                                            Stretch="Uniform" />
+                                    </Viewbox>
+                                </Button>
+
+                                <!--  Полноэкранный режим — справа снизу  -->
+                                <Button
+                                    x:Name="FullscreenBtn"
+                                    Width="36"
+                                    Height="36"
+                                    HorizontalAlignment="Right"
+                                    Click="FullscreenBtn_Click"
+                                    Template="{StaticResource CaptionBtnTemplate}"
+                                    ToolTip="Во весь экран (F11), повторное нажатие вернёт размер">
+                                    <Viewbox
+                                        Width="18"
+                                        Height="18"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center">
+                                        <Path
+                                            x:Name="FullscreenIcon"
+                                            Fill="White"
+                                            Stretch="Uniform" />
+                                    </Viewbox>
+                                </Button>
                             </Grid>
                         </StackPanel>
                     </Border>

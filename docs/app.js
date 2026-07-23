@@ -6,7 +6,7 @@
    ═══════════════════════════════════════════════════════════════ */
 'use strict';
 
-const APP_VERSION = '1.0.22';
+const APP_VERSION = '1.0.23';
 const SEP = '▫';
 const MSG_SEP = '❂';
 const WS_SEP = '▫#▫';
@@ -1440,6 +1440,48 @@ async function doLogin() {
   }
 }
 
+/* ─── Проверка полей регистрации ─────────────────────────────────────────
+   Зеркало серверных правил (Tebegram-server/Classes/UserValidation.cs).
+   Причина ограничений: адрес регистрации выглядит как
+   /register/{логин}-{пароль}-{ник}-{имя}, то есть разделитель — ДЕФИС, и любой
+   дефис внутри поля сдвигает разбор (реальный случай: имя «top-9» создало
+   аккаунт с логином «top9-1234» и ником «top»). Плюс запрещены символы
+   протокола (▫ ❂ &) и служебные символы URL.
+   При правке правил менять и серверный файл — он общий для сервера и win-клиента. */
+const FORBIDDEN_CHARS = ['-', '▫', '❂', '&', '/', '\\', '#', '?', '%', '+', ':', '='];
+
+function checkLoginField(value, fieldName) {
+  if (!value) return `${fieldName} не может быть пустым`;
+  if (value.length < 3) return `${fieldName} должен быть не короче 3 символов`;
+  if (value.length > 32) return `${fieldName} должен быть не длиннее 32 символов`;
+  if (!/^[A-Za-z0-9_.]+$/.test(value))
+    return `${fieldName} может содержать только латинские буквы, цифры, точку и подчёркивание`;
+  return null;
+}
+
+function checkRegistration(login, password, username, name) {
+  const loginError = checkLoginField(login, 'Логин');
+  if (loginError) return loginError;
+
+  if (password.length < 4) return 'Пароль должен быть не короче 4 символов';
+  if (password.length > 64) return 'Пароль должен быть не длиннее 64 символов';
+  if (/\s/.test(password)) return 'Пароль не может содержать пробелы';
+  for (const c of password)
+    if (FORBIDDEN_CHARS.includes(c)) return `Пароль не может содержать символ «${c}»`;
+
+  const usernameError = checkLoginField(username, 'Имя пользователя');
+  if (usernameError) return usernameError;
+
+  if (!name.trim()) return 'Имя не может быть пустым';
+  if (name.length > 48) return 'Имя должно быть не длиннее 48 символов';
+  for (const c of name) {
+    if (FORBIDDEN_CHARS.includes(c)) return `Имя не может содержать символ «${c}»`;
+    // Буквы любого алфавита (нужна кириллица), цифры, пробел, точка, подчёркивание
+    if (!/[\p{L}\p{N} _.]/u.test(c)) return `Имя не может содержать символ «${c}»`;
+  }
+  return null;
+}
+
 async function doRegister() {
   const name = $('reg-name').value.trim();
   const login = $('reg-login').value.trim();
@@ -1448,9 +1490,9 @@ async function doRegister() {
 
   if (!name || !login || !p1) return showError('reg-error', 'Заполни все поля');
   if (p1 !== p2) return showError('reg-error', 'Пароли не совпадают');
-  if (p1.length < 4) return showError('reg-error', 'Пароль должен быть не менее 4 символов');
-  if (login.length < 3) return showError('reg-error', 'Логин должен быть не менее 3 символов');
-  if (/[-▫\s]/.test(login)) return showError('reg-error', 'Логин не может содержать пробелы и дефисы');
+
+  const regError = checkRegistration(login, p1, login, name);
+  if (regError) return showError('reg-error', regError);
 
   $('btn-register').disabled = true;
   try {
