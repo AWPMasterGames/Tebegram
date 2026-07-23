@@ -174,6 +174,17 @@
             </Setter>
         </Style>
 
+        <!--  Меню группового чата: открывается кнопкой-шестерёнкой в шапке.
+              Отдельным ресурсом, а не через ContextMenu на кнопке: у обычного чата
+              та же кнопка открывает окно редактирования контакта, и меню там
+              не должно вылезать даже по правому клику (см. UpdateChatHeaderButtons)  -->
+        <ContextMenu x:Key="GroupChatMenu" Style="{StaticResource TbgContextMenuStyle}">
+            <MenuItem
+                Click="LeaveGroup_Click"
+                Header="Выйти из группы"
+                Style="{StaticResource TbgMenuItemDangerStyle}" />
+        </ContextMenu>
+
         <!--  Компактный шаблон списка чатов: только аватар (режим «только аватарки»)  -->
         <DataTemplate x:Key="LBChatsCompactTemplate">
             <Grid
@@ -490,11 +501,15 @@
                             Text="{Binding Name}"
                             TextTrimming="CharacterEllipsis"
                             TextWrapping="NoWrap" />
+                        <!--  Кнопки шапки. Видимость зависит от типа чата и задаётся
+                              в UpdateChatHeaderButtons: в «Избранном» нет ни звонка,
+                              ни настроек (это чат с самим собой), в группе нет звонка  -->
                         <StackPanel
                             Grid.Column="1"
                             VerticalAlignment="Center"
                             Orientation="Horizontal">
                             <Button
+                                x:Name="BtnCall"
                                 Background="Transparent"
                                 BorderBrush="Transparent"
                                 Click="Button_Click_CallContact"
@@ -510,6 +525,7 @@
                                 </Border>
                             </Button>
                             <Button
+                                x:Name="BtnChatMenu"
                                 Width="40"
                                 Background="Transparent"
                                 BorderBrush="Transparent"

@@ -360,6 +360,7 @@ namespace Tebegrammmm
             GridMessege.Visibility = Visibility.Visible;
             GridContactPanel.Visibility = Visibility.Visible;
             EmptyChatPlaceholder.Visibility = Visibility.Collapsed;
+            UpdateChatHeaderButtons(Contact.IsFavorites, isGroup: false);
 
             // Прокручиваем к последнему сообщению после отрисовки списка
             Dispatcher.BeginInvoke(new Action(() => ScrollToLastMessageIfCurrent(Contact)),
@@ -371,6 +372,43 @@ namespace Tebegrammmm
                 TBMessage.Text = Contact.Draft ?? string.Empty;
                 Log.Save($"[LBChats_SelectionChanged] Restored draft for {Contact.Name}: '{Contact.Draft}'");
             }
+        }
+
+        /// <summary>
+        /// Настраивает кнопки в шапке чата под его тип.
+        ///
+        /// «Избранное» — чат с самим собой: звонить туда некому, и «изменить
+        /// контакт» тоже нечего (имя и аватар свои, они меняются в настройках).
+        /// Группа — звонка пока нет: комната голосовой связи заводится на ПАРУ
+        /// собеседников (VoiceRoom работает по username), группового режима в
+        /// протоколе ещё не существует. Кнопка меню при этом остаётся и открывает
+        /// настройки группы.
+        /// </summary>
+        private void UpdateChatHeaderButtons(bool isFavorites, bool isGroup)
+        {
+            BtnCall.Visibility = isFavorites || isGroup ? Visibility.Collapsed : Visibility.Visible;
+            BtnChatMenu.Visibility = isFavorites ? Visibility.Collapsed : Visibility.Visible;
+            BtnChatMenu.ToolTip = isGroup ? "Настройки группы" : "Изменить контакт";
+        }
+
+        /// <summary>Открывает меню группы под кнопкой в шапке.</summary>
+        private void ShowGroupMenu()
+        {
+            var menu = (System.Windows.Controls.ContextMenu)FindResource("GroupChatMenu");
+            menu.PlacementTarget = BtnChatMenu;
+            menu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+            menu.IsOpen = true;
+        }
+
+        /// <summary>
+        /// «Выйти из группы». Пока заглушка: на сервере нет ни удаления участника
+        /// из чата, ни рассылки об этом остальным — без них кнопка сделала бы вид,
+        /// что вышла, а после перезахода группа вернулась бы на место.
+        /// </summary>
+        private void LeaveGroup_Click(object sender, RoutedEventArgs e)
+        {
+            TbgDialogWindow.Show("Выход из группы скоро добавим — эта часть ещё в работе.",
+                                 _openGroup?.Name ?? "Группа");
         }
 
         // ── Групповые чаты ───────────────────────────────────────────────────
@@ -420,6 +458,7 @@ namespace Tebegrammmm
             GridMessege.Visibility = Visibility.Visible;
             GridContactPanel.Visibility = Visibility.Visible;
             EmptyChatPlaceholder.Visibility = Visibility.Collapsed;
+            UpdateChatHeaderButtons(isFavorites: false, isGroup: true);
 
             if (TBMessage != null) TBMessage.Text = chat.Draft ?? string.Empty;
 
@@ -1263,6 +1302,13 @@ namespace Tebegrammmm
 
         private void Button_Click_ContactRedact(object sender, RoutedEventArgs e)
         {
+            // В группе та же кнопка открывает меню группы, а не карточку контакта
+            if (_openGroup != null)
+            {
+                ShowGroupMenu();
+                return;
+            }
+
             if (Contact == null) return;
 
             string oldName = Contact.Name;
