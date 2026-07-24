@@ -13,7 +13,7 @@
 ; ─────────────────────────────────────────────────────────────────────────────
 
 #define MyAppName "Tebegram"
-#define MyAppVersion "1.0.6"
+#define MyAppVersion "1.0.7"
 #define MyAppPublisher "Tebegram"
 #define MyAppURL "https://github.com/AWPMasterGames/Tebegram"
 #define MyAppExeName "Tebegrammmm.exe"
@@ -56,6 +56,20 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
+[InstallDelete]
+; ПЕРВАЯ установка не должна открываться под чужим аккаунтом: сохранённый вход
+; мог остаться на машине от прошлых запусков (в т.ч. тестовых — test1), и
+; поставленное приложение молча заходило под ним.
+;
+; При ОБНОВЛЕНИИ поверх существующей версии вход НЕ трогаем — иначе после каждого
+; обновления пришлось бы вводить логин и пароль заново (см. IsFreshInstall).
+; Обычное «закрыл и открыл приложение» вход тоже сохраняет: файл читается из
+; AppData и удаляется только кнопкой «Выйти из аккаунта».
+Type: files; Name: "{localappdata}\Tebegram\user.data"; Check: IsFreshInstall
+; Старый файл входа рядом с exe убираем всегда: приложение его больше не читает,
+; но и лежать паролю в папке установки незачем
+Type: files; Name: "{app}\user.data"
+
 [Files]
 ; Весь результат dotnet publish (self-contained — .NET уже внутри)
 Source: "{#PublishDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -70,3 +84,20 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#MyAppName}}
 [UninstallDelete]
 ; Пользовательские данные приложения (сохранённый вход, настройки)
 Type: filesandordirs; Name: "{localappdata}\Tebegram"
+
+[Code]
+{ Ставим ли ПОВЕРХ уже установленной версии? Определяем по записи деинсталлятора:
+  Inno Setup создаёт её как <AppId>_is1. Установка «без прав администратора»
+  (PrivilegesRequired=lowest) пишет запись в HKCU.
+
+  ВАЖНО: строка ниже должна совпадать с AppId из секции [Setup]. Если AppId
+  когда-нибудь поменяется — поправить и здесь, иначе обновление будет считаться
+  первой установкой и станет сбрасывать сохранённый вход. }
+function IsFreshInstall: Boolean;
+var
+  UninstallString: String;
+begin
+  Result := not RegQueryStringValue(HKEY_CURRENT_USER,
+    'Software\Microsoft\Windows\CurrentVersion\Uninstall\{8C6E4B7A-2D91-4A6F-B3E8-5F0A9C7D1234}_is1',
+    'UninstallString', UninstallString);
+end;
