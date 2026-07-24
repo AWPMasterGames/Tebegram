@@ -73,12 +73,73 @@ namespace Tebegrammmm
                 case Mode.AcceptCall:
                     DefoultVoiceRoom.Visibility = Visibility.Visible;
                     ActiveVoiceRoom.Visibility = Visibility.Collapsed;
+                    // Входящий звонок: звука пока нет, поэтому вся сигнализация —
+                    // визуальная. Окно выносим на передний план по центру монитора.
+                    Loaded += (_, __) => AnnounceIncomingCall();
                     break;
                 case Mode.ActiveCall:
                     Init();
                     DefoultVoiceRoom.Visibility = Visibility.Collapsed;
                     ActiveVoiceRoom.Visibility = Visibility.Visible;
                     break;
+            }
+        }
+
+        // ── Сигнализация о входящем звонке ───────────────────────────────────
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern bool FlashWindowEx(ref FLASHWINFO pwfi);
+
+        [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+        private struct FLASHWINFO
+        {
+            public uint cbSize;
+            public IntPtr hwnd;
+            public uint dwFlags;
+            public uint uCount;
+            public uint dwTimeout;
+        }
+
+        private const uint FLASHW_ALL = 3;      // мигать и заголовком, и кнопкой в панели задач
+        private const uint FLASHW_TIMERNOFG = 12; // мигать, пока окно не станет активным
+
+        /// <summary>
+        /// Показывает входящий звонок так, чтобы его нельзя было не заметить:
+        /// окно по центру монитора, поверх остальных и с миганием в панели задач.
+        ///
+        /// Центрируем здесь, а не через WindowStartupLocation: у окна
+        /// SizeToContent="Height", то есть высота становится известна уже ПОСЛЕ
+        /// показа, и штатное центрирование промахивается.
+        ///
+        /// Topmost нужен потому, что Windows не даёт фоновому приложению просто так
+        /// забрать фокус: один Activate() в лучшем случае мигнёт кнопкой в панели
+        /// задач. Снимаем его, когда звонок приняли (см. AnimateToActive) — активный
+        /// разговор поверх всех окон висеть не должен.
+        /// </summary>
+        private void AnnounceIncomingCall()
+        {
+            try
+            {
+                Classes.UiSizes.CenterOnScreen(this);
+
+                Topmost = true;
+                if (WindowState == WindowState.Minimized) WindowState = WindowState.Normal;
+                Activate();
+
+                var info = new FLASHWINFO
+                {
+                    hwnd = new System.Windows.Interop.WindowInteropHelper(this).Handle,
+                    dwFlags = FLASHW_ALL | FLASHW_TIMERNOFG,
+                    uCount = uint.MaxValue,
+                    dwTimeout = 0
+                };
+                info.cbSize = (uint)System.Runtime.InteropServices.Marshal.SizeOf(info);
+                FlashWindowEx(ref info);
+            }
+            catch (Exception ex)
+            {
+                // Не смогли привлечь внимание — не повод ронять звонок
+                Log.Save($"[VoiceRoom.AnnounceIncomingCall] {ex.GetType().Name}: {ex.Message}");
             }
         }
 
@@ -384,6 +445,9 @@ namespace Tebegrammmm
 
         private void AnimateToActive()
         {
+            // Звонок приняли — окно больше не должно висеть поверх всех остальных
+            Topmost = false;
+
             var easeIn  = new CubicEase { EasingMode = EasingMode.EaseIn };
             var easeOut = new CubicEase { EasingMode = EasingMode.EaseOut };
             var exitDuration  = new Duration(TimeSpan.FromMilliseconds(220));
