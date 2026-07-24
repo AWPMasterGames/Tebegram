@@ -162,6 +162,14 @@ namespace Tebegrammmm
                             continue;
                         }
 
+                        // Получатель открыл чат с нами — наши сообщения ему помечаем
+                        // двумя галочками (см. HandleSeenNotification)
+                        if (textMessage.StartsWith("SEEN▫#▫"))
+                        {
+                            HandleSeenNotification(textMessage);
+                            continue;
+                        }
+
                         // Конверт «addMessage▫$▫» = сообщение ГРУППОВОГО чата, внутри
                         // первым полем идёт ChatId. Личные сообщения приходят без
                         // конверта в старом формате — так выпущенные клиенты не ломаются.
@@ -366,12 +374,69 @@ namespace Tebegrammmm
             Dispatcher.BeginInvoke(new Action(() => ScrollToLastMessageIfCurrent(Contact)),
                 System.Windows.Threading.DispatcherPriority.Loaded);
 
+            // Мы открыли чат с этим контактом — сообщаем ему, что видели его
+            // сообщения (у него они станут двумя галочками)
+            _ = SendSeenAsync(Contact.Username);
+
             // Восстанавливаем черновик для нового контакта
             if (TBMessage != null)
             {
                 TBMessage.Text = Contact.Draft ?? string.Empty;
                 Log.Save($"[LBChats_SelectionChanged] Restored draft for {Contact.Name}: '{Contact.Draft}'");
             }
+        }
+
+        // ── Отметки «прочитано» (две галочки) ────────────────────────────────
+        // Модель простая, как просил пользователь: одна галочка — сервер принял;
+        // две — получатель ОТКРЫЛ чат с нами (скорее всего увидел). «Закрашенных»
+        // как в оригинальном Telegram не делаем.
+
+        /// <summary>
+        /// Сообщает собеседнику, что мы открыли чат с ним и видели его сообщения.
+        /// Формат: SEEN▫#▫{я}▫#▫{собеседник}. Сервер доставит собеседнику SEEN▫#▫{я}.
+        /// </summary>
+        private async Task SendSeenAsync(string contactUsername)
+        {
+            try
+            {
+                if (ws == null || ws.State != WebSocketState.Open) return;
+                if (string.IsNullOrEmpty(contactUsername)) return;
+                if (contactUsername == UserData.User.Username) return; // «Избранное» — некому
+
+                string request = $"SEEN▫#▫{UserData.User.Username}▫#▫{contactUsername}";
+                await ws.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes(request)),
+                    WebSocketMessageType.Text, true, CancellationToken.None);
+            }
+            catch (Exception ex)
+            {
+                Log.Save($"[SendSeen] {ex.GetType().Name}: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Пришло SEEN▫#▫{кто-открыл}: получатель открыл чат с нами. Все наши
+        /// доставленные сообщения этому контакту переводим в две галочки.
+        /// </summary>
+        private void HandleSeenNotification(string raw)
+        {
+            string[] parts = raw.Split(new[] { "▫#▫" }, StringSplitOptions.None);
+            if (parts.Length < 2 || string.IsNullOrEmpty(parts[1])) return;
+            string reader = parts[1];
+
+            Dispatcher.Invoke(new Action(() =>
+            {
+                Contact contact = UserData.User.FindContactByUsername(reader);
+                if (contact == null) return;
+
+                foreach (Message m in contact.Messages)
+                {
+                    // До Seen доводим только реально ушедшие (Sent/Pending); Failed
+                    // не трогаем — его ещё нужно переотправить
+                    if (m.IsOutgoing && (m.Status == MessageStatus.Sent || m.Status == MessageStatus.Pending))
+                        m.Status = MessageStatus.Seen;
+                }
+                Log.Save($"[Seen] {reader} открыл чат — наши сообщения ему отмечены прочитанными");
+            }));
         }
 
         /// <summary>
@@ -774,6 +839,17 @@ namespace Tebegrammmm
                         }
                     }
                 }
+
+            // Сообщение пришло в ОТКРЫТЫЙ сейчас чат — сразу отмечаем прочитанным,
+            // чтобы у отправителя появилась вторая галочка, пока мы смотрим переписку
+            if (messageData.Length > 0 && messageData[0] != UserData.User.Username)
+            {
+                string sender = messageData[0];
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    if (Contact != null && Contact.Username == sender) _ = SendSeenAsync(sender);
+                }));
+            }
         }
 
         async void GetMessages()
