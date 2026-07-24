@@ -17,9 +17,10 @@ namespace Tebegrammmm
 
     public enum MessageStatus
     {
-        Sent,      // Сервер принял (галочка)
+        Sent,      // Сервер принял (одна галочка)
         Pending,   // Отправляется / ждёт подтверждения (часики)
-        Failed     // Ошибка отправки (красный «!»)
+        Failed,    // Ошибка отправки (красный «!»)
+        Seen       // Получатель открыл чат с нами (две галочки)
     }
     public class Message : System.ComponentModel.INotifyPropertyChanged
     {
@@ -447,6 +448,7 @@ namespace Tebegrammmm
                 Notify(nameof(Status));
                 Notify(nameof(ShowClock));
                 Notify(nameof(ShowCheck));
+                Notify(nameof(ShowDoubleCheck));
                 Notify(nameof(ShowFailed));
             }
         }
@@ -455,7 +457,10 @@ namespace Tebegrammmm
         /// <summary>Показывать индикатор статуса? Только у своих сообщений.</summary>
         public bool ShowStatus => IsOutgoing;
         public bool ShowClock => IsOutgoing && _Status == MessageStatus.Pending;
+        /// <summary>Одна галочка — сервер принял, но получатель ещё не открывал чат.</summary>
         public bool ShowCheck => IsOutgoing && _Status == MessageStatus.Sent;
+        /// <summary>Две галочки — получатель открыл чат с нами (см. SEEN-уведомление).</summary>
+        public bool ShowDoubleCheck => IsOutgoing && _Status == MessageStatus.Seen;
         public bool ShowFailed => IsOutgoing && _Status == MessageStatus.Failed;
 
         private void Notify(string prop) =>

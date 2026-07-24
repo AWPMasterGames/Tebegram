@@ -141,6 +141,30 @@ async Task SendFileToClientAsync(HttpContext context, Microsoft.Extensions.FileP
     await context.Response.SendFileAsync(fileInfo);
 }
 
+// Уведомление о прочтении: reader открыл чат с sender, поэтому сообщения sender'а
+// этому reader'у считаются увиденными. Шлём sender'у SEEN▫#▫{reader} на все его
+// открытые сессии — его клиент пометит те сообщения двумя галочками.
+async Task NotifySeen(string reader, string sender)
+{
+    User? senderUser = UsersData.FindUserByUsername(sender);
+    if (senderUser == null || string.IsNullOrEmpty(reader)) return;
+
+    byte[] payload = Encoding.UTF8.GetBytes($"SEEN▫#▫{reader}");
+    foreach (WebSocket session in senderUser.ChatsSessions.ToList())
+    {
+        if (session.State != WebSocketState.Open) continue;
+        try
+        {
+            await session.SendAsync(new ArraySegment<byte>(payload),
+                WebSocketMessageType.Text, true, CancellationToken.None);
+        }
+        catch (WebSocketException)
+        {
+            // Сокет умер между проверкой и отправкой — пропускаем
+        }
+    }
+}
+
 // Создаёт файл с УНИКАЛЬНЫМ именем и возвращает открытый поток (имя — в savedName).
 //
 // Раньше файл сохранялся под исходным именем, и второй «photo.jpg» затирал первый:
@@ -948,6 +972,13 @@ app.Map("/Chat/ws", async context =>
                             if (data.Length < 4 || !int.TryParse(data[1], out int requestedChatId)) break;
                             int chatId = ChatsController.CheckIsExist(requestedChatId, user, data[2]);
                             if (chatId != -1) await ChatsController.SendMessage(chatId, data[3]);
+                            break;
+
+                        // SEEN▫#▫{кто-открыл}▫#▫{чьи-сообщения-прочитаны}: получатель
+                        // открыл чат с отправителем. Пересылаем отправителю SEEN▫#▫{кто-открыл},
+                        // и у того его сообщения этому человеку станут двумя галочками.
+                        case "SEEN":
+                            if (data.Length >= 3) await NotifySeen(data[1], data[2]);
                             break;
                     }
                 }

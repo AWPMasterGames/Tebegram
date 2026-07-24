@@ -6,7 +6,7 @@
    ═══════════════════════════════════════════════════════════════ */
 'use strict';
 
-const APP_VERSION = '1.0.25';
+const APP_VERSION = '1.0.26';
 const SEP = '▫';
 const MSG_SEP = '❂';
 const WS_SEP = '▫#▫';
@@ -864,6 +864,10 @@ const Chat = {
         let data = String(e.data);
         // Команда удаления сообщения у собеседника
         if (data.startsWith(`DEL${WS_SEP}`)) { handleDeleteNotification(data); return; }
+        // Отметка «прочитано» (две галочки в win-клиенте). На вебе индикатора
+        // статуса нет, поэтому просто пропускаем, чтобы SEEN не ушёл в разбор
+        // сообщений (иначе принялся бы за отправителя).
+        if (data.startsWith(`SEEN${WS_SEP}`)) return;
         // Конверты команд сервера. Оба относятся к ГРУППОВЫМ чатам, которых на
         // вебе пока нет, поэтому просто пропускаем:
         //   addChat▫$▫    — создана группа;
@@ -1160,6 +1164,12 @@ const UI = {
     this.renderMessages();
     $('screen-chat').classList.remove('hidden');
     requestAnimationFrame(() => $('screen-chat').classList.add('open'));
+
+    // Сообщаем собеседнику, что открыли чат: у него наши прочитанные сообщения
+    // станут двумя галочками (в win-клиенте). Сам веб статус не показывает.
+    if (contact && Store.user && contact.username !== Store.user.username) {
+      Chat.send(`SEEN${WS_SEP}${Store.user.username}${WS_SEP}${contact.username}`);
+    }
   },
 
   closeChat() {

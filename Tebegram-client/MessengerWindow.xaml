@@ -58,13 +58,26 @@
                         StrokeThickness="1"
                         X1="5.5" Y1="5.5" X2="8.2" Y2="5.5" />
                 </Canvas>
-                <!--  Галочка «сервер принял»  -->
+                <!--  Одна галочка: сервер принял, получатель ещё не открывал чат  -->
                 <Viewbox
                     Width="13"
                     Height="13"
                     Visibility="{Binding ShowCheck, Converter={StaticResource BoolToVis}}">
                     <Path Data="{StaticResource IconCheck}" Fill="#D6DBFF" />
                 </Viewbox>
+                <!--  Две галочки: получатель открыл чат с нами (вторая чуть смещена)  -->
+                <Grid Visibility="{Binding ShowDoubleCheck, Converter={StaticResource BoolToVis}}">
+                    <Viewbox Width="13" Height="13" HorizontalAlignment="Left">
+                        <Path Data="{StaticResource IconCheck}" Fill="#D6DBFF" />
+                    </Viewbox>
+                    <Viewbox
+                        Width="13"
+                        Height="13"
+                        Margin="5,0,0,0"
+                        HorizontalAlignment="Left">
+                        <Path Data="{StaticResource IconCheck}" Fill="#D6DBFF" />
+                    </Viewbox>
+                </Grid>
                 <!--  Ошибка отправки  -->
                 <TextBlock
                     VerticalAlignment="Bottom"
@@ -727,11 +740,13 @@
                                         </Style.Triggers>
                                     </Style>
                                 </Border.Style>
+                                <!--  Мягкая, тонкая тень: облачко очерчено едва заметно, чтобы
+                                      рамка не спорила с содержимым (раньше тень была заметнее)  -->
                                 <Border.Effect>
                                     <DropShadowEffect
-                                        BlurRadius="6"
-                                        Opacity="0.08"
-                                        ShadowDepth="1"
+                                        BlurRadius="3"
+                                        Opacity="0.05"
+                                        ShadowDepth="0.5"
                                         Color="#000000" />
                                 </Border.Effect>
 
@@ -883,7 +898,11 @@
                                         MouseLeftButtonUp="FileChip_Click">
                                         <Border.Style>
                                             <Style TargetType="Border">
-                                                <Setter Property="Background" Value="{DynamicResource Light.BgElevatedBrush}" />
+                                                <!--  Плашка файла заметно отличается от фона пузыря, чтобы
+                                                      была видна кликабельная область (Light.MsgFileChipBrush).
+                                                      Раньше входящая плашка была цветом BgElevated = цвету
+                                                      входящего пузыря, и на тёмной теме сливалась с ним  -->
+                                                <Setter Property="Background" Value="{DynamicResource Light.MsgFileChipBrush}" />
                                                 <Setter Property="Visibility" Value="Collapsed" />
                                                 <Style.Triggers>
                                                     <!--  ShowFileChip, а не IsPlainFile: у видео с готовым
