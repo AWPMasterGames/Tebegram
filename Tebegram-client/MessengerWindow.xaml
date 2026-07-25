@@ -239,8 +239,8 @@
               не должно вылезать даже по правому клику (см. UpdateChatHeaderButtons)  -->
         <ContextMenu x:Key="GroupChatMenu" Style="{StaticResource TbgContextMenuStyle}">
             <MenuItem
-                Click="LeaveGroup_Click"
-                Header="Выйти из группы"
+                Click="DeleteGroup_Click"
+                Header="Удалить группу"
                 Style="{StaticResource TbgMenuItemDangerStyle}" />
         </ContextMenu>
 

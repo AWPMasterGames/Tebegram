@@ -766,6 +766,16 @@ app.Map("/Voice/ws", async context =>
     VoiceRoomsController.ConnectingToRoom(ws, Token, user);
     Console.WriteLine($"Пользователь {user.Username} Подключился к комнате Id: {VoiceRoomsController.GetRoomId(Token)}");
 
+    // Как только в комнате стало двое — разговор реально состоялся. До этого
+    // клиент показывает «Соединяем…», а по этому событию запускает отсчёт времени
+    // (раньше таймер стартовал сразу после подключения СВОЕГО сокета, то есть ещё
+    // до того, как собеседник взял трубку).
+    if (VoiceRoomsController.VoiceRooms.TryGetValue(Token, out var joinedRoom)
+        && joinedRoom.RoomMembers.Count >= 2)
+    {
+        await joinedRoom.SendTextToRoom("CallConnected");
+    }
+
     try
     {
         await ReceiveMessage(ws,
@@ -779,6 +789,21 @@ app.Map("/Voice/ws", async context =>
                         byte[] voice = new byte[result.Count];
                         Array.Copy(buffer, voice, result.Count);
                         await room.SendVoiceToRoom(ws, voice);
+                    }
+                }
+                else if (result.MessageType == WebSocketMessageType.Text)
+                {
+                    // Состояние микрофона участника: MIC:1 — включен, MIC:0 — выключен.
+                    // Пересылаем ОСТАЛЬНЫМ, чтобы у них значок рядом с аватаром этого
+                    // человека показывал именно ЕГО микрофон.
+                    //
+                    // Ретранслируем только префикс MIC: — иначе клиент мог бы прислать
+                    // служебное «CloseConnection» и повесить трубку всей комнате.
+                    string voiceText = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                    if (voiceText.StartsWith("MIC:")
+                        && VoiceRoomsController.VoiceRooms.TryGetValue(Token, out var micRoom))
+                    {
+                        await micRoom.SendTextToRoomExcept(ws, voiceText);
                     }
                 }
                 else if (result.MessageType == WebSocketMessageType.Close)
