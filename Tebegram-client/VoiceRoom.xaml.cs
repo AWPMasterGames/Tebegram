@@ -73,12 +73,73 @@ namespace Tebegrammmm
                 case Mode.AcceptCall:
                     DefoultVoiceRoom.Visibility = Visibility.Visible;
                     ActiveVoiceRoom.Visibility = Visibility.Collapsed;
+                    // Входящий звонок: звука пока нет, поэтому вся сигнализация —
+                    // визуальная. Окно выносим на передний план по центру монитора.
+                    Loaded += (_, __) => AnnounceIncomingCall();
                     break;
                 case Mode.ActiveCall:
                     Init();
                     DefoultVoiceRoom.Visibility = Visibility.Collapsed;
                     ActiveVoiceRoom.Visibility = Visibility.Visible;
                     break;
+            }
+        }
+
+        // ── Сигнализация о входящем звонке ───────────────────────────────────
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern bool FlashWindowEx(ref FLASHWINFO pwfi);
+
+        [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+        private struct FLASHWINFO
+        {
+            public uint cbSize;
+            public IntPtr hwnd;
+            public uint dwFlags;
+            public uint uCount;
+            public uint dwTimeout;
+        }
+
+        private const uint FLASHW_ALL = 3;      // мигать и заголовком, и кнопкой в панели задач
+        private const uint FLASHW_TIMERNOFG = 12; // мигать, пока окно не станет активным
+
+        /// <summary>
+        /// Показывает входящий звонок так, чтобы его нельзя было не заметить:
+        /// окно по центру монитора, поверх остальных и с миганием в панели задач.
+        ///
+        /// Центрируем здесь, а не через WindowStartupLocation: у окна
+        /// SizeToContent="Height", то есть высота становится известна уже ПОСЛЕ
+        /// показа, и штатное центрирование промахивается.
+        ///
+        /// Topmost нужен потому, что Windows не даёт фоновому приложению просто так
+        /// забрать фокус: один Activate() в лучшем случае мигнёт кнопкой в панели
+        /// задач. Снимаем его, когда звонок приняли (см. AnimateToActive) — активный
+        /// разговор поверх всех окон висеть не должен.
+        /// </summary>
+        private void AnnounceIncomingCall()
+        {
+            try
+            {
+                Classes.UiSizes.CenterOnScreen(this);
+
+                Topmost = true;
+                if (WindowState == WindowState.Minimized) WindowState = WindowState.Normal;
+                Activate();
+
+                var info = new FLASHWINFO
+                {
+                    hwnd = new System.Windows.Interop.WindowInteropHelper(this).Handle,
+                    dwFlags = FLASHW_ALL | FLASHW_TIMERNOFG,
+                    uCount = uint.MaxValue,
+                    dwTimeout = 0
+                };
+                info.cbSize = (uint)System.Runtime.InteropServices.Marshal.SizeOf(info);
+                FlashWindowEx(ref info);
+            }
+            catch (Exception ex)
+            {
+                // Не смогли привлечь внимание — не повод ронять звонок
+                Log.Save($"[VoiceRoom.AnnounceIncomingCall] {ex.GetType().Name}: {ex.Message}");
             }
         }
 
@@ -144,7 +205,10 @@ namespace Tebegrammmm
                 CancellationToken.None);
 
             IsMicrophoneOn = waveIn != null;
-            StartCallTimer();
+            // Таймер НЕ стартует здесь: подключился только наш сокет, собеседник
+            // мог ещё не взять трубку. До его прихода показываем «Соединяем…»,
+            // отсчёт начнётся по событию CallConnected от сервера.
+            CallTimeText.Text = "Соединяем…";
             StartSVT();
             StartRVT();
         }
@@ -237,6 +301,8 @@ namespace Tebegrammmm
 
         private void StartCallTimer()
         {
+            if (_callTimer != null) return; // сервер мог прислать CallConnected повторно
+
             _callDuration = TimeSpan.Zero;
             CallTimeText.Text = "00:00";
 
@@ -344,8 +410,28 @@ namespace Tebegrammmm
                 if (result.MessageType == WebSocketMessageType.Text)
                 {
                     string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+
+                    // Микрофон СОБЕСЕДНИКА: значок рядом с его аватаром
+                    if (message.StartsWith("MIC:"))
+                    {
+                        bool peerMuted = message == "MIC:0";
+                        Dispatcher.Invoke(new Action(() => SetPeerMicMuted(peerMuted)));
+                        continue;
+                    }
+
                     switch (message)
                     {
+                        // В комнате стало двое — разговор состоялся, включаем отсчёт
+                        case "CallConnected":
+                            Dispatcher.Invoke(new Action(() =>
+                            {
+                                StartCallTimer();
+                                // Заодно сообщаем собеседнику своё состояние микрофона:
+                                // он мог подключиться позже, чем мы его выключили
+                                _ = SendMicStateAsync();
+                            }));
+                            break;
+
                         case "CloseConnection":
                             Dispatcher.Invoke(new Action(() =>
                             {
@@ -359,6 +445,9 @@ namespace Tebegrammmm
 
         private void AnimateToActive()
         {
+            // Звонок приняли — окно больше не должно висеть поверх всех остальных
+            Topmost = false;
+
             var easeIn  = new CubicEase { EasingMode = EasingMode.EaseIn };
             var easeOut = new CubicEase { EasingMode = EasingMode.EaseOut };
             var exitDuration  = new Duration(TimeSpan.FromMilliseconds(220));
@@ -536,38 +625,70 @@ namespace Tebegrammmm
         private void Button_Click_OffOnMicrofon(object sender, RoutedEventArgs e)
         {
             IsMicrophoneOn = !IsMicrophoneOn;
-            AnimateMicToggle(muting: !IsMicrophoneOn);
+            AnimateOwnMicToggle(muting: !IsMicrophoneOn);
+            _ = SendMicStateAsync();
         }
 
-        private void AnimateMicToggle(bool muting)
+        /// <summary>
+        /// Сообщает собеседнику состояние СВОЕГО микрофона (MIC:1 / MIC:0).
+        /// Сервер перешлёт это остальным в комнате, и у них обновится значок
+        /// рядом с нашим аватаром.
+        /// </summary>
+        private async Task SendMicStateAsync()
+        {
+            try
+            {
+                if (ws == null || ws.State != WebSocketState.Open) return;
+                byte[] payload = Encoding.UTF8.GetBytes(IsMicrophoneOn ? "MIC:1" : "MIC:0");
+                await ws.SendAsync(new ArraySegment<byte>(payload),
+                    WebSocketMessageType.Text, true, CancellationToken.None);
+            }
+            catch (Exception ex)
+            {
+                Log.Save($"[VoiceRoom.SendMicState] {ex.GetType().Name}: {ex.Message}");
+            }
+        }
+
+        // ── Значки микрофона ─────────────────────────────────────────────────
+        // Их ДВА, и показывают они РАЗНОЕ:
+        //   • нижняя кнопка (BtnMic) — свой микрофон, им же и управляем;
+        //   • бейдж у аватара (MicButtonBorder) — микрофон СОБЕСЕДНИКА, чтобы
+        //     понимать, слышит ли он нас.
+        // Раньше одно нажатие меняло оба значка сразу, и по бейджу нельзя было
+        // судить о собеседнике — он просто повторял наше собственное состояние.
+
+        /// <summary>Свой микрофон: нижняя кнопка.</summary>
+        private void AnimateOwnMicToggle(bool muting)
+            => ApplyMicVisual(muting, MicSlashLine, MicIconPath, b => BtnMic.Background = b);
+
+        /// <summary>Микрофон собеседника: бейдж рядом с его аватаром.</summary>
+        private void SetPeerMicMuted(bool muted)
+            => ApplyMicVisual(muted, MicAvatarSlashLine, MicAvatarPath, b => MicButtonBorder.Background = b);
+
+        // Фон передаётся сеттером: снизу это Button, у аватара — Border, общего
+        // предка со свойством Background у них нет
+        private void ApplyMicVisual(bool muted, Line slash, Path icon, Action<Brush> setBackground)
         {
             const double SlashLength = 26.0;
             var duration = new Duration(TimeSpan.FromMilliseconds(220));
             var ease = new CubicEase { EasingMode = EasingMode.EaseOut };
 
-            // Черта: рисуем при мьюте (offset 26→0), стираем при разблокировке (0→26)
-            var fromOffset = muting ? SlashLength : 0.0;
-            var toOffset   = muting ? 0.0 : SlashLength;
+            // Черта: рисуем при мьюте (offset 26→0), стираем при включении (0→26)
+            slash.BeginAnimation(Shape.StrokeDashOffsetProperty,
+                new DoubleAnimation(muted ? SlashLength : 0.0, muted ? 0.0 : SlashLength, duration)
+                { EasingFunction = ease });
 
-            MicSlashLine.BeginAnimation(Shape.StrokeDashOffsetProperty,
-                new DoubleAnimation(fromOffset, toOffset, duration) { EasingFunction = ease });
-            MicAvatarSlashLine.BeginAnimation(Shape.StrokeDashOffsetProperty,
-                new DoubleAnimation(fromOffset, toOffset, duration) { EasingFunction = ease });
-
-            // Фон кнопки и бейджа: серый ↔ мягко-красный
-            var mutedBg  = (Brush)FindResource("Light.DangerMutedBrush");
-            var normalBg = (Brush)FindResource("Light.BgElevatedBrush");
-            BtnMic.Background          = muting ? mutedBg : normalBg;
-            MicButtonBorder.Background = muting ? mutedBg : normalBg;
+            // Фон: серый ↔ мягко-красный
+            setBackground(muted
+                ? (Brush)FindResource("Light.DangerMutedBrush")
+                : (Brush)FindResource("Light.BgElevatedBrush"));
 
             // Цвет иконки и черты: обычный ↔ красный
-            var iconColor = muting
+            var iconColor = muted
                 ? (Brush)FindResource("Light.DangerBrush")
                 : (Brush)FindResource("Light.TextPrimaryBrush");
-            MicIconPath.Fill          = iconColor;
-            MicAvatarPath.Fill        = iconColor;
-            MicSlashLine.Stroke       = iconColor;
-            MicAvatarSlashLine.Stroke = iconColor;
+            icon.Fill = iconColor;
+            slash.Stroke = iconColor;
         }
     }
 }

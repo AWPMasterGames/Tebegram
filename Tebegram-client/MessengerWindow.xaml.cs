@@ -482,18 +482,28 @@ namespace Tebegrammmm
         }
 
         /// <summary>
-        /// «Выйти из группы». Пока заглушка: на сервере нет ни удаления участника
-        /// из чата, ни рассылки об этом остальным — без них кнопка сделала бы вид,
-        /// что вышла, а после перезахода группа вернулась бы на место.
+        /// «Удалить группу». Пока ЗАГЛУШКА — логику пишет Максим.
+        ///
+        /// Что понадобится, когда дойдут руки: эндпоинт удаления чата на сервере
+        /// (снести Chat из ChatsController.Chats и из Chats.json), рассылка
+        /// остальным участникам по WebSocket, чтобы группа пропала и у них, и
+        /// удаление её из UserData.User.Chats на клиенте. Без рассылки кнопка
+        /// сделала бы вид, что удалила, а после перезахода группа вернулась бы.
         /// </summary>
         private async void LeaveGroup_Click(object sender, RoutedEventArgs e)
         {
-            //TbgDialogWindow.Show("Выход из группы скоро добавим — эта часть ещё в работе.", _openGroup?.Name ?? "Группа");
+            TbgDialogWindow.Show("Выход из группы скоро добавим — эта часть ещё в работе.", _openGroup?.Name ?? "Группа");
             // ПЕРЕХОД НА ChatId: вместо 0 подставить реальный chat.Id (см. комментарий выше)
-            string request = $"DELETEChat▫#▫{_openGroup.Id}";
+            
+		}
+		
+        private void DeleteGroup_Click(object sender, RoutedEventArgs e)
+        {
+            //TbgDialogWindow.Show("Удаление группы скоро добавим — эта часть ещё в работе.",
+                                 _openGroup?.Name ?? "Группа");
+								 string request = $"DELETEChat▫#▫{_openGroup.Id}";
             ArraySegment<byte> buffer = new ArraySegment<byte>(Encoding.UTF8.GetBytes(request));
             await ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
-
         }
 
         // ── Групповые чаты ───────────────────────────────────────────────────

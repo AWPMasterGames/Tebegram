@@ -47,11 +47,13 @@ namespace Tebegrammmm
             UpdateServerChoiceLabels();
             _ = RefreshServerChoiceLabelsAsync();
 
-            // Данные храним в AppData (AppPaths) — в Program Files запись запрещена.
-            // Старый файл рядом с exe читаем для миграции.
-            string userDataPath = File.Exists(AppPaths.UserDataFile) ? AppPaths.UserDataFile
-                                : File.Exists("user.data") ? "user.data"
-                                : null;
+            // Сохранённый вход читаем ТОЛЬКО из AppData (AppPaths).
+            //
+            // Раньше здесь был запасной путь «user.data рядом с exe» — остаток
+            // миграции. Он опасен: любой такой файл в папке установки молча
+            // авторизовал бы КАЖДОГО, кто поставил приложение, под чужим
+            // аккаунтом. Миграция давно прошла, путь убран совсем.
+            string userDataPath = File.Exists(AppPaths.UserDataFile) ? AppPaths.UserDataFile : null;
             if (userDataPath != null)
             {
                 try
@@ -214,7 +216,8 @@ namespace Tebegrammmm
                     {
                         AppPaths.EnsureDir();
                         File.WriteAllText(AppPaths.UserDataFile, $"{TBUserLogin.Text}▫{PBUserPassord.Password}");
-                        // Убираем старый файл рядом с exe после миграции в AppData
+                        // Подчищаем возможный старый файл рядом с exe: читать его мы
+                        // больше не читаем, но и лежать с паролем ему незачем
                         if (File.Exists("user.data")) File.Delete("user.data");
                     }
                     catch (Exception ex)
