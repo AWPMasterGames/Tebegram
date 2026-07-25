@@ -497,10 +497,9 @@ namespace Tebegrammmm
             
 		}
 		
-        private void DeleteGroup_Click(object sender, RoutedEventArgs e)
+        private async void DeleteGroup_Click(object sender, RoutedEventArgs e)
         {
-            //TbgDialogWindow.Show("Удаление группы скоро добавим — эта часть ещё в работе.",
-                                 _openGroup?.Name ?? "Группа");
+            //TbgDialogWindow.Show("Удаление группы скоро добавим — эта часть ещё в работе.",_openGroup?.Name ?? "Группа");
 								 string request = $"DELETEChat▫#▫{_openGroup.Id}";
             ArraySegment<byte> buffer = new ArraySegment<byte>(Encoding.UTF8.GetBytes(request));
             await ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
