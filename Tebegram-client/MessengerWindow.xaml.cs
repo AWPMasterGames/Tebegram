@@ -183,6 +183,11 @@ namespace Tebegrammmm
                             HandleAddChat(textMessage.Substring("addChat▫$▫".Length));
                             continue;
                         }
+                        if (textMessage.StartsWith("removeChat▫$▫"))
+                        {
+                            HandleRemoveChat(textMessage.Substring("removeChat▫$▫".Length));
+                            continue;
+                        }
 
                         AddMessageToUser(textMessage);
                     }
@@ -454,6 +459,17 @@ namespace Tebegrammmm
             BtnCall.Visibility = isFavorites || isGroup ? Visibility.Collapsed : Visibility.Visible;
             BtnChatMenu.Visibility = isFavorites ? Visibility.Collapsed : Visibility.Visible;
             BtnChatMenu.ToolTip = isGroup ? "Настройки группы" : "Изменить контакт";
+            if (isGroup)
+            {
+                BtnChatMenu.Click -= Button_Click_ContactRedact;
+                BtnChatMenu.Click += Button_Click_GroupSettings;
+
+            }
+            else
+            {
+                BtnChatMenu.Click -= Button_Click_GroupSettings;
+                BtnChatMenu.Click += Button_Click_ContactRedact;
+            }
         }
 
         /// <summary>Открывает меню группы под кнопкой в шапке.</summary>
@@ -470,10 +486,14 @@ namespace Tebegrammmm
         /// из чата, ни рассылки об этом остальным — без них кнопка сделала бы вид,
         /// что вышла, а после перезахода группа вернулась бы на место.
         /// </summary>
-        private void LeaveGroup_Click(object sender, RoutedEventArgs e)
+        private async void LeaveGroup_Click(object sender, RoutedEventArgs e)
         {
-            TbgDialogWindow.Show("Выход из группы скоро добавим — эта часть ещё в работе.",
-                                 _openGroup?.Name ?? "Группа");
+            //TbgDialogWindow.Show("Выход из группы скоро добавим — эта часть ещё в работе.", _openGroup?.Name ?? "Группа");
+            // ПЕРЕХОД НА ChatId: вместо 0 подставить реальный chat.Id (см. комментарий выше)
+            string request = $"DELETEChat▫#▫{_openGroup.Id}";
+            ArraySegment<byte> buffer = new ArraySegment<byte>(Encoding.UTF8.GetBytes(request));
+            await ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+
         }
 
         // ── Групповые чаты ───────────────────────────────────────────────────
@@ -593,7 +613,8 @@ namespace Tebegrammmm
             if (parts[2] == "File")
             {
                 return new Message(senderName, parts[1], parts[5], parts[3],
-                    MessageType.File, parts[4]) { IsOutgoing = outgoing, Status = MessageStatus.Sent };
+                    MessageType.File, parts[4])
+                { IsOutgoing = outgoing, Status = MessageStatus.Sent };
             }
 
             // Текст мог содержать разделитель — склеиваем хвост обратно
@@ -615,6 +636,13 @@ namespace Tebegrammmm
             Contact added = UserData.User.FindContactByUsername(username);
             SearchContactBarTB.Text = string.Empty; // выходим из режима поиска
             if (added != null) OpenContact(added);
+        }
+
+        private void HandleRemoveChat(string payload)
+        {
+            Chat chat = UserData.User.FindChatById(int.Parse(payload));
+            if(chat == null) return;
+            UserData.User.Chats.Remove(chat);
         }
 
         /// <summary>
@@ -654,11 +682,22 @@ namespace Tebegrammmm
             }
         }
 
+
+        /// <summary>
+        /// Удаление чата
+        /// пока-что только группы
+        /// </summary>
+        private void HandleChatDelete(int ChatId)
+        {
+
+        }
+
         /// <summary>
         /// Сообщение ГРУППОВОГО чата: payload = ChatId▫Sender▫Reciver▫Type▫Time▫Server▫Text.
         /// Именно ради этого первого поля и нужен конверт: в личном чате клиент
         /// понимает, куда класть сообщение, по собеседнику, а в группе — не может.
         /// </summary>
+
         private void HandleGroupMessage(string payload)
         {
             try
@@ -1469,15 +1508,15 @@ namespace Tebegrammmm
             }
         }
 
+        private void Button_Click_GroupSettings(object sender, RoutedEventArgs e)
+        {
+            ShowGroupMenu();
+        }
+
         private void Button_Click_ContactRedact(object sender, RoutedEventArgs e)
         {
+            
             // В группе та же кнопка открывает меню группы, а не карточку контакта
-            if (_openGroup != null)
-            {
-                ShowGroupMenu();
-                return;
-            }
-
             if (Contact == null) return;
 
             string oldName = Contact.Name;

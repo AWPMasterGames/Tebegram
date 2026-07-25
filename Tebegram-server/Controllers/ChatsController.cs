@@ -15,6 +15,8 @@ namespace TebegramServer.Controllers
         /// <summary>Конверт команды «создан чат» в WS-канале.</summary>
         public const string AddChatEnvelope = "addChat▫$▫";
 
+        public const string RemoveChatEnvelope = "removeChat▫$▫";
+
         /// <summary>Конверт сообщения ГРУППОВОГО чата (внутри — ChatId первым полем).</summary>
         public const string AddMessageEnvelope = "addMessage▫$▫";
 
@@ -78,6 +80,38 @@ namespace TebegramServer.Controllers
             if (chat.IsGroup) _ = NotifyChatCreatedAsync(chat);
 
             return chat.Id;
+        }
+
+        public static async void DeleteChat(int chatId, User Owner)
+        {
+            Chat chat = Chats[chatId];
+            if (chat == null) return;
+            if (chat.Owner != Owner) return;
+
+            string wire = $"{RemoveChatEnvelope}{chat.Id}";
+            byte[] payload = Encoding.UTF8.GetBytes(wire);
+            foreach (User user in chat.Members.ToList())
+            {
+                // Снимок списка сессий: коллекция может меняться из других потоков во время рассылки
+                foreach (WebSocket session in user.ChatsSessions.ToList())
+                {
+                    if (session.State == WebSocketState.Open)
+                    {
+                        try
+                        {
+                            await session.SendAsync(new ArraySegment<byte>(payload),
+                                WebSocketMessageType.Text, true, CancellationToken.None);
+                        }
+                        catch (WebSocketException)
+                        {
+                            // Сокет умер между проверкой State и отправкой — просто пропускаем
+                        }
+                    }
+                }
+                user.RemoveChat(chat.Id);
+            }
+
+            Chats.Remove(chatId);
         }
 
         /// <summary>
