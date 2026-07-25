@@ -980,6 +980,13 @@ app.Map("/Chat/ws", async context =>
                         case "SEEN":
                             if (data.Length >= 3) await NotifySeen(data[1], data[2]);
                             break;
+
+                        // DELETEChat▫#▫{ChatId}
+                        // Удаление чата
+                        // В данный момент пользователь может удалить Группу если он является владельцем
+                        case "DELETECHAT":
+                            ChatsController.DeleteChat(int.Parse(data[1]), user);
+                            break;
                     }
                 }
                 else if (result.MessageType == WebSocketMessageType.Close)
