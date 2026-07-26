@@ -445,6 +445,35 @@ html, body {
 .bubble--file .file-name { font-weight: 600; text-decoration: underline; }
 /* Вторая строка карточки файла: «MP4-файл · скачать» */
 .file-meta { display: block; font-size: 12px; opacity: .7; margin-top: 2px; }
+/* Видео в чате: превью-кадр с кнопкой play по центру (как в десктопном клиенте) */
+.bubble--video { position: relative; padding: 3px; width: fit-content; max-width: min(246px, 78%); }
+.bubble-video-preview {
+  display: block;
+  width: 100%;
+  border-radius: 12px;
+  /* Кадр может быть любых пропорций — ограничиваем высоту, как у фото */
+  max-height: 320px;
+  object-fit: cover;
+  background: #000;
+}
+.video-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, .6);
+  color: #fff;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  pointer-events: none;
+}
+.video-play svg { width: 22px; height: 22px; display: block; }
 /* Универсальная карточка неизвестного файла — плашка вместо простой ссылки */
 .bubble--doc .file-name { text-decoration: none; }
 .bubble--doc {
@@ -502,12 +531,15 @@ html, body {
   align-items: center;
   justify-content: center;
 }
-.photo-viewer img {
+.photo-viewer img,
+.photo-viewer video {
   max-width: 94vw;
   max-height: 84vh;
   border-radius: 10px;
   object-fit: contain;
 }
+/* .hidden скрывает элемент, но у video display:flex от родителя перебивал бы правило */
+.photo-viewer video.hidden { display: none; }
 .pv-btn {
   position: absolute;
   display: flex;
@@ -558,7 +590,9 @@ html, body {
   width: fit-content;
   max-width: min(246px, 78%);
 }
-.bubble--photo .bubble-time {
+/* Время плашкой поверх вложения — одинаково у фото и у превью видео */
+.bubble--photo .bubble-time,
+.bubble--video .bubble-time {
   position: absolute;
   right: 9px;
   bottom: 9px;

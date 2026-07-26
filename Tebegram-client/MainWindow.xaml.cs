@@ -47,11 +47,13 @@ namespace Tebegrammmm
             UpdateServerChoiceLabels();
             _ = RefreshServerChoiceLabelsAsync();
 
-            // Данные храним в AppData (AppPaths) — в Program Files запись запрещена.
-            // Старый файл рядом с exe читаем для миграции.
-            string userDataPath = File.Exists(AppPaths.UserDataFile) ? AppPaths.UserDataFile
-                                : File.Exists("user.data") ? "user.data"
-                                : null;
+            // Сохранённый вход читаем ТОЛЬКО из AppData (AppPaths).
+            //
+            // Раньше здесь был запасной путь «user.data рядом с exe» — остаток
+            // миграции. Он опасен: любой такой файл в папке установки молча
+            // авторизовал бы КАЖДОГО, кто поставил приложение, под чужим
+            // аккаунтом. Миграция давно прошла, путь убран совсем.
+            string userDataPath = File.Exists(AppPaths.UserDataFile) ? AppPaths.UserDataFile : null;
             if (userDataPath != null)
             {
                 try
@@ -168,18 +170,21 @@ namespace Tebegrammmm
                 using HttpResponseMessage response = await httpClient.SendAsync(request);
                 string content = await response.Content.ReadAsStringAsync();
 
+                // Сервер теперь отвечает честными кодами (401 — неверные данные),
+                // но ТЕКСТ ошибки по-прежнему в теле — показываем именно его,
+                // иначе пользователь видел бы безликое «Сервер вернул ошибку (401)»
                 if (!response.IsSuccessStatusCode || string.IsNullOrEmpty(content))
                 {
                     Log.Save($"[Authorization] Bad response: status={(int)response.StatusCode} len={content.Length}");
-                    MessageBox.Show($"Сервер вернул ошибку ({(int)response.StatusCode}). Проверьте логин/пароль и соединение.");
+                    MessageBox.Show(string.IsNullOrWhiteSpace(content)
+                        ? $"Сервер вернул ошибку ({(int)response.StatusCode}). Проверьте логин/пароль и соединение."
+                        : content);
                     return;
                 }
 
-                if (content.StartsWith("Пользователь с таким логином не существует") ||
-                    content.StartsWith("Неверный пароль") ||
-                    content.StartsWith("Ошибка"))
+                if (Tebegram.Shared.UserValidation.IsErrorResponse(content))
                 {
-                    MessageBox.Show($"Ошибка авторизации: {content}");
+                    MessageBox.Show(content);
                     return;
                 }
 
@@ -211,7 +216,8 @@ namespace Tebegrammmm
                     {
                         AppPaths.EnsureDir();
                         File.WriteAllText(AppPaths.UserDataFile, $"{TBUserLogin.Text}▫{PBUserPassord.Password}");
-                        // Убираем старый файл рядом с exe после миграции в AppData
+                        // Подчищаем возможный старый файл рядом с exe: читать его мы
+                        // больше не читаем, но и лежать с паролем ему незачем
                         if (File.Exists("user.data")) File.Delete("user.data");
                     }
                     catch (Exception ex)
@@ -269,19 +275,16 @@ namespace Tebegrammmm
                 MessageBox.Show("Пароли не совпадают");
                 return;
             }
-            if (PBUserPassword.Password.Length < 4)
+
+            // Единая проверка логина, пароля и ИМЕНИ. Раньше проверялся только логин,
+            // поэтому дефис в имени («top-9») сдвигал разбор адреса на сервере и
+            // создавал мусорный аккаунт. Те же правила продублированы на сервере
+            string error = Tebegram.Shared.UserValidation.CheckRegistration(
+                TBUserNameLogin.Text.Trim(), PBUserPassword.Password,
+                TBUserNameLogin.Text.Trim(), TBUserName.Text.Trim());
+            if (error != null)
             {
-                MessageBox.Show("Пароль должен быть не менее 4 символов");
-                return;
-            }
-            if (TBUserNameLogin.Text.Contains("-") || TBUserNameLogin.Text.Contains("▫") || TBUserNameLogin.Text.Contains(" "))
-            {
-                MessageBox.Show("Логин не может содержать пробелы, дефисы или спецсимволы");
-                return;
-            }
-            if (TBUserNameLogin.Text.Length < 3)
-            {
-                MessageBox.Show("Логин должен быть не менее 3 символов");
+                MessageBox.Show(error);
                 return;
             }
 
@@ -299,7 +302,10 @@ namespace Tebegrammmm
                 using HttpResponseMessage response = await httpClient.SendAsync(request);
                 string content = await response.Content.ReadAsStringAsync();
 
-                if (response.IsSuccessStatusCode)
+                // Сервер отдаёт ошибки регистрации с кодом 200 и текстом в теле,
+                // поэтому одного IsSuccessStatusCode мало: раньше при занятом логине
+                // показывался баннер «Аккаунт создан», хотя аккаунта не появлялось
+                if (response.IsSuccessStatusCode && !Tebegram.Shared.UserValidation.IsErrorResponse(content))
                 {
                     Log.Save($"[Registration] User registered successfully: {username}");
 
@@ -340,6 +346,8 @@ namespace Tebegrammmm
                         MessageBox.Show("Пользователь с таким логином уже существует");
                     else if (content.Contains("должны быть заполнены"))
                         MessageBox.Show("Все поля должны быть заполнены");
+                    else if (content.StartsWith("Ошибка: "))
+                        MessageBox.Show(content.Substring("Ошибка: ".Length)); // текст уже готов
                     else
                         MessageBox.Show($"Ошибка регистрации: {content}");
                     Log.Save($"[Registration] Registration error: {content}");

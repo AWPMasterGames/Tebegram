@@ -102,6 +102,11 @@ namespace TebegramServer
                 ChatsFolders[0].AddChat(chat);
         }
 
+        public void RemoveChat(int chatId)
+        {
+            Chats.Remove(chatId);
+        }
+
         public const string FavoritesName = "Избранное";
 
         /// <summary>

@@ -41,6 +41,11 @@ namespace Tebegrammmm
         public MessengerWindow()
         {
             InitializeComponent();
+
+            // Размер главного окна — от рабочей области монитора, но в разумной
+            // вилке (см. UiSizes): не во весь экран на ноутбуке и не «марка» на 4K
+            UiSizes.ApplyAndCenter(this, UiSizes.MessengerWidth, UiSizes.MessengerHeight);
+
             LoadStyle();
             _fullChatsTemplate = LBChats.ItemTemplate; // сохраняем полный шаблон для переключения режимов
             GridMessege.Visibility = Visibility.Collapsed;
@@ -51,11 +56,17 @@ namespace Tebegrammmm
             LBChatsLoders.ItemsSource = UserData.User.ChatsFolders;
             LBChatsLoders.SelectedIndex = 0;
 
+            // Раз за запуск прибираемся в кэше медиа: удаляем хвосты прерванных
+            // загрузок и вытесняем самое старое, если кэш перерос потолок
+            Data.MediaCache.ScheduleTrim();
+
             TempContacts = UserData.User.Contacts;
 
             // Подтягиваем папки контактов, сохранённые на сервере
             _ = LoadFoldersFromServerAsync();
-
+            // И групповые чаты: ответ логина их не содержит (его формат разбирают
+            // все выпущенные клиенты), поэтому список приходит отдельным запросом
+            _ = LoadGroupChatsAsync();
             // Загружаем историю сообщений с сервера
             InitChatWebSocket();
 
@@ -151,17 +162,30 @@ namespace Tebegrammmm
                             continue;
                         }
 
-                        // Конверт команд из main-dev (64bc1ab): «команда▫$▫данные».
-                        // Наш сервер пока шлёт сообщения БЕЗ конверта — понимаем оба
-                        // формата: старый не ломается, к новому серверу уже готовы
+                        // Получатель открыл чат с нами — наши сообщения ему помечаем
+                        // двумя галочками (см. HandleSeenNotification)
+                        if (textMessage.StartsWith("SEEN▫#▫"))
+                        {
+                            HandleSeenNotification(textMessage);
+                            continue;
+                        }
+
+                        // Конверт «addMessage▫$▫» = сообщение ГРУППОВОГО чата, внутри
+                        // первым полем идёт ChatId. Личные сообщения приходят без
+                        // конверта в старом формате — так выпущенные клиенты не ломаются.
                         if (textMessage.StartsWith("addMessage▫$▫"))
                         {
-                            AddMessageToUser(textMessage.Substring("addMessage▫$▫".Length));
+                            HandleGroupMessage(textMessage.Substring("addMessage▫$▫".Length));
                             continue;
                         }
                         if (textMessage.StartsWith("addChat▫$▫"))
                         {
                             HandleAddChat(textMessage.Substring("addChat▫$▫".Length));
+                            continue;
+                        }
+                        if (textMessage.StartsWith("removeChat▫$▫"))
+                        {
+                            HandleRemoveChat(textMessage.Substring("removeChat▫$▫".Length));
                             continue;
                         }
 
@@ -258,18 +282,65 @@ namespace Tebegrammmm
             {
                 return;
             }
-            LBChats.ItemsSource = (LBChatsLoders.SelectedItem as ChatFolder).Contacts;
+            SetChatListSource(LBChatsLoders.SelectedItem as ChatFolder);
             _IsInSearch = false;
             SearchContactBarTB.Text = string.Empty;
         }
 
+        // Готовые источники списка по папкам. Кэшируем: ChatListSource подписан на
+        // коллекции папки, и создавать его заново при каждом переключении значило бы
+        // копить подписки (утечка + лишние пересборки на каждое изменение).
+        private readonly System.Collections.Generic.Dictionary<ChatFolder, Classes.ChatListSource> _chatListSources = new();
+
+        /// <summary>
+        /// Наполняет список чатов: «Избранное» → группы → остальные контакты
+        /// (порядок держит ChatListSource).
+        ///
+        /// Раньше сюда подставлялись только Contacts, а коллекция Chats не
+        /// использовалась в интерфейсе НИГДЕ — из-за этого созданные группы
+        /// приходили с сервера, но на экране не появлялись.
+        /// </summary>
+        private void SetChatListSource(ChatFolder folder)
+        {
+            if (folder == null) return;
+
+            if (!_chatListSources.TryGetValue(folder, out var source))
+            {
+                PruneChatListSources();
+                source = new Classes.ChatListSource(folder);
+                _chatListSources[folder] = source;
+            }
+
+            // Тот же источник уже стоит — не трогаем, иначе слетит выделение
+            // (после поиска сюда приходят с тем же списком)
+            if (!ReferenceEquals(LBChats.ItemsSource, source))
+                LBChats.ItemsSource = source;
+        }
+
+        /// <summary>
+        /// Убирает источники папок, которых больше нет: LoadFoldersFromServerAsync
+        /// пересоздаёт список папок целиком, и подписки старых объектов иначе
+        /// висели бы до конца сеанса.
+        /// </summary>
+        private void PruneChatListSources()
+        {
+            if (_chatListSources.Count == 0 || UserData.User == null) return;
+
+            var alive = new System.Collections.Generic.HashSet<ChatFolder>(UserData.User.ChatsFolders);
+            foreach (var pair in _chatListSources.Where(p => !alive.Contains(p.Key)).ToList())
+            {
+                pair.Value.Detach();
+                _chatListSources.Remove(pair.Key);
+            }
+        }
+
         private void LBChats_SelectionChangedChat(object sender, SelectionChangedEventArgs e)
         {
-            // Сохраняем черновик для предыдущего контакта
-            if (Contact != null && TBMessage != null)
+            // Сохраняем черновик для предыдущего чата — им мог быть и контакт, и группа
+            if (TBMessage != null)
             {
-                Contact.Draft = TBMessage.Text;
-                Log.Save($"[LBChats_SelectionChanged] Saved draft for {Contact.Name}: '{Contact.Draft}'");
+                if (Contact != null) Contact.Draft = TBMessage.Text;
+                else if (_openGroup != null) _openGroup.Draft = TBMessage.Text;
             }
 
             if (LBChats.SelectedItem == null)
@@ -278,18 +349,39 @@ namespace Tebegrammmm
                 return;
             }
 
+            // В списке теперь два типа элементов: группы (Chat) и контакты (Contact)
+            if (LBChats.SelectedItem is Classes.Chat selectedChat)
+            {
+                OpenGroupChat(selectedChat);
+                return;
+            }
+
+            _openGroup = null;   // выбрали контакт — групповой чат больше не открыт
             Contact = LBChats.SelectedItem as Contact;
             Log.Save($"[LBChats_SelectionChanged] Selected contact: {Contact?.Name} ({Contact?.Username})");
+
+            // Результат глобального поиска: пользователя ещё нет в контактах —
+            // сначала добавляем его на сервере, потом открываем чат
+            if (Contact != null && Contact.IsGlobalResult)
+            {
+                _ = AddGlobalResultAsync(Contact);
+                return;
+            }
 
             GridChat.DataContext = Contact;
             SetMessagesSource(Contact);
             GridMessege.Visibility = Visibility.Visible;
             GridContactPanel.Visibility = Visibility.Visible;
             EmptyChatPlaceholder.Visibility = Visibility.Collapsed;
+            UpdateChatHeaderButtons(Contact.IsFavorites, isGroup: false);
 
             // Прокручиваем к последнему сообщению после отрисовки списка
             Dispatcher.BeginInvoke(new Action(() => ScrollToLastMessageIfCurrent(Contact)),
                 System.Windows.Threading.DispatcherPriority.Loaded);
+
+            // Мы открыли чат с этим контактом — сообщаем ему, что видели его
+            // сообщения (у него они станут двумя галочками)
+            _ = SendSeenAsync(Contact.Username);
 
             // Восстанавливаем черновик для нового контакта
             if (TBMessage != null)
@@ -297,6 +389,269 @@ namespace Tebegrammmm
                 TBMessage.Text = Contact.Draft ?? string.Empty;
                 Log.Save($"[LBChats_SelectionChanged] Restored draft for {Contact.Name}: '{Contact.Draft}'");
             }
+        }
+
+        // ── Отметки «прочитано» (две галочки) ────────────────────────────────
+        // Модель простая, как просил пользователь: одна галочка — сервер принял;
+        // две — получатель ОТКРЫЛ чат с нами (скорее всего увидел). «Закрашенных»
+        // как в оригинальном Telegram не делаем.
+
+        /// <summary>
+        /// Сообщает собеседнику, что мы открыли чат с ним и видели его сообщения.
+        /// Формат: SEEN▫#▫{я}▫#▫{собеседник}. Сервер доставит собеседнику SEEN▫#▫{я}.
+        /// </summary>
+        private async Task SendSeenAsync(string contactUsername)
+        {
+            try
+            {
+                if (ws == null || ws.State != WebSocketState.Open) return;
+                if (string.IsNullOrEmpty(contactUsername)) return;
+                if (contactUsername == UserData.User.Username) return; // «Избранное» — некому
+
+                string request = $"SEEN▫#▫{UserData.User.Username}▫#▫{contactUsername}";
+                await ws.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes(request)),
+                    WebSocketMessageType.Text, true, CancellationToken.None);
+            }
+            catch (Exception ex)
+            {
+                Log.Save($"[SendSeen] {ex.GetType().Name}: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Пришло SEEN▫#▫{кто-открыл}: получатель открыл чат с нами. Все наши
+        /// доставленные сообщения этому контакту переводим в две галочки.
+        /// </summary>
+        private void HandleSeenNotification(string raw)
+        {
+            string[] parts = raw.Split(new[] { "▫#▫" }, StringSplitOptions.None);
+            if (parts.Length < 2 || string.IsNullOrEmpty(parts[1])) return;
+            string reader = parts[1];
+
+            Dispatcher.Invoke(new Action(() =>
+            {
+                Contact contact = UserData.User.FindContactByUsername(reader);
+                if (contact == null) return;
+
+                foreach (Message m in contact.Messages)
+                {
+                    // До Seen доводим только реально ушедшие (Sent/Pending); Failed
+                    // не трогаем — его ещё нужно переотправить
+                    if (m.IsOutgoing && (m.Status == MessageStatus.Sent || m.Status == MessageStatus.Pending))
+                        m.Status = MessageStatus.Seen;
+                }
+                Log.Save($"[Seen] {reader} открыл чат — наши сообщения ему отмечены прочитанными");
+            }));
+        }
+
+        /// <summary>
+        /// Настраивает кнопки в шапке чата под его тип.
+        ///
+        /// «Избранное» — чат с самим собой: звонить туда некому, и «изменить
+        /// контакт» тоже нечего (имя и аватар свои, они меняются в настройках).
+        /// Группа — звонка пока нет: комната голосовой связи заводится на ПАРУ
+        /// собеседников (VoiceRoom работает по username), группового режима в
+        /// протоколе ещё не существует. Кнопка меню при этом остаётся и открывает
+        /// настройки группы.
+        /// </summary>
+        private void UpdateChatHeaderButtons(bool isFavorites, bool isGroup)
+        {
+            BtnCall.Visibility = isFavorites || isGroup ? Visibility.Collapsed : Visibility.Visible;
+            BtnChatMenu.Visibility = isFavorites ? Visibility.Collapsed : Visibility.Visible;
+            BtnChatMenu.ToolTip = isGroup ? "Настройки группы" : "Изменить контакт";
+            if (isGroup)
+            {
+                BtnChatMenu.Click -= Button_Click_ContactRedact;
+                BtnChatMenu.Click += Button_Click_GroupSettings;
+
+            }
+            else
+            {
+                BtnChatMenu.Click -= Button_Click_GroupSettings;
+                BtnChatMenu.Click += Button_Click_ContactRedact;
+            }
+        }
+
+        /// <summary>Открывает меню группы под кнопкой в шапке.</summary>
+        private void ShowGroupMenu()
+        {
+            var menu = (System.Windows.Controls.ContextMenu)FindResource("GroupChatMenu");
+            menu.PlacementTarget = BtnChatMenu;
+            menu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+            menu.IsOpen = true;
+        }
+
+        /// <summary>
+        /// «Удалить группу». Пока ЗАГЛУШКА — логику пишет Максим.
+        ///
+        /// Что понадобится, когда дойдут руки: эндпоинт удаления чата на сервере
+        /// (снести Chat из ChatsController.Chats и из Chats.json), рассылка
+        /// остальным участникам по WebSocket, чтобы группа пропала и у них, и
+        /// удаление её из UserData.User.Chats на клиенте. Без рассылки кнопка
+        /// сделала бы вид, что удалила, а после перезахода группа вернулась бы.
+        /// </summary>
+        private async void LeaveGroup_Click(object sender, RoutedEventArgs e)
+        {
+            TbgDialogWindow.Show("Выход из группы скоро добавим — эта часть ещё в работе.", _openGroup?.Name ?? "Группа");
+            // ПЕРЕХОД НА ChatId: вместо 0 подставить реальный chat.Id (см. комментарий выше)
+            
+		}
+		
+        private async void DeleteGroup_Click(object sender, RoutedEventArgs e)
+        {
+            //TbgDialogWindow.Show("Удаление группы скоро добавим — эта часть ещё в работе.",_openGroup?.Name ?? "Группа");
+								 string request = $"DELETEChat▫#▫{_openGroup.Id}";
+            ArraySegment<byte> buffer = new ArraySegment<byte>(Encoding.UTF8.GetBytes(request));
+            await ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+        }
+
+        // ── Групповые чаты ───────────────────────────────────────────────────
+        // Открытая сейчас группа (null, если открыт обычный чат с контактом).
+        // Хранится отдельно от Contact: маршрутизация у них разная — контакту
+        // сообщение адресуется по нику, группе по её Id.
+        private Classes.Chat _openGroup;
+
+        /// <summary>
+        /// Загружает список групповых чатов пользователя (GET /Chats/{userId}).
+        /// Формат: чаты через ❂, поля — id&amp;имя&amp;группа?&amp;аватар&amp;владелец&amp;участники.
+        /// </summary>
+        private async Task LoadGroupChatsAsync()
+        {
+            try
+            {
+                await ServerData.Ready;
+                using var request = new HttpRequestMessage(HttpMethod.Get,
+                    $"{ServerData.ServerAdress}/Chats/{UserData.User.Id}");
+                using var response = await httpClient.SendAsync(request);
+                if (!response.IsSuccessStatusCode) return;
+
+                string raw = (await response.Content.ReadAsStringAsync()).Trim();
+                if (string.IsNullOrEmpty(raw)) return;
+
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    foreach (string entry in raw.Split('❂'))
+                        HandleAddChat(entry);   // тот же разбор, что у WS-уведомления
+                }));
+                Log.Save($"[LoadGroupChats] Загружено групп: {UserData.User.Chats.Count}");
+            }
+            catch (Exception ex)
+            {
+                Log.Save($"[LoadGroupChats] {ex.GetType().Name}: {ex.Message}");
+            }
+        }
+
+        /// <summary>Открывает групповой чат: шапка, история сообщений, поле ввода.</summary>
+        private void OpenGroupChat(Classes.Chat chat)
+        {
+            _openGroup = chat;
+            Contact = null;
+
+            GridChat.DataContext = chat;
+            LBMessages.ItemsSource = chat.Messages;
+            GridMessege.Visibility = Visibility.Visible;
+            GridContactPanel.Visibility = Visibility.Visible;
+            EmptyChatPlaceholder.Visibility = Visibility.Collapsed;
+            UpdateChatHeaderButtons(isFavorites: false, isGroup: true);
+
+            if (TBMessage != null) TBMessage.Text = chat.Draft ?? string.Empty;
+
+            // Открываем чат внизу переписки, как и обычный (см. ScrollMessagesToEnd)
+            Dispatcher.BeginInvoke(new Action(ScrollMessagesToEnd),
+                System.Windows.Threading.DispatcherPriority.Loaded);
+
+            // История подтягивается с сервера один раз: сообщения группы живут
+            // на сервере, а клиент при входе получает только список чатов
+            _ = LoadGroupHistoryAsync(chat);
+
+            PrefetchChatMedia(chat.Messages);
+
+            Log.Save($"[OpenGroupChat] Открыт групповой чат {chat.Id} «{chat.Name}»");
+        }
+
+        /// <summary>Догружает историю группы (сообщения через ❂, как в /messages).</summary>
+        private async Task LoadGroupHistoryAsync(Classes.Chat chat)
+        {
+            if (chat.HistoryLoaded) return;
+            chat.HistoryLoaded = true;
+
+            try
+            {
+                using var request = new HttpRequestMessage(HttpMethod.Get,
+                    $"{ServerData.ServerAdress}/Chat/History/{chat.Id}");
+                using var response = await httpClient.SendAsync(request);
+                if (!response.IsSuccessStatusCode) return;
+
+                string raw = (await response.Content.ReadAsStringAsync()).Trim();
+                if (string.IsNullOrEmpty(raw)) return;
+
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    foreach (string entry in raw.Split('❂'))
+                    {
+                        Message message = ParseGroupMessage(entry);
+                        if (message != null) chat.Messages.Add(message);
+                    }
+
+                    // История пришла — можно докладывать её вложения в кэш
+                    PrefetchChatMedia(chat.Messages);
+
+                    // …и встать в конец переписки, если открыта именно эта группа
+                    if (ReferenceEquals(chat, _openGroup)) ScrollMessagesToEnd();
+                }));
+            }
+            catch (Exception ex)
+            {
+                chat.HistoryLoaded = false; // дадим повторить при следующем открытии
+                Log.Save($"[LoadGroupHistory] {ex.GetType().Name}: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Разбирает сообщение группы: Sender▫Reciver▫Type▫Time▫ServerAdress▫Text —
+        /// тот же формат, что и у личных сообщений (конверт с ChatId снимается выше).
+        /// </summary>
+        private Message ParseGroupMessage(string raw)
+        {
+            string[] parts = raw.Split('▫');
+            if (parts.Length < 6) return null;
+
+            bool outgoing = parts[0] == UserData.User.Username;
+            string senderName = outgoing ? UserData.User.Name : parts[0];
+
+            if (parts[2] == "File")
+            {
+                return new Message(senderName, parts[1], parts[5], parts[3],
+                    MessageType.File, parts[4])
+                { IsOutgoing = outgoing, Status = MessageStatus.Sent };
+            }
+
+            // Текст мог содержать разделитель — склеиваем хвост обратно
+            string text = string.Join('▫', parts.Skip(5));
+            return new Message(senderName, parts[1], text, parts[3])
+            { IsOutgoing = outgoing, Status = MessageStatus.Sent };
+        }
+
+        /// <summary>
+        /// Клик по результату глобального поиска: добавляем пользователя в контакты
+        /// и открываем с ним чат. Поиск при этом сбрасывается — контакт уже «свой».
+        /// </summary>
+        private async Task AddGlobalResultAsync(Contact found)
+        {
+            string username = found.Username;
+            bool ok = await SendAddNewContactRequest($"{UserData.User.Id}▫{username}▫");
+            if (!ok) return; // при 404 SendAddNewContactRequest сам покажет сообщение
+
+            Contact added = UserData.User.FindContactByUsername(username);
+            SearchContactBarTB.Text = string.Empty; // выходим из режима поиска
+            if (added != null) OpenContact(added);
+        }
+
+        private void HandleRemoveChat(string payload)
+        {
+            Chat chat = UserData.User.FindChatById(int.Parse(payload));
+            if(chat == null) return;
+            UserData.User.Chats.Remove(chat);
         }
 
         /// <summary>
@@ -311,12 +666,17 @@ namespace Tebegrammmm
         {
             try
             {
+                // Replace здесь больше не нужен: сервер добавляет конверт РОВНО ОДИН
+                // раз (раньше он клеился дважды, и это гасилось здесь — две ошибки
+                // компенсировали друг друга, а односторонняя правка всё ломала)
                 string[] chatData = payload.Split('&');
+                if (chatData.Length < 3 || !int.TryParse(chatData[0], out int chatId)) return;
+
                 bool iOwner = chatData.Length > 4 && chatData[4] != "None" &&
                               int.TryParse(chatData[4], out int ownerId) && ownerId == UserData.User.Id;
 
-                var chat = new Classes.Chat(int.Parse(chatData[0]), chatData[1],
-                    bool.Parse(chatData[2]), chatData[3], iOwner);
+                var chat = new Classes.Chat(chatId, chatData[1],
+                    bool.Parse(chatData[2]), chatData.Length > 3 ? chatData[3] : "", iOwner);
 
                 Dispatcher.Invoke(new Action(() =>
                 {
@@ -328,6 +688,59 @@ namespace Tebegrammmm
             catch (Exception ex)
             {
                 Log.Save($"[HandleAddChat] {ex.GetType().Name}: {ex.Message}");
+            }
+        }
+
+
+        /// <summary>
+        /// Удаление чата
+        /// пока-что только группы
+        /// </summary>
+        private void HandleChatDelete(int ChatId)
+        {
+
+        }
+
+        /// <summary>
+        /// Сообщение ГРУППОВОГО чата: payload = ChatId▫Sender▫Reciver▫Type▫Time▫Server▫Text.
+        /// Именно ради этого первого поля и нужен конверт: в личном чате клиент
+        /// понимает, куда класть сообщение, по собеседнику, а в группе — не может.
+        /// </summary>
+
+        private void HandleGroupMessage(string payload)
+        {
+            try
+            {
+                int sep = payload.IndexOf('▫');
+                if (sep <= 0) return;
+                if (!int.TryParse(payload.Substring(0, sep), out int chatId)) return;
+
+                string raw = payload.Substring(sep + 1);
+                Message message = ParseGroupMessage(raw);
+                if (message == null) return;
+
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    Classes.Chat chat = UserData.User.FindChatById(chatId);
+                    if (chat == null) return; // группа ещё не пришла — придёт вместе с addChat
+
+                    // Эхо своего сообщения в группе — подтверждаем уже показанный
+                    // пузырь (часики → галочка), а не дублируем его
+                    if (message.IsOutgoing
+                        && TryConfirmOutgoing(chat.Messages, message.MessageType, message.Text, message.Time))
+                    {
+                        if (_openGroup != null && _openGroup.Id == chatId) ScrollMessagesToEnd();
+                        return;
+                    }
+
+                    chat.Messages.Add(message);
+                    if (_openGroup != null && _openGroup.Id == chatId)
+                        ScrollMessagesToEnd();
+                }));
+            }
+            catch (Exception ex)
+            {
+                Log.Save($"[HandleGroupMessage] {ex.GetType().Name}: {ex.Message}");
             }
         }
 
@@ -360,12 +773,17 @@ namespace Tebegrammmm
                 {
                     // Хвост склеиваем с разделителем — раньше символ ▫ из текста терялся
                     string text = string.Join('▫', messageData.Skip(5));
-                    Message message = new Message(UserData.User.Name, UserData.User.Username, text, messageData[3]);
-                    message.Status = MessageStatus.Sent; // Все сообщения просто сохраняются
-                    message.IsOutgoing = true;
 
                     Dispatcher.Invoke(new Action(() =>
                     {
+                        // Эхо своего сообщения: сначала пробуем подтвердить уже
+                        // показанный пузырь (часики → галочка), и лишь если такого
+                        // нет (отправлено с другого устройства) — добавляем новый
+                        if (TryConfirmOutgoing(contact.Messages, MessageType.Text, text, messageData[3]))
+                            return;
+
+                        Message message = new Message(UserData.User.Name, UserData.User.Username, text, messageData[3])
+                        { Status = MessageStatus.Sent, IsOutgoing = true };
                         contact.Messages.Add(message);
                         ScrollToLastMessageIfCurrent(contact);
                     }));
@@ -375,12 +793,14 @@ namespace Tebegrammmm
                 }
                 else if (messageData[2] == "File")
                 {
-                    Message message = new Message(UserData.User.Name, messageData[1], messageData[5], messageData[3], MessageType.File, $"{ServerData.ServerAdress}/upload/{messageData[5]}");
-                    message.Status = MessageStatus.Sent; // Файлы тоже просто сохраняются
-                    message.IsOutgoing = true;
-
                     Dispatcher.Invoke(new Action(() =>
                     {
+                        if (TryConfirmOutgoing(contact.Messages, MessageType.File, messageData[5], messageData[3]))
+                            return;
+
+                        Message message = new Message(UserData.User.Name, messageData[1], messageData[5], messageData[3],
+                            MessageType.File, $"{ServerData.ServerAdress}/upload/{messageData[5]}")
+                        { Status = MessageStatus.Sent, IsOutgoing = true };
                         contact.Messages.Add(message);
                         ScrollToLastMessageIfCurrent(contact);
                     }));
@@ -467,6 +887,17 @@ namespace Tebegrammmm
                         }
                     }
                 }
+
+            // Сообщение пришло в ОТКРЫТЫЙ сейчас чат — сразу отмечаем прочитанным,
+            // чтобы у отправителя появилась вторая галочка, пока мы смотрим переписку
+            if (messageData.Length > 0 && messageData[0] != UserData.User.Username)
+            {
+                string sender = messageData[0];
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    if (Contact != null && Contact.Username == sender) _ = SendSeenAsync(sender);
+                }));
+            }
         }
 
         async void GetMessages()
@@ -657,6 +1088,13 @@ namespace Tebegrammmm
                 return;
             }
 
+            // Открыт групповой чат — у него своя маршрутизация (по Id чата)
+            if (_openGroup != null)
+            {
+                await SendGroupMessageAsync(_openGroup, message, messageType, ServerFilePath);
+                return;
+            }
+
             if (Contact == null)
             {
                 MessageBox.Show("Ошибка: не выбран получатель сообщения");
@@ -666,32 +1104,85 @@ namespace Tebegrammmm
 
             // Полная дата + время (для разделителей по дням). В пузыре показывается только ЧЧ:ММ.
             Message Message = new Message(UserData.User.Username, Contact.Username, message, DateTime.Now.ToString("dd.MM.yyyy HH:mm"), messageType, ServerFilePath);
+            Message.IsOutgoing = true;
+            Message.Status = MessageStatus.Pending; // часики, пока сервер не подтвердил
 
-            Log.Save($"[SendMessage] Message added to local contact. Sending to UserData.User...");
+            // Показываем сообщение СРАЗУ (как в Telegram): пользователь видит, что оно
+            // ушло, ещё до ответа сервера. Раньше пузырь появлялся только после эха с
+            // сервера, и по медленному туннелю была заметная пауза «в никуда».
+            Contact contact = Contact;
+            contact.Messages.Add(Message);
+            ScrollToLastMessageIfCurrent(contact);
+            TBMessage.Text = string.Empty;
+            contact.Draft = string.Empty; // Очищаем черновик после отправки
+
+            Log.Save($"[SendMessage] Локальный пузырь добавлен, отправляю на сервер...");
 
             if (ws == null || ws.State != WebSocketState.Open)
             {
-                MessageBox.Show("Нет соединения с сервером. Сообщение не отправлено — попробуйте ещё раз через пару секунд.");
+                // Нет связи — помечаем сообщение как неотправленное (красный «!»),
+                // но не роняем его: текст пользователя не пропадает
+                Message.Status = MessageStatus.Failed;
                 return;
             }
 
             try
             {
                 // ПЕРЕХОД НА ChatId: вместо 0 подставить реальный chat.Id (см. комментарий выше)
-                string request = $"SEND▫#▫0▫#▫{Contact.Username}▫#▫{Message.ToString()}";
+                string request = $"SEND▫#▫0▫#▫{contact.Username}▫#▫{Message.ToString()}";
                 ArraySegment<byte> buffer = new ArraySegment<byte>(Encoding.UTF8.GetBytes(request));
                 await ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
             }
             catch (Exception ex)
             {
                 Log.Save($"[SendMessage] Ошибка отправки по WebSocket: {ex.Message}");
-                MessageBox.Show("Не удалось отправить сообщение — соединение прервано. Попробуйте ещё раз.");
+                Message.Status = MessageStatus.Failed;
                 return;
             }
 
+            // Сохраняем на сервере. Статус станет Sent, когда сервер вернёт эхо
+            // (см. AddMessageToUser → TryConfirmOutgoing).
             await SendMessageToUserAsync(Message);
+        }
+
+        /// <summary>
+        /// Отправка в ГРУППУ. Отличие от личного чата одно: в команде SEND идёт
+        /// реальный Id чата, а поле получателя серверу не нужно — по существующему
+        /// Id он находит чат сразу (CheckIsExist возвращает его первой же проверкой)
+        /// и рассылает сообщение всем участникам.
+        /// Своё сообщение показываем СРАЗУ (часики), а когда сервер вернёт его нам
+        /// эхом — подтверждаем ту же запись (галочка), а не добавляем заново
+        /// (см. HandleGroupMessage → TryConfirmOutgoing).
+        /// </summary>
+        private async Task SendGroupMessageAsync(Classes.Chat chat, string message,
+            MessageType messageType, string ServerFilePath)
+        {
+            var outgoing = new Message(UserData.User.Username, chat.Name, message,
+                DateTime.Now.ToString("dd.MM.yyyy HH:mm"), messageType, ServerFilePath)
+            { IsOutgoing = true, Status = MessageStatus.Pending };
+
+            chat.Messages.Add(outgoing);
+            if (ReferenceEquals(chat, _openGroup)) ScrollMessagesToEnd();
             TBMessage.Text = string.Empty;
-            Contact.Draft = string.Empty; // Очищаем черновик после отправки
+            chat.Draft = string.Empty;
+
+            if (ws == null || ws.State != WebSocketState.Open)
+            {
+                outgoing.Status = MessageStatus.Failed;
+                return;
+            }
+
+            try
+            {
+                string request = $"SEND▫#▫{chat.Id}▫#▫{UserData.User.Username}▫#▫{outgoing}";
+                await ws.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes(request)),
+                    WebSocketMessageType.Text, true, CancellationToken.None);
+            }
+            catch (Exception ex)
+            {
+                Log.Save($"[SendGroupMessage] {ex.GetType().Name}: {ex.Message}");
+                outgoing.Status = MessageStatus.Failed;
+            }
         }
 
         private void Button_Click_SendMessage(object sender, RoutedEventArgs e)
@@ -822,8 +1313,67 @@ namespace Tebegrammmm
         private void ScrollToLastMessageIfCurrent(Contact contact)
         {
             if (!ReferenceEquals(contact, Contact)) return;
-            if (LBMessages.Items.Count > 0)
+            ScrollMessagesToEnd();
+        }
+
+        // Прилипание к низу переписки: пока пользователь стоит внизу, догрузка
+        // фото и видео не должна утаскивать его вверх (см. Classes/BottomSticker.cs)
+        private ScrollViewer _messagesScroll;
+        private readonly Classes.BottomSticker _sticker = new();
+
+        private void LBMessages_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            if (e.OriginalSource is not ScrollViewer scroll) return;
+            _messagesScroll = scroll;
+            _sticker.Handle(scroll, e.ExtentHeightChange);
+        }
+
+        /// <summary>
+        /// Помечает своё отправленное сообщение как подтверждённое сервером
+        /// (часики → галочка). Сообщение показывается СРАЗУ со статусом Pending, а
+        /// когда сервер возвращает его нам эхом, мы находим ту же запись и ставим
+        /// Sent — вместо того чтобы добавлять её заново.
+        ///
+        /// Совпадение ищем по (тип, текст/имя файла, время до минуты) среди своих
+        /// ещё не подтверждённых сообщений. Берём ПЕРВОЕ подходящее: если в ту же
+        /// минуту отправлено два одинаковых сообщения, каждое эхо подтвердит по
+        /// одному. Возвращает false, если пары нет (сообщение с другого устройства
+        /// или после перезапуска) — тогда его добавляют как обычно.
+        ///
+        /// Должно вызываться на UI-потоке: меняет Status, а тот уведомляет привязки.
+        /// </summary>
+        private static bool TryConfirmOutgoing(System.Collections.Generic.IEnumerable<Message> messages,
+            MessageType type, string identity, string time)
+        {
+            if (messages == null) return false;
+            foreach (Message m in messages)
+            {
+                if (m.IsOutgoing && m.Status != MessageStatus.Sent
+                    && m.MessageType == type && m.Time == time && m.Text == identity)
+                {
+                    m.Status = MessageStatus.Sent;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>Прокручивает список сообщений к последнему (общее для чатов и групп).</summary>
+        private void ScrollMessagesToEnd()
+        {
+            if (LBMessages.Items.Count == 0) return;
+
+            if (_messagesScroll != null)
+            {
+                // Снова «липнем» к низу: дальше досмотрит BottomSticker, когда
+                // догрузятся картинки и высота списка изменится
+                _sticker.Stick(_messagesScroll);
+            }
+            else
+            {
+                // ScrollViewer появляется только после первой отрисовки списка
                 LBMessages.ScrollIntoView(LBMessages.Items[LBMessages.Items.Count - 1]);
+            }
         }
 
         /// <summary>Привязывает сообщения контакта с группировкой по дням (для разделителей-дат).</summary>
@@ -832,6 +1382,35 @@ namespace Tebegrammmm
             var view = new System.Windows.Data.CollectionViewSource { Source = contact.Messages };
             view.GroupDescriptions.Add(new System.Windows.Data.PropertyGroupDescription("DateKey"));
             LBMessages.ItemsSource = view.View;
+
+            PrefetchChatMedia(contact.Messages);
+        }
+
+        // Сколько последних сообщений чата просматриваем на предмет вложений.
+        // Больше и не нужно: до старых фото ещё надо долистать, а качать всю
+        // переписку целиком при каждом открытии чата — неуважение к трафику.
+        private const int PrefetchLimit = 60;
+
+        /// <summary>
+        /// Тихо докладывает фото открытого чата в локальный кэш, чтобы при прокрутке
+        /// вверх они уже лежали на диске (список виртуализован — сам он грузит только
+        /// то, что видно на экране).
+        ///
+        /// Видео целиком не тянем: ролик может весить сотни мегабайт. Он попадает в
+        /// кэш после первого просмотра, а в списке показывается сохранённый кадр —
+        /// так же устроена автозагрузка в Telegram, где у видео свой потолок размера.
+        /// </summary>
+        private static void PrefetchChatMedia(System.Collections.Generic.IEnumerable<Message> messages)
+        {
+            if (messages == null) return;
+
+            // С конца: свежие сообщения пользователь увидит первыми
+            foreach (Message message in messages.Reverse().Take(PrefetchLimit))
+            {
+                // Пропускаем ещё не залитые заглушки — у них нет адреса на сервере
+                if (message != null && message.IsImageFile && !message.IsUploading)
+                    Data.MediaCache.Prefetch(message.FileUrl);
+            }
         }
 
         // ── Удаление сообщений ───────────────────────────────────────────────
@@ -938,8 +1517,15 @@ namespace Tebegrammmm
             }
         }
 
+        private void Button_Click_GroupSettings(object sender, RoutedEventArgs e)
+        {
+            ShowGroupMenu();
+        }
+
         private void Button_Click_ContactRedact(object sender, RoutedEventArgs e)
         {
+            
+            // В группе та же кнопка открывает меню группы, а не карточку контакта
             if (Contact == null) return;
 
             string oldName = Contact.Name;
@@ -1051,25 +1637,149 @@ namespace Tebegrammmm
             }
         }
 
+        /// <summary>
+        /// Предел размера файла. Должен совпадать с лимитом сервера
+        /// (Tebegram-server/Program.cs, MaxUploadBytes): проверяем и здесь, чтобы
+        /// не гнать по сети сотни мегабайт ради ответа «слишком большой».
+        /// </summary>
+        private const long MaxUploadBytes = 256L * 1024 * 1024;
+
+        /// <summary>
+        /// Отдельный клиент для загрузки файлов. У общего httpClient таймаут по
+        /// умолчанию — 100 секунд, а полусотня мегабайт по туннелю идёт дольше:
+        /// отправка обрывалась на середине, исключение вылетало из async void и
+        /// показывалось как «Необработанная ошибка» вместо внятного сообщения.
+        /// </summary>
+        private static readonly HttpClient _uploadHttp = new(new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback = (m, c, ch, e) => true
+        })
+        { Timeout = TimeSpan.FromMinutes(30) };
+
         private async Task SendFileToServer(string filePath)
         {
-            string mimeType = MIME.GetMimeType(Path.GetExtension(filePath));
-            if (mimeType == "application/octet-stream")
+            // Куда шлём — фиксируем СЕЙЧАС: пока файл заливается, пользователь может
+            // переключить чат, и результат должен уйти в тот, где нажали «отправить»
+            Contact targetContact = _openGroup == null ? Contact : null;
+            Classes.Chat targetGroup = _openGroup;
+            if (targetContact == null && targetGroup == null)
             {
-                MessageBox.Show("Неизвестный тип файла");
+                TbgDialogWindow.Show("Сначала выберите чат.", "Отправка файла");
                 return;
             }
 
-            using var multipar = new MultipartFormDataContent();
-            var fileStream = new StreamContent(File.OpenRead(filePath));
-            fileStream.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
-            multipar.Add(fileStream, name: "file", fileName: Path.GetFileName(filePath));
+            // Тип по расширению нужен только как подсказка серверу. Неизвестное
+            // расширение (exe, rar, psd…) — НЕ повод отказывать: такой файл
+            // показывается универсальной карточкой «скачать», ради неё всё и
+            // делалось. Раньше здесь стояла проверка на application/octet-stream,
+            // и отправить установщик или архив было нельзя.
+            string mimeType = MIME.GetMimeType(Path.GetExtension(filePath));
 
-            using var response = await httpClient.PostAsync($"{ServerData.ServerAdress}/upload", multipar);
-            var ResponseText = await response.Content.ReadAsStringAsync();
-            this.Dispatcher.Invoke(new Action(() => { SendMessage(Path.GetFileName(filePath).Replace(" ", "_"), MessageType.File, $"{ServerData.ServerAdress}/upload/{Path.GetFileName(filePath).Replace(" ", "_")}"); }));
-            // Системное окно с ответом сервера (именем файла) убрано — файл и так появляется в чате
-            Log.Save($"[SendFileToServer] Загружен файл: {ResponseText}");
+            var info = new FileInfo(filePath);
+            if (info.Length > MaxUploadBytes)
+            {
+                TbgDialogWindow.Show(
+                    $"Файл весит {info.Length / 1024.0 / 1024:0.#} МБ, а сервер принимает до {MaxUploadBytes / 1024 / 1024} МБ.",
+                    "Файл слишком большой");
+                return;
+            }
+
+            string localName = Path.GetFileName(filePath).Replace(" ", "_");
+            string receiver = targetContact != null ? targetContact.Username : targetGroup.Name;
+
+            // Пузырь-заглушка появляется СРАЗУ и показывает полоску загрузки — видно,
+            // что отправка идёт. По готовности он же превращается в обычное вложение
+            // (см. Message.BeginUpload/FinishUpload), а не создаётся заново.
+            var placeholder = new Message(UserData.User.Username, receiver, localName,
+                DateTime.Now.ToString("dd.MM.yyyy HH:mm"), MessageType.File, null)
+            { IsOutgoing = true, Status = MessageStatus.Pending };
+            placeholder.BeginUpload();
+
+            Dispatcher.Invoke(new Action(() =>
+            {
+                if (targetContact != null) targetContact.Messages.Add(placeholder);
+                else targetGroup.Messages.Add(placeholder);
+
+                bool isCurrent = (targetContact != null && ReferenceEquals(targetContact, Contact))
+                              || (targetGroup != null && ReferenceEquals(targetGroup, _openGroup));
+                if (isCurrent) ScrollMessagesToEnd();
+            }));
+
+            // Весь путь в try: раньше обрыв связи или таймаут вылетал исключением
+            // из async void (Button_Click_SelectFile) и всплывал окном
+            // «Необработанная ошибка» — по нему нельзя было понять, что случилось.
+            try
+            {
+                Log.Save($"[SendFileToServer] Отправляю {localName}, {info.Length / 1024.0 / 1024:0.#} МБ, тип {mimeType}");
+
+                int lastPercent = -1;
+                using var multipar = new MultipartFormDataContent();
+                using var fs = File.OpenRead(filePath);
+                // ProgressStream считает отправленные байты и двигает полоску в пузыре
+                var progress = new Classes.ProgressStream(fs, info.Length, (sent, total) =>
+                {
+                    int percent = total > 0 ? (int)(sent * 100 / total) : 0;
+                    if (percent == lastPercent) return; // не дёргаем UI на каждый буфер
+                    lastPercent = percent;
+                    Dispatcher.BeginInvoke(new Action(() => placeholder.ReportUpload(percent)));
+                });
+                var content = new StreamContent(progress);
+                content.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
+                multipar.Add(content, name: "file", fileName: localName);
+
+                using var response = await _uploadHttp.PostAsync($"{ServerData.ServerAdress}/upload", multipar);
+                string savedName = (await response.Content.ReadAsStringAsync()).Trim();
+
+                if (!response.IsSuccessStatusCode || string.IsNullOrEmpty(savedName))
+                {
+                    Log.Save($"[SendFileToServer] Сервер не принял файл: {(int)response.StatusCode} {savedName}");
+                    // 413 разбираем отдельно: у сервера может стоять лимит меньше нашего
+                    // (например, он ещё не перезапущен после поднятия лимита)
+                    string reason = response.StatusCode == System.Net.HttpStatusCode.RequestEntityTooLarge
+                        ? "Файл слишком большой для сервера."
+                        : "Не удалось загрузить файл на сервер.";
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        placeholder.Status = MessageStatus.Failed;
+                        TbgDialogWindow.Show(reason, "Отправка файла");
+                    }));
+                    return;
+                }
+
+                // Имя берём ИЗ ОТВЕТА сервера: при совпадении имён сервер сохраняет
+                // файл как photo_1.jpg. Заглушка превращается в готовое вложение.
+                string url = $"{ServerData.ServerAdress}/upload/{savedName}";
+                Dispatcher.Invoke(new Action(() => placeholder.FinishUpload(savedName, url)));
+
+                // Файл на сервере — теперь отправляем само сообщение. Статус станет
+                // Sent, когда сервер вернёт его эхом (TryConfirmOutgoing).
+                if (ws == null || ws.State != WebSocketState.Open)
+                {
+                    Dispatcher.Invoke(new Action(() => placeholder.Status = MessageStatus.Failed));
+                    return;
+                }
+
+                string request = targetGroup != null
+                    ? $"SEND▫#▫{targetGroup.Id}▫#▫{UserData.User.Username}▫#▫{placeholder}"
+                    : $"SEND▫#▫0▫#▫{targetContact.Username}▫#▫{placeholder}";
+                await ws.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes(request)),
+                    WebSocketMessageType.Text, true, CancellationToken.None);
+
+                // Личные сообщения сервер хранит по запросу /messages; групповые он
+                // сохраняет сам при рассылке
+                if (targetGroup == null) await SendMessageToUserAsync(placeholder);
+
+                Log.Save($"[SendFileToServer] Загружен файл: {savedName}");
+            }
+            catch (Exception ex)
+            {
+                Log.Save($"[SendFileToServer] {ex.GetType().Name}: {ex.Message}");
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    placeholder.Status = MessageStatus.Failed;
+                    TbgDialogWindow.Show($"Не удалось отправить файл.\n{ex.Message}", "Отправка файла");
+                }));
+            }
         }
 
         private async void Button_Click_SelectFile(object sender, RoutedEventArgs e)
@@ -1098,57 +1808,25 @@ namespace Tebegrammmm
                 || ext == ".gif" || ext == ".bmp" || ext == ".webp";
         }
 
-        private async void LBMessages_SelectionChangeMessage(object sender, SelectionChangedEventArgs e)
+        /// <summary>
+        /// Выделение в списке сообщений нам не нужно — только сбрасываем его.
+        /// Вложения открываются по КЛИКУ (Attachment_Click): выделение может
+        /// меняться и программно (например, при смене чата), и тогда файл
+        /// открывался бы сам собой.
+        /// </summary>
+        private void LBMessages_SelectionChangeMessage(object sender, SelectionChangedEventArgs e)
         {
-            if (LBMessages.SelectedItem == null)
-            {
-                LBMessages.SelectedIndex = -1;
-                return;
-            }
-
-            Message msg = LBMessages.SelectedItem as Message;
-            LBMessages.SelectedIndex = -1; // сбрасываем выделение, чтобы повторный клик срабатывал
-
-            if (msg == null || msg.MessageType != MessageType.File) return;
-
-            // ПКМ тоже выделяет элемент ListBox — но правый клик должен открывать
-            // только контекстное меню, а не просмотрщик/скачивание
-            if (Mouse.RightButton == MouseButtonState.Pressed) return;
-
-            // Фото — открываем во встроенном просмотрщике (зум, вписывание)
-            if (IsImageFile(msg.Text))
-            {
-                string fileUrl = msg.FileUrl;
-                if (_openImageViewers.TryGetValue(fileUrl, out var existing))
-                {
-                    if (existing.WindowState == WindowState.Minimized) existing.WindowState = WindowState.Normal;
-                    existing.Activate();
-                    return;
-                }
-                var viewer = new ImageViewerWindow(fileUrl, msg.Text);
-                viewer.Closed += (_, __) => _openImageViewers.Remove(fileUrl);
-                _openImageViewers[fileUrl] = viewer;
-                viewer.Show();
-                return;
-            }
-
-            // Прочие файлы — скачиваем в выбранную папку
-            await DownloadFileAsync(msg);
+            if (LBMessages.SelectedIndex != -1) LBMessages.SelectedIndex = -1;
         }
 
-        /// <summary>ПКМ по фото/файлу → «Сохранить»: выбор папки и скачивание.</summary>
-        private void SaveFile_Click(object sender, RoutedEventArgs e)
-            => _ = DownloadFileAsync(MessageFromMenu(sender));
-
         /// <summary>
-        /// Клик по чипу файла. Видео/аудио открываем системой (браузер или плеер их
-        /// покажет), а НЕИЗВЕСТНЫЙ файл (архив, документ, exe, редкий контейнер)
-        /// сразу предлагаем скачать: открывать его нечем — в браузере это дало бы
-        /// пустую вкладку. «Сохранить» в ПКМ-меню работает для любых файлов.
+        /// Клик по вложению в пузыре: фото и видео открываем во встроенном
+        /// просмотрщике, аудио — системным плеером, неизвестный файл — скачиваем.
         /// </summary>
-        private void FileChip_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void Attachment_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if ((sender as FrameworkElement)?.DataContext is not Message msg) return;
+            if (msg.MessageType != MessageType.File) return;
 
             if (msg.IsUnknownFile)
             {
@@ -1156,6 +1834,13 @@ namespace Tebegrammmm
                 return;
             }
 
+            if (msg.IsImageFile || ImageViewerWindow.IsVideoFile(msg.Text))
+            {
+                OpenInViewer(msg);
+                return;
+            }
+
+            // Аудио — системным приложением
             string url = msg.FileUrl;
             if (string.IsNullOrEmpty(url)) return;
             try
@@ -1164,9 +1849,39 @@ namespace Tebegrammmm
             }
             catch (Exception ex)
             {
-                Log.Save($"[FileChip_Click] {ex.Message}");
+                Log.Save($"[Attachment_Click] {ex.Message}");
             }
         }
+
+        /// <summary>
+        /// Открывает фото или видео в просмотрщике. Одно и то же вложение не
+        /// открывается дважды — повторный клик поднимает уже открытое окно.
+        /// </summary>
+        private void OpenInViewer(Message msg)
+        {
+            string fileUrl = msg.FileUrl;
+            if (string.IsNullOrEmpty(fileUrl)) return;
+
+            if (_openImageViewers.TryGetValue(fileUrl, out var existing))
+            {
+                if (existing.WindowState == WindowState.Minimized) existing.WindowState = WindowState.Normal;
+                existing.Activate();
+                return;
+            }
+
+            var viewer = new ImageViewerWindow(fileUrl, msg.Text);
+            viewer.Closed += (_, __) => _openImageViewers.Remove(fileUrl);
+            _openImageViewers[fileUrl] = viewer;
+            viewer.Show();
+        }
+
+        /// <summary>ПКМ по фото/файлу → «Сохранить»: выбор папки и скачивание.</summary>
+        private void SaveFile_Click(object sender, RoutedEventArgs e)
+            => _ = DownloadFileAsync(MessageFromMenu(sender));
+
+        /// <summary>Клик по чипу файла — та же логика, что и по превью (см. Attachment_Click).</summary>
+        private void FileChip_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+            => Attachment_Click(sender, e);
 
         private async Task DownloadFileAsync(Message msg)
         {
@@ -1193,10 +1908,67 @@ namespace Tebegrammmm
             }
         }
 
+        // ── Модальные окна поверх мессенджера (настройки и т.п.) ─────────────
+        // Пока открыт модальный диалог, кликать по чату нельзя (ShowDialog гасит
+        // окно-владельца). Но если пользователь всё же щёлкает по мессенджеру, он
+        // ждёт, что диалог вынырнет наверх и встанет по центру — это и делаем.
+        private Window _activeModal;
+
+        /// <summary>Показывает окно модально, по центру экрана, и запоминает его на время показа.</summary>
+        private bool? ShowModalCentered(Window dialog)
+        {
+            dialog.Owner = this;
+            dialog.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            _activeModal = dialog;
+            try
+            {
+                return dialog.ShowDialog();
+            }
+            finally
+            {
+                _activeModal = null;
+            }
+        }
+
+        // Клик по окну-владельцу модального диалога Windows шлёт ему WM_MOUSEACTIVATE.
+        // Перехватываем его и вместо системного «дзынь» поднимаем диалог наверх и
+        // центрируем. Хук вешаем на дескриптор окна (появляется в OnSourceInitialized).
+        private const int WM_MOUSEACTIVATE = 0x0021;
+        private const int MA_NOACTIVATEANDEAT = 0x0004; // не активировать владельца и «съесть» клик
+
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+            var source = System.Windows.Interop.HwndSource.FromHwnd(
+                new System.Windows.Interop.WindowInteropHelper(this).Handle);
+            source?.AddHook(OwnerWndHook);
+        }
+
+        private IntPtr OwnerWndHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            if (msg == WM_MOUSEACTIVATE && _activeModal != null && _activeModal.IsLoaded)
+            {
+                try
+                {
+                    Classes.UiSizes.CenterOnScreen(_activeModal);
+                    if (_activeModal.WindowState == WindowState.Minimized)
+                        _activeModal.WindowState = WindowState.Normal;
+                    _activeModal.Activate();
+                }
+                catch (Exception ex)
+                {
+                    Log.Save($"[ModalToFront] {ex.GetType().Name}: {ex.Message}");
+                }
+                handled = true;
+                return new IntPtr(MA_NOACTIVATEANDEAT);
+            }
+            return IntPtr.Zero;
+        }
+
         private void Button_Click_Settings(object sender, RoutedEventArgs e)
         {
             SettingsPanelWindow SPW = new SettingsPanelWindow();
-            if (SPW.ShowDialog() == true)
+            if (ShowModalCentered(SPW) == true)
             {
                 try
                 {
@@ -1216,13 +1988,32 @@ namespace Tebegrammmm
 
         private async void Button_Click_CallContact(object sender, RoutedEventArgs e)
         {
-            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/Voice/CreateRoom/{UserData.User.Id}-{Contact.Username}");
-            using HttpResponseMessage response = await httpClient.SendAsync(request);
-            string token = await response.Content.ReadAsStringAsync();
+            if (Contact == null) return;
 
-            VoiceRoom VR = new VoiceRoom(Mode.ActiveCall, Contact, token);
-            UserData.User.InCall = true;
-            VR.Show();
+            // async void: недоступный сервер кидал здесь HttpRequestException и приложение
+            // падало при попытке позвонить. Теперь — понятное сообщение вместо краша
+            try
+            {
+                using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/Voice/CreateRoom/{UserData.User.Id}-{Contact.Username}");
+                using HttpResponseMessage response = await httpClient.SendAsync(request);
+                string token = (await response.Content.ReadAsStringAsync()).Trim();
+
+                if (!response.IsSuccessStatusCode || string.IsNullOrEmpty(token))
+                {
+                    Log.Save($"[CallContact] Сервер не выдал токен: {(int)response.StatusCode}");
+                    TbgDialogWindow.Show("Не удалось начать звонок — сервер не ответил. Проверь соединение.", "Звонок");
+                    return;
+                }
+
+                VoiceRoom VR = new VoiceRoom(Mode.ActiveCall, Contact, token);
+                UserData.User.InCall = true;
+                VR.Show();
+            }
+            catch (Exception ex)
+            {
+                Log.Save($"[CallContact] {ex.GetType().Name}: {ex.Message}");
+                TbgDialogWindow.Show("Не удалось начать звонок. Проверь соединение с сервером.", "Звонок");
+            }
         }
 
         ObservableCollection<Contact> TempContacts;
@@ -1238,14 +2029,20 @@ namespace Tebegrammmm
             {
                 if (_IsInSearch)
                 {
-                    LBChats.ItemsSource = TempContacts;
+                    // Возвращаем полный список — вместе с группами, а не только контакты
+                    SetChatListSource(LBChatsLoders.SelectedItem as ChatFolder
+                                      ?? UserData.User.ChatsFolders[0]);
                     _IsInSearch = false;
                 }
+                SetSearchHint(null);
             }
             else
             {
                 _IsInSearch = true;
-                TempContacts = (LBChatsLoders.SelectedItem as ChatFolder).Contacts;
+                // Папка может быть не выбрана — раньше здесь падало исключение,
+                // и до глобального поиска ниже дело уже не доходило
+                TempContacts = (LBChatsLoders.SelectedItem as ChatFolder)?.Contacts
+                               ?? UserData.User.ChatsFolders[0].Contacts;
 
                 string q = SearchContactBarTB.Text.ToLower().TrimStart('@');
 
@@ -1267,7 +2064,105 @@ namespace Tebegrammmm
 
                 FindedContacts = new ObservableCollection<Contact>(exact.Concat(prefix).Concat(rest));
                 LBChats.ItemsSource = FindedContacts;
+
+                // Запрос с @ — ищем ещё и среди ВСЕХ пользователей сервера (как в вебе)
+                ScheduleGlobalSearch();
             }
+        }
+
+        // ── Живой глобальный поиск по @логину (как в веб-клиенте) ───────────────
+        // Пока пользователь печатает, ждём паузу в 300 мс и только потом идём на
+        // сервер: иначе на каждый символ уходил бы отдельный запрос.
+        private System.Windows.Threading.DispatcherTimer _globalSearchTimer;
+        private int _globalSearchSeq;
+
+        /// <summary>Подсказка под списком чатов (null — спрятать).</summary>
+        private void SetSearchHint(string text)
+        {
+            if (SearchEmptyHint == null) return;
+            SearchEmptyHint.Text = text ?? string.Empty;
+            SearchEmptyHint.Visibility = string.IsNullOrEmpty(text) ? Visibility.Collapsed : Visibility.Visible;
+        }
+
+        private void ScheduleGlobalSearch()
+        {
+            string raw = SearchContactBarTB.Text.Trim();
+            // Ищем только по явному @ и минимум двум символам — как на сервере
+            // (/Users/find отвечает пустотой на запрос короче двух символов)
+            if (!raw.StartsWith("@") || raw.Length < 3)
+            {
+                _globalSearchTimer?.Stop();
+                SetSearchHint(raw.StartsWith("@") && raw.Length == 2
+                    ? "Введи ещё хотя бы один символ" : null);
+                return;
+            }
+
+            SetSearchHint("Ищем на сервере…");
+
+            if (_globalSearchTimer == null)
+            {
+                _globalSearchTimer = new System.Windows.Threading.DispatcherTimer
+                { Interval = TimeSpan.FromMilliseconds(300) };
+                _globalSearchTimer.Tick += (_, __) =>
+                {
+                    _globalSearchTimer.Stop();
+                    _ = RunGlobalSearchAsync(SearchContactBarTB.Text.Trim().TrimStart('@'));
+                };
+            }
+
+            _globalSearchTimer.Stop();  // сбрасываем отсчёт на каждый новый символ
+            _globalSearchTimer.Start();
+        }
+
+        private async Task RunGlobalSearchAsync(string query)
+        {
+            int seq = ++_globalSearchSeq;
+            string raw;
+            try
+            {
+                using var request = new HttpRequestMessage(HttpMethod.Get,
+                    $"{ServerData.ServerAdress}/Users/find/{Uri.EscapeDataString(query)}");
+                using var response = await httpClient.SendAsync(request);
+                if (!response.IsSuccessStatusCode)
+                {
+                    if (seq == _globalSearchSeq) SetSearchHint("Сервер не ответил на поиск");
+                    return;
+                }
+                raw = (await response.Content.ReadAsStringAsync()).Trim();
+            }
+            catch (Exception ex)
+            {
+                Log.Save($"[GlobalSearch] {ex.GetType().Name}: {ex.Message}");
+                if (seq == _globalSearchSeq) SetSearchHint("Нет связи с сервером");
+                return;
+            }
+
+            // Пока ждали ответ, запрос мог смениться — не рисуем устаревшее
+            if (seq != _globalSearchSeq) return;
+            string current = SearchContactBarTB.Text.Trim();
+            if (!current.StartsWith("@") || current.TrimStart('@') != query) return;
+
+            int added = 0;
+            foreach (string entry in string.IsNullOrEmpty(raw)
+                     ? Array.Empty<string>() : raw.Split('❂'))
+            {
+                string[] parts = entry.Split('▫');
+                if (parts.Length < 3 || !int.TryParse(parts[0], out int id)) continue;
+
+                string username = parts[1];
+                if (username == UserData.User.Username) continue;                 // себя не предлагаем
+                if (UserData.User.FindContactByUsername(username) != null) continue; // уже в контактах — он выше
+                if (FindedContacts.Any(c => c.Username == username)) continue;    // не дублируем
+
+                FindedContacts.Add(new Contact(id, username, parts[2]) { IsGlobalResult = true });
+                added++;
+            }
+
+            // Итог поиска показываем явно — иначе пустой список читается как «не работает»
+            if (FindedContacts.Count > 0)
+                SetSearchHint(null);
+            else
+                SetSearchHint($"На сервере нет пользователей с «{query}» в логине или имени");
         }
 
         /// <summary>
@@ -1346,7 +2241,7 @@ namespace Tebegrammmm
         {
             _IsInSearch = false;
             LBChatsLoders.SelectedIndex = 0; // «Все чаты» — там точно есть новый контакт
-            LBChats.ItemsSource = UserData.User.ChatsFolders[0].Contacts;
+            SetChatListSource(UserData.User.ChatsFolders[0]);
             LBChats.SelectedItem = contact;
             LBChats.ScrollIntoView(contact);
         }

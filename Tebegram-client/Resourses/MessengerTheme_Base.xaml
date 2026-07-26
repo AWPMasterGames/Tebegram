@@ -25,7 +25,10 @@
         Viewport="0,0,26,26"
         ViewportUnits="Absolute">
         <DrawingBrush.Drawing>
-            <GeometryDrawing Brush="#128A93A6">
+            <!--  Цвет точек берётся из темы (Light.ChatDotBrush): на светлой теме он
+                  темнее и точки видно, на тёмной — прежний деликатный. Задаётся в
+                  ThemeManager и меняется вживую при переключении темы  -->
+            <GeometryDrawing Brush="{DynamicResource Light.ChatDotBrush}">
                 <GeometryDrawing.Geometry>
                     <EllipseGeometry
                         Center="13,13"

@@ -6,7 +6,7 @@
    ═══════════════════════════════════════════════════════════════ */
 'use strict';
 
-const APP_VERSION = '1.0.17';
+const APP_VERSION = '1.0.26';
 const SEP = '▫';
 const MSG_SEP = '❂';
 const WS_SEP = '▫#▫';
@@ -179,7 +179,12 @@ const Api = {
     const fd = new FormData();
     fd.append('file', file, file.name);
     const r = await fetch(`${Server.address}/upload`, { method: 'POST', body: fd });
-    return r.text(); // сервер возвращает сохранённое имя файла
+    // Раньше ответ брался как есть: при отказе сервера (например, 413 — файл
+    // больше лимита) в чат уходило сообщение с пустым или мусорным именем файла
+    if (!r.ok) throw new Error(`upload ${r.status}`);
+    const stored = (await r.text()).trim();
+    if (!stored) throw new Error('upload: пустой ответ');
+    return stored; // сервер возвращает сохранённое имя файла
   },
 
   async uploadAvatar(userId, file) {
@@ -738,7 +743,7 @@ function fileKind(fileName) {
 // Подпись под именем файла: что это и что произойдёт по клику
 function fileCaption(fileName) {
   const kind = fileKind(fileName);
-  if (kind === 'video') return 'Видео · открыть';
+  if (kind === 'video') return 'Видео · смотреть';
   if (kind === 'audio') return 'Аудио · открыть';
   const ext = fileExt(fileName).toUpperCase();
   return ext ? `${ext}-файл · скачать` : 'Файл · скачать';
@@ -859,10 +864,18 @@ const Chat = {
         let data = String(e.data);
         // Команда удаления сообщения у собеседника
         if (data.startsWith(`DEL${WS_SEP}`)) { handleDeleteNotification(data); return; }
-        // Конверт команд сервера из main-dev (64bc1ab): «команда▫$▫данные».
-        // Наш сервер пока шлёт сообщения без конверта — понимаем оба формата.
-        if (data.startsWith('addMessage▫$▫')) data = data.slice('addMessage▫$▫'.length);
-        else if (data.startsWith('addChat▫$▫')) return; // групповых чатов на вебе пока нет
+        // Отметка «прочитано» (две галочки в win-клиенте). На вебе индикатора
+        // статуса нет, поэтому просто пропускаем, чтобы SEEN не ушёл в разбор
+        // сообщений (иначе принялся бы за отправителя).
+        if (data.startsWith(`SEEN${WS_SEP}`)) return;
+        // Конверты команд сервера. Оба относятся к ГРУППОВЫМ чатам, которых на
+        // вебе пока нет, поэтому просто пропускаем:
+        //   addChat▫$▫    — создана группа;
+        //   addMessage▫$▫ — сообщение группы (внутри первым полем идёт ChatId).
+        // Раньше здесь конверт снимался и payload шёл в обычный разбор — тогда
+        // ChatId принимался за отправителя и сообщение уходило «в никуда».
+        // Личные сообщения приходят без конверта и обрабатываются как прежде.
+        if (data.startsWith('addChat▫$▫') || data.startsWith('addMessage▫$▫')) return;
         routeMessage(data);
       };
       ws.onerror = () => reject(new Error('ws error'));
@@ -1151,6 +1164,12 @@ const UI = {
     this.renderMessages();
     $('screen-chat').classList.remove('hidden');
     requestAnimationFrame(() => $('screen-chat').classList.add('open'));
+
+    // Сообщаем собеседнику, что открыли чат: у него наши прочитанные сообщения
+    // станут двумя галочками (в win-клиенте). Сам веб статус не показывает.
+    if (contact && Store.user && contact.username !== Store.user.username) {
+      Chat.send(`SEEN${WS_SEP}${Store.user.username}${WS_SEP}${contact.username}`);
+    }
   },
 
   closeChat() {
@@ -1239,10 +1258,61 @@ const UI = {
           el.classList.add('bubble--doc');
           el.download = m.text || '';
           name.textContent = `⬇ ${m.text}`;
+        } else if (kind === 'video') {
+          // Превью-кадр вместо скрепки: preload=metadata + #t=0.3 заставляет браузер
+          // показать кадр с 0.3 секунды (нулевой часто чёрный), сам ролик не грузится.
+          // Поверх — круглая кнопка play, как в десктопном клиенте
+          el.classList.add('bubble--video');
+          const prev = document.createElement('video');
+          prev.className = 'bubble-video-preview';
+          prev.preload = 'metadata';
+          prev.muted = true;
+          prev.playsInline = true;
+          // Медиафрагмент #t= браузеры применяют не всегда (Chromium показывает кадр
+          // с нуля, а он у многих роликов чёрный) — пробуем довести позицию руками.
+          // Подписка ДО присвоения src: из кэша метаданные приходят мгновенно,
+          // и подписка после src уже опаздывала на событие.
+          // У файлов без индекса (например, записанных MediaRecorder) перемотка
+          // может «схлопнуться» обратно в 0 — тогда просто останется нулевой кадр
+          const seekToFrame = () => {
+            if (prev.currentTime < 0.05 && prev.duration > 0.5) {
+              try { prev.currentTime = Math.min(0.3, prev.duration / 2); } catch {}
+            }
+          };
+          prev.addEventListener('loadedmetadata', seekToFrame, { once: true });
+          prev.src = `${url}#t=0.3`;
+          if (prev.readyState >= 1) seekToFrame(); // метаданные уже были готовы
+          const play = document.createElement('span');
+          play.className = 'video-play';
+          // SVG вместо символа ▶: у текстового глифа свои поля внутри шрифта,
+          // из-за них треугольник не попадал в центр кружка.
+          // viewBox подобран так, чтобы в центре SVG оказался ЦЕНТР МАСС
+          // треугольника (вершины 8,5 / 8,19 / 19,12 → центроид 11.67, 12),
+          // а не середина его рамки — иначе значок выглядит смещённым влево
+          play.innerHTML = '<svg viewBox="4.17 4.5 15 15" aria-hidden="true">' +
+                           '<path fill="currentColor" d="M8 5v14l11-7z"/></svg>';
+          el.appendChild(prev);
+          el.appendChild(play);
+          name.style.display = 'none';   // имя файла на превью не нужно
+          // Если кадр не отрисовался (нет кодека) — возвращаем обычный вид с именем
+          prev.addEventListener('error', () => {
+            prev.remove(); play.remove();
+            name.style.display = '';
+            name.textContent = `▶ ${m.text}`;
+            el.classList.remove('bubble--video');
+          });
+          el.addEventListener('click', e => {
+            e.preventDefault();
+            PhotoViewer.open(url, m.text);
+          });
         }
-        meta = document.createElement('span');
-        meta.className = 'file-meta';
-        meta.textContent = fileCaption(m.text);
+        // У видео подпись не нужна: на превью и так есть кнопка play и время.
+        // Без этого пузырь был выше кадра, и плашка времени с play съезжали вниз
+        if (kind !== 'video') {
+          meta = document.createElement('span');
+          meta.className = 'file-meta';
+          meta.textContent = fileCaption(m.text);
+        }
       }
       el.appendChild(name);
       if (meta) el.appendChild(meta);
@@ -1389,6 +1459,48 @@ async function doLogin() {
   }
 }
 
+/* ─── Проверка полей регистрации ─────────────────────────────────────────
+   Зеркало серверных правил (Tebegram-server/Classes/UserValidation.cs).
+   Причина ограничений: адрес регистрации выглядит как
+   /register/{логин}-{пароль}-{ник}-{имя}, то есть разделитель — ДЕФИС, и любой
+   дефис внутри поля сдвигает разбор (реальный случай: имя «top-9» создало
+   аккаунт с логином «top9-1234» и ником «top»). Плюс запрещены символы
+   протокола (▫ ❂ &) и служебные символы URL.
+   При правке правил менять и серверный файл — он общий для сервера и win-клиента. */
+const FORBIDDEN_CHARS = ['-', '▫', '❂', '&', '/', '\\', '#', '?', '%', '+', ':', '='];
+
+function checkLoginField(value, fieldName) {
+  if (!value) return `${fieldName} не может быть пустым`;
+  if (value.length < 3) return `${fieldName} должен быть не короче 3 символов`;
+  if (value.length > 32) return `${fieldName} должен быть не длиннее 32 символов`;
+  if (!/^[A-Za-z0-9_.]+$/.test(value))
+    return `${fieldName} может содержать только латинские буквы, цифры, точку и подчёркивание`;
+  return null;
+}
+
+function checkRegistration(login, password, username, name) {
+  const loginError = checkLoginField(login, 'Логин');
+  if (loginError) return loginError;
+
+  if (password.length < 4) return 'Пароль должен быть не короче 4 символов';
+  if (password.length > 64) return 'Пароль должен быть не длиннее 64 символов';
+  if (/\s/.test(password)) return 'Пароль не может содержать пробелы';
+  for (const c of password)
+    if (FORBIDDEN_CHARS.includes(c)) return `Пароль не может содержать символ «${c}»`;
+
+  const usernameError = checkLoginField(username, 'Имя пользователя');
+  if (usernameError) return usernameError;
+
+  if (!name.trim()) return 'Имя не может быть пустым';
+  if (name.length > 48) return 'Имя должно быть не длиннее 48 символов';
+  for (const c of name) {
+    if (FORBIDDEN_CHARS.includes(c)) return `Имя не может содержать символ «${c}»`;
+    // Буквы любого алфавита (нужна кириллица), цифры, пробел, точка, подчёркивание
+    if (!/[\p{L}\p{N} _.]/u.test(c)) return `Имя не может содержать символ «${c}»`;
+  }
+  return null;
+}
+
 async function doRegister() {
   const name = $('reg-name').value.trim();
   const login = $('reg-login').value.trim();
@@ -1397,9 +1509,9 @@ async function doRegister() {
 
   if (!name || !login || !p1) return showError('reg-error', 'Заполни все поля');
   if (p1 !== p2) return showError('reg-error', 'Пароли не совпадают');
-  if (p1.length < 4) return showError('reg-error', 'Пароль должен быть не менее 4 символов');
-  if (login.length < 3) return showError('reg-error', 'Логин должен быть не менее 3 символов');
-  if (/[-▫\s]/.test(login)) return showError('reg-error', 'Логин не может содержать пробелы и дефисы');
+
+  const regError = checkRegistration(login, p1, login, name);
+  if (regError) return showError('reg-error', regError);
 
   $('btn-register').disabled = true;
   try {
@@ -1452,15 +1564,27 @@ async function normalizePhoto(file) {
   }
 }
 
+/* Предел размера файла — тот же, что у сервера (Program.cs, MaxUploadBytes)
+   и у win-клиента. Проверяем до отправки: иначе телефон полчаса заливает
+   файл по мобильной сети, чтобы получить 413. */
+const MAX_UPLOAD_BYTES = 256 * 1024 * 1024;
+
 async function doSendFile(file) {
   const contact = Store.activeContact;
   if (!file || !contact) return;
+
+  if (file.size > MAX_UPLOAD_BYTES) {
+    UI.toast(`Файл больше ${MAX_UPLOAD_BYTES / 1024 / 1024} МБ — сервер такой не примет`);
+    return;
+  }
+
   UI.toast('Загружаем файл…');
   try {
     file = await normalizePhoto(file);
     const stored = await Api.uploadFile(file);
     await sendMessage(contact, stored, 'File', Api.fileUrl(stored));
-  } catch {
+  } catch (e) {
+    console.warn('[doSendFile]', e);
     UI.toast('Не удалось загрузить файл');
   }
 }
@@ -1696,8 +1820,29 @@ const Theme = {
 
 /* ─────────────── Просмотр фото (как ImageViewerWindow на ПК) ─────────────── */
 const PhotoViewer = {
+  // Один просмотрщик на фото и видео: для видео показываем <video controls>
+  // (пауза и перемотка — штатные средства браузера), для фото — <img>
   open(url, name) {
-    $('pv-img').src = url;
+    const isVideo = fileKind(name) === 'video';
+    const img = $('pv-img');
+    const video = $('pv-video');
+
+    img.classList.toggle('hidden', isVideo);
+    video.classList.toggle('hidden', !isVideo);
+
+    if (isVideo) {
+      img.src = '';
+      video.src = url;
+      // Автостарт может быть заблокирован автоплей-политикой — тогда просто
+      // останется первый кадр с кнопкой воспроизведения, это нормально
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+      video.removeAttribute('src');
+      video.load();
+      img.src = url;
+    }
+
     const dl = $('pv-download');
     dl.href = url;
     dl.setAttribute('download', name || 'photo');
@@ -1706,6 +1851,11 @@ const PhotoViewer = {
   close() {
     $('photo-viewer').classList.add('hidden');
     $('pv-img').src = '';
+    // Без остановки звук ролика продолжает играть после закрытия просмотрщика
+    const video = $('pv-video');
+    video.pause();
+    video.removeAttribute('src');
+    video.load();
   },
   isOpen() { return !$('photo-viewer').classList.contains('hidden'); },
 };

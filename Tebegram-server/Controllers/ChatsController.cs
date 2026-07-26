@@ -12,8 +12,35 @@ namespace TebegramServer.Controllers
         private static readonly object _lock = new object();
         private static readonly Random _random = new Random();
 
-        public static int CreateChat(List<User> members)
+        /// <summary>Конверт команды «создан чат» в WS-канале.</summary>
+        public const string AddChatEnvelope = "addChat▫$▫";
+
+        public const string RemoveChatEnvelope = "removeChat▫$▫";
+
+        /// <summary>Конверт сообщения ГРУППОВОГО чата (внутри — ChatId первым полем).</summary>
+        public const string AddMessageEnvelope = "addMessage▫$▫";
+
+        /// <summary>
+        /// Одна строка описания чата для клиента:
+        /// id&amp;имя&amp;группа?&amp;аватар&amp;владелец&amp;участники_через_запятую.
+        /// Используется и в уведомлении addChat, и в ответе /Chats/{userId}, чтобы
+        /// формат не разъезжался между двумя местами.
+        /// </summary>
+        public static string ChatToLine(Chat chat)
         {
+            string owner = chat.Owner != null ? $"{chat.Owner.Id}" : "None";
+            string members = string.Join(",", chat.Members.Select(m => m.Id));
+            return $"{chat.Id}&{chat.Name}&{chat.IsGroup}&{chat.Avatar}&{owner}&{members}";
+        }
+
+        /// <param name="groupName">
+        /// Название группы из интерфейса. Пусто — соберём из имён участников
+        /// (так вело себя старое поведение).
+        /// </param>
+        public static int CreateChat(List<User> members, string groupName = "")
+        {
+            Chat chat;
+
             lock (_lock)
             {
                 // Убираем дубли — для чата с собой members = [user, user] превращается в [user]
@@ -26,7 +53,6 @@ namespace TebegramServer.Controllers
                     id = 1000000 + _random.Next(int.MaxValue - 1000001);
                 } while (Chats.ContainsKey(id));
 
-                Chat chat;
                 if (members.Count < 3)
                 {
                     // Личный чат (или чат с собой — «Избранное»)
@@ -34,9 +60,10 @@ namespace TebegramServer.Controllers
                 }
                 else
                 {
-                    // Группа (перенос из main-dev, коммит 64bc1ab): имя по умолчанию —
-                    // перечисление имён участников, владелец — создатель (первый в списке)
-                    string gName = string.Join(", ", members.Select(m => m.Name));
+                    // Группа: имя из интерфейса, а если его не передали — перечисление имён участников
+                    string gName = string.IsNullOrWhiteSpace(groupName)
+                        ? string.Join(", ", members.Select(m => m.Name))
+                        : groupName.Trim();
                     chat = new Chat(id, gName, true, "", members[0], members, new ObservableCollection<Message>());
                 }
 
@@ -45,7 +72,82 @@ namespace TebegramServer.Controllers
                 {
                     user.AddChat(chat.Id);
                 }
-                return chat.Id;
+            }
+
+            // Рассылка ВНЕ блокировки: раньше она запускалась внутри lock как async void,
+            // и продолжение после await выполнялось уже вне лока, а любое исключение
+            // в async void роняет процесс сервера целиком
+            if (chat.IsGroup) _ = NotifyChatCreatedAsync(chat);
+
+            return chat.Id;
+        }
+
+        public static async void DeleteChat(int chatId, User Owner)
+        {
+            Chat chat = Chats[chatId];
+            if (chat == null) return;
+            if (chat.Owner != Owner) return;
+
+            string wire = $"{RemoveChatEnvelope}{chat.Id}";
+            byte[] payload = Encoding.UTF8.GetBytes(wire);
+            foreach (User user in chat.Members.ToList())
+            {
+                // Снимок списка сессий: коллекция может меняться из других потоков во время рассылки
+                foreach (WebSocket session in user.ChatsSessions.ToList())
+                {
+                    if (session.State == WebSocketState.Open)
+                    {
+                        try
+                        {
+                            await session.SendAsync(new ArraySegment<byte>(payload),
+                                WebSocketMessageType.Text, true, CancellationToken.None);
+                        }
+                        catch (WebSocketException)
+                        {
+                            // Сокет умер между проверкой State и отправкой — просто пропускаем
+                        }
+                    }
+                }
+                user.RemoveChat(chat.Id);
+            }
+
+            Chats.Remove(chatId);
+        }
+
+        /// <summary>
+        /// Сообщает участникам группы, что чат создан. Конверт добавляется РОВНО ОДИН
+        /// раз (в исходной версии префикс клеился дважды, и клиенту приходило
+        /// «addChat▫$▫addChat▫$▫…»; на клиенте это гасилось Replace — пара ошибок
+        /// компенсировала друг друга, но любая односторонняя правка всё ломала).
+        /// </summary>
+        private static async Task NotifyChatCreatedAsync(Chat chat)
+        {
+            try
+            {
+                byte[] payload = Encoding.UTF8.GetBytes(AddChatEnvelope + ChatToLine(chat));
+
+                // Снимки коллекций: во время рассылки участники и сессии могут меняться
+                foreach (User user in chat.Members.ToList())
+                {
+                    foreach (WebSocket session in user.ChatsSessions.ToList())
+                    {
+                        if (session.State != WebSocketState.Open) continue;
+                        try
+                        {
+                            await session.SendAsync(new ArraySegment<byte>(payload),
+                                WebSocketMessageType.Text, true, CancellationToken.None);
+                        }
+                        catch (WebSocketException)
+                        {
+                            // Сокет умер между проверкой состояния и отправкой — пропускаем
+                        }
+                    }
+                }
+                Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Создан групповой чат {chat.Id} «{chat.Name}» ({chat.Members.Count} участн.)");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Ошибка рассылки о создании чата: {ex.Message}");
             }
         }
 
@@ -73,6 +175,15 @@ namespace TebegramServer.Controllers
 
             chat.Messages.Add(message);
 
+            // Личный чат — СТАРЫЙ формат без конверта: его понимают все выпущенные
+            // клиенты, ломать их нельзя. Группа — конверт с ChatId первым полем:
+            // в 1:1 клиент определяет чат по собеседнику, а в группе отправитель
+            // не говорит, куда класть сообщение, поэтому Id обязателен.
+            string wire = chat.IsGroup
+                ? $"{AddMessageEnvelope}{chat.Id}▫{message}"
+                : message.ToString();
+            byte[] payload = Encoding.UTF8.GetBytes(wire);
+
             foreach (User user in chat.Members.ToList())
             {
                 // Снимок списка сессий: коллекция может меняться из других потоков во время рассылки
@@ -82,14 +193,8 @@ namespace TebegramServer.Controllers
                     {
                         try
                         {
-                            Console.WriteLine($"Send to user: {user.Username} | message: {message}");
-                            // ПЕРЕХОД НА ChatId: в v2 сообщение оборачивается в конверт
-                            // $"addMessage▫$▫{message}" (win-клиент и веб УЖЕ понимают
-                            // оба формата — см. GetMessage / ws.onmessage), а само
-                            // message.ToString() начнёт включать ChatId первым полем.
-                            // Включать конверт можно только когда все клиенты обновятся.
-                            var arraySegment = new ArraySegment<byte>(Encoding.UTF8.GetBytes(message.ToString()));
-                            await session.SendAsync(arraySegment, WebSocketMessageType.Text, true, CancellationToken.None);
+                            await session.SendAsync(new ArraySegment<byte>(payload),
+                                WebSocketMessageType.Text, true, CancellationToken.None);
                         }
                         catch (WebSocketException)
                         {

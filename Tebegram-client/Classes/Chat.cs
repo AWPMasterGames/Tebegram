@@ -50,6 +50,23 @@ namespace Tebegrammmm.Classes
             set { _Avatar = value; Notify(nameof(Avatar)); }
         }
 
+        // ── Поверхность для списка чатов ─────────────────────────────────────
+        // Список LBChats показывает и контакты, и группы одним шаблоном, поэтому
+        // у Chat должны быть те же свойства, к которым привязан шаблон. Иначе
+        // привязки к отсутствующим свойствам сыпали бы ошибками в окно вывода.
+        public bool IsFavorites => false;        // «Избранное» — только личный чат с собой
+        public bool IsGlobalResult => false;     // группа не бывает результатом @-поиска
+        public string GlobalHint => string.Empty;
+        public string Draft { get; set; } = string.Empty;
+
+        /// <summary>История с сервера уже загружена? (чтобы не тянуть повторно)</summary>
+        public bool HistoryLoaded { get; set; }
+
+        /// <summary>Подпись под названием группы в списке — сколько участников.</summary>
+        public string MembersHint => IsGroup && Members.Count > 0
+            ? $"Участников: {Members.Count}"
+            : string.Empty;
+
         public Chat(int id, string name, bool isGroup, string avatar, bool iOwner)
             : this(id, name, isGroup, avatar, iOwner, null, null)
         {

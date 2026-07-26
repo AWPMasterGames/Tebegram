@@ -2,10 +2,12 @@
     x:Class="Tebegrammmm.ImageViewerWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:classes="clr-namespace:Tebegrammmm.Classes"
     AllowsTransparency="True"
     Background="Transparent"
-    MinWidth="420"
-    MinHeight="320"
+    MinWidth="{x:Static classes:UiSizes.ViewerMinWidth}"
+    MinHeight="{x:Static classes:UiSizes.ViewerMinHeight}"
+    SizeChanged="Window_SizeChanged"
     WindowStartupLocation="CenterScreen"
     WindowStyle="None"
     ResizeMode="CanResizeWithGrip">
@@ -94,6 +96,21 @@
     </Window.Resources>
 
     <Grid x:Name="OuterGrid" Margin="8">
+        <Grid.Resources>
+            <!--  Невидимая «ручка» для изменения размера окна. Нужна, потому что при
+                  AllowsTransparency=True и WindowStyle=None у окна нет системной рамки,
+                  а стандартный ResizeGrip попадает в прозрачную тень — потянуть за край
+                  было нечем ни у фото, ни у видео  -->
+            <Style x:Key="ResizeThumbStyle" TargetType="Thumb">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Thumb">
+                            <Border Background="Transparent" />
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </Grid.Resources>
         <Border
             x:Name="OuterBorder"
             Background="#1A1A1A"
@@ -170,8 +187,15 @@
                     </StackPanel>
                 </Grid>
 
-                <!--  Область просмотра  -->
+                <!--  Область просмотра.
+                      Две строки: содержимое и панель управления видео. Панель именно
+                      в СВОЕЙ строке, а не поверх кадра — иначе она перекрывала низ
+                      видео и его приходилось «поднимать», чтобы увидеть целиком  -->
                 <Grid Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
 
                     <ScrollViewer
                         x:Name="ImageScrollViewer"
@@ -203,11 +227,110 @@
                                     </Image.LayoutTransform>
                                 </Image>
                             </Border>
+
                         </Grid>
                     </ScrollViewer>
 
+                    <!--  Видео: тот же просмотрщик, что и для фото, но ВНЕ ScrollViewer —
+                          Stretch=Uniform вписывает кадр в доступную область целиком,
+                          скроллить и масштабировать ничего не нужно.
+                          LoadedBehavior=Manual — воспроизведением управляем сами  -->
+                    <MediaElement
+                        x:Name="MainVideo"
+                        Grid.Row="0"
+                        Margin="12,0,12,6"
+                        MediaEnded="Video_MediaEnded"
+                        MediaFailed="Video_MediaFailed"
+                        MediaOpened="Video_MediaOpened"
+                        LoadedBehavior="Manual"
+                        MouseLeftButtonUp="Video_Click"
+                        ScrubbingEnabled="True"
+                        Stretch="Uniform"
+                        UnloadedBehavior="Manual"
+                        Visibility="Collapsed" />
+
                     <!--  Grip изменения размера — помещён внутрь видимой области,
                           т.к. с AllowsTransparency=True стандартный grip попадает в прозрачную тень  -->
+
+                    <!--  Панель управления видео ЛЕЖИТ ПОВЕРХ кадра (та же строка Grid)
+                          и полупрозрачна. Перекрытия не мешают: без движения мыши она
+                          скрывается через секунду и возвращается при первом же движении  -->
+                    <Border
+                        x:Name="VideoBar"
+                        Grid.Row="0"
+                        Margin="24,0,24,20"
+                        Padding="14,8"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Bottom"
+                        Background="#A6000000"
+                        CornerRadius="12"
+                        Visibility="Collapsed">
+                        <StackPanel>
+                            <!--  Перемотка: тянем ползунок в любой момент времени  -->
+                            <Slider
+                                x:Name="VideoSlider"
+                                Margin="0,0,0,6"
+                                IsMoveToPointEnabled="True"
+                                Maximum="1"
+                                Minimum="0"
+                                Thumb.DragCompleted="VideoSlider_DragCompleted"
+                                Thumb.DragStarted="VideoSlider_DragStarted"
+                                ValueChanged="VideoSlider_ValueChanged" />
+
+                            <Grid>
+                                <!--  Текущее время / длительность — слева  -->
+                                <TextBlock
+                                    x:Name="VideoTimeText"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    FontSize="12"
+                                    Foreground="#CCFFFFFF"
+                                    Text="0:00 / 0:00" />
+
+                                <!--  Пауза/воспроизведение — по центру, кнопка КВАДРАТНАЯ  -->
+                                <Button
+                                    x:Name="PlayPauseBtn"
+                                    Width="36"
+                                    Height="36"
+                                    HorizontalAlignment="Center"
+                                    Click="PlayPauseBtn_Click"
+                                    Template="{StaticResource CaptionBtnTemplate}"
+                                    ToolTip="Пауза / продолжить (пробел)">
+                                    <Viewbox
+                                        Width="18"
+                                        Height="18"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center">
+                                        <Path
+                                            x:Name="PlayPauseIcon"
+                                            Fill="White"
+                                            Stretch="Uniform" />
+                                    </Viewbox>
+                                </Button>
+
+                                <!--  Полноэкранный режим — справа снизу  -->
+                                <Button
+                                    x:Name="FullscreenBtn"
+                                    Width="36"
+                                    Height="36"
+                                    HorizontalAlignment="Right"
+                                    Click="FullscreenBtn_Click"
+                                    Template="{StaticResource CaptionBtnTemplate}"
+                                    ToolTip="Во весь экран (F11), повторное нажатие вернёт размер">
+                                    <Viewbox
+                                        Width="18"
+                                        Height="18"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center">
+                                        <Path
+                                            x:Name="FullscreenIcon"
+                                            Fill="White"
+                                            Stretch="Uniform" />
+                                    </Viewbox>
+                                </Button>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
 
                     <!--  Плавающий бейдж масштаба — появляется при изменении зума  -->
                     <Border
@@ -230,5 +353,30 @@
                 </Grid>
             </Grid>
         </Border>
+
+        <!--  Зоны изменения размера окна: правый и нижний края + угол.
+              Лежат поверх содержимого, но узкие (6 px) и прозрачные  -->
+        <Thumb
+            Width="6"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Stretch"
+            Cursor="SizeWE"
+            DragDelta="ResizeRight_DragDelta"
+            Style="{StaticResource ResizeThumbStyle}" />
+        <Thumb
+            Height="6"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Bottom"
+            Cursor="SizeNS"
+            DragDelta="ResizeBottom_DragDelta"
+            Style="{StaticResource ResizeThumbStyle}" />
+        <Thumb
+            Width="16"
+            Height="16"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Cursor="SizeNWSE"
+            DragDelta="ResizeCorner_DragDelta"
+            Style="{StaticResource ResizeThumbStyle}" />
     </Grid>
 </Window>

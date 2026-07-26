@@ -65,5 +65,20 @@ namespace TebegramServer.Classes.VoiceClasses
                 await roomMember.SendMeText(text);
             }
         }
+
+        /// <summary>
+        /// Текст всем, КРОМЕ отправителя. Нужно для состояния микрофона: значок
+        /// рядом с аватаром показывает микрофон СОБЕСЕДНИКА, поэтому своё же
+        /// уведомление возвращать себе нельзя — иначе оно перебьёт свой значок.
+        /// </summary>
+        public async Task SendTextToRoomExcept(WebSocket sender, string text)
+        {
+            // Снимок списка: участники могут отключаться во время рассылки
+            foreach (RoomMember roomMember in _RoomMembers.ToList())
+            {
+                if (roomMember.Member == sender) continue;
+                await roomMember.SendMeText(text);
+            }
+        }
     }
 }

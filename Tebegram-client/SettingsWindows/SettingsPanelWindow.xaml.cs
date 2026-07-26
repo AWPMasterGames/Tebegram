@@ -27,6 +27,7 @@ namespace Tebegrammmm
 
             // Текущий выбор сервера (DrunkMan / Adress.txt)
             UpdateServerChoiceLabel();
+            UpdateCacheLabel();
 
             // Список тем — тот же ComboBox, что и выбор микрофона.
             // Текущую тему выставляем без вызова обработчика (иначе лишняя запись файла)
@@ -49,6 +50,35 @@ namespace Tebegrammmm
             ServerData.SetServerChoice(ServerData.ServerChoice == "drunkman" ? "auto" : "drunkman");
             UpdateServerChoiceLabel();
             Log.Save($"[Settings] Сервер переключён: {ServerData.ServerChoice} → {ServerData.ServerAdress}");
+        }
+
+        // ── Кэш медиа ────────────────────────────────────────────────────────
+
+        /// <summary>Показывает, сколько занимают скачанные фото и видео.</summary>
+        private void UpdateCacheLabel()
+        {
+            var (files, bytes) = MediaCache.Stats();
+            TBCacheSize.Text = files == 0
+                ? "Кэш медиа: пусто"
+                : $"Кэш медиа: {FormatSize(bytes)} · файлов: {files}";
+        }
+
+        private static string FormatSize(long bytes)
+        {
+            if (bytes >= 1024L * 1024 * 1024) return $"{bytes / 1024.0 / 1024 / 1024:0.0} ГБ";
+            if (bytes >= 1024 * 1024) return $"{bytes / 1024.0 / 1024:0.0} МБ";
+            return $"{bytes / 1024.0:0} КБ";
+        }
+
+        /// <summary>
+        /// Очистка кэша. Файлы никуда не денутся — они лежат на сервере и
+        /// скачаются заново при следующем открытии чата.
+        /// </summary>
+        private void ClearCache_Click(object sender, RoutedEventArgs e)
+        {
+            MediaCache.Clear();
+            UpdateCacheLabel();
+            Log.Save("[Settings] Кэш медиа очищен");
         }
 
         private void ThemeCB_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -127,11 +157,6 @@ namespace Tebegrammmm
         {
             if (e.ChangedButton == System.Windows.Input.MouseButton.Left)
                 this.DragMove();
-        }
-
-        private void MinimizeBtn_Click(object sender, RoutedEventArgs e)
-        {
-            this.WindowState = WindowState.Minimized;
         }
 
         private void CloseBtn_Click(object sender, RoutedEventArgs e)
