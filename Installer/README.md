@@ -28,10 +28,11 @@ winget install JRSoftware.InnoSetup
 (и это правильно: собранные бинарники в git не хранят). В папке `Installer`
 остаются только **исходники** установщика:
 
-- `TebegramSetup.iss`, `build-installer.ps1(.bat)` — новый Inno Setup установщик (.exe)
-- `*.wxs`, `*.wixproj`, `*.wxl` — старый WiX-проект (.msi), оставлен как альтернатива
+- `TebegramSetup.iss`, `build-installer.ps1(.bat)` — Inno Setup установщик (.exe)
 
-Собранные `setup.exe`/`.msi` в репозиторий класть не нужно — их выкладывают в
+Старый WiX-проект (.msi) удалён — используется только Inno Setup.
+
+Собранные `setup.exe` в репозиторий класть не нужно — их выкладывают в
 **GitHub Releases** (страница релизов репозитория). Там файлы не «теряются»
 и у каждого релиза своя версия.
 
