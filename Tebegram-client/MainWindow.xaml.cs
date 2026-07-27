@@ -151,8 +151,9 @@ namespace Tebegrammmm
             else
             {
                 string entered = TbgDialogWindow.Prompt(
-                    "Укажи адрес своего сервера, например https://my-server.example.com",
-                    "Другой сервер", ServerData.CustomAdress);
+                    "Укажи адрес своего сервера:",
+                    "Другой сервер", ServerData.CustomAdress,
+                    placeholder: "https://my-server.example.com");
                 if (string.IsNullOrWhiteSpace(entered)) return; // отменили — остаёмся на main
                 ServerData.SetServerChoice("custom", entered);
             }

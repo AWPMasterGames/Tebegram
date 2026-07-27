@@ -95,14 +95,25 @@
                 BorderThickness="1"
                 CornerRadius="10"
                 Visibility="Collapsed">
-                <TextBox
-                    x:Name="InputBox"
-                    VerticalContentAlignment="Center"
-                    Padding="12,0"
-                    Background="Transparent"
-                    BorderThickness="0"
-                    FontSize="14"
-                    Foreground="{DynamicResource Light.TextPrimaryBrush}" />
+                <Grid>
+                    <!--  Прозрачная подсказка-пример: видна, пока поле пустое, клики
+                          проходят к TextBox под ней  -->
+                    <TextBlock
+                        x:Name="InputPlaceholder"
+                        Margin="12,0"
+                        VerticalAlignment="Center"
+                        FontSize="14"
+                        Foreground="{DynamicResource Light.TextMutedBrush}"
+                        IsHitTestVisible="False" />
+                    <TextBox
+                        x:Name="InputBox"
+                        VerticalContentAlignment="Center"
+                        Padding="12,0"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        FontSize="14"
+                        Foreground="{DynamicResource Light.TextPrimaryBrush}" />
+                </Grid>
             </Border>
 
             <Grid>

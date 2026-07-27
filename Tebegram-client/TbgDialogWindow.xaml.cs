@@ -13,7 +13,7 @@ namespace Tebegrammmm
     public partial class TbgDialogWindow : Window
     {
         private TbgDialogWindow(string title, string message, string primaryText, string secondaryText,
-                                bool isPrompt = false, string inputDefault = null)
+                                bool isPrompt = false, string inputDefault = null, string inputPlaceholder = null)
         {
             InitializeComponent();
             TitleText.Text = title;
@@ -33,10 +33,22 @@ namespace Tebegrammmm
             if (isPrompt)
             {
                 InputBorder.Visibility = Visibility.Visible;
+                InputPlaceholder.Text = inputPlaceholder ?? string.Empty;
                 InputBox.Text = inputDefault ?? string.Empty;
+
+                // Подсказка-пример видна, только пока поле пустое
+                UpdatePlaceholder();
+                InputBox.TextChanged += (_, __) => UpdatePlaceholder();
+
                 // Фокус и выделение всего текста — сразу можно печатать/заменять
                 Loaded += (_, __) => { InputBox.Focus(); InputBox.SelectAll(); };
             }
+        }
+
+        private void UpdatePlaceholder()
+        {
+            InputPlaceholder.Visibility = string.IsNullOrEmpty(InputBox.Text)
+                ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public static void Show(string message, string title = "Tebegram")
@@ -65,13 +77,15 @@ namespace Tebegrammmm
         /// (обрезанный), либо null — если пользователь отменил или оставил пусто.
         /// </summary>
         public static string Prompt(string message, string title, string defaultValue = null,
+                                    string placeholder = null,
                                     string okText = "Сохранить", string cancelText = "Отмена")
         {
             string result = null;
             OnUI(() =>
             {
                 var dlg = new TbgDialogWindow(title, message, okText, cancelText,
-                                              isPrompt: true, inputDefault: defaultValue);
+                                              isPrompt: true, inputDefault: defaultValue,
+                                              inputPlaceholder: placeholder);
                 TrySetOwner(dlg);
                 if (dlg.ShowDialog() == true)
                 {
