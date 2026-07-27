@@ -208,7 +208,7 @@
                     </StackPanel>
 
                     <!-- Индикатор связи с сервером + переключатель источника адреса.
-                         Кнопка меняет Adress.txt (авто) ↔ туннель DrunkMan ещё до входа -->
+                         Кнопка меняет «main» ↔ «Другой» (свой адрес) ещё до входа -->
                     <StackPanel
                         Margin="4,6,0,0"
                         HorizontalAlignment="Left"
@@ -227,12 +227,12 @@
                             Click="ServerChoiceBtn_Click"
                             Cursor="Hand"
                             Template="{StaticResource GhostButtonTemplate}"
-                            ToolTip="Сервер, к которому подключается приложение. Нажми, чтобы переключить: Adress.txt (авто) ↔ туннель DrunkMan.">
+                            ToolTip="Сервер, к которому подключается приложение. Нажми, чтобы переключить: main ↔ Другой (свой адрес).">
                             <TextBlock
                                 x:Name="LoginServerLabel"
                                 FontSize="11"
                                 Foreground="{DynamicResource Light.TextMutedBrush}"
-                                Text="Adress.txt (авто)" />
+                                Text="main" />
                         </Button>
                     </StackPanel>
 
@@ -462,12 +462,12 @@
                             Click="ServerChoiceBtn_Click"
                             Cursor="Hand"
                             Template="{StaticResource GhostButtonTemplate}"
-                            ToolTip="Сервер, к которому подключается приложение. Нажми, чтобы переключить: Adress.txt (авто) ↔ туннель DrunkMan.">
+                            ToolTip="Сервер, к которому подключается приложение. Нажми, чтобы переключить: main ↔ Другой (свой адрес).">
                             <TextBlock
                                 x:Name="RegServerLabel"
                                 FontSize="11"
                                 Foreground="{DynamicResource Light.TextMutedBrush}"
-                                Text="Adress.txt (авто)" />
+                                Text="main" />
                         </Button>
                     </StackPanel>
 

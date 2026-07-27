@@ -121,12 +121,13 @@ namespace Tebegrammmm
             }
         }
 
-        // ── Переключатель сервера до входа: Adress.txt (авто) ↔ туннель DrunkMan ──
-        // Выбор общий с настройками (serverChoice.data в AppData); по умолчанию,
-        // пока файла нет, — Adress.txt (авто).
+        // ── Переключатель сервера до входа: «main» ↔ «Другой» ──
+        // «main» — адрес из Adress.txt (по умолчанию при первом входе), «Другой» —
+        // свой адрес. Выбор общий с настройками (serverChoice.data в AppData) и
+        // переживает перезапуски.
         private void UpdateServerChoiceLabels()
         {
-            string label = ServerData.ServerChoice == "drunkman" ? "Туннель DrunkMan" : "Adress.txt (авто)";
+            string label = ServerData.ServerChoice == "custom" ? "Другой" : "main";
             // Подписи на обоих экранах (вход и регистрация) — как точки соединения
             if (LoginServerLabel != null) LoginServerLabel.Text = label;
             if (RegServerLabel != null) RegServerLabel.Text = label;
@@ -138,11 +139,26 @@ namespace Tebegrammmm
             UpdateServerChoiceLabels();
         }
 
+        // Клик переключает между «main» и «Другой». При выборе «Другой» спрашиваем
+        // адрес своего сервера (окно в стиле приложения) и запоминаем его.
         private void ServerChoiceBtn_Click(object sender, RoutedEventArgs e)
         {
-            ServerData.SetServerChoice(ServerData.ServerChoice == "drunkman" ? "auto" : "drunkman");
+            if (ServerData.ServerChoice == "custom")
+            {
+                // Уже на «Другой» — возвращаемся на main
+                ServerData.SetServerChoice("main");
+            }
+            else
+            {
+                string entered = TbgDialogWindow.Prompt(
+                    "Укажи адрес своего сервера, например https://my-server.example.com",
+                    "Другой сервер", ServerData.CustomAdress);
+                if (string.IsNullOrWhiteSpace(entered)) return; // отменили — остаёмся на main
+                ServerData.SetServerChoice("custom", entered);
+            }
+
             UpdateServerChoiceLabels();
-            Log.Save($"[MainWindow] Сервер переключён до входа: {ServerData.ServerChoice}");
+            Log.Save($"[MainWindow] Сервер до входа: {ServerData.ServerChoice} → {ServerData.ServerAdress}");
             _connDelayCts?.Cancel(); // индикатор соединения перепроверит новый адрес сразу
         }
 

@@ -7,11 +7,13 @@ namespace Tebegrammmm
     /// <summary>
     /// Диалог в стиле приложения вместо системного MessageBox:
     /// TbgDialogWindow.Show(...) — сообщение с кнопкой «ОК»,
-    /// TbgDialogWindow.Confirm(...) — вопрос «Да/Нет», возвращает bool.
+    /// TbgDialogWindow.Confirm(...) — вопрос «Да/Нет», возвращает bool,
+    /// TbgDialogWindow.Prompt(...) — ввод строки (адрес сервера), возвращает текст или null.
     /// </summary>
     public partial class TbgDialogWindow : Window
     {
-        private TbgDialogWindow(string title, string message, string primaryText, string secondaryText)
+        private TbgDialogWindow(string title, string message, string primaryText, string secondaryText,
+                                bool isPrompt = false, string inputDefault = null)
         {
             InitializeComponent();
             TitleText.Text = title;
@@ -26,6 +28,14 @@ namespace Tebegrammmm
             else
             {
                 SecondaryBtn.Content = secondaryText;
+            }
+
+            if (isPrompt)
+            {
+                InputBorder.Visibility = Visibility.Visible;
+                InputBox.Text = inputDefault ?? string.Empty;
+                // Фокус и выделение всего текста — сразу можно печатать/заменять
+                Loaded += (_, __) => { InputBox.Focus(); InputBox.SelectAll(); };
             }
         }
 
@@ -48,6 +58,29 @@ namespace Tebegrammmm
                 TrySetOwner(dlg);
                 return dlg.ShowDialog() == true;
             });
+        }
+
+        /// <summary>
+        /// Запрашивает строку в стиле приложения. Возвращает введённый текст
+        /// (обрезанный), либо null — если пользователь отменил или оставил пусто.
+        /// </summary>
+        public static string Prompt(string message, string title, string defaultValue = null,
+                                    string okText = "Сохранить", string cancelText = "Отмена")
+        {
+            string result = null;
+            OnUI(() =>
+            {
+                var dlg = new TbgDialogWindow(title, message, okText, cancelText,
+                                              isPrompt: true, inputDefault: defaultValue);
+                TrySetOwner(dlg);
+                if (dlg.ShowDialog() == true)
+                {
+                    string text = dlg.InputBox.Text?.Trim();
+                    if (!string.IsNullOrWhiteSpace(text)) result = text;
+                }
+                return true;
+            });
+            return result;
         }
 
         private static void TrySetOwner(TbgDialogWindow dlg)

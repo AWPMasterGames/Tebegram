@@ -523,7 +523,7 @@
                                     Margin="0,12"
                                     Background="{DynamicResource Light.BorderSubtleBrush}" />
 
-                                <!--  Переключатель сервера: туннель DrunkMan ↔ Adress.txt (авто).
+                                <!--  Переключатель сервера: «main» (Adress.txt) ↔ «Другой» (свой адрес).
                                       Отдельной строкой на всю ширину карточки — раньше эта пара
                                       делила колонку с «Проверить обновления» и обрезалась  -->
                                 <Grid>
@@ -541,7 +541,7 @@
                                             x:Name="TBServerChoice"
                                             FontSize="15"
                                             Foreground="{DynamicResource Light.TextPrimaryBrush}"
-                                            Text="Adress.txt (авто)" />
+                                            Text="main" />
                                     </StackPanel>
                                     <Button
                                         Grid.Column="1"

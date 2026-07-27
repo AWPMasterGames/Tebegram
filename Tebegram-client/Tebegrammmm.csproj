@@ -27,13 +27,4 @@
   <ItemGroup>
     <Compile Include="..\Tebegram-server\Classes\UserValidation.cs" Link="Classes\UserValidation.cs" />
   </ItemGroup>
-
-  <!-- Локальный override адреса сервера: копируется к exe при сборке,
-       но НЕ попадает в publish/установщик — у пользователей работает Adress.txt с GitHub -->
-  <ItemGroup Condition="Exists('Adress.override.txt')">
-    <Content Include="Adress.override.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
 </Project>
