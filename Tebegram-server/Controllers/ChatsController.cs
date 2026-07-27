@@ -82,36 +82,47 @@ namespace TebegramServer.Controllers
             return chat.Id;
         }
 
-        public static async void DeleteChat(int chatId, User Owner)
+        // Task, а НЕ async void: исключение из async void не ловится вызывающим и
+        // роняет весь процесс сервера. Теперь оно всплывает в await и обрабатывается.
+        public static async Task DeleteChat(int chatId, User owner)
         {
-            Chat chat = Chats[chatId];
-            if (chat == null) return;
-            if (chat.Owner != Owner) return;
-
-            string wire = $"{RemoveChatEnvelope}{chat.Id}";
-            byte[] payload = Encoding.UTF8.GetBytes(wire);
-            foreach (User user in chat.Members.ToList())
+            List<User> members;
+            lock (_lock)
             {
-                // Снимок списка сессий: коллекция может меняться из других потоков во время рассылки
-                foreach (WebSocket session in user.ChatsSessions.ToList())
-                {
-                    if (session.State == WebSocketState.Open)
-                    {
-                        try
-                        {
-                            await session.SendAsync(new ArraySegment<byte>(payload),
-                                WebSocketMessageType.Text, true, CancellationToken.None);
-                        }
-                        catch (WebSocketException)
-                        {
-                            // Сокет умер между проверкой State и отправкой — просто пропускаем
-                        }
-                    }
-                }
-                user.RemoveChat(chat.Id);
+                // TryGetValue, а не индексатор Chats[chatId]: на несуществующем или
+                // уже удалённом id индексатор кидал KeyNotFoundException → краш сервера
+                if (!Chats.TryGetValue(chatId, out Chat chat)) return;
+                // Удалять группу может только её владелец
+                if (chat.Owner != owner) return;
+
+                // Снимок участников ДО удаления — по нему разошлём уведомление.
+                // Всю правку структур делаем под тем же _lock, что и остальной
+                // ChatsController, иначе рассылка/сохранение могут поймать полусостояние.
+                members = chat.Members.ToList();
+                Chats.Remove(chatId);
+                foreach (User u in members) u.RemoveChat(chatId);
             }
 
-            Chats.Remove(chatId);
+            // Рассылку выносим ИЗ-под lock: держать блокировку через await нельзя.
+            // Уведомляем всех участников (включая владельца) — у каждого чат
+            // пропадёт из списка (см. клиент, HandleRemoveChat).
+            byte[] payload = Encoding.UTF8.GetBytes($"{RemoveChatEnvelope}{chatId}");
+            foreach (User u in members)
+            {
+                foreach (WebSocket session in u.ChatsSessions.ToList())
+                {
+                    if (session.State != WebSocketState.Open) continue;
+                    try
+                    {
+                        await session.SendAsync(new ArraySegment<byte>(payload),
+                            WebSocketMessageType.Text, true, CancellationToken.None);
+                    }
+                    catch (WebSocketException)
+                    {
+                        // Сокет умер между проверкой State и отправкой — пропускаем
+                    }
+                }
+            }
         }
 
         /// <summary>

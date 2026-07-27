@@ -24,13 +24,15 @@ builder.Services.AddCors(options =>
         policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 });
 
-// Предел размера загружаемого файла. По умолчанию Kestrel обрывает запрос
-// на 30 МБ — на этом молча ломалась отправка чего-нибудь крупного (установщик,
-// архив, длинное видео): клиент получал 413 без внятного объяснения.
-// Значение продублировано в клиенте (MessengerWindow.SendFileToServer,
-// MaxUploadBytes) и в вебе (docs/app.js, MAX_UPLOAD_BYTES) — там файл
-// отсеивается до отправки, чтобы не гнать сотни мегабайт впустую.
-const long MaxUploadBytes = 256L * 1024 * 1024;
+// Предел размера загружаемого файла — 16 МБ.
+// Сам Kestrel потянул бы куда больше, но перед сервером стоит туннель devtunnel,
+// а у него ЖЁСТКИЙ потолок тела запроса 16 МБ: файл больше по туннелю не доходит,
+// обрывается почти в конце. Поэтому держим общий предел 16 МБ во всех трёх местах:
+// здесь, в клиенте (MessengerWindow.SendFileToServer, MaxUploadBytes) и в вебе
+// (docs/app.js, MAX_UPLOAD_BYTES) — клиенты отсеивают файл ДО отправки и сразу
+// показывают понятное сообщение. Уйдём с бесплатного туннеля на прямой хостинг —
+// поднять во всех трёх местах.
+const long MaxUploadBytes = 16L * 1024 * 1024;
 builder.WebHost.ConfigureKestrel(options => options.Limits.MaxRequestBodySize = MaxUploadBytes);
 builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
 {
@@ -1006,11 +1008,12 @@ app.Map("/Chat/ws", async context =>
                             if (data.Length >= 3) await NotifySeen(data[1], data[2]);
                             break;
 
-                        // DELETEChat▫#▫{ChatId}
-                        // Удаление чата
-                        // В данный момент пользователь может удалить Группу если он является владельцем
+                        // DELETEChat▫#▫{ChatId} — удаление чата (пока только группы,
+                        // и только владельцем). int.TryParse + await: битый id больше
+                        // не роняет соединение, а исключение из DeleteChat не теряется.
                         case "DELETECHAT":
-                            ChatsController.DeleteChat(int.Parse(data[1]), user);
+                            if (data.Length >= 2 && int.TryParse(data[1], out int delChatId))
+                                await ChatsController.DeleteChat(delChatId, user);
                             break;
                     }
                 }
