@@ -6,7 +6,7 @@
    ═══════════════════════════════════════════════════════════════ */
 'use strict';
 
-const APP_VERSION = '1.0.26';
+const APP_VERSION = '1.0.27';
 const SEP = '▫';
 const MSG_SEP = '❂';
 const WS_SEP = '▫#▫';
@@ -1564,17 +1564,18 @@ async function normalizePhoto(file) {
   }
 }
 
-/* Предел размера файла — тот же, что у сервера (Program.cs, MaxUploadBytes)
-   и у win-клиента. Проверяем до отправки: иначе телефон полчаса заливает
-   файл по мобильной сети, чтобы получить 413. */
-const MAX_UPLOAD_BYTES = 256 * 1024 * 1024;
+/* Предел размера файла — 16 МБ, как у сервера (Program.cs) и win-клиента.
+   Это потолок туннеля devtunnel (тело запроса до 16 МБ), а не самого сервера.
+   Проверяем до отправки: иначе телефон полчаса заливает файл по мобильной сети,
+   чтобы в конце получить обрыв. */
+const MAX_UPLOAD_BYTES = 16 * 1024 * 1024;
 
 async function doSendFile(file) {
   const contact = Store.activeContact;
   if (!file || !contact) return;
 
   if (file.size > MAX_UPLOAD_BYTES) {
-    UI.toast(`Файл больше ${MAX_UPLOAD_BYTES / 1024 / 1024} МБ — сервер такой не примет`);
+    UI.toast(`Файл больше ${MAX_UPLOAD_BYTES / 1024 / 1024} МБ — столько не отправить`);
     return;
   }
 

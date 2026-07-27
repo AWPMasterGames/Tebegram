@@ -112,6 +112,43 @@ namespace Tebegrammmm
                 _live[key] = new SolidColorBrush(toColor);
                 Application.Current.Resources[key] = _live[key];
             }
+
+            ApplyChatPattern(isDark);
+        }
+
+        /// <summary>
+        /// Строит узор-точки фона чата ПОД ТЕМУ и кладёт готовую кисть в ресурсы.
+        ///
+        /// Раньше цвет точки задавался через DynamicResource ВНУТРИ DrawingBrush, а
+        /// сам DrawingBrush подключался как StaticResource. WPF замораживает такой
+        /// Freezable, и цвет точки «застывал» тем, что был при загрузке — на светлой
+        /// теме точек в итоге не было видно. Теперь кисть собирается здесь целиком
+        /// (её цвет уже правильный), и на светлой теме точки видны так же, как на
+        /// тёмной. Окно ссылается на неё через DynamicResource ChatPatternBrush, так
+        /// что смена темы обновляет узор вживую.
+        /// </summary>
+        private static void ApplyChatPattern(bool isDark)
+        {
+            // Те же значения, что и для Light.ChatDotBrush: тёмная — деликатная,
+            // светлая — заметная серо-синяя (фон при этом НЕ меняем)
+            Color dot = isDark
+                ? Color.FromArgb(0x12, 0x8A, 0x93, 0xA6)
+                : Color.FromArgb(0x55, 0x4E, 0x5C, 0x78);
+
+            var drawing = new GeometryDrawing(
+                new SolidColorBrush(dot), null,
+                new EllipseGeometry(new Point(13, 13), 1.3, 1.3));
+
+            var pattern = new DrawingBrush(drawing)
+            {
+                Stretch = Stretch.None,
+                TileMode = TileMode.Tile,
+                Viewport = new Rect(0, 0, 26, 26),
+                ViewportUnits = BrushMappingMode.Absolute
+            };
+            pattern.Freeze(); // кисть неизменна в пределах темы — можно заморозить для скорости
+
+            Application.Current.Resources["ChatPatternBrush"] = pattern;
         }
     }
 }

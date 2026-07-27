@@ -459,17 +459,15 @@ namespace Tebegrammmm
             BtnCall.Visibility = isFavorites || isGroup ? Visibility.Collapsed : Visibility.Visible;
             BtnChatMenu.Visibility = isFavorites ? Visibility.Collapsed : Visibility.Visible;
             BtnChatMenu.ToolTip = isGroup ? "Настройки группы" : "Изменить контакт";
-            if (isGroup)
-            {
-                BtnChatMenu.Click -= Button_Click_ContactRedact;
-                BtnChatMenu.Click += Button_Click_GroupSettings;
 
-            }
-            else
-            {
-                BtnChatMenu.Click -= Button_Click_GroupSettings;
-                BtnChatMenu.Click += Button_Click_ContactRedact;
-            }
+            // Снимаем ОБА обработчика перед добавлением одного. Раньше снимался
+            // только противоположный, и при подряд идущих открытиях чатов ОДНОГО
+            // типа обработчик копился — по клику кнопка открывала бы по нескольку
+            // окон. Привязку Click из XAML тоже убрали: единственный источник
+            // истины теперь здесь.
+            BtnChatMenu.Click -= Button_Click_ContactRedact;
+            BtnChatMenu.Click -= Button_Click_GroupSettings;
+            BtnChatMenu.Click += isGroup ? Button_Click_GroupSettings : Button_Click_ContactRedact;
         }
 
         /// <summary>Открывает меню группы под кнопкой в шапке.</summary>
@@ -482,27 +480,41 @@ namespace Tebegrammmm
         }
 
         /// <summary>
-        /// «Удалить группу». Пока ЗАГЛУШКА — логику пишет Максим.
-        ///
-        /// Что понадобится, когда дойдут руки: эндпоинт удаления чата на сервере
-        /// (снести Chat из ChatsController.Chats и из Chats.json), рассылка
-        /// остальным участникам по WebSocket, чтобы группа пропала и у них, и
-        /// удаление её из UserData.User.Chats на клиенте. Без рассылки кнопка
-        /// сделала бы вид, что удалила, а после перезахода группа вернулась бы.
+        /// «Удалить группу». Просит сервер удалить чат; сам локально ничего не
+        /// сносит — сервер вернёт removeChat▫$▫ ВСЕМ участникам (включая нас), и
+        /// удаление у всех пойдёт одним путём (см. HandleRemoveChat). Удалить
+        /// может только владелец — это проверяет сервер.
         /// </summary>
-        private async void LeaveGroup_Click(object sender, RoutedEventArgs e)
-        {
-            TbgDialogWindow.Show("Выход из группы скоро добавим — эта часть ещё в работе.", _openGroup?.Name ?? "Группа");
-            // ПЕРЕХОД НА ChatId: вместо 0 подставить реальный chat.Id (см. комментарий выше)
-            
-		}
-		
         private async void DeleteGroup_Click(object sender, RoutedEventArgs e)
         {
-            //TbgDialogWindow.Show("Удаление группы скоро добавим — эта часть ещё в работе.",_openGroup?.Name ?? "Группа");
-								 string request = $"DELETEChat▫#▫{_openGroup.Id}";
-            ArraySegment<byte> buffer = new ArraySegment<byte>(Encoding.UTF8.GetBytes(request));
-            await ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+            var group = _openGroup;
+            if (group == null) return;
+
+            // Действие необратимо и затрагивает всех — спрашиваем подтверждение
+            if (!TbgDialogWindow.Confirm(
+                    $"Удалить группу «{group.Name}» для всех участников? Отменить будет нельзя.",
+                    "Удаление группы", "Удалить", "Отмена"))
+                return;
+
+            try
+            {
+                if (ws == null || ws.State != WebSocketState.Open)
+                {
+                    TbgDialogWindow.Show("Нет соединения с сервером. Попробуй ещё раз через пару секунд.",
+                                         "Удаление группы");
+                    return;
+                }
+
+                string request = $"DELETEChat▫#▫{group.Id}";
+                await ws.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes(request)),
+                    WebSocketMessageType.Text, true, CancellationToken.None);
+            }
+            catch (Exception ex)
+            {
+                // async void: без catch обрыв связи здесь ронял всё приложение
+                Log.Save($"[DeleteGroup] {ex.GetType().Name}: {ex.Message}");
+                TbgDialogWindow.Show("Не удалось удалить группу — соединение прервано.", "Удаление группы");
+            }
         }
 
         // ── Групповые чаты ───────────────────────────────────────────────────
@@ -647,11 +659,28 @@ namespace Tebegrammmm
             if (added != null) OpenContact(added);
         }
 
+        /// <summary>
+        /// Сервер сообщил, что группа удалена (removeChat▫$▫{id}) — убираем её из
+        /// списка. Выполняется на UI-потоке (как и остальной приём WS), поэтому
+        /// правка ObservableCollection безопасна.
+        /// </summary>
         private void HandleRemoveChat(string payload)
         {
-            Chat chat = UserData.User.FindChatById(int.Parse(payload));
-            if(chat == null) return;
+            if (!int.TryParse(payload.Trim(), out int chatId)) return; // битый id не роняет приём
+            Chat chat = UserData.User.FindChatById(chatId);
+            if (chat == null) return;
             UserData.User.Chats.Remove(chat);
+
+            // Удалили открытую сейчас группу — закрываем её панель, иначе на экране
+            // остаётся «призрак» удалённого чата, в который ещё можно писать
+            if (_openGroup != null && _openGroup.Id == chatId)
+            {
+                _openGroup = null;
+                Contact = null;
+                GridMessege.Visibility = Visibility.Collapsed;
+                GridContactPanel.Visibility = Visibility.Collapsed;
+                EmptyChatPlaceholder.Visibility = Visibility.Visible;
+            }
         }
 
         /// <summary>
@@ -691,22 +720,11 @@ namespace Tebegrammmm
             }
         }
 
-
-        /// <summary>
-        /// Удаление чата
-        /// пока-что только группы
-        /// </summary>
-        private void HandleChatDelete(int ChatId)
-        {
-
-        }
-
         /// <summary>
         /// Сообщение ГРУППОВОГО чата: payload = ChatId▫Sender▫Reciver▫Type▫Time▫Server▫Text.
         /// Именно ради этого первого поля и нужен конверт: в личном чате клиент
         /// понимает, куда класть сообщение, по собеседнику, а в группе — не может.
         /// </summary>
-
         private void HandleGroupMessage(string payload)
         {
             try
@@ -1524,8 +1542,8 @@ namespace Tebegrammmm
 
         private void Button_Click_ContactRedact(object sender, RoutedEventArgs e)
         {
-            
-            // В группе та же кнопка открывает меню группы, а не карточку контакта
+            // Для группы к кнопке привязан Button_Click_GroupSettings (см.
+            // UpdateChatHeaderButtons), так что сюда попадают только контакты
             if (Contact == null) return;
 
             string oldName = Contact.Name;
@@ -1638,11 +1656,14 @@ namespace Tebegrammmm
         }
 
         /// <summary>
-        /// Предел размера файла. Должен совпадать с лимитом сервера
-        /// (Tebegram-server/Program.cs, MaxUploadBytes): проверяем и здесь, чтобы
-        /// не гнать по сети сотни мегабайт ради ответа «слишком большой».
+        /// Предел размера файла — 16 МБ. Это НЕ лимит сервера (тот держит 256 МБ),
+        /// а предел туннеля devtunnel: у него жёсткий потолок тела запроса 16 МБ,
+        /// и файл больше него по туннелю не проходит — обрывается почти в конце.
+        /// Проверяем ДО отправки, чтобы сразу показать понятное сообщение, а не
+        /// гнать файл впустую. Если однажды уйдём с бесплатного туннеля на прямой
+        /// хостинг — поднять здесь, в docs/app.js (MAX_UPLOAD_BYTES) и в сервере.
         /// </summary>
-        private const long MaxUploadBytes = 256L * 1024 * 1024;
+        private const long MaxUploadBytes = 16L * 1024 * 1024;
 
         /// <summary>
         /// Отдельный клиент для загрузки файлов. У общего httpClient таймаут по
@@ -1679,7 +1700,7 @@ namespace Tebegrammmm
             if (info.Length > MaxUploadBytes)
             {
                 TbgDialogWindow.Show(
-                    $"Файл весит {info.Length / 1024.0 / 1024:0.#} МБ, а сервер принимает до {MaxUploadBytes / 1024 / 1024} МБ.",
+                    $"Файл весит {info.Length / 1024.0 / 1024:0.#} МБ, а отправить можно до {MaxUploadBytes / 1024 / 1024} МБ.",
                     "Файл слишком большой");
                 return;
             }

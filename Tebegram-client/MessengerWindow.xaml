@@ -583,12 +583,13 @@
                                     </Viewbox>
                                 </Border>
                             </Button>
+                            <!--  Click НЕ задаём здесь: обработчик (контакт/группа) ставится
+                                  в UpdateChatHeaderButtons ровно один и меняется по типу чата  -->
                             <Button
                                 x:Name="BtnChatMenu"
                                 Width="40"
                                 Background="Transparent"
                                 BorderBrush="Transparent"
-                                Click="Button_Click_ContactRedact"
                                 ToolTip="Изменить контакт">
                                 <Viewbox Width="20" Height="20">
                                     <Path Data="{StaticResource IconList}" Fill="{DynamicResource Light.TextSecondaryBrush}" />
@@ -600,7 +601,10 @@
 
                 <!--  Фон чата: сплошной по теме + тонкий узор-обои (одинаково хорош в обеих темах)  -->
                 <Rectangle Grid.Row="1" Fill="{DynamicResource Light.BgDeepBrush}" />
-                <Rectangle Grid.Row="1" Fill="{StaticResource ChatPatternBrush}" />
+                <!--  DynamicResource: узор строит ThemeManager под тему (см. ApplyChatPattern),
+                      StaticResource взял бы «замороженный» вариант из словаря, где точки на
+                      светлой теме не проявлялись  -->
+                <Rectangle Grid.Row="1" Fill="{DynamicResource ChatPatternBrush}" />
 
                 <!--  Сообщения  -->
                 <!--  IsSynchronizedWithCurrentItem=False обязателен: ItemsSource — это
@@ -731,9 +735,10 @@
                                                 <Setter Property="HorizontalAlignment" Value="Right" />
                                                 <Setter Property="CornerRadius" Value="14,4,14,14" />
                                             </DataTrigger>
-                                            <DataTrigger Binding="{Binding Status}" Value="Pending">
-                                                <Setter Property="Background" Value="{DynamicResource Light.MsgPendingBrush}" />
-                                            </DataTrigger>
+                                            <!--  Раньше статус Pending красил пузырь в бледный MsgPendingBrush.
+                                                  На светлой теме он сливался с фоном (особенно у пузыря
+                                                  загрузки файла). Статус теперь виден по значку (часики), а
+                                                  пузырь остаётся своим акцентным цветом — контрастным.  -->
                                             <DataTrigger Binding="{Binding Status}" Value="Failed">
                                                 <Setter Property="Background" Value="{DynamicResource Light.MsgFailedBrush}" />
                                             </DataTrigger>
