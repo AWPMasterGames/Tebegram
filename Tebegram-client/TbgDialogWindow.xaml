@@ -85,6 +85,26 @@
                 Text="Сообщение"
                 TextWrapping="Wrap" />
 
+            <!--  Поле ввода: показывается только в режиме Prompt (ввод адреса сервера)  -->
+            <Border
+                x:Name="InputBorder"
+                Height="40"
+                Margin="0,0,0,20"
+                Background="{DynamicResource Light.BgInputBrush}"
+                BorderBrush="{DynamicResource Light.BorderDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="10"
+                Visibility="Collapsed">
+                <TextBox
+                    x:Name="InputBox"
+                    VerticalContentAlignment="Center"
+                    Padding="12,0"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    FontSize="14"
+                    Foreground="{DynamicResource Light.TextPrimaryBrush}" />
+            </Border>
+
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />

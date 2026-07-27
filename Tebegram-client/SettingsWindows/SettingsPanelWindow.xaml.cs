@@ -39,17 +39,27 @@ namespace Tebegrammmm
 
         private void UpdateServerChoiceLabel()
         {
-            TBServerChoice.Text = ServerData.ServerChoice == "drunkman"
-                ? "Туннель DrunkMan"
-                : "Adress.txt (авто)";
+            TBServerChoice.Text = ServerData.ServerChoice == "custom" ? "Другой" : "main";
         }
 
-        /// <summary>Переключение сервера: туннель DrunkMan ↔ обычная цепочка Adress.txt.</summary>
+        /// <summary>Переключение сервера: «main» (Adress.txt) ↔ «Другой» (свой адрес).</summary>
         private void ToggleServer_Click(object sender, RoutedEventArgs e)
         {
-            ServerData.SetServerChoice(ServerData.ServerChoice == "drunkman" ? "auto" : "drunkman");
+            if (ServerData.ServerChoice == "custom")
+            {
+                ServerData.SetServerChoice("main");
+            }
+            else
+            {
+                string entered = TbgDialogWindow.Prompt(
+                    "Укажи адрес своего сервера, например https://my-server.example.com",
+                    "Другой сервер", ServerData.CustomAdress);
+                if (string.IsNullOrWhiteSpace(entered)) return;
+                ServerData.SetServerChoice("custom", entered);
+            }
+
             UpdateServerChoiceLabel();
-            Log.Save($"[Settings] Сервер переключён: {ServerData.ServerChoice} → {ServerData.ServerAdress}");
+            Log.Save($"[Settings] Сервер: {ServerData.ServerChoice} → {ServerData.ServerAdress}");
         }
 
         // ── Кэш медиа ────────────────────────────────────────────────────────

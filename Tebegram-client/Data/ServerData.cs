@@ -11,18 +11,16 @@ namespace Tebegrammmm.Data
         // (TLS терминирует devtunnel), поэтому здесь именно http, а не https.
         private const string DefaultAdress = "http://localhost:5000";
 
-        /// <summary>Постоянный туннель DrunkMan (для переключателя в настройках).</summary>
-        public const string DrunkManTunnel = "https://d6qdbhpn-5000.euw.devtunnels.ms";
-
-        /// <summary>Режим выбора сервера: "drunkman" — жёстко туннель DrunkMan, "auto" — Adress.txt.</summary>
-        public static string ServerChoice { get; private set; } = "auto";
-
         /// <summary>
-        /// Файл рядом с exe для ручного переопределения адреса (для локальных тестов).
-        /// В установщик не попадает (CopyToPublishDirectory=Never) — у пользователей
-        /// работает обычный механизм с Adress.txt на GitHub.
+        /// Выбор сервера: "main" — адрес из Adress.txt на GitHub (по умолчанию, при
+        /// первом входе), "custom" — адрес, введённый пользователем (пункт «Другой»).
+        /// Хранится в serverChoice.data, сам адрес «Другого» — в customServer.data,
+        /// поэтому выбор переживает перезапуски (для автоматических входов).
         /// </summary>
-        private const string OverrideFileName = "Adress.override.txt";
+        public static string ServerChoice { get; private set; } = "main";
+
+        /// <summary>Адрес своего сервера (вариант «Другой»); пуст, если не задан.</summary>
+        public static string CustomAdress { get; private set; } = "";
 
         // Источники адреса сервера в порядке приоритета.
         // Первый — ветка main-dev-Test (ВРЕМЕННО, для проверки туннеля DrunkMan),
@@ -66,42 +64,17 @@ namespace Tebegrammmm.Data
 
         private static async Task RefreshAdressAsync()
         {
-            // Читаем сохранённый выбор сервера сразу (для корректной подписи в настройках),
-            // применяется он ниже — после проверки локального override
-            try
-            {
-                if (System.IO.File.Exists(AppPaths.ServerChoiceFile))
-                    ServerChoice = System.IO.File.ReadAllText(AppPaths.ServerChoiceFile).Trim();
-            }
-            catch { /* нет выбора — авто */ }
+            LoadChoice();
 
-            // 1. Локальный override рядом с exe — высший приоритет (для тестов)
-            try
+            // Вариант «Другой»: используем адрес, введённый пользователем, как есть.
+            // Пустой custom не должен обрубать вход — тогда падаем на цепочку main.
+            if (ServerChoice == "custom" && !string.IsNullOrWhiteSpace(CustomAdress))
             {
-                string overridePath = System.IO.Path.Combine(AppContext.BaseDirectory, OverrideFileName);
-                if (System.IO.File.Exists(overridePath))
-                {
-                    string overrideAdress = System.IO.File.ReadAllText(overridePath).Split('\n')[0].Trim();
-                    if (!string.IsNullOrWhiteSpace(overrideAdress))
-                    {
-                        _ServerAdress = overrideAdress.TrimEnd('/');
-                        return;
-                    }
-                }
-            }
-            catch
-            {
-                // не смогли прочитать override — идём обычным путём
-            }
-
-            // 2. Выбор пользователя из настроек: жёстко туннель DrunkMan
-            if (ServerChoice == "drunkman")
-            {
-                _ServerAdress = DrunkManTunnel;
+                _ServerAdress = CustomAdress.TrimEnd('/');
                 return;
             }
 
-            // 3. Adress.txt на GitHub (несколько путей-кандидатов).
+            // Вариант «main»: Adress.txt на GitHub (несколько путей-кандидатов).
             // Кандидат берётся, только если его сервер ЖИВ (/Test отвечает «HI!»).
             // Раньше побеждал первый успешно СКАЧАННЫЙ адрес: мёртвый туннель в
             // файле «закупоривал» авто-режим, хотя дальше по цепочке лежал рабочий
@@ -153,23 +126,60 @@ namespace Tebegrammmm.Data
         }
 
         /// <summary>
-        /// Переключение сервера из настроек: "drunkman" — жёстко туннель DrunkMan,
-        /// "auto" — обычная цепочка (Adress.txt). Применяется сразу и сохраняется.
+        /// Читает сохранённый выбор сервера и адрес «Другого» из файлов.
+        /// Любое старое/незнакомое значение (в т.ч. прежние "auto"/"drunkman")
+        /// приводим к "main" — новых вариантов только два.
         /// </summary>
-        public static void SetServerChoice(string choice)
+        private static void LoadChoice()
         {
-            ServerChoice = choice == "drunkman" ? "drunkman" : "auto";
+            try
+            {
+                if (System.IO.File.Exists(AppPaths.ServerChoiceFile))
+                    ServerChoice = System.IO.File.ReadAllText(AppPaths.ServerChoiceFile).Trim();
+            }
+            catch { /* нет файла — main */ }
+            if (ServerChoice != "custom") ServerChoice = "main";
+
+            try
+            {
+                if (System.IO.File.Exists(AppPaths.CustomServerFile))
+                    CustomAdress = System.IO.File.ReadAllText(AppPaths.CustomServerFile)
+                        .Split('\n')[0].Trim().TrimEnd('/');
+            }
+            catch { /* нет своего адреса — пусто */ }
+        }
+
+        /// <summary>
+        /// Меняет выбор сервера и СОХРАНЯЕТ его для следующих автовходов.
+        /// choice = "main" — цепочка Adress.txt; "custom" — адрес customAdress
+        /// (если передан — запоминается). Применяется сразу.
+        /// </summary>
+        public static void SetServerChoice(string choice, string customAdress = null)
+        {
+            if (choice == "custom")
+            {
+                ServerChoice = "custom";
+                if (customAdress != null) CustomAdress = customAdress.Trim().TrimEnd('/');
+                Save();
+                _ServerAdress = string.IsNullOrWhiteSpace(CustomAdress) ? DefaultAdress : CustomAdress;
+            }
+            else
+            {
+                ServerChoice = "main";
+                Save();
+                GetServerAdress(); // перечитать Adress.txt в фоне
+            }
+        }
+
+        private static void Save()
+        {
             try
             {
                 AppPaths.EnsureDir();
                 System.IO.File.WriteAllText(AppPaths.ServerChoiceFile, ServerChoice);
+                System.IO.File.WriteAllText(AppPaths.CustomServerFile, CustomAdress ?? "");
             }
-            catch { /* не сохранился выбор — применим хотя бы на эту сессию */ }
-
-            if (ServerChoice == "drunkman")
-                _ServerAdress = DrunkManTunnel;
-            else
-                GetServerAdress(); // перечитать Adress.txt в фоне
+            catch { /* не сохранилось — применим хотя бы на эту сессию */ }
         }
 
         /// <summary>
