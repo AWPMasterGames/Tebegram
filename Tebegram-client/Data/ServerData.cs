@@ -22,14 +22,16 @@ namespace Tebegrammmm.Data
         /// <summary>Адрес своего сервера (вариант «Другой»); пуст, если не задан.</summary>
         public static string CustomAdress { get; private set; } = "";
 
-        // Источники адреса сервера в порядке приоритета.
-        // Первый — ветка main-dev-Test (ВРЕМЕННО, для проверки туннеля DrunkMan),
-        // дальше — основные пути в main (новая и старая раскладка репозитория).
+        // Источники адреса сервера в порядке приоритета: СНАЧАЛА main — по нему
+        // живут релизные сборки у тестеров, и рабочая ветка не должна случайно
+        // уводить их на временный адрес. Ветка main-dev-Test остаётся запасным
+        // вариантом (если main почему-то недоступен).
+        // Путь main/Tebegrammmm/Adress.txt убран: старая раскладка репозитория
+        // удалена вместе с переездом на Tebegram-client / Tebegram-server.
         private static readonly string[] AdressUrls =
         {
-            "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main-dev-Test/Tebegram-client/Adress.txt",
             "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Tebegram-client/Adress.txt",
-            "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Tebegrammmm/Adress.txt",
+            "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main-dev-Test/Tebegram-client/Adress.txt",
         };
 
         private static string _ServerAdress = DefaultAdress;
