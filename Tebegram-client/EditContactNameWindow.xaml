@@ -37,27 +37,6 @@
             </ControlTemplate.Triggers>
         </ControlTemplate>
 
-        <ControlTemplate x:Key="MinimizeButtonTemplate" TargetType="Button">
-            <Border x:Name="Bd" Background="Transparent" CornerRadius="6">
-                <TextBlock
-                    x:Name="Txt"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    FontSize="{TemplateBinding FontSize}"
-                    Foreground="{DynamicResource Light.TextMutedBrush}"
-                    Text="{TemplateBinding Content}" />
-            </Border>
-            <ControlTemplate.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.BgElevatedBrush}" />
-                    <Setter TargetName="Txt" Property="Foreground" Value="{DynamicResource Light.TextPrimaryBrush}" />
-                </Trigger>
-                <Trigger Property="IsPressed" Value="True">
-                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.BgDeepBrush}" />
-                </Trigger>
-            </ControlTemplate.Triggers>
-        </ControlTemplate>
-
         <ControlTemplate x:Key="PrimaryButtonTemplate" TargetType="Button">
             <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="8">
                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
@@ -142,13 +121,6 @@
                         VerticalAlignment="Top"
                         Opacity="0"
                         Orientation="Horizontal">
-                        <Button
-                            Width="28"
-                            Height="28"
-                            Click="MinimizeBtn_Click"
-                            Content="─"
-                            FontSize="14"
-                            Template="{StaticResource MinimizeButtonTemplate}" />
                         <Button
                             x:Name="CloseBtn"
                             Width="28"

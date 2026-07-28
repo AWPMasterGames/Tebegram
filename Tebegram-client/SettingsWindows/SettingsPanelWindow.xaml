@@ -381,16 +381,21 @@
                                             FontSize="15"
                                             Foreground="{DynamicResource Light.TextPrimaryBrush}" />
                                     </StackPanel>
-                                    <Viewbox
+                                    <!--  Подсказка: логин — то, что вводят другие, чтобы найти тебя.
+                                          Border с прозрачным фоном делает наводимой всю область иконки.  -->
+                                    <Border
                                         Grid.Column="1"
-                                        Width="16"
-                                        Height="16"
-                                        VerticalAlignment="Center">
-                                        <Path
-                                            Data="{StaticResource IconInfo}"
-                                            Fill="{DynamicResource Light.TextMutedBrush}"
-                                            Stretch="Uniform" />
-                                    </Viewbox>
+                                        Background="Transparent"
+                                        Cursor="Help"
+                                        VerticalAlignment="Center"
+                                        ToolTip="Это твой логин. Другие пользователи вводят его в поиск, чтобы найти тебя и написать.">
+                                        <Viewbox Width="16" Height="16">
+                                            <Path
+                                                Data="{StaticResource IconInfo}"
+                                                Fill="{DynamicResource Light.TextMutedBrush}"
+                                                Stretch="Uniform" />
+                                        </Viewbox>
+                                    </Border>
                                 </Grid>
 
                                 <!--  Разделитель строк  -->
