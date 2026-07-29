@@ -1,0 +1,938 @@
+/* ═══════════════════════════════════════════════════════════
+   Tebegram Web — стили в духе нативных iOS-приложений.
+   Палитра совпадает с десктопным клиентом (ColorSystem.xaml).
+   ═══════════════════════════════════════════════════════════ */
+
+:root {
+  /* Светлая тема (по умолчанию) */
+  --bg-deep: #E8ECF5;
+  --bg-primary: #FFFFFF;
+  --bg-surface: #F2F4FA;
+  --bg-elevated: #EAECF5;
+  --bg-input: #F0F2F8;
+  --accent: #4A5AE8;
+  --accent-hover: #5B6BF5;
+  --accent-muted: #DCE0FF;
+  --accent-text: #3A4AD0;
+  --danger: #D93025;
+  --success: #1E8A5E;
+  --text-primary: #0D1117;
+  --text-secondary: #505870;
+  --text-muted: #909AAF;
+  --text-inverse: #FFFFFF;
+  --border-subtle: #EAECF5;
+  --border-default: #D4D8E8;
+  --msg-out: #4A5AE8;
+  --msg-in: #FFFFFF;
+  --chat-bg: linear-gradient(135deg, #F0F4FF 0%, #EAECF5 100%);
+  --shadow: 0 1px 6px rgba(0, 0, 0, .08);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-deep: #0D1117;
+    --bg-primary: #161B27;
+    --bg-surface: #1E2438;
+    --bg-elevated: #262D47;
+    --bg-input: #1A1F33;
+    --accent: #5B6BF5;
+    --accent-hover: #6B7BFF;
+    --accent-muted: #1E2560;
+    --accent-text: #8B9BFF;
+    --danger: #F04F4F;
+    --success: #3ECF8E;
+    --text-primary: #E8EAED;
+    --text-secondary: #8B91A8;
+    --text-muted: #4A5068;
+    --text-inverse: #FFFFFF;
+    --border-subtle: #1E2438;
+    --border-default: #2E3550;
+    --msg-out: #2D3F9E;
+    --msg-in: #262D47;
+    --chat-bg: radial-gradient(120% 95% at 50% 20%, #1E2845 0%, #0D1117 100%);
+    --shadow: 0 1px 6px rgba(0, 0, 0, .35);
+  }
+}
+
+/* Ручной выбор темы в настройках перекрывает системную
+   (data-theme на <html>; без атрибута — авто по prefers-color-scheme) */
+:root[data-theme="light"] {
+  --bg-deep: #E8ECF5;
+  --bg-primary: #FFFFFF;
+  --bg-surface: #F2F4FA;
+  --bg-elevated: #EAECF5;
+  --bg-input: #F0F2F8;
+  --accent: #4A5AE8;
+  --accent-hover: #5B6BF5;
+  --accent-muted: #DCE0FF;
+  --accent-text: #3A4AD0;
+  --danger: #D93025;
+  --success: #1E8A5E;
+  --text-primary: #0D1117;
+  --text-secondary: #505870;
+  --text-muted: #909AAF;
+  --text-inverse: #FFFFFF;
+  --border-subtle: #EAECF5;
+  --border-default: #D4D8E8;
+  --msg-out: #4A5AE8;
+  --msg-in: #FFFFFF;
+  --chat-bg: linear-gradient(135deg, #F0F4FF 0%, #EAECF5 100%);
+  --shadow: 0 1px 6px rgba(0, 0, 0, .08);
+}
+
+:root[data-theme="dark"] {
+  --bg-deep: #0D1117;
+  --bg-primary: #161B27;
+  --bg-surface: #1E2438;
+  --bg-elevated: #262D47;
+  --bg-input: #1A1F33;
+  --accent: #5B6BF5;
+  --accent-hover: #6B7BFF;
+  --accent-muted: #1E2560;
+  --accent-text: #8B9BFF;
+  --danger: #F04F4F;
+  --success: #3ECF8E;
+  --text-primary: #E8EAED;
+  --text-secondary: #8B91A8;
+  --text-muted: #4A5068;
+  --text-inverse: #FFFFFF;
+  --border-subtle: #1E2438;
+  --border-default: #2E3550;
+  --msg-out: #2D3F9E;
+  --msg-in: #262D47;
+  --chat-bg: radial-gradient(120% 95% at 50% 20%, #1E2845 0%, #0D1117 100%);
+  --shadow: 0 1px 6px rgba(0, 0, 0, .35);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  /* Системный шрифт платформы — на iPhone это SF Pro, поэтому выглядит «как родное» */
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+.hidden { display: none !important; }
+
+/* Безопасные зоны iPhone (чёлка и полоса внизу) */
+.safe-top { padding-top: calc(env(safe-area-inset-top, 0px) + 8px); }
+/* Не полный inset (34px на iPhone), а сильно урезанный: панели почти у самого
+   края. Это НЕ заблокировано системой — iOS рисует «домашний индикатор» поверх
+   нашего контента; ~10px хватает, чтобы кнопки не попадали ровно под полоску.
+   max() не даёт уйти в 0 на устройствах без «чёлки». */
+.safe-bottom { padding-bottom: max(calc(env(safe-area-inset-bottom, 0px) - 24px), 4px); }
+
+/* ═══════════ Экраны ═══════════ */
+.screen {
+  position: fixed;
+  /* Привязка ко ВСЕМ четырём краям (bottom:0 прижимает таббар к самому низу).
+     Никаких height:100vh/dvh — на iPhone-ярлыке они врут, оставляя полосу снизу:
+     фиксированный элемент, растянутый через inset, физически не может её оставить */
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-primary);
+}
+
+/* Экран чата выезжает справа, как push-переход в iOS */
+.screen-chat {
+  transform: translateX(100%);
+  transition: transform .3s cubic-bezier(.32, .72, .35, 1);
+  z-index: 20;
+}
+.screen-chat.open { transform: translateX(0); }
+
+/* ═══════════ Авторизация ═══════════ */
+.screen--auth {
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-deep);
+  padding: 24px;
+}
+.auth-box {
+  width: 100%;
+  max-width: 360px;
+  background: var(--bg-primary);
+  border-radius: 20px;
+  padding: 28px 22px calc(28px + env(safe-area-inset-bottom, 0px));
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.auth-logo { width: 72px; height: 72px; border-radius: 18px; align-self: center; }
+.auth-title { font-size: 26px; font-weight: 700; text-align: center; }
+.auth-subtitle { color: var(--text-secondary); text-align: center; margin-bottom: 8px; }
+.auth-error { color: var(--danger); font-size: 14px; text-align: center; }
+
+.field input, .field textarea {
+  width: 100%;
+  /* 16px минимум — иначе iOS приближает страницу при фокусе */
+  font-size: 16px;
+  padding: 13px 14px;
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  outline: none;
+  -webkit-appearance: none;
+}
+.field input:focus { border-color: var(--accent); }
+
+.btn {
+  font-size: 16px;
+  font-weight: 600;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: opacity .15s;
+}
+.btn:active { opacity: .7; }
+.btn--primary { background: var(--accent); color: #fff; }
+.btn--ghost { background: transparent; color: var(--accent-text); }
+
+/* ═══════════ Шапки ═══════════ */
+.header {
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+.header--large { padding-left: 16px; padding-right: 16px; padding-bottom: 8px; }
+.header-row { display: flex; align-items: center; justify-content: space-between; }
+.header-title { font-size: 32px; font-weight: 800; letter-spacing: -.5px; }
+
+.conn-badge {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--success);
+  transition: background .3s;
+}
+.conn-badge--off { background: var(--text-muted); }
+
+.search-wrap { margin-top: 8px; }
+
+/* Папки контактов — горизонтальная лента чипсов */
+.folder-chips {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+.folder-chips::-webkit-scrollbar { display: none; }
+.folder-chip {
+  flex-shrink: 0;
+  border: none;
+  border-radius: 16px;
+  padding: 7px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--bg-input);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.folder-chip--active {
+  background: var(--accent);
+  color: #fff;
+}
+.search-wrap input {
+  width: 100%;
+  font-size: 16px;
+  padding: 9px 14px;
+  border: none;
+  border-radius: 10px;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  outline: none;
+  -webkit-appearance: none;
+}
+
+/* ═══════════ Список чатов ═══════════ */
+.tab { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.chat-list { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+
+.chat-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background .12s;
+}
+.chat-item:active { background: var(--bg-elevated); }
+.chat-item + .chat-item { border-top: .5px solid var(--border-subtle); }
+
+.chat-item-body { flex: 1; min-width: 0; }
+.chat-item-top { display: flex; justify-content: space-between; align-items: baseline; }
+.chat-item-name { font-size: 17px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chat-item-time { font-size: 13px; color: var(--text-muted); flex-shrink: 0; margin-left: 8px; }
+.chat-item-preview {
+  font-size: 14px;
+  color: var(--text-secondary);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+.chat-list-empty {
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 15px;
+}
+
+/* ═══════════ Аватары ═══════════ */
+.avatar {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: var(--accent-muted);
+  color: var(--accent-text);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 20px;
+  flex-shrink: 0;
+  overflow: hidden;
+  user-select: none;
+}
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.avatar--sm { width: 36px; height: 36px; font-size: 15px; }
+.avatar--xl { width: 64px; height: 64px; font-size: 24px; }
+
+/* ═══════════ Плавающая кнопка ═══════════ */
+.fab {
+  position: absolute;
+  right: 18px;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 76px);
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px rgba(74, 90, 232, .4);
+  cursor: pointer;
+  z-index: 5;
+}
+.fab svg { width: 26px; height: 26px; }
+.fab:active { transform: scale(.92); }
+
+/* ═══════════ Нижняя панель вкладок ═══════════ */
+.tabbar {
+  /* Прибит к НИЗУ вьюпорта жёстко (fixed), а не через flex: на iPhone (Safari
+     standalone) flex-раскладка оставляла полосу под панелью, хотя в Chromium всё
+     было ровно. Фиксированной позиции всё равно на высотные капризы движка.
+     z-index 10 < 20 (.screen-chat) — экран чата выезжает ПОВЕРХ панели. */
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  border-top: .5px solid var(--border-default);
+  background: color-mix(in srgb, var(--bg-primary) 92%, transparent);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+/* Панель плавает над контентом — списку и настройкам нужен нижний отступ,
+   чтобы последний элемент не прятался под ней */
+.chat-list,
+.settings {
+  padding-bottom: calc(66px + env(safe-area-inset-bottom, 0px));
+}
+.tabbar-item {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 2px;
+  padding: 7px 0 3px;
+  border: none; background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.tabbar-item--active { color: var(--accent-text); }
+.tabbar-icon { width: 24px; height: 24px; }
+.tabbar-label { font-size: 10px; font-weight: 600; }
+
+/* ═══════════ Экран переписки ═══════════ */
+.chat-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-left: 6px;
+  padding-right: 10px;
+  padding-bottom: 8px;
+}
+.back-btn {
+  border: none; background: transparent;
+  color: var(--accent-text);
+  /* Сенсорная цель ≥44pt */
+  min-width: 44px; min-height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0;
+  cursor: pointer;
+}
+.back-btn svg { width: 28px; height: 28px; }
+.chat-header-info { flex: 1; min-width: 0; }
+.chat-header-name { font-size: 17px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chat-header-username { font-size: 13px; color: var(--text-secondary); }
+
+.icon-btn {
+  border: none; background: transparent;
+  /* Сенсорная цель ≥44pt */
+  min-width: 44px; min-height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  color: var(--accent-text);
+}
+.icon-btn svg { width: 22px; height: 22px; }
+.icon-btn:disabled { opacity: .35; }
+.icon-btn:active { opacity: .6; }
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--chat-bg);
+  padding: 12px 12px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bubble {
+  max-width: 78%;
+  padding: 8px 12px;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  font-size: 15px;
+  line-height: 1.35;
+  animation: bubble-in .18s ease-out;
+}
+@keyframes bubble-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+.bubble--in {
+  align-self: flex-start;
+  background: var(--msg-in);
+  color: var(--text-primary);
+  border-top-left-radius: 5px;
+}
+.bubble--out {
+  align-self: flex-end;
+  background: var(--msg-out);
+  color: var(--text-inverse);
+  border-top-right-radius: 5px;
+}
+.bubble-time {
+  display: block;
+  font-size: 10px;
+  text-align: right;
+  margin-top: 3px;
+  opacity: .6;
+}
+.bubble--file { text-decoration: none; display: block; }
+.bubble--file .file-name { font-weight: 600; text-decoration: underline; }
+/* Вторая строка карточки файла: «MP4-файл · скачать» */
+.file-meta { display: block; font-size: 12px; opacity: .7; margin-top: 2px; }
+/* Видео в чате: превью-кадр с кнопкой play по центру (как в десктопном клиенте) */
+.bubble--video { position: relative; padding: 3px; width: fit-content; max-width: min(246px, 78%); }
+.bubble-video-preview {
+  display: block;
+  width: 100%;
+  border-radius: 12px;
+  /* Кадр может быть любых пропорций — ограничиваем высоту, как у фото */
+  max-height: 320px;
+  object-fit: cover;
+  background: #000;
+}
+.video-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, .6);
+  color: #fff;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  pointer-events: none;
+}
+.video-play svg { width: 22px; height: 22px; display: block; }
+/* Универсальная карточка неизвестного файла — плашка вместо простой ссылки */
+.bubble--doc .file-name { text-decoration: none; }
+.bubble--doc {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+}
+.bubble--doc.bubble--out {
+  /* На акцентном фоне своего пузыря — полупрозрачная плашка, как в win-клиенте */
+  background: rgba(255, 255, 255, .18);
+  border-color: rgba(255, 255, 255, .28);
+}
+/* ═══════════ Глобальный поиск (@логин) ═══════════ */
+.gs-header {
+  padding: 14px 16px 6px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  color: var(--text-muted);
+}
+.gs-item .avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-muted);
+  color: var(--accent-text);
+  font-weight: 700;
+}
+
+/* ═══════════ Заглушка горизонтального режима ═══════════ */
+.rotate-lock {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.rotate-lock p { margin-top: 6px; color: var(--text-secondary); font-size: 14px; }
+/* Только телефоны (по высоте), не десктопные окна */
+@media (orientation: landscape) and (max-height: 500px) {
+  .rotate-lock { display: flex; }
+}
+
+/* ═══════════ Просмотр фото (лайтбокс) ═══════════ */
+.photo-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(8, 10, 16, .92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.photo-viewer img,
+.photo-viewer video {
+  max-width: 94vw;
+  max-height: 84vh;
+  border-radius: 10px;
+  object-fit: contain;
+}
+/* .hidden скрывает элемент, но у video display:flex от родителя перебивал бы правило */
+.photo-viewer video.hidden { display: none; }
+.pv-btn {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  background: rgba(255, 255, 255, .12);
+  color: #fff;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+.pv-close {
+  top: calc(env(safe-area-inset-top, 0px) + 14px);
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+.pv-close svg { width: 22px; height: 22px; }
+.pv-download {
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 18px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 22px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* Инлайн-превью фото в пузыре (как в десктопном клиенте) */
+.bubble-photo {
+  display: block;
+  max-width: min(240px, 100%);
+  max-height: 260px;
+  border-radius: 13px;
+  object-fit: contain;
+}
+/* Фото-пузырь: минимальная рамка (u исходящих фон был широкой обводкой),
+   время — плашкой поверх фото, как в Telegram */
+.bubble--photo {
+  padding: 3px;
+  position: relative;
+  /* Без этого пузырь широких (горизонтальных) фото растягивался до НАТУРАЛЬНОЙ
+     ширины картинки, хотя сама она ужата до 240px — справа оставалась пустота,
+     и время «висело в воздухе» вместо наложения на фото */
+  width: fit-content;
+  max-width: min(246px, 78%);
+}
+/* Время плашкой поверх вложения — одинаково у фото и у превью видео */
+.bubble--photo .bubble-time,
+.bubble--video .bubble-time {
+  position: absolute;
+  right: 9px;
+  bottom: 9px;
+  margin: 0;
+  padding: 1px 7px;
+  border-radius: 9px;
+  background: rgba(0, 0, 0, .45);
+  color: #fff;
+  opacity: 1;
+}
+
+.messages-date {
+  align-self: center;
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: color-mix(in srgb, var(--bg-surface) 75%, transparent);
+  border-radius: 10px;
+  padding: 3px 10px;
+  margin: 4px 0;
+}
+
+/* ═══════════ Поле ввода сообщения ═══════════ */
+.composer {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--bg-primary);
+  border-top: .5px solid var(--border-default);
+  flex-shrink: 0;
+}
+.composer-attach { font-size: 20px; padding: 8px 4px; }
+.composer-input-wrap {
+  flex: 1;
+  background: var(--bg-input);
+  border: 1px solid var(--border-default);
+  border-radius: 18px;
+  padding: 8px 14px;
+}
+.composer-input-wrap textarea {
+  width: 100%;
+  max-height: 96px;
+  font-size: 16px;
+  font-family: inherit;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  resize: none;
+  outline: none;
+}
+.composer-send {
+  width: 44px; height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.composer-send svg { width: 20px; height: 20px; margin-left: 2px; }
+.composer-send:active { transform: scale(.9); }
+
+/* ═══════════ Настройки ═══════════ */
+.settings {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 14px 16px 90px;
+  background: var(--bg-surface);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.card {
+  background: var(--bg-primary);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.settings-profile { display: flex; align-items: center; gap: 14px; padding: 16px; }
+.settings-name { font-size: 19px; font-weight: 700; }
+.settings-username { color: var(--text-secondary); font-size: 14px; }
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 16px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+}
+.settings-row:active { background: var(--bg-elevated); }
+.settings-row--danger { color: var(--danger); justify-content: center; font-weight: 600; }
+.settings-row--column { flex-direction: column; align-items: stretch; gap: 8px; cursor: default; }
+.settings-row--column input {
+  font-size: 16px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  outline: none;
+}
+/* Выпадающий список (тема и т.п.) — в стиле полей ввода, со своей стрелкой,
+   т.к. системная у select не красится под тему */
+.select-wrap { position: relative; }
+.select-wrap select {
+  width: 100%;
+  font-size: 16px;
+  padding: 10px 36px 10px 12px;
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+.select-wrap::after {
+  content: "";
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  margin-top: -6px;
+  border-right: 1.5px solid var(--text-muted);
+  border-bottom: 1.5px solid var(--text-muted);
+  transform: rotate(45deg);
+  pointer-events: none; /* клик проходит в сам select */
+}
+.settings-hint { color: var(--text-muted); font-size: 12px; }
+.settings-value { color: var(--text-secondary); font-size: 15px; }
+.settings-version { text-align: center; color: var(--text-muted); font-size: 12px; margin-top: 8px; }
+.chevron { color: var(--text-muted); font-size: 20px; }
+
+/* ═══════════ Модалка ═══════════ */
+.modal {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, .45);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  z-index: 50;
+}
+.modal-card {
+  width: 100%; max-width: 340px;
+  background: var(--bg-primary);
+  border-radius: 18px;
+  padding: 20px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.modal-card h2 { font-size: 19px; }
+.modal-actions { display: flex; gap: 10px; }
+.modal-actions .btn { flex: 1; }
+
+/* ═══════════ Обрезка аватара ═══════════ */
+.crop-area {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #000;
+  touch-action: none;       /* перетаскивание пальцем, а не скролл */
+  cursor: grab;
+}
+.crop-area:active { cursor: grabbing; }
+#crop-img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  max-width: none;          /* транслируем/масштабируем сами */
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+  will-change: transform;
+}
+/* Затемнение вне круга + тонкое кольцо (как в десктопном кропе) */
+.crop-ring {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle 140px at center, transparent 139px, rgba(0, 0, 0, .55) 140px);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .25);
+  border-radius: 14px;
+}
+#crop-zoom {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+/* ═══════════ Подсказка установки ═══════════ */
+.install-hint {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, .45);
+  display: flex; align-items: flex-end; justify-content: center;
+  z-index: 60;
+}
+.install-hint-card {
+  width: 100%;
+  max-width: 480px;
+  background: var(--bg-primary);
+  border-radius: 20px 20px 0 0;
+  padding: 22px 20px calc(22px + env(safe-area-inset-bottom, 0px));
+  display: flex; flex-direction: column; gap: 12px;
+  font-size: 15px;
+}
+.install-hint-card p { color: var(--text-secondary); line-height: 1.45; }
+.ios-share { color: var(--accent-text); font-weight: 700; }
+
+/* ═══════════ Экран звонка ═══════════ */
+.screen-call {
+  z-index: 40;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(160deg, var(--accent) 0%, #2a1d6e 100%);
+  color: #fff;
+}
+.call-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin-top: 12vh;
+  padding: 0 24px;
+  text-align: center;
+}
+.avatar--call {
+  width: 128px; height: 128px;
+  font-size: 48px;
+  background: rgba(255, 255, 255, .16);
+  color: #fff;
+}
+.avatar--call svg { width: 56%; height: 56%; }
+.call-name { font-size: 26px; font-weight: 700; }
+.call-status { font-size: 16px; opacity: .85; min-height: 22px; }
+
+.call-actions {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0 24px 6vh;
+}
+.call-btn-row { display: flex; gap: 56px; }
+.call-btn {
+  width: 68px; height: 68px;
+  border: none;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: #fff;
+  transition: transform .1s, opacity .15s;
+}
+.call-btn svg { width: 30px; height: 30px; }
+.call-btn:active { transform: scale(.9); }
+.call-btn--accept { background: #2ecc71; }
+.call-btn--hangup { background: #e74c3c; }
+.call-btn--hangup svg { transform: rotate(135deg); }
+.call-btn--mic { background: rgba(255, 255, 255, .2); }
+.call-btn--mic.muted { background: #e74c3c; }
+
+/* ═══════════ Аватар «Избранное» ═══════════ */
+.avatar--fav {
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  color: #fff;
+}
+.avatar--fav svg { width: 56%; height: 56%; }
+
+/* ═══════════ Нижнее меню действий (action sheet) ═══════════ */
+.sheet {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, .45);
+  display: flex; align-items: flex-end; justify-content: center;
+  z-index: 65;
+  animation: fade-in .15s ease-out;
+}
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+.sheet-card {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 8px calc(env(safe-area-inset-bottom, 0px) + 8px);
+  display: flex; flex-direction: column; gap: 1px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--border-subtle);
+}
+.sheet-btn {
+  border: none;
+  padding: 16px;
+  font-size: 17px;
+  background: var(--bg-primary);
+  color: var(--accent-text);
+  cursor: pointer;
+}
+.sheet-btn:active { background: var(--bg-elevated); }
+.sheet-btn--danger { color: var(--danger); }
+.sheet-btn:last-child { margin-top: 8px; border-radius: 14px; font-weight: 600; color: var(--accent-text); }
+
+/* ═══════════ Тост ═══════════ */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 88px);
+  transform: translateX(-50%);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  padding: 10px 18px;
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  font-size: 14px;
+  z-index: 70;
+  max-width: 86%;
+  text-align: center;
+}
+
+/* Тонкие скроллбары на десктопе */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* Видимый фокус для клавиатуры и скринридеров (a11y) */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Уважение к системной настройке «уменьшить движение» */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}

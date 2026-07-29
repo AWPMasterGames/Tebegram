@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <!-- Веб-клиент (PWA) из папки docs попадает в сборку сервера как wwwroot
+       и раздаётся по адресу /app -->
+  <ItemGroup>
+    <Content Include="..\docs\**" LinkBase="wwwroot" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- ЖИВАЯ база пользователей лежит в bin/.../Data/Users.json — сервер пишет её
+       на лету (автосохранение каждые 10 с). Закоммиченный Data/Users.json — лишь
+       дев-сид, но Sdk.Web сам включает все *.json как Content с копированием в
+       выход, из-за чего ПЕРЕСБОРКА после git pull / переключения веток затирала
+       живую базу сидом: свежезарегистрированные аккаунты пропадали (симптом
+       «в логах аккаунт создан, а войти нельзя»). Поэтому в выход его не копируем:
+       свежая установка стартует с пустой базой и создаёт файл при первом сохранении. -->
+  <ItemGroup>
+    <Content Update="Data\Users.json" CopyToOutputDirectory="Never" CopyToPublishDirectory="Never" />
+  </ItemGroup>
+
+</Project>

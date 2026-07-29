@@ -1,20 +1,33 @@
-*.data
-*.log
-*.cache
-*.tmp
-*.pid
+# Build artifacts
+bin/
+obj/
+
+# Локальные заметки/журналы разработки — описывают процесс, а не сам проект,
+# в итоговый репозиторий (main) не идут. Ведутся локально.
+roadmap.md
+UI-MIGRATION.md
+TUNNEL-TEST-LOG.md
+VOICE-PLAN.md
+Для Github.txt
+
+# Собранные установщики — их место в GitHub Releases, не в репозитории
+Installer/Output/
+
+# IDE files
+.vs/
 *.user
-*.config
-Tebegrammmm/TebegramServer/TebegramServer/uploads/
-Tebegrammmm/TebegramServer/TebegramServer/avatars/
-Tebegrammmm/Tebegrammmm/bin/Debug/net8.0-windows/CrashLogs/
-Tebegrammmm/Tebegrammmm/bin/Release/net8.0-windows/CrashLogs/
-Tebegrammmm/Tebegrammmm/bin/Release/net8.0-windows/Data/
-Tebegrammmm/Tebegrammmm/bin/Debug/net8.0-windows/Data/
-Tebegrammmm/Tebegrammmm/bin/Debug/net8.0-windows/Settings/
-Tebegrammmm/TebegramServer/TebegramServer/Messages/
-Tebegrammmm/TebegramServer/TebegramServer/Logs/
-Tebegrammmm/TebegramServer/TebegramServer/bin/Debug/net8.0/Data/
-Tebegrammmm/TebegramServer/TebegramServer/bin/Debug/net8.0/Logs/
-Tebegrammmm/TebegramServer/TebegramServer/bin/Release/net8.0/Data/
-Tebegrammmm/TebegramServer/TebegramServer/bin/Release/net8.0/Logs/
+# Логи авто-обновления проекта, генерируемые Visual Studio
+UpgradeLog*.htm
+
+# Server runtime data
+Tebegram-server/Logs/
+Tebegram-server/Messages/
+Tebegram-server/uploads/
+Tebegram-server/avatars/
+
+# Client runtime data
+Tebegram-client/bin/Debug/net8.0-windows/CrashLogs/
+Tebegram-client/bin/Release/net8.0-windows/CrashLogs/
+Tebegram-client/bin/Release/net8.0-windows/Data/
+Tebegram-client/bin/Debug/net8.0-windows/Data/
+Tebegram-client/bin/Debug/net8.0-windows/Settings/
