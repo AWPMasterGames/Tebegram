@@ -22,19 +22,22 @@ namespace Tebegrammmm.Data
         /// <summary>Адрес своего сервера (вариант «Другой»); пуст, если не задан.</summary>
         public static string CustomAdress { get; private set; } = "";
 
-        // Источники адреса сервера в порядке приоритета: СНАЧАЛА main — по нему
-        // живут релизные сборки у тестеров, и рабочая ветка не должна случайно
-        // уводить их на временный адрес. Ветка main-dev-Test остаётся запасным
-        // вариантом (если main почему-то недоступен).
+        // Источники адреса сервера в порядке приоритета. Все ведут на main — по
+        // нему живут релизные сборки у тестеров, и рабочая ветка не должна
+        // случайно уводить их на временный адрес.
         //
-        // Путей к main ДВА, потому что в main лежит СТАРАЯ раскладка репозитория:
-        // канонический адрес сейчас в Tebegrammmm/Adress.txt (им управляет Максим).
-        // Первый путь сработает, когда main переедет на Tebegram-client/ — тогда
-        // второй станет просто запасным. Недоступный путь молча пропускается.
+        // ПЕРВЫМ идёт Tebegrammmm/Adress.txt — это КАНОНИЧЕСКИЙ файл, его ведёт
+        // Максим, и его же читают все клиенты, выпущенные до 2.0.0 (другого пути
+        // они не знают). Tebegram-client/Adress.txt — зеркало для новой раскладки;
+        // оно стоит вторым намеренно: если обновить только канонический файл,
+        // зеркало останется устаревшим, и при ВЫКЛЮЧЕННЫХ серверах победил бы
+        // именно устаревший адрес (проверка живости в этом случае не спасает).
+        // Ветка main-dev-Test — последний запасной вариант.
+        // Недоступный путь просто пропускается, поэтому лишних записей не боимся.
         private static readonly string[] AdressUrls =
         {
-            "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Tebegram-client/Adress.txt",
             "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Tebegrammmm/Adress.txt",
+            "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Tebegram-client/Adress.txt",
             "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main-dev-Test/Tebegram-client/Adress.txt",
         };
 
