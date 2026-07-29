@@ -26,11 +26,15 @@ namespace Tebegrammmm.Data
         // живут релизные сборки у тестеров, и рабочая ветка не должна случайно
         // уводить их на временный адрес. Ветка main-dev-Test остаётся запасным
         // вариантом (если main почему-то недоступен).
-        // Путь main/Tebegrammmm/Adress.txt убран: старая раскладка репозитория
-        // удалена вместе с переездом на Tebegram-client / Tebegram-server.
+        //
+        // Путей к main ДВА, потому что в main лежит СТАРАЯ раскладка репозитория:
+        // канонический адрес сейчас в Tebegrammmm/Adress.txt (им управляет Максим).
+        // Первый путь сработает, когда main переедет на Tebegram-client/ — тогда
+        // второй станет просто запасным. Недоступный путь молча пропускается.
         private static readonly string[] AdressUrls =
         {
             "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Tebegram-client/Adress.txt",
+            "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Tebegrammmm/Adress.txt",
             "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main-dev-Test/Tebegram-client/Adress.txt",
         };
 
