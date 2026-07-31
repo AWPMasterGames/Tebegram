@@ -22,14 +22,23 @@ namespace Tebegrammmm.Data
         /// <summary>Адрес своего сервера (вариант «Другой»); пуст, если не задан.</summary>
         public static string CustomAdress { get; private set; } = "";
 
-        // Источники адреса сервера в порядке приоритета.
-        // Первый — ветка main-dev-Test (ВРЕМЕННО, для проверки туннеля DrunkMan),
-        // дальше — основные пути в main (новая и старая раскладка репозитория).
+        // Источники адреса сервера в порядке приоритета. Все ведут на main — по
+        // нему живут релизные сборки у тестеров, и рабочая ветка не должна
+        // случайно уводить их на временный адрес.
+        //
+        // ПЕРВЫМ идёт Tebegrammmm/Adress.txt — это КАНОНИЧЕСКИЙ файл, его ведёт
+        // Максим, и его же читают все клиенты, выпущенные до 2.0.0 (другого пути
+        // они не знают). Tebegram-client/Adress.txt — зеркало для новой раскладки;
+        // оно стоит вторым намеренно: если обновить только канонический файл,
+        // зеркало останется устаревшим, и при ВЫКЛЮЧЕННЫХ серверах победил бы
+        // именно устаревший адрес (проверка живости в этом случае не спасает).
+        // Ветка main-dev-Test — последний запасной вариант.
+        // Недоступный путь просто пропускается, поэтому лишних записей не боимся.
         private static readonly string[] AdressUrls =
         {
-            "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main-dev-Test/Tebegram-client/Adress.txt",
-            "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Tebegram-client/Adress.txt",
             "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Tebegrammmm/Adress.txt",
+            "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Tebegram-client/Adress.txt",
+            "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main-dev-Test/Tebegram-client/Adress.txt",
         };
 
         private static string _ServerAdress = DefaultAdress;
@@ -74,13 +83,18 @@ namespace Tebegrammmm.Data
                 return;
             }
 
-            // Вариант «main»: Adress.txt на GitHub (несколько путей-кандидатов).
+            // Вариант «main»: адрес ВСЕГДА берётся из Adress.txt на GitHub и не
+            // должен «залипать» на адресе «Другого» с прошлого выбора. Раньше при
+            // переключении custom→main, если GitHub был недоступен, _ServerAdress
+            // сохранял свой (custom) адрес — и клиент под меткой «main» продолжал
+            // ходить на личный сервер (жалоба «выбрал main, а подключился к своему»).
+            // Поэтому сбрасываем на localhost: если ни один кандидат не скачается,
+            // индикатор честно покажет «сервер не отвечает», а не чужой адрес.
+            _ServerAdress = DefaultAdress;
+
             // Кандидат берётся, только если его сервер ЖИВ (/Test отвечает «HI!»).
-            // Раньше побеждал первый успешно СКАЧАННЫЙ адрес: мёртвый туннель в
-            // файле «закупоривал» авто-режим, хотя дальше по цепочке лежал рабочий
-            // адрес (жалоба «не заходит через Adress.txt»). Если не жив ни один —
-            // оставляем первый скачанный (прежнее поведение: пусть индикатор честно
-            // покажет «сервер не отвечает», а не молча уйдёт на localhost).
+            // Первый успешно СКАЧАННЫЙ адрес запоминаем как запасной: мёртвый туннель
+            // в файле не должен «закупоривать» цепочку, если дальше лежит рабочий адрес.
             string firstFetched = null;
             foreach (string url in AdressUrls)
             {
