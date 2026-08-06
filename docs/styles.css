@@ -441,6 +441,43 @@ html, body {
   margin-top: 3px;
   opacity: .6;
 }
+/* ── Создание группы ── */
+/* Кнопка в шапке «Чаты» прижимается вправо, к краю строки */
+.header-action { margin-left: auto; }
+
+.group-name-input {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-input, transparent);
+  color: inherit;
+  font: inherit;
+}
+.group-hint {
+  font-size: 12px;
+  opacity: .65;
+  margin-bottom: 10px;
+}
+/* Список участников прокручивается: контактов может быть много,
+   а модалка не должна вылезать за экран телефона */
+.group-members {
+  max-height: min(46vh, 320px);
+  overflow-y: auto;
+  margin-bottom: 12px;
+}
+.group-member {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 4px;
+  cursor: pointer;
+}
+.group-member input { width: 18px; height: 18px; flex: none; }
+.group-member-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.group-members-empty { font-size: 13px; opacity: .65; padding: 8px 4px; }
+
 /* Галочки статуса своего сообщения (одна — отправлено, две — прочитано).
    Вторая галочка накладывается со сдвигом, как в win-клиенте. */
 .msg-status {

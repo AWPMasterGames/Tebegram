@@ -136,6 +136,16 @@ const Api = {
     } catch { return []; }
   },
 
+  // Создание группы. Ники участников (без себя) разделяются ▫, название — в query.
+  // Сервер сам разошлёт всем участникам addChat, поэтому отдельно добавлять
+  // группу в список не нужно — её подхватит обработчик конверта.
+  async createChat(userId, usernames, name) {
+    const path = usernames.map(encodeURIComponent).join(encodeURIComponent(SEP));
+    const r = await fetchWithTimeout(
+      `${Server.address}/Chat/Create/${userId}-${path}?name=${encodeURIComponent(name)}`, 10000);
+    return { ok: r.ok, text: await r.text() };
+  },
+
   // История группы: сообщения через ❂ в обычном формате (без конверта)
   async chatHistory(chatId) {
     try {
@@ -935,7 +945,9 @@ function upsertGroup(info) {
   const existing = findGroup(info.chatId);
   if (existing) {
     existing.name = info.name;
-    existing.memberIds = info.memberIds;
+    // Ответ /Chat/Create участников не содержит (в отличие от конверта addChat) —
+    // пустым списком не затираем уже известный состав
+    if (info.memberIds.length) existing.memberIds = info.memberIds;
     return existing;
   }
   const g = makeGroup(info);
@@ -954,6 +966,70 @@ function routeGroupMessage(payload) {
   m.outgoing = m.sender === Store.user.username;
   group.messages.push(m);
   UI.onMessageAdded(group, m);
+}
+
+/* ── Создание группы ── */
+/** Собеседники, которых можно позвать: без себя («Избранное») и без групп. */
+function groupCandidates() {
+  return Store.contacts.filter(c => !isGroupChat(c) && !isFavorites(c));
+}
+
+function openGroupModal() {
+  const box = $('group-members');
+  box.textContent = '';
+  const candidates = groupCandidates();
+
+  if (!candidates.length) {
+    const empty = document.createElement('div');
+    empty.className = 'group-members-empty';
+    empty.textContent = 'Сначала добавь собеседников: найди их через @логин в поиске.';
+    box.appendChild(empty);
+  } else {
+    for (const c of candidates) {
+      const row = document.createElement('label');
+      row.className = 'group-member';
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.value = c.username;
+      const name = document.createElement('span');
+      name.className = 'group-member-name';
+      name.textContent = c.name;
+      row.append(cb, name);
+      box.appendChild(row);
+    }
+  }
+
+  $('group-name').value = '';
+  $('modal-group').classList.remove('hidden');
+}
+
+function closeGroupModal() { $('modal-group').classList.add('hidden'); }
+
+async function createGroupFromModal() {
+  const usernames = [...document.querySelectorAll('#group-members input:checked')].map(i => i.value);
+  const name = $('group-name').value.trim();
+
+  // Сервер считает группой чат от трёх участников: я + минимум двое.
+  // При меньшем числе он молча создал бы личный чат, поэтому проверяем здесь.
+  if (usernames.length < 2) { UI.toast('Выбери хотя бы двух собеседников'); return; }
+  if (!name) { UI.toast('Введи название группы'); return; }
+
+  const btn = $('btn-group-create');
+  btn.disabled = true;
+  try {
+    const res = await Api.createChat(Store.user.id, usernames, name);
+    if (!res.ok) { UI.toast(res.text || 'Не удалось создать группу'); return; }
+    // Обычно группа уже пришла конвертом addChat; на случай, если WS молчит,
+    // добавляем её из ответа сами (upsert не создаст дубль).
+    const group = upsertGroup(parseChatLine(res.text));
+    UI.renderChatList();
+    closeGroupModal();
+    if (group) UI.openChat(group);
+  } catch {
+    UI.toast('Нет связи с сервером');
+  } finally {
+    btn.disabled = false;
+  }
 }
 
 /** Пришло removeChat▫$▫{chatId} — группу удалил владелец. */
@@ -1993,6 +2069,13 @@ function bindEvents() {
   $('msg-del-all').addEventListener('click', () => deleteTargetMessage('all'));
   $('msg-menu-cancel').addEventListener('click', hideMessageMenu);
   $('msg-menu').addEventListener('click', e => { if (e.target.id === 'msg-menu') hideMessageMenu(); });
+
+  // Создание группы
+  $('btn-new-group').addEventListener('click', openGroupModal);
+  $('btn-group-cancel').addEventListener('click', closeGroupModal);
+  $('btn-group-create').addEventListener('click', createGroupFromModal);
+  // Клик по затемнению вне карточки закрывает модалку (как у обрезки аватара)
+  $('modal-group').addEventListener('click', e => { if (e.target.id === 'modal-group') closeGroupModal(); });
 
   document.querySelectorAll('.tabbar-item').forEach(b =>
     b.addEventListener('click', () => UI.switchTab(b.dataset.tab)));
