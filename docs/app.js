@@ -641,13 +641,51 @@ const Voice = {
 
   // Опрос входящих звонков (аналог десктопного GetCallToken)
   _incoming: null,
+  _pollBusy: false,
+
+  /**
+   * Жив ли ещё показываемый входящий звонок.
+   * Пока трубку не взяли, WebSocket к комнате не открыт (см. acceptIncoming),
+   * поэтому служебное "CloseConnection" до нас дойти не может: если звонящий
+   * отменил вызов, окно висело бы вечно. Сервер при завершении обнуляет
+   * CallToken обеих сторон — по его исчезновению и понимаем, что звонок снят.
+   *
+   * Сетевую ошибку намеренно считаем «жив»: моргнувший интернет не должен
+   * сбрасывать реальный входящий звонок.
+   */
+  async _incomingStillAlive() {
+    if (!this._incoming) return false;
+    try {
+      const r = await fetch(`${Server.address}/Voice/GetCallToken/${Store.user.id}`);
+      if (!r.ok) return true;
+      const t = await r.text();
+      if (t === 'NotFound') return false;
+      return t.includes(this._incoming.token);
+    } catch {
+      return true; // сеть недоступна — окно не трогаем
+    }
+  },
+
   startPolling() {
     this._poll = setInterval(async () => {
-      if (this.active || this._incoming) return;
-      const call = await this.getIncomingCall();
-      if (call) {
-        this._incoming = call;
-        UI.showIncoming(call.caller);
+      if (this.active || this._pollBusy) return;
+      this._pollBusy = true;
+      try {
+        if (this._incoming) {
+          // Показывается входящий — следим, не отменил ли звонящий вызов
+          if (!(await this._incomingStillAlive())) {
+            this._incoming = null;
+            UI.hideCall();
+          }
+          return;
+        }
+        const call = await this.getIncomingCall();
+        if (call) {
+          this._incoming = call;
+          UI.showIncoming(call.caller);
+        }
+      } finally {
+        this._pollBusy = false;
       }
     }, 1800);
   },
@@ -873,10 +911,9 @@ const Chat = {
         let data = String(e.data);
         // Команда удаления сообщения у собеседника
         if (data.startsWith(`DEL${WS_SEP}`)) { handleDeleteNotification(data); return; }
-        // Отметка «прочитано» (две галочки в win-клиенте). На вебе индикатора
-        // статуса нет, поэтому просто пропускаем, чтобы SEEN не ушёл в разбор
-        // сообщений (иначе принялся бы за отправителя).
-        if (data.startsWith(`SEEN${WS_SEP}`)) return;
+        // Отметка «прочитано»: собеседник открыл чат с нами — наши сообщения
+        // ему становятся двумя галочками (как в win-клиенте).
+        if (data.startsWith(`SEEN${WS_SEP}`)) { handleSeenNotification(data); return; }
         // Конверты команд сервера. Оба относятся к ГРУППОВЫМ чатам, которых на
         // вебе пока нет, поэтому просто пропускаем:
         //   addChat▫$▫    — создана группа;
@@ -898,6 +935,28 @@ const Chat = {
     return true;
   },
 };
+
+/* ─────────────────────── Статус «прочитано» ─────────────────────── */
+/**
+ * Пришло SEEN▫#▫{кто-открыл}: собеседник открыл чат с нами, значит все наши
+ * отправленные ему сообщения прочитаны — переводим их в две галочки.
+ * Формат и семантика совпадают с HandleSeenNotification в win-клиенте.
+ */
+function handleSeenNotification(raw) {
+  const parts = raw.split(WS_SEP);
+  const reader = parts[1];
+  if (!reader) return;
+
+  const contact = Store.findContact(reader);
+  if (!contact) return;
+
+  let changed = false;
+  for (const m of contact.messages) {
+    if (m.outgoing && !m.seen) { m.seen = true; changed = true; }
+  }
+  // Перерисовываем, только если открыт именно этот чат и что-то поменялось
+  if (changed && Store.activeContact === contact) UI.renderMessages();
+}
 
 /* ─────────────────────── Удаление сообщений ─────────────────────── */
 let _menuTarget = null;
@@ -1335,6 +1394,9 @@ const UI = {
     const time = document.createElement('span');
     time.className = 'bubble-time';
     time.textContent = timeShort(m.time);
+    // Статус своего сообщения, как в win-клиенте: одна галочка — доставлено,
+    // две — собеседник открыл чат (пришло SEEN).
+    if (m.outgoing) time.appendChild(this.statusNode(m));
     el.appendChild(time);
 
     // Долгое нажатие (моб.) или правый клик (десктоп) — меню удаления
@@ -1349,6 +1411,29 @@ const UI = {
       showMessageMenu(Store.activeContact, m);
     });
     return el;
+  },
+
+  /**
+   * Галочки статуса своего сообщения (аналог MsgStatusTemplate в win-клиенте):
+   * одна — сервер принял, две — получатель открыл чат с нами.
+   * Рисуем SVG-галочку, чтобы вид не зависел от наличия глифа в шрифте системы.
+   */
+  statusNode(m) {
+    const wrap = document.createElement('span');
+    wrap.className = `msg-status${m.seen ? ' msg-status--seen' : ''}`;
+    wrap.title = m.seen ? 'Прочитано' : 'Отправлено';
+    const tick = () => {
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('viewBox', '0 0 16 16');
+      svg.setAttribute('class', 'msg-tick');
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', 'M2 8.5 L6 12.5 L14 4');
+      svg.appendChild(path);
+      return svg;
+    };
+    wrap.appendChild(tick());
+    if (m.seen) wrap.appendChild(tick());
+    return wrap;
   },
 
   onMessageAdded(contact, m) {

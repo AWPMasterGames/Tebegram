@@ -727,8 +727,23 @@ app.MapGet("/Voice/GetCallToken/{userId:int}", async (HttpContext Context, int u
     await Context.Response.WriteAsync(response);
 });
 
-app.MapGet("/Voice/DeclineCall/{userId:int}-{token}", async (HttpContext Context, int userId, string token) =>
+// Сегмент принимаем ЦЕЛИКОМ и делим по первому дефису вручную.
+// Причина: TokenGenerator отдаёт URL-safe Base64 ('+'→'-', '/'→'_'), то есть сам
+// токен почти всегда содержит дефисы. На маршруте "{userId:int}-{token}" такой
+// запрос не совпадал и возвращал 404 — сервер не чистил CallToken и не рассылал
+// "CloseConnection", из-за чего у второй стороны звонок не завершался.
+// Форма URL осталась прежней, менять клиенты не нужно.
+app.MapGet("/Voice/DeclineCall/{data}", async (HttpContext Context, string data) =>
 {
+    int sep = data.IndexOf('-');
+    if (sep <= 0 || !int.TryParse(data.Substring(0, sep), out int userId))
+    {
+        Context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+        await Context.Response.WriteAsync("Некорректный запрос");
+        return;
+    }
+    string token = data.Substring(sep + 1);
+
     User? user = UsersData.FindUserById(userId);
 
     if (user != null) user.CallToken = "";

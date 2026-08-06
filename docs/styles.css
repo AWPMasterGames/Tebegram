@@ -441,6 +441,25 @@ html, body {
   margin-top: 3px;
   opacity: .6;
 }
+/* Галочки статуса своего сообщения (одна — отправлено, две — прочитано).
+   Вторая галочка накладывается со сдвигом, как в win-клиенте. */
+.msg-status {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
+  vertical-align: -1px;
+}
+.msg-tick {
+  width: 11px;
+  height: 11px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+/* Две галочки — «внахлёст», иначе пара занимает слишком много места */
+.msg-status--seen .msg-tick + .msg-tick { margin-left: -5px; }
 .bubble--file { text-decoration: none; display: block; }
 .bubble--file .file-name { font-weight: 600; text-decoration: underline; }
 /* Вторая строка карточки файла: «MP4-файл · скачать» */

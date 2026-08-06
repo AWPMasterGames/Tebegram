@@ -37,6 +37,12 @@ namespace Tebegrammmm
         private bool IsMicrophoneOn { get; set; }
 
         private DispatcherTimer _callTimer;
+
+        // Сторож входящего звонка: пока трубку не взяли, WebSocket не открыт (см. Init),
+        // поэтому служебное "CloseConnection" до нас дойти не может. Если звонивший
+        // отменил вызов, окно висело бы бесконечно — поэтому опрашиваем свой CallToken.
+        private DispatcherTimer _incomingWatchdog;
+        private bool _watchdogBusy;
         private TimeSpan _callDuration;
 
         /// <summary>
@@ -75,7 +81,7 @@ namespace Tebegrammmm
                     ActiveVoiceRoom.Visibility = Visibility.Collapsed;
                     // Входящий звонок: звука пока нет, поэтому вся сигнализация —
                     // визуальная. Окно выносим на передний план по центру монитора.
-                    Loaded += (_, __) => AnnounceIncomingCall();
+                    Loaded += (_, __) => { AnnounceIncomingCall(); StartIncomingWatchdog(); };
                     break;
                 case Mode.ActiveCall:
                     Init();
@@ -317,6 +323,54 @@ namespace Tebegrammmm
             _callTimer.Start();
         }
 
+        /// <summary>
+        /// Пока показывается входящий звонок, узнать об отмене можно только опросом:
+        /// сервер обнуляет CallToken обеих сторон (ClearCallTokens) при завершении звонка.
+        /// Пропал токен — звонивший отменил вызов, закрываем окно.
+        /// </summary>
+        private void StartIncomingWatchdog()
+        {
+            if (_incomingWatchdog != null) return;
+            _incomingWatchdog = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1.5) };
+            _incomingWatchdog.Tick += async (s, e) => await CheckIncomingStillAliveAsync();
+            _incomingWatchdog.Start();
+        }
+
+        private void StopIncomingWatchdog()
+        {
+            _incomingWatchdog?.Stop();
+            _incomingWatchdog = null;
+        }
+
+        private async Task CheckIncomingStillAliveAsync()
+        {
+            // Не наслаиваем запросы и не трогаем уже завершённый звонок
+            if (_watchdogBusy || _callEnded || _incomingWatchdog == null) return;
+            _watchdogBusy = true;
+            try
+            {
+                using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/Voice/GetCallToken/{UserData.User.Id}");
+                using HttpResponseMessage response = await httpClient.SendAsync(request);
+                if (!response.IsSuccessStatusCode) return; // сервер моргнул — окно не трогаем
+                string content = await response.Content.ReadAsStringAsync();
+
+                if (content == "NotFound" || !content.Contains(Token))
+                {
+                    StopIncomingWatchdog();
+                    try { this.Close(); } catch { }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Сервер недоступен — это не повод сбрасывать звонок, просто ждём следующей попытки
+                Log.Save($"[VoiceRoom.Watchdog] {ex.GetType().Name}: {ex.Message}");
+            }
+            finally
+            {
+                _watchdogBusy = false;
+            }
+        }
+
         private void StopCallTimer()
         {
             _callTimer?.Stop();
@@ -543,6 +597,8 @@ namespace Tebegrammmm
 
         private void Button_Click_Accept(object sender, RoutedEventArgs e)
         {
+            // Трубку взяли: дальше о завершении узнаём по "CloseConnection" из WebSocket
+            StopIncomingWatchdog();
             Init();
             AnimateToActive();
         }
@@ -556,6 +612,7 @@ namespace Tebegrammmm
             // Запоминаем длительность ДО сброса таймера — для сообщения в чат
             TimeSpan callLength = _callDuration;
             StopCallTimer();
+            StopIncomingWatchdog();
             try
             {
                 waveIn?.StopRecording();
