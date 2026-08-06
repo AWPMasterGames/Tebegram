@@ -125,6 +125,25 @@ const Api = {
     return r.ok ? r.text() : '';
   },
 
+  // Групповые чаты пользователя. Личные чаты сюда не попадают — их клиент
+  // уже видит как контакты (см. /Chats на сервере).
+  async getChats(userId) {
+    try {
+      const r = await fetchWithTimeout(`${Server.address}/Chats/${userId}`, 10000);
+      if (!r.ok) return [];
+      const body = await r.text();
+      return body.split(MSG_SEP).map(s => s.trim()).filter(Boolean).map(parseChatLine).filter(Boolean);
+    } catch { return []; }
+  },
+
+  // История группы: сообщения через ❂ в обычном формате (без конверта)
+  async chatHistory(chatId) {
+    try {
+      const r = await fetchWithTimeout(`${Server.address}/Chat/History/${chatId}`, 10000);
+      return r.ok ? r.text() : '';
+    } catch { return ''; }
+  },
+
   // Дублирующая запись сообщения (как в десктопе): WS рассылает, POST сохраняет
   async postMessage(raw) {
     await fetch(`${Server.address}/messages`, { method: 'POST', body: raw });
@@ -855,6 +874,97 @@ function makeContact(id, username, name) {
   return { id, username, name: name || username, avatar: '', messages: [] };
 }
 
+/* ─────────────────────── Групповые чаты ───────────────────────
+   Группа хранится в том же списке, что и контакты, — как «псевдо-контакт»
+   с синтетическим username вида "group:123". Так весь существующий код
+   (список чатов, открытие, отрисовка пузырей) работает без изменений,
+   а различия сводятся к нескольким проверкам isGroupChat().            */
+const GROUP_PREFIX = 'group:';
+
+/** Строка чата с сервера: id&имя&группа?&аватар&владелец&участники_через_запятую */
+function parseChatLine(line) {
+  const p = String(line).split('&');
+  const chatId = Number(p[0]);
+  if (!Number.isFinite(chatId) || chatId <= 0) return null;
+  if (String(p[2]).toLowerCase() !== 'true') return null; // личные чаты — это контакты
+  return {
+    chatId,
+    name: p[1] || 'Группа',
+    avatarFile: p[3] || '',
+    ownerId: Number(p[4]) || null,
+    memberIds: (p[5] || '').split(',').map(Number).filter(Boolean),
+  };
+}
+
+function makeGroup(info) {
+  return {
+    id: info.chatId,
+    chatId: info.chatId,
+    username: GROUP_PREFIX + info.chatId, // ключ для findContact
+    name: info.name,
+    avatar: info.avatarFile ? Api.avatarUrl(info.avatarFile) : '',
+    messages: [],
+    isGroup: true,
+    ownerId: info.ownerId,
+    memberIds: info.memberIds,
+    historyLoaded: false,
+  };
+}
+
+function isGroupChat(c) { return !!c && c.isGroup === true; }
+
+/** «5 участников» с правильным окончанием — подпись в шапке группы. */
+function groupMembersLabel(g) {
+  const n = (g.memberIds && g.memberIds.length) || 0;
+  if (!n) return 'групповой чат';
+  const last = n % 10, tens = n % 100;
+  const word = (last === 1 && tens !== 11) ? 'участник'
+    : (last >= 2 && last <= 4 && (tens < 12 || tens > 14)) ? 'участника'
+    : 'участников';
+  return `${n} ${word}`;
+}
+
+function findGroup(chatId) {
+  const id = Number(chatId);
+  return Store.contacts.find(c => c.isGroup && c.chatId === id) || null;
+}
+
+/** Добавляет группу в список, если её ещё нет. Возвращает её. */
+function upsertGroup(info) {
+  if (!info) return null;
+  const existing = findGroup(info.chatId);
+  if (existing) {
+    existing.name = info.name;
+    existing.memberIds = info.memberIds;
+    return existing;
+  }
+  const g = makeGroup(info);
+  Store.contacts.push(g);
+  return g;
+}
+
+/** Пришло addMessage▫$▫{chatId}▫{сообщение} — сообщение группового чата. */
+function routeGroupMessage(payload) {
+  const cut = payload.indexOf(SEP);
+  if (cut < 0) return;
+  const group = findGroup(payload.slice(0, cut));
+  if (!group) return; // про эту группу мы ещё не знаем — подтянется при следующем входе
+  const m = parseMessage(payload.slice(cut + 1));
+  if (!m) return;
+  m.outgoing = m.sender === Store.user.username;
+  group.messages.push(m);
+  UI.onMessageAdded(group, m);
+}
+
+/** Пришло removeChat▫$▫{chatId} — группу удалил владелец. */
+function handleRemoveChat(chatId) {
+  const group = findGroup(chatId);
+  if (!group) return;
+  if (Store.activeContact === group) UI.closeChat();
+  Store.contacts.splice(Store.contacts.indexOf(group), 1);
+  UI.renderChatList();
+}
+
 /* ── «Избранное» — чат с самим собой (как в Telegram) ── */
 function isFavorites(c) {
   return !!Store.user && c.username === Store.user.username;
@@ -914,14 +1024,22 @@ const Chat = {
         // Отметка «прочитано»: собеседник открыл чат с нами — наши сообщения
         // ему становятся двумя галочками (как в win-клиенте).
         if (data.startsWith(`SEEN${WS_SEP}`)) { handleSeenNotification(data); return; }
-        // Конверты команд сервера. Оба относятся к ГРУППОВЫМ чатам, которых на
-        // вебе пока нет, поэтому просто пропускаем:
-        //   addChat▫$▫    — создана группа;
-        //   addMessage▫$▫ — сообщение группы (внутри первым полем идёт ChatId).
-        // Раньше здесь конверт снимался и payload шёл в обычный разбор — тогда
-        // ChatId принимался за отправителя и сообщение уходило «в никуда».
+        // Конверты команд сервера для ГРУППОВЫХ чатов. Внутри addMessage первым
+        // полем идёт ChatId — без конверта его приняли бы за отправителя.
         // Личные сообщения приходят без конверта и обрабатываются как прежде.
-        if (data.startsWith('addChat▫$▫') || data.startsWith('addMessage▫$▫')) return;
+        if (data.startsWith('addChat▫$▫')) {
+          const group = upsertGroup(parseChatLine(data.slice('addChat▫$▫'.length)));
+          if (group) UI.renderChatList();
+          return;
+        }
+        if (data.startsWith('removeChat▫$▫')) {
+          handleRemoveChat(data.slice('removeChat▫$▫'.length));
+          return;
+        }
+        if (data.startsWith('addMessage▫$▫')) {
+          routeGroupMessage(data.slice('addMessage▫$▫'.length));
+          return;
+        }
         routeMessage(data);
       };
       ws.onerror = () => reject(new Error('ws error'));
@@ -964,8 +1082,9 @@ let _menuTarget = null;
 function showMessageMenu(contact, m) {
   if (!contact || !m) return;
   _menuTarget = { contact, m };
-  // В «Избранном» собеседник — ты сам, «удалить у всех» не имеет смысла
-  $('msg-del-all').classList.toggle('hidden', isFavorites(contact));
+  // В «Избранном» собеседник — ты сам, «удалить у всех» не имеет смысла.
+  // В группе — тоже: сервер адресует удаление по нику собеседника, а у группы его нет.
+  $('msg-del-all').classList.toggle('hidden', isFavorites(contact) || isGroupChat(contact));
   $('msg-menu').classList.remove('hidden');
 }
 
@@ -979,6 +1098,9 @@ async function deleteTargetMessage(scope) {
   hideMessageMenu();
   if (!t) return;
   UI.removeMessage(t.contact, t.m);
+  // Серверное удаление адресуется по нику собеседника — для группы такого ника
+  // нет, поэтому там прячем сообщение только у себя (иначе получили бы ошибку).
+  if (isGroupChat(t.contact)) return;
   try {
     await Api.deleteMessage(Store.user.id, t.contact.username, scope, t.m.time, t.m.text);
   } catch {
@@ -1006,9 +1128,10 @@ function handleDeleteNotification(raw) {
 
 /* ─────────────────────── Отправка сообщений ─────────────────────── */
 async function sendMessage(contact, text, type = 'Text', serverAddress = '') {
+  const group = isGroupChat(contact);
   const m = {
     sender: Store.user.username,
-    receiver: contact.username,
+    receiver: group ? contact.name : contact.username, // в группе адресат — её имя
     type,
     time: nowFull(),
     serverAddress,
@@ -1016,14 +1139,18 @@ async function sendMessage(contact, text, type = 'Text', serverAddress = '') {
   };
   const raw = serializeMessage(m);
 
-  // ПЕРЕХОД НА ChatId: вместо 0 подставить реальный id чата
+  // Для группы отправляем реальный chatId — сервер по нему находит чат.
+  // ПЕРЕХОД НА ChatId: для личных чатов вместо 0 подставить реальный id
   // (сервер пока сам ищет/создаёт чат по username в CheckIsExist)
-  if (!Chat.send(`SEND${WS_SEP}0${WS_SEP}${contact.username}${WS_SEP}${raw}`)) {
+  const chatId = group ? contact.chatId : 0;
+  if (!Chat.send(`SEND${WS_SEP}${chatId}${WS_SEP}${contact.username}${WS_SEP}${raw}`)) {
     UI.toast('Нет соединения с сервером — попробуй ещё раз');
     return false;
   }
-  // Дублируем в POST /messages для сохранения на сервере (как десктопный клиент)
-  Api.postMessage(raw).catch(() => { /* история догрузится позже */ });
+  // Дублируем в POST /messages для сохранения на сервере (как десктопный клиент).
+  // Группы пропускаем: этот эндпоинт раскладывает сообщение по НИКАМ, а имя
+  // группы ником не является — сообщение осело бы в несуществующем контакте.
+  if (!group) Api.postMessage(raw).catch(() => { /* история догрузится позже */ });
   return true;
 }
 
@@ -1079,6 +1206,13 @@ async function enterApp(payload, login, password) {
     Store.user.avatar = Api.avatarUrl(user.avatarFile);
     UI.renderSettings();
   }
+
+  // Групповые чаты приходят отдельным запросом: в ответе /login их нет
+  Api.getChats(user.id).then(chats => {
+    if (!chats.length) return;
+    chats.forEach(upsertGroup);
+    UI.renderChatList();
+  });
 
   // История, затем реалтайм
   try {
@@ -1214,9 +1348,13 @@ const UI = {
 
       const preview = document.createElement('div');
       preview.className = 'chat-item-preview';
+      // В группе подписываем автора (в личном чате он и так очевиден),
+      // а вместо ника у пустой группы — число участников: "group:123" —
+      // внутренний ключ, показывать его нельзя.
+      const author = last && !last.outgoing && isGroupChat(c) ? `${last.sender}: ` : (last && last.outgoing ? 'Вы: ' : '');
       preview.textContent = last
-        ? (last.type === 'File' ? '📎 Файл' : (last.outgoing ? 'Вы: ' : '') + last.text)
-        : `@${c.username}`;
+        ? (last.type === 'File' ? `${author}📎 Файл` : author + last.text)
+        : (isGroupChat(c) ? groupMembersLabel(c) : `@${c.username}`);
 
       body.append(top, preview);
       item.appendChild(body);
@@ -1233,9 +1371,37 @@ const UI = {
     $('screen-chat').classList.remove('hidden');
     requestAnimationFrame(() => $('screen-chat').classList.add('open'));
 
+    // История группы лежит отдельно от личных сообщений — подтягиваем при
+    // первом открытии (дальше сообщения приходят по WS конвертом addMessage).
+    if (isGroupChat(contact) && !contact.historyLoaded) {
+      contact.historyLoaded = true;
+      Api.chatHistory(contact.chatId).then(body => {
+        const rows = String(body).split(MSG_SEP).map(s => s.trim()).filter(Boolean);
+        if (!rows.length) return;
+        const key = m => `${m.sender}|${m.time}|${m.text}`;
+        // Пока грузилась история, по WS могли прийти новые сообщения — они
+        // должны остаться в конце, поэтому историю кладём ПЕРЕД ними (без
+        // сортировки: сервер и так отдаёт её в хронологическом порядке).
+        const live = contact.messages.slice();
+        const liveKeys = new Set(live.map(key));
+        const history = [];
+        for (const raw of rows) {
+          const m = parseMessage(raw);
+          if (!m || liveKeys.has(key(m))) continue;
+          m.outgoing = m.sender === Store.user.username;
+          history.push(m);
+        }
+        if (!history.length) return;
+        contact.messages.length = 0;
+        contact.messages.push(...history, ...live);
+        if (Store.activeContact === contact) this.renderMessages();
+        this.renderChatList();
+      });
+    }
+
     // Сообщаем собеседнику, что открыли чат: у него наши прочитанные сообщения
-    // станут двумя галочками (в win-клиенте). Сам веб статус не показывает.
-    if (contact && Store.user && contact.username !== Store.user.username) {
+    // станут двумя галочками. В группе адресата нет — не отправляем.
+    if (contact && Store.user && !isGroupChat(contact) && contact.username !== Store.user.username) {
       Chat.send(`SEEN${WS_SEP}${Store.user.username}${WS_SEP}${contact.username}`);
     }
   },
@@ -1250,13 +1416,17 @@ const UI = {
   updateChatHeader() {
     const c = Store.activeContact;
     const fav = isFavorites(c);
+    const group = isGroupChat(c);
     $('chat-header-name').textContent = fav ? 'Избранное' : c.name;
-    $('chat-header-username').textContent = fav ? 'ваши сохранённые сообщения' : `@${c.username}`;
+    // У группы ника нет — вместо @username показываем число участников
+    $('chat-header-username').textContent = fav
+      ? 'ваши сохранённые сообщения'
+      : group ? groupMembersLabel(c) : `@${c.username}`;
     const holder = $('chat-header-avatar');
     const av = fav ? favoritesAvatar('avatar--sm') : this.avatarNode(c, 'avatar--sm');
     holder.replaceWith(Object.assign(av, { id: 'chat-header-avatar' }));
-    // Звонок самому себе не нужен
-    $('btn-call').style.display = fav ? 'none' : '';
+    // Звонок самому себе не нужен; групповых звонков сервер не поддерживает
+    $('btn-call').style.display = (fav || group) ? 'none' : '';
   },
 
   renderMessages() {
