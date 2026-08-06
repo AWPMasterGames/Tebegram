@@ -215,7 +215,23 @@ app.MapGet("/Test", async (HttpContext context) =>
 
 app.MapPost("/upload", async (HttpContext context) =>
 {
-    IFormFileCollection files = context.Request.Form.Files;
+    IFormFileCollection files;
+    try
+    {
+        // Разбор multipart падает, если соединение оборвалось до конца тела
+        // (телефон свернули, туннель разорвал долгую заливку видео). Раньше это
+        // всплывало пятисоткой со стеком, и клиент показывал безликое «500».
+        files = context.Request.Form.Files;
+    }
+    catch (Exception ex)
+    {
+        Logs.Save($"Загрузка не принята: {ex.Message}");
+        Console.WriteLine($"[Upload] Тело запроса пришло не полностью: {ex.Message}");
+        context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+        await context.Response.WriteAsync("Загрузка прервана — файл дошёл не полностью");
+        return;
+    }
+
     var uploadFiles = $"{Directory.GetCurrentDirectory()}/uploads";
     Directory.CreateDirectory(uploadFiles);
 
@@ -225,9 +241,44 @@ app.MapPost("/upload", async (HttpContext context) =>
     {
         // Имя подбирается свободное: одинаковые названия снимков больше не затирают
         // друг друга (клиенту возвращается то имя, под которым файл реально лёг)
-        using var fileStream = CreateUniqueFile(uploadFiles, file.FileName, out FName);
-        await file.CopyToAsync(fileStream);
-        Logs.Save($"Загружен файл {FName}");
+        string savedName;
+        string savedPath;
+        long written;
+        try
+        {
+            using (var fileStream = CreateUniqueFile(uploadFiles, file.FileName, out savedName))
+            {
+                savedPath = fileStream.Name;
+                await file.CopyToAsync(fileStream);
+                written = fileStream.Length;
+            }
+        }
+        catch (Exception ex)
+        {
+            // Соединение оборвалось посреди заливки (частый случай на больших видео
+            // через туннель или с телефона): раньше на диске навсегда оставался
+            // огрызок, а причина нигде не фиксировалась.
+            Logs.Save($"Загрузка файла {file.FileName} прервана: {ex.Message}");
+            Console.WriteLine($"[Upload] Прервана загрузка {file.FileName}: {ex.Message}");
+            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            await context.Response.WriteAsync("Загрузка прервана — файл дошёл не полностью");
+            return;
+        }
+
+        // Клиент объявляет размер в multipart-заголовке. Если записали меньше —
+        // файл неполный (битое видео/фото), отдавать такой в чат нельзя.
+        if (file.Length > 0 && written != file.Length)
+        {
+            try { File.Delete(savedPath); } catch { /* уже нет — не мешаем ответу */ }
+            Logs.Save($"Файл {file.FileName} дошёл не полностью: {written} из {file.Length} байт");
+            Console.WriteLine($"[Upload] {file.FileName}: получено {written} из {file.Length} байт — файл удалён");
+            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            await context.Response.WriteAsync($"Файл дошёл не полностью ({written} из {file.Length} байт)");
+            return;
+        }
+
+        FName = savedName;
+        Logs.Save($"Загружен файл {FName} ({written} байт)");
     }
 
     await context.Response.WriteAsync(FName);

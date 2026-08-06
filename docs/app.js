@@ -218,8 +218,13 @@ const Api = {
     fd.append('file', file, file.name);
     const r = await fetch(`${Server.address}/upload`, { method: 'POST', body: fd });
     // Раньше ответ брался как есть: при отказе сервера (например, 413 — файл
-    // больше лимита) в чат уходило сообщение с пустым или мусорным именем файла
-    if (!r.ok) throw new Error(`upload ${r.status}`);
+    // больше лимита) в чат уходило сообщение с пустым или мусорным именем файла.
+    // Текст ответа показываем пользователю: сервер объясняет причину отказа
+    // («файл дошёл не полностью» и т.п.) — раньше был только безликий код.
+    if (!r.ok) {
+      const reason = await r.text().catch(() => '');
+      throw new Error(reason.trim() || `сервер ответил ${r.status}`);
+    }
     const stored = (await r.text()).trim();
     if (!stored) throw new Error('upload: пустой ответ');
     return stored; // сервер возвращает сохранённое имя файла
@@ -1919,14 +1924,19 @@ async function doSendFile(file) {
     return;
   }
 
-  UI.toast('Загружаем файл…');
+  // У больших видео заливка занимает десятки секунд — показываем размер, чтобы
+  // было понятно, что процесс идёт, а приложение не «зависло»
+  const mb = file.size / 1024 / 1024;
+  UI.toast(mb >= 1 ? `Загружаем файл (${mb.toFixed(1)} МБ)…` : 'Загружаем файл…');
   try {
     file = await normalizePhoto(file);
     const stored = await Api.uploadFile(file);
     await sendMessage(contact, stored, 'File', Api.fileUrl(stored));
   } catch (e) {
     console.warn('[doSendFile]', e);
-    UI.toast('Не удалось загрузить файл');
+    // Причина от сервера («файл дошёл не полностью») полезнее общей фразы:
+    // обрыв на больших видео и отказ по размеру теперь различимы.
+    UI.toast(`Не удалось загрузить файл: ${e.message || 'нет связи с сервером'}`);
   }
 }
 
