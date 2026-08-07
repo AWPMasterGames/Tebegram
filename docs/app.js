@@ -15,13 +15,22 @@ const WS_SEP = '▫#▫';
 const Server = {
   address: null,
 
-  // Тот же механизм, что у десктопного клиента: адрес devtunnel лежит в Adress.txt
-  // в репозитории. Первый источник — ветка main-dev-Test (ВРЕМЕННО, для проверки
-  // туннеля DrunkMan), дальше — основные пути в main (новая и старая раскладка).
+  // Тот же механизм и ТОТ ЖЕ ПОРЯДОК, что у десктопного клиента (см.
+  // Tebegram-client/Data/ServerData.cs): адрес devtunnel лежит в Adress.txt
+  // в репозитории, все источники ведут на main — по нему живут релизные клиенты.
+  //
+  // ПЕРВЫМ идёт Tebegrammmm/Adress.txt — это канонический файл, его ведут вручную.
+  // Tebegram-client/Adress.txt — зеркало для новой раскладки; оно вторым намеренно:
+  // если обновить только канонический файл, зеркало останется устаревшим, и при
+  // ВЫКЛЮЧЕННЫХ серверах победил бы устаревший адрес (проверка живости не спасает).
+  // Ветка main-dev-Test — последний запасной вариант.
+  //
+  // Когда страница открыта с самого сервера (путь /app), до этого списка дело
+  // вообще не доходит — API берётся со своего домена (см. resolve, шаг 2).
   ADDRESS_SOURCES: [
-    'https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main-dev-Test/Tebegram-client/Adress.txt',
-    'https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Tebegram-client/Adress.txt',
     'https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Tebegrammmm/Adress.txt',
+    'https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Tebegram-client/Adress.txt',
+    'https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main-dev-Test/Tebegram-client/Adress.txt',
   ],
 
   async resolve() {
@@ -116,6 +125,35 @@ const Api = {
     return r.ok ? r.text() : '';
   },
 
+  // Групповые чаты пользователя. Личные чаты сюда не попадают — их клиент
+  // уже видит как контакты (см. /Chats на сервере).
+  async getChats(userId) {
+    try {
+      const r = await fetchWithTimeout(`${Server.address}/Chats/${userId}`, 10000);
+      if (!r.ok) return [];
+      const body = await r.text();
+      return body.split(MSG_SEP).map(s => s.trim()).filter(Boolean).map(parseChatLine).filter(Boolean);
+    } catch { return []; }
+  },
+
+  // Создание группы. Ники участников (без себя) разделяются ▫, название — в query.
+  // Сервер сам разошлёт всем участникам addChat, поэтому отдельно добавлять
+  // группу в список не нужно — её подхватит обработчик конверта.
+  async createChat(userId, usernames, name) {
+    const path = usernames.map(encodeURIComponent).join(encodeURIComponent(SEP));
+    const r = await fetchWithTimeout(
+      `${Server.address}/Chat/Create/${userId}-${path}?name=${encodeURIComponent(name)}`, 10000);
+    return { ok: r.ok, text: await r.text() };
+  },
+
+  // История группы: сообщения через ❂ в обычном формате (без конверта)
+  async chatHistory(chatId) {
+    try {
+      const r = await fetchWithTimeout(`${Server.address}/Chat/History/${chatId}`, 10000);
+      return r.ok ? r.text() : '';
+    } catch { return ''; }
+  },
+
   // Дублирующая запись сообщения (как в десктопе): WS рассылает, POST сохраняет
   async postMessage(raw) {
     await fetch(`${Server.address}/messages`, { method: 'POST', body: raw });
@@ -180,8 +218,13 @@ const Api = {
     fd.append('file', file, file.name);
     const r = await fetch(`${Server.address}/upload`, { method: 'POST', body: fd });
     // Раньше ответ брался как есть: при отказе сервера (например, 413 — файл
-    // больше лимита) в чат уходило сообщение с пустым или мусорным именем файла
-    if (!r.ok) throw new Error(`upload ${r.status}`);
+    // больше лимита) в чат уходило сообщение с пустым или мусорным именем файла.
+    // Текст ответа показываем пользователю: сервер объясняет причину отказа
+    // («файл дошёл не полностью» и т.п.) — раньше был только безликий код.
+    if (!r.ok) {
+      const reason = await r.text().catch(() => '');
+      throw new Error(reason.trim() || `сервер ответил ${r.status}`);
+    }
     const stored = (await r.text()).trim();
     if (!stored) throw new Error('upload: пустой ответ');
     return stored; // сервер возвращает сохранённое имя файла
@@ -632,13 +675,51 @@ const Voice = {
 
   // Опрос входящих звонков (аналог десктопного GetCallToken)
   _incoming: null,
+  _pollBusy: false,
+
+  /**
+   * Жив ли ещё показываемый входящий звонок.
+   * Пока трубку не взяли, WebSocket к комнате не открыт (см. acceptIncoming),
+   * поэтому служебное "CloseConnection" до нас дойти не может: если звонящий
+   * отменил вызов, окно висело бы вечно. Сервер при завершении обнуляет
+   * CallToken обеих сторон — по его исчезновению и понимаем, что звонок снят.
+   *
+   * Сетевую ошибку намеренно считаем «жив»: моргнувший интернет не должен
+   * сбрасывать реальный входящий звонок.
+   */
+  async _incomingStillAlive() {
+    if (!this._incoming) return false;
+    try {
+      const r = await fetch(`${Server.address}/Voice/GetCallToken/${Store.user.id}`);
+      if (!r.ok) return true;
+      const t = await r.text();
+      if (t === 'NotFound') return false;
+      return t.includes(this._incoming.token);
+    } catch {
+      return true; // сеть недоступна — окно не трогаем
+    }
+  },
+
   startPolling() {
     this._poll = setInterval(async () => {
-      if (this.active || this._incoming) return;
-      const call = await this.getIncomingCall();
-      if (call) {
-        this._incoming = call;
-        UI.showIncoming(call.caller);
+      if (this.active || this._pollBusy) return;
+      this._pollBusy = true;
+      try {
+        if (this._incoming) {
+          // Показывается входящий — следим, не отменил ли звонящий вызов
+          if (!(await this._incomingStillAlive())) {
+            this._incoming = null;
+            UI.hideCall();
+          }
+          return;
+        }
+        const call = await this.getIncomingCall();
+        if (call) {
+          this._incoming = call;
+          UI.showIncoming(call.caller);
+        }
+      } finally {
+        this._pollBusy = false;
       }
     }, 1800);
   },
@@ -808,6 +889,163 @@ function makeContact(id, username, name) {
   return { id, username, name: name || username, avatar: '', messages: [] };
 }
 
+/* ─────────────────────── Групповые чаты ───────────────────────
+   Группа хранится в том же списке, что и контакты, — как «псевдо-контакт»
+   с синтетическим username вида "group:123". Так весь существующий код
+   (список чатов, открытие, отрисовка пузырей) работает без изменений,
+   а различия сводятся к нескольким проверкам isGroupChat().            */
+const GROUP_PREFIX = 'group:';
+
+/** Строка чата с сервера: id&имя&группа?&аватар&владелец&участники_через_запятую */
+function parseChatLine(line) {
+  const p = String(line).split('&');
+  const chatId = Number(p[0]);
+  if (!Number.isFinite(chatId) || chatId <= 0) return null;
+  if (String(p[2]).toLowerCase() !== 'true') return null; // личные чаты — это контакты
+  return {
+    chatId,
+    name: p[1] || 'Группа',
+    avatarFile: p[3] || '',
+    ownerId: Number(p[4]) || null,
+    memberIds: (p[5] || '').split(',').map(Number).filter(Boolean),
+  };
+}
+
+function makeGroup(info) {
+  return {
+    id: info.chatId,
+    chatId: info.chatId,
+    username: GROUP_PREFIX + info.chatId, // ключ для findContact
+    name: info.name,
+    avatar: info.avatarFile ? Api.avatarUrl(info.avatarFile) : '',
+    messages: [],
+    isGroup: true,
+    ownerId: info.ownerId,
+    memberIds: info.memberIds,
+    historyLoaded: false,
+  };
+}
+
+function isGroupChat(c) { return !!c && c.isGroup === true; }
+
+/** «5 участников» с правильным окончанием — подпись в шапке группы. */
+function groupMembersLabel(g) {
+  const n = (g.memberIds && g.memberIds.length) || 0;
+  if (!n) return 'групповой чат';
+  const last = n % 10, tens = n % 100;
+  const word = (last === 1 && tens !== 11) ? 'участник'
+    : (last >= 2 && last <= 4 && (tens < 12 || tens > 14)) ? 'участника'
+    : 'участников';
+  return `${n} ${word}`;
+}
+
+function findGroup(chatId) {
+  const id = Number(chatId);
+  return Store.contacts.find(c => c.isGroup && c.chatId === id) || null;
+}
+
+/** Добавляет группу в список, если её ещё нет. Возвращает её. */
+function upsertGroup(info) {
+  if (!info) return null;
+  const existing = findGroup(info.chatId);
+  if (existing) {
+    existing.name = info.name;
+    // Ответ /Chat/Create участников не содержит (в отличие от конверта addChat) —
+    // пустым списком не затираем уже известный состав
+    if (info.memberIds.length) existing.memberIds = info.memberIds;
+    return existing;
+  }
+  const g = makeGroup(info);
+  Store.contacts.push(g);
+  return g;
+}
+
+/** Пришло addMessage▫$▫{chatId}▫{сообщение} — сообщение группового чата. */
+function routeGroupMessage(payload) {
+  const cut = payload.indexOf(SEP);
+  if (cut < 0) return;
+  const group = findGroup(payload.slice(0, cut));
+  if (!group) return; // про эту группу мы ещё не знаем — подтянется при следующем входе
+  const m = parseMessage(payload.slice(cut + 1));
+  if (!m) return;
+  m.outgoing = m.sender === Store.user.username;
+  group.messages.push(m);
+  UI.onMessageAdded(group, m);
+}
+
+/* ── Создание группы ── */
+/** Собеседники, которых можно позвать: без себя («Избранное») и без групп. */
+function groupCandidates() {
+  return Store.contacts.filter(c => !isGroupChat(c) && !isFavorites(c));
+}
+
+function openGroupModal() {
+  const box = $('group-members');
+  box.textContent = '';
+  const candidates = groupCandidates();
+
+  if (!candidates.length) {
+    const empty = document.createElement('div');
+    empty.className = 'group-members-empty';
+    empty.textContent = 'Сначала добавь собеседников: найди их через @логин в поиске.';
+    box.appendChild(empty);
+  } else {
+    for (const c of candidates) {
+      const row = document.createElement('label');
+      row.className = 'group-member';
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.value = c.username;
+      const name = document.createElement('span');
+      name.className = 'group-member-name';
+      name.textContent = c.name;
+      row.append(cb, name);
+      box.appendChild(row);
+    }
+  }
+
+  $('group-name').value = '';
+  $('modal-group').classList.remove('hidden');
+}
+
+function closeGroupModal() { $('modal-group').classList.add('hidden'); }
+
+async function createGroupFromModal() {
+  const usernames = [...document.querySelectorAll('#group-members input:checked')].map(i => i.value);
+  const name = $('group-name').value.trim();
+
+  // Сервер считает группой чат от трёх участников: я + минимум двое.
+  // При меньшем числе он молча создал бы личный чат, поэтому проверяем здесь.
+  if (usernames.length < 2) { UI.toast('Выбери хотя бы двух собеседников'); return; }
+  if (!name) { UI.toast('Введи название группы'); return; }
+
+  const btn = $('btn-group-create');
+  btn.disabled = true;
+  try {
+    const res = await Api.createChat(Store.user.id, usernames, name);
+    if (!res.ok) { UI.toast(res.text || 'Не удалось создать группу'); return; }
+    // Обычно группа уже пришла конвертом addChat; на случай, если WS молчит,
+    // добавляем её из ответа сами (upsert не создаст дубль).
+    const group = upsertGroup(parseChatLine(res.text));
+    UI.renderChatList();
+    closeGroupModal();
+    if (group) UI.openChat(group);
+  } catch {
+    UI.toast('Нет связи с сервером');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+/** Пришло removeChat▫$▫{chatId} — группу удалил владелец. */
+function handleRemoveChat(chatId) {
+  const group = findGroup(chatId);
+  if (!group) return;
+  if (Store.activeContact === group) UI.closeChat();
+  Store.contacts.splice(Store.contacts.indexOf(group), 1);
+  UI.renderChatList();
+}
+
 /* ── «Избранное» — чат с самим собой (как в Telegram) ── */
 function isFavorites(c) {
   return !!Store.user && c.username === Store.user.username;
@@ -864,18 +1102,25 @@ const Chat = {
         let data = String(e.data);
         // Команда удаления сообщения у собеседника
         if (data.startsWith(`DEL${WS_SEP}`)) { handleDeleteNotification(data); return; }
-        // Отметка «прочитано» (две галочки в win-клиенте). На вебе индикатора
-        // статуса нет, поэтому просто пропускаем, чтобы SEEN не ушёл в разбор
-        // сообщений (иначе принялся бы за отправителя).
-        if (data.startsWith(`SEEN${WS_SEP}`)) return;
-        // Конверты команд сервера. Оба относятся к ГРУППОВЫМ чатам, которых на
-        // вебе пока нет, поэтому просто пропускаем:
-        //   addChat▫$▫    — создана группа;
-        //   addMessage▫$▫ — сообщение группы (внутри первым полем идёт ChatId).
-        // Раньше здесь конверт снимался и payload шёл в обычный разбор — тогда
-        // ChatId принимался за отправителя и сообщение уходило «в никуда».
+        // Отметка «прочитано»: собеседник открыл чат с нами — наши сообщения
+        // ему становятся двумя галочками (как в win-клиенте).
+        if (data.startsWith(`SEEN${WS_SEP}`)) { handleSeenNotification(data); return; }
+        // Конверты команд сервера для ГРУППОВЫХ чатов. Внутри addMessage первым
+        // полем идёт ChatId — без конверта его приняли бы за отправителя.
         // Личные сообщения приходят без конверта и обрабатываются как прежде.
-        if (data.startsWith('addChat▫$▫') || data.startsWith('addMessage▫$▫')) return;
+        if (data.startsWith('addChat▫$▫')) {
+          const group = upsertGroup(parseChatLine(data.slice('addChat▫$▫'.length)));
+          if (group) UI.renderChatList();
+          return;
+        }
+        if (data.startsWith('removeChat▫$▫')) {
+          handleRemoveChat(data.slice('removeChat▫$▫'.length));
+          return;
+        }
+        if (data.startsWith('addMessage▫$▫')) {
+          routeGroupMessage(data.slice('addMessage▫$▫'.length));
+          return;
+        }
         routeMessage(data);
       };
       ws.onerror = () => reject(new Error('ws error'));
@@ -890,14 +1135,37 @@ const Chat = {
   },
 };
 
+/* ─────────────────────── Статус «прочитано» ─────────────────────── */
+/**
+ * Пришло SEEN▫#▫{кто-открыл}: собеседник открыл чат с нами, значит все наши
+ * отправленные ему сообщения прочитаны — переводим их в две галочки.
+ * Формат и семантика совпадают с HandleSeenNotification в win-клиенте.
+ */
+function handleSeenNotification(raw) {
+  const parts = raw.split(WS_SEP);
+  const reader = parts[1];
+  if (!reader) return;
+
+  const contact = Store.findContact(reader);
+  if (!contact) return;
+
+  let changed = false;
+  for (const m of contact.messages) {
+    if (m.outgoing && !m.seen) { m.seen = true; changed = true; }
+  }
+  // Перерисовываем, только если открыт именно этот чат и что-то поменялось
+  if (changed && Store.activeContact === contact) UI.renderMessages();
+}
+
 /* ─────────────────────── Удаление сообщений ─────────────────────── */
 let _menuTarget = null;
 
 function showMessageMenu(contact, m) {
   if (!contact || !m) return;
   _menuTarget = { contact, m };
-  // В «Избранном» собеседник — ты сам, «удалить у всех» не имеет смысла
-  $('msg-del-all').classList.toggle('hidden', isFavorites(contact));
+  // В «Избранном» собеседник — ты сам, «удалить у всех» не имеет смысла.
+  // В группе — тоже: сервер адресует удаление по нику собеседника, а у группы его нет.
+  $('msg-del-all').classList.toggle('hidden', isFavorites(contact) || isGroupChat(contact));
   $('msg-menu').classList.remove('hidden');
 }
 
@@ -911,6 +1179,9 @@ async function deleteTargetMessage(scope) {
   hideMessageMenu();
   if (!t) return;
   UI.removeMessage(t.contact, t.m);
+  // Серверное удаление адресуется по нику собеседника — для группы такого ника
+  // нет, поэтому там прячем сообщение только у себя (иначе получили бы ошибку).
+  if (isGroupChat(t.contact)) return;
   try {
     await Api.deleteMessage(Store.user.id, t.contact.username, scope, t.m.time, t.m.text);
   } catch {
@@ -938,9 +1209,10 @@ function handleDeleteNotification(raw) {
 
 /* ─────────────────────── Отправка сообщений ─────────────────────── */
 async function sendMessage(contact, text, type = 'Text', serverAddress = '') {
+  const group = isGroupChat(contact);
   const m = {
     sender: Store.user.username,
-    receiver: contact.username,
+    receiver: group ? contact.name : contact.username, // в группе адресат — её имя
     type,
     time: nowFull(),
     serverAddress,
@@ -948,14 +1220,18 @@ async function sendMessage(contact, text, type = 'Text', serverAddress = '') {
   };
   const raw = serializeMessage(m);
 
-  // ПЕРЕХОД НА ChatId: вместо 0 подставить реальный id чата
+  // Для группы отправляем реальный chatId — сервер по нему находит чат.
+  // ПЕРЕХОД НА ChatId: для личных чатов вместо 0 подставить реальный id
   // (сервер пока сам ищет/создаёт чат по username в CheckIsExist)
-  if (!Chat.send(`SEND${WS_SEP}0${WS_SEP}${contact.username}${WS_SEP}${raw}`)) {
+  const chatId = group ? contact.chatId : 0;
+  if (!Chat.send(`SEND${WS_SEP}${chatId}${WS_SEP}${contact.username}${WS_SEP}${raw}`)) {
     UI.toast('Нет соединения с сервером — попробуй ещё раз');
     return false;
   }
-  // Дублируем в POST /messages для сохранения на сервере (как десктопный клиент)
-  Api.postMessage(raw).catch(() => { /* история догрузится позже */ });
+  // Дублируем в POST /messages для сохранения на сервере (как десктопный клиент).
+  // Группы пропускаем: этот эндпоинт раскладывает сообщение по НИКАМ, а имя
+  // группы ником не является — сообщение осело бы в несуществующем контакте.
+  if (!group) Api.postMessage(raw).catch(() => { /* история догрузится позже */ });
   return true;
 }
 
@@ -1011,6 +1287,13 @@ async function enterApp(payload, login, password) {
     Store.user.avatar = Api.avatarUrl(user.avatarFile);
     UI.renderSettings();
   }
+
+  // Групповые чаты приходят отдельным запросом: в ответе /login их нет
+  Api.getChats(user.id).then(chats => {
+    if (!chats.length) return;
+    chats.forEach(upsertGroup);
+    UI.renderChatList();
+  });
 
   // История, затем реалтайм
   try {
@@ -1146,9 +1429,13 @@ const UI = {
 
       const preview = document.createElement('div');
       preview.className = 'chat-item-preview';
+      // В группе подписываем автора (в личном чате он и так очевиден),
+      // а вместо ника у пустой группы — число участников: "group:123" —
+      // внутренний ключ, показывать его нельзя.
+      const author = last && !last.outgoing && isGroupChat(c) ? `${last.sender}: ` : (last && last.outgoing ? 'Вы: ' : '');
       preview.textContent = last
-        ? (last.type === 'File' ? '📎 Файл' : (last.outgoing ? 'Вы: ' : '') + last.text)
-        : `@${c.username}`;
+        ? (last.type === 'File' ? `${author}📎 Файл` : author + last.text)
+        : (isGroupChat(c) ? groupMembersLabel(c) : `@${c.username}`);
 
       body.append(top, preview);
       item.appendChild(body);
@@ -1165,9 +1452,37 @@ const UI = {
     $('screen-chat').classList.remove('hidden');
     requestAnimationFrame(() => $('screen-chat').classList.add('open'));
 
+    // История группы лежит отдельно от личных сообщений — подтягиваем при
+    // первом открытии (дальше сообщения приходят по WS конвертом addMessage).
+    if (isGroupChat(contact) && !contact.historyLoaded) {
+      contact.historyLoaded = true;
+      Api.chatHistory(contact.chatId).then(body => {
+        const rows = String(body).split(MSG_SEP).map(s => s.trim()).filter(Boolean);
+        if (!rows.length) return;
+        const key = m => `${m.sender}|${m.time}|${m.text}`;
+        // Пока грузилась история, по WS могли прийти новые сообщения — они
+        // должны остаться в конце, поэтому историю кладём ПЕРЕД ними (без
+        // сортировки: сервер и так отдаёт её в хронологическом порядке).
+        const live = contact.messages.slice();
+        const liveKeys = new Set(live.map(key));
+        const history = [];
+        for (const raw of rows) {
+          const m = parseMessage(raw);
+          if (!m || liveKeys.has(key(m))) continue;
+          m.outgoing = m.sender === Store.user.username;
+          history.push(m);
+        }
+        if (!history.length) return;
+        contact.messages.length = 0;
+        contact.messages.push(...history, ...live);
+        if (Store.activeContact === contact) this.renderMessages();
+        this.renderChatList();
+      });
+    }
+
     // Сообщаем собеседнику, что открыли чат: у него наши прочитанные сообщения
-    // станут двумя галочками (в win-клиенте). Сам веб статус не показывает.
-    if (contact && Store.user && contact.username !== Store.user.username) {
+    // станут двумя галочками. В группе адресата нет — не отправляем.
+    if (contact && Store.user && !isGroupChat(contact) && contact.username !== Store.user.username) {
       Chat.send(`SEEN${WS_SEP}${Store.user.username}${WS_SEP}${contact.username}`);
     }
   },
@@ -1182,13 +1497,17 @@ const UI = {
   updateChatHeader() {
     const c = Store.activeContact;
     const fav = isFavorites(c);
+    const group = isGroupChat(c);
     $('chat-header-name').textContent = fav ? 'Избранное' : c.name;
-    $('chat-header-username').textContent = fav ? 'ваши сохранённые сообщения' : `@${c.username}`;
+    // У группы ника нет — вместо @username показываем число участников
+    $('chat-header-username').textContent = fav
+      ? 'ваши сохранённые сообщения'
+      : group ? groupMembersLabel(c) : `@${c.username}`;
     const holder = $('chat-header-avatar');
     const av = fav ? favoritesAvatar('avatar--sm') : this.avatarNode(c, 'avatar--sm');
     holder.replaceWith(Object.assign(av, { id: 'chat-header-avatar' }));
-    // Звонок самому себе не нужен
-    $('btn-call').style.display = fav ? 'none' : '';
+    // Звонок самому себе не нужен; групповых звонков сервер не поддерживает
+    $('btn-call').style.display = (fav || group) ? 'none' : '';
   },
 
   renderMessages() {
@@ -1326,6 +1645,9 @@ const UI = {
     const time = document.createElement('span');
     time.className = 'bubble-time';
     time.textContent = timeShort(m.time);
+    // Статус своего сообщения, как в win-клиенте: одна галочка — доставлено,
+    // две — собеседник открыл чат (пришло SEEN).
+    if (m.outgoing) time.appendChild(this.statusNode(m));
     el.appendChild(time);
 
     // Долгое нажатие (моб.) или правый клик (десктоп) — меню удаления
@@ -1340,6 +1662,29 @@ const UI = {
       showMessageMenu(Store.activeContact, m);
     });
     return el;
+  },
+
+  /**
+   * Галочки статуса своего сообщения (аналог MsgStatusTemplate в win-клиенте):
+   * одна — сервер принял, две — получатель открыл чат с нами.
+   * Рисуем SVG-галочку, чтобы вид не зависел от наличия глифа в шрифте системы.
+   */
+  statusNode(m) {
+    const wrap = document.createElement('span');
+    wrap.className = `msg-status${m.seen ? ' msg-status--seen' : ''}`;
+    wrap.title = m.seen ? 'Прочитано' : 'Отправлено';
+    const tick = () => {
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('viewBox', '0 0 16 16');
+      svg.setAttribute('class', 'msg-tick');
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', 'M2 8.5 L6 12.5 L14 4');
+      svg.appendChild(path);
+      return svg;
+    };
+    wrap.appendChild(tick());
+    if (m.seen) wrap.appendChild(tick());
+    return wrap;
   },
 
   onMessageAdded(contact, m) {
@@ -1579,14 +1924,19 @@ async function doSendFile(file) {
     return;
   }
 
-  UI.toast('Загружаем файл…');
+  // У больших видео заливка занимает десятки секунд — показываем размер, чтобы
+  // было понятно, что процесс идёт, а приложение не «зависло»
+  const mb = file.size / 1024 / 1024;
+  UI.toast(mb >= 1 ? `Загружаем файл (${mb.toFixed(1)} МБ)…` : 'Загружаем файл…');
   try {
     file = await normalizePhoto(file);
     const stored = await Api.uploadFile(file);
     await sendMessage(contact, stored, 'File', Api.fileUrl(stored));
   } catch (e) {
     console.warn('[doSendFile]', e);
-    UI.toast('Не удалось загрузить файл');
+    // Причина от сервера («файл дошёл не полностью») полезнее общей фразы:
+    // обрыв на больших видео и отказ по размеру теперь различимы.
+    UI.toast(`Не удалось загрузить файл: ${e.message || 'нет связи с сервером'}`);
   }
 }
 
@@ -1729,6 +2079,13 @@ function bindEvents() {
   $('msg-del-all').addEventListener('click', () => deleteTargetMessage('all'));
   $('msg-menu-cancel').addEventListener('click', hideMessageMenu);
   $('msg-menu').addEventListener('click', e => { if (e.target.id === 'msg-menu') hideMessageMenu(); });
+
+  // Создание группы
+  $('btn-new-group').addEventListener('click', openGroupModal);
+  $('btn-group-cancel').addEventListener('click', closeGroupModal);
+  $('btn-group-create').addEventListener('click', createGroupFromModal);
+  // Клик по затемнению вне карточки закрывает модалку (как у обрезки аватара)
+  $('modal-group').addEventListener('click', e => { if (e.target.id === 'modal-group') closeGroupModal(); });
 
   document.querySelectorAll('.tabbar-item').forEach(b =>
     b.addEventListener('click', () => UI.switchTab(b.dataset.tab)));

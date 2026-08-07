@@ -38,6 +38,7 @@ namespace Tebegrammmm
                 Log.Save($"[App] Не удалось применить тему: {ex.Message}");
             }
 
+            //ошибки в UI-потоке
             DispatcherUnhandledException += (s, args) =>
             {
                 Log.Save($"[UnhandledDispatcher] {args.Exception.GetType().Name}: {args.Exception.Message}\n{args.Exception.StackTrace}");
