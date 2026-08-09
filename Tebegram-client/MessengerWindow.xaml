@@ -1181,9 +1181,26 @@
                                     FontSize="14"
                                     Foreground="{DynamicResource Light.TextPrimaryBrush}"
                                     KeyDown="TBMessage_KeyDown_SendMessage"
+                                    MaxLength="512"
+                                    TextChanged="TBMessage_TextChanged"
                                     TextWrapping="Wrap" />
                             </ScrollViewer>
                         </Border>
+
+                        <!--  Счётчик символов: неприметный, появляется только когда в поле
+                              что-то есть. Лежит ПОВЕРХ правого нижнего угла поля ввода
+                              (Grid.Column=1), поэтому не двигает разметку, когда исчезает.
+                              На подходе к пределу подсвечивается.  -->
+                        <TextBlock
+                            x:Name="TBCharCounter"
+                            Grid.Column="1"
+                            Margin="0,0,10,-2"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Bottom"
+                            FontSize="10"
+                            Foreground="{DynamicResource Light.TextMutedBrush}"
+                            IsHitTestVisible="False"
+                            Visibility="Collapsed" />
 
                         <!--  Отправить  -->
                         <Button

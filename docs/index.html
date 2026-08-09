@@ -187,7 +187,10 @@
         <input id="msg-file" type="file" class="hidden">
       </label>
       <div class="composer-input-wrap">
-        <textarea id="msg-input" rows="1" placeholder="Сообщение" aria-label="Текст сообщения"></textarea>
+        <textarea id="msg-input" rows="1" maxlength="512" placeholder="Сообщение" aria-label="Текст сообщения"></textarea>
+        <!-- Счётчик символов: скрыт, пока поле пустое (класс hidden снимается в JS).
+             Лежит поверх правого нижнего угла поля, поэтому не двигает вёрстку. -->
+        <span id="char-counter" class="char-counter hidden" aria-live="polite"></span>
       </div>
       <button id="btn-send" class="composer-send" aria-label="Отправить">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z"/></svg>

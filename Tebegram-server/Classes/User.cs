@@ -29,6 +29,50 @@ namespace TebegramServer
         public ObservableCollection<Message> NewMessages = new ObservableCollection<Message>();
         public ObservableCollection<WebSocket> ChatsSessions = new ObservableCollection<WebSocket>();
 
+        // ── Платформа сессии ─────────────────────────────────────────────────
+        // Звонок должен приходить ТОЛЬКО туда, откуда звонят: с win-клиента — на
+        // win-клиент собеседника, из веба — в веб. Раньше токен звонка был один на
+        // пользователя, его опрашивали обе платформы, и звонок звонил сразу везде.
+        //
+        // Платформу сообщает сам клиент при подключении чат-сокета
+        // (/Chat/ws?userId=..&platform=win|web). Старые клиенты её не шлют — такая
+        // сессия помечается "legacy" и считается доступной для любого звонка,
+        // иначе выпущенные версии перестали бы принимать вызовы.
+        private readonly Dictionary<WebSocket, string> _sessionPlatform = new();
+
+        public void AddSession(WebSocket socket, string platform)
+        {
+            lock (_sessionPlatform)
+            {
+                _sessionPlatform[socket] = string.IsNullOrWhiteSpace(platform) ? "legacy" : platform;
+            }
+            ChatsSessions.Add(socket);
+        }
+
+        public void RemoveSession(WebSocket socket)
+        {
+            lock (_sessionPlatform) { _sessionPlatform.Remove(socket); }
+            ChatsSessions.Remove(socket);
+        }
+
+        /// <summary>
+        /// Есть ли живое подключение с этой платформы? Сессия без платформы
+        /// (старый клиент) считается подходящей для любой — иначе звонок таким
+        /// пользователям вообще перестал бы доходить.
+        /// </summary>
+        public bool IsOnlineOn(string platform)
+        {
+            lock (_sessionPlatform)
+            {
+                foreach (var pair in _sessionPlatform)
+                {
+                    if (pair.Key.State != WebSocketState.Open) continue;
+                    if (pair.Value == platform || pair.Value == "legacy") return true;
+                }
+                return false;
+            }
+        }
+
         public User(int id, string login, string password, string name, string username, ObservableCollection<ChatFolder> chatsFolders, string avatar)
         {
             _Id = id;

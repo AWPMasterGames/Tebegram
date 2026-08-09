@@ -349,7 +349,7 @@ namespace Tebegrammmm
             _watchdogBusy = true;
             try
             {
-                using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/Voice/GetCallToken/{UserData.User.Id}");
+                using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/Voice/GetCallToken/{UserData.User.Id}?platform=win");
                 using HttpResponseMessage response = await httpClient.SendAsync(request);
                 if (!response.IsSuccessStatusCode) return; // сервер моргнул — окно не трогаем
                 string content = await response.Content.ReadAsStringAsync();

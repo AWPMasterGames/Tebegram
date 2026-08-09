@@ -140,6 +140,69 @@ async Task SendFileToClientAsync(HttpContext context, Microsoft.Extensions.FileP
         context.Response.Headers.CacheControl = "public, max-age=31536000, immutable";
 
     context.Response.ContentType = contentType;
+
+    // ── Частичная отдача (HTTP Range) ────────────────────────────────────────
+    // Без неё <video> в браузере не умеет перематывать: ползунок ползёт, а картинка
+    // стоит. На телефоне это было незаметно (ролик догружался целиком и играл с
+    // начала), а на компьютере перемотка просто не срабатывала. Заодно без Range
+    // ломалось preload="metadata" — превью-кадр не строился, и видео в чате
+    // выглядело обычной строчкой с именем файла.
+    //
+    // SendFileAsync умеет отдавать кусок (offset, count) — остаётся разобрать
+    // заголовок Range и выставить 206 + Content-Range.
+    long fileLength = fileInfo.Length;
+    context.Response.Headers.AcceptRanges = "bytes";
+
+    string rangeHeader = context.Request.Headers.Range.ToString();
+    if (!string.IsNullOrEmpty(rangeHeader) && rangeHeader.StartsWith("bytes=", StringComparison.OrdinalIgnoreCase))
+    {
+        // Поддерживаем один диапазон: "bytes=НАЧАЛО-КОНЕЦ", "bytes=НАЧАЛО-", "bytes=-ХВОСТ".
+        // Составные диапазоны (через запятую) браузеры для видео не используют.
+        string spec = rangeHeader.Substring("bytes=".Length).Split(',')[0].Trim();
+        int dash = spec.IndexOf('-');
+        if (dash >= 0 && fileLength > 0)
+        {
+            string fromRaw = spec.Substring(0, dash).Trim();
+            string toRaw = spec.Substring(dash + 1).Trim();
+
+            long start, end;
+            bool ok;
+            if (fromRaw.Length == 0)
+            {
+                // "-500" — последние 500 байт
+                ok = long.TryParse(toRaw, out long tail) && tail > 0;
+                start = ok ? Math.Max(0, fileLength - tail) : 0;
+                end = fileLength - 1;
+            }
+            else
+            {
+                ok = long.TryParse(fromRaw, out start) && start >= 0 && start < fileLength;
+                end = fileLength - 1;
+                if (ok && toRaw.Length > 0)
+                {
+                    ok = long.TryParse(toRaw, out end) && end >= start;
+                    if (end > fileLength - 1) end = fileLength - 1;
+                }
+            }
+
+            if (ok)
+            {
+                long count = end - start + 1;
+                context.Response.StatusCode = (int)HttpStatusCode.PartialContent;   // 206
+                context.Response.Headers.ContentRange = $"bytes {start}-{end}/{fileLength}";
+                context.Response.ContentLength = count;
+                await context.Response.SendFileAsync(fileInfo, start, count);
+                return;
+            }
+
+            // Диапазон за пределами файла — по RFC отвечаем 416 и говорим реальный размер
+            context.Response.StatusCode = (int)HttpStatusCode.RequestedRangeNotSatisfiable;
+            context.Response.Headers.ContentRange = $"bytes */{fileLength}";
+            return;
+        }
+    }
+
+    context.Response.ContentLength = fileLength;
     await context.Response.SendFileAsync(fileInfo);
 }
 
@@ -753,10 +816,27 @@ app.MapGet("/Voice/CreateRoom/{userId:int}-{calledUserUsername}", async (HttpCon
         await Context.Response.WriteAsync("Пользователь не найден");
         return;
     }
+    // Платформа звонящего (?platform=win|web). Звонок пойдёт ТОЛЬКО на такую же
+    // платформу собеседника: win звонит в win, веб — в веб. Причина простая —
+    // звук и сигнализация у платформ разные, а раньше токен был один на
+    // пользователя, и вызов звонил сразу везде, где человек залогинен.
+    string callerPlatform = Context.Request.Query["platform"].ToString();
+    if (string.IsNullOrWhiteSpace(callerPlatform)) callerPlatform = "legacy";
+
+    // Собеседник должен быть в сети НА ТОЙ ЖЕ платформе, иначе звонить некуда
+    if (callerPlatform != "legacy" && !calledUser.IsOnlineOn(callerPlatform))
+    {
+        Context.Response.StatusCode = (int)HttpStatusCode.Conflict;
+        await Context.Response.WriteAsync("Собеседник сейчас не в сети в этом приложении");
+        return;
+    }
+
     string token = VoiceRoomsController.CreateRoom(user.Username + calledUser.Username);
 
     user.CallToken = token;
-    calledUser.CallToken = $"{user.Username}▫{token}";
+    // Третьим полем — платформа, для которой предназначен вызов. Старые клиенты
+    // читают только первые два поля, поэтому формат для них не изменился.
+    calledUser.CallToken = $"{user.Username}▫{token}▫{callerPlatform}";
 
     await Context.Response.WriteAsync(token);
 });
@@ -771,8 +851,21 @@ app.MapGet("/Voice/GetCallToken/{userId:int}", async (HttpContext Context, int u
     {
         response = "NotFound";
     }
-    else {
+    else
+    {
         response = user.CallToken;
+
+        // Клиент сообщает свою платформу — отдаём вызов только «своей».
+        // Без параметра (старый клиент) поведение прежнее: получает всё.
+        string asking = Context.Request.Query["platform"].ToString();
+        if (!string.IsNullOrWhiteSpace(asking))
+        {
+            string[] parts = response.Split('▫');
+            // parts: [звонящий, токен, платформа]. Платформы нет — вызов от старого
+            // клиента, его показываем всем, иначе он вообще никому не дозвонится.
+            if (parts.Length >= 3 && parts[2] != "legacy" && parts[2] != asking)
+                response = "NotFound";
+        }
     }
 
     await Context.Response.WriteAsync(response);
@@ -1042,7 +1135,9 @@ app.Map("/Chat/ws", async context =>
     }
 
     using var ws = await context.WebSockets.AcceptWebSocketAsync();
-    user.ChatsSessions.Add(ws);
+    // Платформа нужна для маршрутизации звонков (см. User.IsOnlineOn).
+    // Параметра нет — старый клиент, такая сессия принимает звонки с любой платформы.
+    user.AddSession(ws, context.Request.Query["platform"].ToString());
 
     try
     {
@@ -1097,7 +1192,7 @@ app.Map("/Chat/ws", async context =>
     {
         // Убираем сессию всегда — даже при аварийном разрыве.
         // Раньше мёртвые сокеты копились в ChatsSessions навсегда.
-        user.ChatsSessions.Remove(ws);
+        user.RemoveSession(ws);
     }
 });
 

@@ -120,7 +120,11 @@ namespace Tebegrammmm
                     ws = new ClientWebSocket();
                     // https → wss (раньше подставлялось ws:// на https-туннель и соединение не устанавливалось)
                     string wsAddress = ServerData.ServerAdress.Replace("https:", "wss:").Replace("http:", "ws:");
-                    await ws.ConnectAsync(new Uri($"{wsAddress}/Chat/ws?userId={UserData.User.Id}"),
+                    // platform=win — по нему сервер решает, куда направлять звонок:
+                    // вызов с win-клиента должен звонить только на win-клиент
+                    // собеседника, а не на все его устройства сразу (см. Program.cs,
+                    // /Voice/CreateRoom и User.IsOnlineOn)
+                    await ws.ConnectAsync(new Uri($"{wsAddress}/Chat/ws?userId={UserData.User.Id}&platform=win"),
                         CancellationToken.None);
                     Log.Save("[ChatWS] Соединение установлено");
                     await ReceiveMessagesAsync();
@@ -224,7 +228,7 @@ namespace Tebegrammmm
                             Thread.Sleep(1000);
                             continue;
                         }
-                        using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/Voice/GetCallToken/{UserData.User.Id}");
+                        using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/Voice/GetCallToken/{UserData.User.Id}?platform=win");
                         using HttpResponseMessage response = await httpClient.SendAsync(request);
                         string Content = await response.Content.ReadAsStringAsync();
                         if (Content != "NotFound")
@@ -1118,6 +1122,20 @@ namespace Tebegrammmm
                 return;
             }
 
+            // Чистим текст перед отправкой: убираем разделители протокола и
+            // невидимые символы, режем по длине. Эмодзи и любые алфавиты остаются —
+            // ломают передачу только ▫ и ❂ (см. UserValidation.SanitizeMessage).
+            // Для файлов message — это имя файла на сервере, его не трогаем.
+            if (messageType == MessageType.Text)
+            {
+                message = Tebegram.Shared.UserValidation.SanitizeMessage(message);
+                if (string.IsNullOrEmpty(message))
+                {
+                    TBMessage.Text = string.Empty;
+                    return;
+                }
+            }
+
             // Открыт групповой чат — у него своя маршрутизация (по Id чата)
             if (_openGroup != null)
             {
@@ -1229,6 +1247,36 @@ namespace Tebegrammmm
             Log.Save($"[Button_Click_SendMessage] Sending message: '{TBMessage.Text}'");
             SendMessage(TBMessage.Text);
             TBMessage.Focus();
+        }
+
+        // ── Ограничение длины сообщения ──────────────────────────────────────
+        // Верхний предел один для всех клиентов (веб — MAX_MESSAGE_LENGTH в app.js).
+        // Само поле ограничено MaxLength="512" в разметке, поэтому лишнее просто не
+        // наберётся; проверка при отправке — на случай вставки из буфера в обход.
+        public const int MaxMessageLength = 512;
+
+        /// <summary>
+        /// Счётчик символов под полем ввода: скрыт, пока поле пустое, и подсвечивается,
+        /// когда до предела остаётся меньше полусотни символов.
+        /// </summary>
+        private void TBMessage_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (TBCharCounter == null || TBMessage == null) return;
+
+            int len = TBMessage.Text?.Length ?? 0;
+            if (len == 0)
+            {
+                TBCharCounter.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            TBCharCounter.Text = $"{len}/{MaxMessageLength}";
+            TBCharCounter.Visibility = Visibility.Visible;
+            TBCharCounter.Foreground = len >= MaxMessageLength
+                ? (Brush)FindResource("Light.DangerBrush")
+                : len >= MaxMessageLength - 50
+                    ? (Brush)FindResource("Light.WarningBrush")
+                    : (Brush)FindResource("Light.TextMutedBrush");
         }
 
         private void TBMessage_KeyDown_SendMessage(object sender, KeyEventArgs e)
@@ -2027,9 +2075,23 @@ namespace Tebegrammmm
             // падало при попытке позвонить. Теперь — понятное сообщение вместо краша
             try
             {
-                using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/Voice/CreateRoom/{UserData.User.Id}-{Contact.Username}");
+                // platform=win — звоним только на win-клиент собеседника
+                using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get,
+                    $"{ServerData.ServerAdress}/Voice/CreateRoom/{UserData.User.Id}-{Contact.Username}?platform=win");
                 using HttpResponseMessage response = await httpClient.SendAsync(request);
                 string token = (await response.Content.ReadAsStringAsync()).Trim();
+
+                // 409 — собеседник не в сети именно в приложении для Windows
+                // (мог быть открыт только веб-клиент). Звонок не начинаем.
+                if (response.StatusCode == HttpStatusCode.Conflict)
+                {
+                    Log.Save($"[CallContact] {Contact.Username} не в сети в win-клиенте");
+                    TbgDialogWindow.Show(
+                        $"{Contact.Name} сейчас не в сети в приложении для Windows.\n\n" +
+                        "Позвонить можно только тому, у кого открыт такой же клиент.",
+                        "Звонок не удался");
+                    return;
+                }
 
                 if (!response.IsSuccessStatusCode || string.IsNullOrEmpty(token))
                 {

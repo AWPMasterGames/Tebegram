@@ -101,6 +101,11 @@ const Store = {
   activeFolder: null,  // null = «Все чаты»
   activeContact: null,
 
+  // Результаты поиска по @логину среди ВСЕХ пользователей сервера.
+  // Хранятся в состоянии, а не дописываются в DOM: список чатов рисует один
+  // метод (UI.renderChatList), поэтому найденные не могут наложиться на своих.
+  globalResults: [],
+
   findContact(username) {
     return this.contacts.find(c => c.username === username) || null;
   },
@@ -245,8 +250,10 @@ const Api = {
 /* ─────────────────────── Голосовые звонки ───────────────────────
    Совместимы с ПК и Android: общий формат — PCM 16 бит, 48 кГц, моно.
    Сервер просто ретранслирует бинарные пакеты всем в комнате.
-   - GET  /Voice/CreateRoom/{myId}-{username}   → токен комнаты
-   - GET  /Voice/GetCallToken/{myId}            → "NotFound" или "caller▫token"
+   - GET  /Voice/CreateRoom/{myId}-{username}?platform=web → токен комнаты,
+       либо 409, если собеседник не в сети именно в веб-версии
+   - GET  /Voice/GetCallToken/{myId}?platform=web → "NotFound" или
+       "caller▫token▫платформа" (чужую платформу сервер не отдаёт)
    - GET  /Voice/DeclineCall/{myId}-{token}
    - WSS  /Voice/ws?userId={id}&roomToken={t}   → бинарный PCM 48 кГц + текст "CloseConnection"
    ──────────────────────────────────────────────────────────────── */
@@ -268,14 +275,20 @@ const Voice = {
   timer: null,
   seconds: 0,
 
+  // platform=web — звонок пойдёт ТОЛЬКО в веб-клиент собеседника. Если у него
+  // открыт лишь десктоп, сервер ответит 409 и звонок не начнётся: сигнализация
+  // и звук у платформ разные, а раньше вызов звонил сразу везде.
   async createRoom(contactUsername) {
-    const r = await fetch(`${Server.address}/Voice/CreateRoom/${Store.user.id}-${encodeURIComponent(contactUsername)}`);
-    return r.text();
+    const r = await fetch(`${Server.address}/Voice/CreateRoom/${Store.user.id}-${encodeURIComponent(contactUsername)}?platform=web`);
+    const text = await r.text();
+    if (r.status === 409) return { offline: true, message: text };
+    if (!r.ok) return { error: true, message: text };
+    return { token: text.trim() };
   },
 
   async getIncomingCall() {
     try {
-      const r = await fetch(`${Server.address}/Voice/GetCallToken/${Store.user.id}`);
+      const r = await fetch(`${Server.address}/Voice/GetCallToken/${Store.user.id}?platform=web`);
       const t = await r.text();
       if (t === 'NotFound') return null;
       const [caller, token] = t.split(SEP);
@@ -385,7 +398,20 @@ const Voice = {
       this.stream = await this._getMic(); // до сетевых запросов — см. _getMic
       await this._ensureAudio();          // аудиоконтекст тоже создаём в жесте (iOS)
       this._acquireWakeLock();            // экран не гаснет во время звонка
-      this.token = await this.createRoom(contact.username);
+
+      const room = await this.createRoom(contact.username);
+      if (room.offline) {
+        // Собеседник в сети, но не в веб-версии — звонить некуда
+        UI.toast(`${contact.name} сейчас не в сети в веб-версии. Позвонить можно только тому, у кого открыт такой же клиент.`);
+        this.hangup();
+        return;
+      }
+      if (room.error || !room.token) {
+        UI.toast('Не удалось начать звонок: ' + (room.message || 'сервер не ответил'));
+        this.hangup();
+        return;
+      }
+      this.token = room.token;
       await this._connectAudio(this.token);
       // Таймер НЕ стартуем: держим «Вызов…», пока собеседник не принял.
       // «Идёт разговор» + таймер включит его ПЕРВЫЙ аудио-кадр (см. _connectAudio) —
@@ -690,7 +716,7 @@ const Voice = {
   async _incomingStillAlive() {
     if (!this._incoming) return false;
     try {
-      const r = await fetch(`${Server.address}/Voice/GetCallToken/${Store.user.id}`);
+      const r = await fetch(`${Server.address}/Voice/GetCallToken/${Store.user.id}?platform=web`);
       if (!r.ok) return true;
       const t = await r.text();
       if (t === 'NotFound') return false;
@@ -771,6 +797,30 @@ function int16ToFloat32(i16) {
    Менять только СИНХРОННО с сервером (Tebegram-server/Classes/Message.ToString)
    и win-клиентом (Classes/Message.ToString + AddMessageToUser) — иначе ломается
    доставка у всех уже установленных клиентов. */
+/* Предел длины сообщения — тот же, что в win-клиенте
+   (Tebegram-server/Classes/UserValidation.cs, MessageMaxLength). */
+const MAX_MESSAGE_LENGTH = 512;
+
+/* Чистит текст перед отправкой — зеркало UserValidation.SanitizeMessage.
+   Эмодзи, иероглифы и любые алфавиты НЕ трогаем: это мессенджер. Убираем только
+   то, что ломает передачу: разделители протокола ▫ и ❂ (второй разрывал строку
+   на два «сообщения») и невидимые управляющие символы. Плюс обрезка по длине —
+   на случай вставки из буфера мимо ограничения поля. */
+function sanitizeMessage(text) {
+  if (!text) return '';
+  let out = '';
+  for (const ch of text) {
+    if (ch === SEP || ch === MSG_SEP) { out += ' '; continue; }
+    if (ch === '\n' || ch === '\r' || ch === '\t') { out += ch; continue; }
+    const code = ch.codePointAt(0);
+    // Управляющие диапазоны C0/C1 — выбрасываем (эмодзи сюда не попадают)
+    if (code < 0x20 || (code >= 0x7f && code <= 0x9f)) continue;
+    out += ch;
+  }
+  out = out.trim();
+  return out.length > MAX_MESSAGE_LENGTH ? out.slice(0, MAX_MESSAGE_LENGTH) : out;
+}
+
 function parseMessage(raw) {
   const p = raw.split(SEP);
   if (p.length < 6) return null;
@@ -1095,7 +1145,7 @@ const Chat = {
 
   _connectOnce() {
     return new Promise((resolve, reject) => {
-      const ws = new WebSocket(Server.wsUrl(`/Chat/ws?userId=${Store.user.id}`));
+      const ws = new WebSocket(Server.wsUrl(`/Chat/ws?userId=${Store.user.id}&platform=web`));
       this.ws = ws;
       ws.onopen = () => UI.setConnected(true);
       ws.onmessage = e => {
@@ -1394,12 +1444,14 @@ const UI = {
         c.name.toLowerCase().includes(qq) || c.username.toLowerCase().includes(qq));
     }
 
-    if (!contacts.length) {
-      // При @поиске пустоту не показываем — снизу появится «Глобальный поиск»
-      if (q.startsWith('@')) return;
+    const globals = q.startsWith('@') ? (Store.globalResults || []) : [];
+
+    if (!contacts.length && !globals.length) {
       const empty = document.createElement('div');
       empty.className = 'chat-list-empty';
-      empty.textContent = q ? 'Ничего не найдено' : 'Пока нет чатов.\nНайди собеседника: введи @логин в поиске.';
+      empty.textContent = q.startsWith('@')
+        ? 'Ищем на сервере…'
+        : (q ? 'Ничего не найдено' : 'Пока нет чатов.\nНайди собеседника: введи @логин в поиске.');
       list.appendChild(empty);
       return;
     }
@@ -1441,6 +1493,43 @@ const UI = {
       item.appendChild(body);
       item.addEventListener('click', () => this.openChat(c));
       list.appendChild(item);
+    }
+
+    // Найденные на сервере — отдельной секцией ПОД своими контактами.
+    // Рисуются здесь же, а не дописываются в DOM отдельно, поэтому наложиться
+    // на список контактов физически не могут (см. GlobalSearch.run).
+    if (globals.length) {
+      const header = document.createElement('div');
+      header.className = 'gs-header';
+      header.textContent = 'Глобальный поиск';
+      list.appendChild(header);
+
+      for (const g of globals) {
+        const item = document.createElement('div');
+        item.className = 'chat-item gs-item';
+
+        const av = document.createElement('div');
+        av.className = 'avatar';
+        av.textContent = initials(g.name);
+        item.appendChild(av);
+
+        const body = document.createElement('div');
+        body.className = 'chat-item-body';
+        const top = document.createElement('div');
+        top.className = 'chat-item-top';
+        const nm = document.createElement('span');
+        nm.className = 'chat-item-name';
+        nm.textContent = g.name;
+        top.appendChild(nm);
+        const sub = document.createElement('div');
+        sub.className = 'chat-item-preview';
+        sub.textContent = `@${g.username}`;
+        body.append(top, sub);
+        item.appendChild(body);
+
+        item.addEventListener('click', () => GlobalSearch.add(g.username));
+        list.appendChild(item);
+      }
     }
   },
 
@@ -1873,13 +1962,32 @@ async function doRegister() {
 
 async function doSend() {
   const input = $('msg-input');
-  const text = input.value.trim();
+  const text = sanitizeMessage(input.value);
   const contact = Store.activeContact;
   if (!text || !contact) return;
   if (await sendMessage(contact, text)) {
     input.value = '';
     input.style.height = 'auto';
+    updateCharCounter();
   }
+}
+
+/* Счётчик символов под полем ввода: скрыт, пока пусто; подсвечивается на подходе
+   к пределу и краснеет на нём. Вызывается на каждый ввод и после отправки. */
+function updateCharCounter() {
+  const input = $('msg-input');
+  const counter = $('char-counter');
+  if (!input || !counter) return;
+
+  const len = input.value.length;
+  if (len === 0) {
+    counter.classList.add('hidden');
+    return;
+  }
+  counter.textContent = `${len}/${MAX_MESSAGE_LENGTH}`;
+  counter.classList.remove('hidden');
+  counter.classList.toggle('full', len >= MAX_MESSAGE_LENGTH);
+  counter.classList.toggle('warn', len >= MAX_MESSAGE_LENGTH - 50 && len < MAX_MESSAGE_LENGTH);
 }
 
 /* Нормализация фото перед отправкой:
@@ -1968,45 +2076,36 @@ const GlobalSearch = {
     const raw = $('chat-search').value.trim();
     if (!raw.startsWith('@') || raw.slice(1) !== q) return;
 
-    const list = $('chat-list');
-    list.querySelectorAll('.gs-header, .gs-item').forEach(el => el.remove());
-    if (!text) return;
-
-    const header = document.createElement('div');
-    header.className = 'gs-header';
-    header.textContent = 'Глобальный поиск';
-    list.appendChild(header);
-
-    for (const rawU of text.split(MSG_SEP)) {
-      const [, username, name] = rawU.split(SEP);
-      if (!username || username === Store.user.username) continue;
-      if (Store.findContact(username)) continue; // свои контакты уже выше
-
-      const item = document.createElement('div');
-      item.className = 'chat-item gs-item';
-
-      const av = document.createElement('div');
-      av.className = 'avatar';
-      av.textContent = initials(name || username);
-      item.appendChild(av);
-
-      const body = document.createElement('div');
-      body.className = 'chat-item-body';
-      const top = document.createElement('div');
-      top.className = 'chat-item-top';
-      const nm = document.createElement('span');
-      nm.className = 'chat-item-name';
-      nm.textContent = name || username;
-      top.appendChild(nm);
-      const sub = document.createElement('div');
-      sub.className = 'chat-item-preview';
-      sub.textContent = `@${username}`;
-      body.append(top, sub);
-      item.appendChild(body);
-
-      item.addEventListener('click', () => this.add(username));
-      list.appendChild(item);
+    // Результаты СОХРАНЯЕМ и перерисовываем список целиком.
+    //
+    // Раньше они дописывались прямо в DOM в обход renderChatList: тот начинает с
+    // list.textContent = '' и рисует только контакты. Любая его посторонняя
+    // перерисовка (пришло сообщение, догрузился аватар, сменилась папка) шла
+    // вперемешку с дописыванием — результаты то исчезали, то оказывались среди
+    // своих контактов, а строки наезжали друг на друга. Теперь у списка ровно
+    // один источник правды и один рисующий метод.
+    Store.globalResults = [];
+    if (text) {
+      for (const rawU of text.split(MSG_SEP)) {
+        const [, username, name] = rawU.split(SEP);
+        if (!username || username === Store.user.username) continue;
+        if (Store.findContact(username)) continue;   // свои контакты уже выше
+        if (Store.globalResults.some(g => g.username === username)) continue; // без дублей
+        Store.globalResults.push({ username, name: name || username });
+      }
     }
+    UI.renderChatList();
+  },
+
+  /** Сбрасывает результаты (поиск очищен или ушли с @-режима). */
+  clear() {
+    this._seq++;                 // отменяем ответ на запрос, который ещё в пути
+    clearTimeout(this._timer);
+    if (Store.globalResults.length) {
+      Store.globalResults = [];
+      return true;
+    }
+    return false;
   },
 
   async add(username) {
@@ -2018,6 +2117,7 @@ const GlobalSearch = {
       Store.contacts.push(contact);
       loadContactAvatar(contact);
       $('chat-search').value = '';
+      this.clear();              // контакт стал своим — секция поиска не нужна
       UI.renderChatList();
       UI.openChat(contact);
     } catch {
@@ -2051,6 +2151,11 @@ function bindEvents() {
   $('btn-register').addEventListener('click', doRegister);
 
   $('chat-search').addEventListener('input', () => {
+    // Ушли с @-режима (или очистили поиск) — старые результаты сервера больше
+    // не относятся к текущему запросу, убираем их ДО перерисовки
+    const raw = $('chat-search').value.trim();
+    if (!raw.startsWith('@') || raw.length < 3) GlobalSearch.clear();
+
     UI.renderChatList();
     GlobalSearch.schedule(); // @логин — поиск среди всех пользователей сервера
   });
@@ -2064,6 +2169,7 @@ function bindEvents() {
   msgInput.addEventListener('input', () => {
     msgInput.style.height = 'auto';
     msgInput.style.height = Math.min(msgInput.scrollHeight, 96) + 'px';
+    updateCharCounter();
   });
 
   $('msg-file').addEventListener('change', e => {

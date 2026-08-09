@@ -687,7 +687,24 @@ html, body {
   border: 1px solid var(--border-default);
   border-radius: 18px;
   padding: 8px 14px;
+  /* Опорная точка для счётчика символов — он лежит поверх, в правом нижнем углу */
+  position: relative;
 }
+
+/* Счётчик символов: неприметный, появляется только когда в поле есть текст.
+   Абсолютное позиционирование — чтобы появление и исчезновение не двигали поле. */
+.char-counter {
+  position: absolute;
+  right: 12px;
+  bottom: 2px;
+  font-size: 10px;
+  line-height: 1;
+  color: var(--text-muted);
+  pointer-events: none;   /* клик проходит сквозь — попадает в поле ввода */
+  user-select: none;
+}
+.char-counter.warn { color: var(--warning, #E8A13A); }
+.char-counter.full { color: var(--danger, #F0575C); }
 .composer-input-wrap textarea {
   width: 100%;
   max-height: 96px;

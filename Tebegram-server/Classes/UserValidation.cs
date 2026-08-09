@@ -115,6 +115,66 @@ namespace Tebegram.Shared
                 ?? CheckName(name);
         }
 
+        // ── Текст сообщения ──────────────────────────────────────────────────
+        /// <summary>Предел длины одного сообщения. Веб повторяет: MAX_MESSAGE_LENGTH в app.js.</summary>
+        public const int MessageMaxLength = 512;
+
+        /// <summary>
+        /// Приводит текст сообщения к безопасному виду.
+        ///
+        /// Здесь НАМЕРЕННО не запрещаем ни эмодзи, ни иероглифы, ни любой другой
+        /// алфавит: это мессенджер, люди вправе писать что угодно. Убираем только то,
+        /// что физически ломает передачу:
+        ///   ▫ и ❂ — разделители протокола (поля и сообщения). Символ ▫ в тексте
+        ///     ещё как-то переживался склейкой хвоста при разборе, а вот ❂ разрывал
+        ///     строку на два «сообщения», и вторая половина уезжала мусором;
+        ///   управляющие символы (кроме перевода строки) — невидимы, но попадают
+        ///     в файлы истории и ломают их чтение.
+        /// Плюс обрезка по длине — на случай вставки из буфера мимо поля ввода.
+        ///
+        /// Возвращает null, если после очистки не осталось ничего осмысленного.
+        /// </summary>
+        public static string? SanitizeMessage(string? text)
+        {
+            if (string.IsNullOrEmpty(text)) return null;
+
+            var sb = new System.Text.StringBuilder(text.Length);
+            foreach (char c in text)
+            {
+                if (c == '▫' || c == '❂') { sb.Append(' '); continue; }   // разделители протокола
+                if (c == '\n' || c == '\r' || c == '\t') { sb.Append(c); continue; }
+                if (char.IsControl(c)) continue;                          // прочее невидимое — прочь
+                sb.Append(c);
+            }
+
+            string result = sb.ToString().Trim();
+            if (result.Length > MessageMaxLength) result = result.Substring(0, MessageMaxLength);
+            return string.IsNullOrWhiteSpace(result) ? null : result;
+        }
+
+        // ── Свободный текст: имя контакта, название группы, название папки ───
+        /// <summary>
+        /// Проверяет произвольную подпись, которая уходит в протокол (переименование
+        /// контакта, название группы или папки). В отличие от имени при регистрации,
+        /// здесь дефис РАЗРЕШЁН — эти поля передаются телом запроса или параметром,
+        /// а не куском адреса. Запрещены только разделители протокола и невидимые
+        /// символы. Эмодзи не мешают: они не участвуют в разборе.
+        /// </summary>
+        public static string? CheckLabel(string? value, string fieldName, int maxLength = 60)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return $"{fieldName} не может быть пустым";
+            if (value.Length > maxLength)
+                return $"{fieldName} должно быть не длиннее {maxLength} символов";
+            if (value.Any(char.IsControl))
+                return $"{fieldName} содержит недопустимые символы";
+
+            foreach (char c in value)
+                if (c == '▫' || c == '❂' || c == '&')
+                    return $"{fieldName} не может содержать символ «{c}»";
+            return null;
+        }
+
         /// <summary>
         /// Ответ сервера — это сообщение об ошибке, а не данные пользователя?
         ///
