@@ -19,16 +19,17 @@ const Server = {
   // Tebegram-client/Data/ServerData.cs): адрес devtunnel лежит в Adress.txt
   // в репозитории, все источники ведут на main — по нему живут релизные клиенты.
   //
-  // ПЕРВЫМ идёт Tebegrammmm/Adress.txt — это канонический файл, его ведут вручную.
-  // Tebegram-client/Adress.txt — зеркало для новой раскладки; оно вторым намеренно:
-  // если обновить только канонический файл, зеркало останется устаревшим, и при
-  // ВЫКЛЮЧЕННЫХ серверах победил бы устаревший адрес (проверка живости не спасает).
+  // ПЕРВЫМ идёт Adress.txt В КОРНЕ репозитория — канонический файл, его ведут
+  // вручную. Раньше он лежал в папке Tebegrammmm/ от старой раскладки; файл
+  // вынесен в корень, папка удалена.
+  // Tebegram-client/Adress.txt — зеркало для уже установленных клиентов 2.0.0.
+  // Пока такие в ходу, оба файла держим с одинаковым адресом.
   // Ветка main-dev-Test — последний запасной вариант.
   //
   // Когда страница открыта с самого сервера (путь /app), до этого списка дело
   // вообще не доходит — API берётся со своего домена (см. resolve, шаг 2).
   ADDRESS_SOURCES: [
-    'https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Tebegrammmm/Adress.txt',
+    'https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Adress.txt',
     'https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Tebegram-client/Adress.txt',
     'https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main-dev-Test/Tebegram-client/Adress.txt',
   ],

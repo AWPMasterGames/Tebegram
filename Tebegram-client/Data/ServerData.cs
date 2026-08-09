@@ -26,17 +26,21 @@ namespace Tebegrammmm.Data
         // нему живут релизные сборки у тестеров, и рабочая ветка не должна
         // случайно уводить их на временный адрес.
         //
-        // ПЕРВЫМ идёт Tebegrammmm/Adress.txt — это КАНОНИЧЕСКИЙ файл, его ведёт
-        // Максим, и его же читают все клиенты, выпущенные до 2.0.0 (другого пути
-        // они не знают). Tebegram-client/Adress.txt — зеркало для новой раскладки;
-        // оно стоит вторым намеренно: если обновить только канонический файл,
-        // зеркало останется устаревшим, и при ВЫКЛЮЧЕННЫХ серверах победил бы
-        // именно устаревший адрес (проверка живости в этом случае не спасает).
+        // ПЕРВЫМ идёт Adress.txt В КОРНЕ репозитория — это канонический файл, его
+        // ведут вручную. Раньше он лежал в Tebegrammmm/ — папке от старой раскладки,
+        // которая на GitHub выглядела забытым мусором; файл вынесен в корень, папка
+        // удалена.
+        //
+        // Tebegram-client/Adress.txt — зеркало: его читают уже установленные клиенты
+        // 2.0.0, у которых корневого пути в цепочке ещё нет. Пока такие клиенты в
+        // ходу, оба файла нужно держать с одинаковым адресом. Когда все обновятся,
+        // зеркало можно удалить и оставить один файл в корне.
+        //
         // Ветка main-dev-Test — последний запасной вариант.
         // Недоступный путь просто пропускается, поэтому лишних записей не боимся.
         private static readonly string[] AdressUrls =
         {
-            "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Tebegrammmm/Adress.txt",
+            "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Adress.txt",
             "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Tebegram-client/Adress.txt",
             "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main-dev-Test/Tebegram-client/Adress.txt",
         };
