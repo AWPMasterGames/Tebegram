@@ -10,7 +10,7 @@
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4)](https://dotnet.microsoft.com/)
 
 **Веб-версия открывается без установки: [awpmastergames.github.io/Tebegram](https://awpmastergames.github.io/Tebegram/)**
-Десктопное приложение: [последний релиз](https://github.com/AWPMasterGames/Tebegram/releases/latest), файл `TebegramSetup-2.0.1.exe`.
+Десктопное приложение: [последний релиз](https://github.com/AWPMasterGames/Tebegram/releases/latest), файл `TebegramSetup-2.0.2.exe`.
 
 <!-- СКРИНШОТ-ГЕРОЙ
      Положите главное окно с открытым чатом в docs/screenshots/main.png
