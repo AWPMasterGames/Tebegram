@@ -174,8 +174,11 @@ namespace TebegramServer.Controllers
             Message? message = null;
             if (messageData.Length >= 6 && messageData[2] == "Text")
             {
-                // Текст может содержать ▫ - склеиваем хвост обратно с разделителем
-                string text = string.Join('▫', messageData.Skip(5));
+                // Текст может содержать ▫ - склеиваем хвост обратно с разделителем,
+                // затем чистим. Оба клиента вызывают SanitizeMessage сами, но запрос
+                // в обход клиента иначе доставит ❂ в историю чата.
+                string text = Tebegram.Shared.UserValidation.SanitizeMessage(string.Join('▫', messageData.Skip(5)));
+                if (text == null) return;
                 message = new Message(messageData[0], messageData[1], text, messageData[3]);
             }
             else if (messageData.Length >= 6 && messageData[2] == "File")

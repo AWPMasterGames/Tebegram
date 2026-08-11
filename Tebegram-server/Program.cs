@@ -797,7 +797,12 @@ static Message? ParseMessage(string raw)
 
     if (messageData[2] == "Text")
     {
-        string text = string.Join('▫', messageData.Skip(5));
+        // Текст чистится и на сервере, хотя оба клиента уже вызывают SanitizeMessage
+        // перед отправкой. Проверка на одной стороне защищает только от опечаток:
+        // запрос в обход клиента доставит ❂ в историю, и одно сообщение при чтении
+        // разделится на два, а хвост придёт мусором.
+        string text = Tebegram.Shared.UserValidation.SanitizeMessage(string.Join('▫', messageData.Skip(5)));
+        if (text == null) return null;
         return new Message(messageData[0], messageData[1], text, messageData[3]);
     }
     if (messageData[2] == "File")
