@@ -107,6 +107,23 @@ string? webRoot = webRootCandidates.FirstOrDefault(Directory.Exists);
 if (webRoot != null)
 {
     var webFileProvider = new PhysicalFileProvider(webRoot);
+
+    // Адрес /app без косой черты в конце обрабатывается здесь, до UseDefaultFiles.
+    // Штатный редирект той середины собирает АБСОЛЮТНУЮ ссылку из заголовка Host,
+    // а туннель кладёт в Host внутренний порт. Наружу уходило
+    // https://<адрес-туннеля>:5000/app/ - такой адрес не открывается, и пользователь
+    // видел ошибку вместо веб-клиента. Относительная ссылка браузер разрешает сам
+    // относительно текущего адреса, поэтому порт подставиться не может.
+    app.Use(async (context, next) =>
+    {
+        if (context.Request.Path == "/app")
+        {
+            context.Response.Redirect("/app/" + context.Request.QueryString, permanent: true);
+            return;
+        }
+        await next();
+    });
+
     app.UseDefaultFiles(new DefaultFilesOptions { FileProvider = webFileProvider, RequestPath = "/app" });
     app.UseStaticFiles(new StaticFileOptions
     {
