@@ -13,7 +13,7 @@
 ; ─────────────────────────────────────────────────────────────────────────────
 
 #define MyAppName "Tebegram"
-#define MyAppVersion "2.0.1"
+#define MyAppVersion "2.0.2"
 #define MyAppPublisher "Tebegram"
 #define MyAppURL "https://github.com/AWPMasterGames/Tebegram"
 #define MyAppExeName "Tebegrammmm.exe"

@@ -15,7 +15,7 @@ namespace Tebegrammmm.Classes
     public static class UpdateChecker
     {
         // Текущая версия клиента. Должна совпадать с MyAppVersion в Installer/TebegramSetup.iss
-        public const string CurrentVersion = "2.0.1";
+        public const string CurrentVersion = "2.0.2";
 
         // Кандидаты в порядке приоритета: main - основной источник для пользователей
         // (там лежит версия последнего релиза), main-dev-Test - запасной, если main
