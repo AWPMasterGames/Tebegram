@@ -144,8 +144,9 @@ namespace TebegramServer
             // Перенос из main-dev (коммит 311bff0): чат кладётся и в папку «Все чаты»,
             // чтобы у пользователя была живая коллекция объектов, а не только id.
             // С защитой TryGetValue - в оригинале голый индексатор кидал
-            // KeyNotFoundException, если комнаты с таким id нет в ChatsController
-            // (например, после рестарта сервера - чаты пока не сохраняются в базу).
+            // KeyNotFoundException, если чата с таким id нет в ChatsController.
+            // Такое возможно при рассинхронизации Users.json и Chats.json, например
+            // если один из файлов восстановлен из резервной копии.
             if (Controllers.ChatsController.Chats.TryGetValue(chatId, out var chat))
                 ChatsFolders[0].AddChat(chat);
         }

@@ -19,10 +19,11 @@ namespace Tebegrammmm
         public ObservableCollection<ChatFolder> ChatsFolders { get; set; }
         public ObservableCollection<Contact> Contacts { get { return ChatsFolders[0].Contacts; } set { ChatsFolders[0].Contacts = value; } }
 
-        // Задел под групповые чаты (перенос из main-dev): сейчас коллекция всегда
-        // пуста - текущий поток данных живёт на Contacts, наполнение начнётся после
-        // миграции протокола (ChatId в сообщениях). ChatFolder гарантирует, что
-        // Chats не бывает null (инициализируется во всех конструкторах).
+        // Групповые чаты пользователя. Наполняется через AddChat при входе и по
+        // команде addChat, выводится списком через ChatListSource. Личная переписка
+        // сюда не попадает: она живёт в Contacts до миграции протокола на ChatId.
+        // ChatFolder гарантирует, что Chats не бывает null: коллекция создаётся
+        // во всех конструкторах.
         public ObservableCollection<Classes.Chat> Chats
         {
             get { return ChatsFolders[0].Chats; }
