@@ -14,8 +14,28 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Привязка порта задаётся в appsettings.json (Kestrel:Endpoints → http://0.0.0.0:5000).
 // Раньше здесь стоял UseUrls("https://localhost:5000"), но Kestrel:Endpoints его молча
-// переопределял, из-за чего порт 5000 фактически слушал HTTP, а конфиг ложно обещал HTTPS - 
+// переопределял, из-за чего порт 5000 фактически слушал HTTP, а конфиг ложно обещал HTTPS -
 // это путало настройку devtunnel и приводило к зависанию соединения (красная лампочка).
+
+// Необязательный HTTPS-эндпоинт, по умолчанию выключен. Основная схема работы
+// прежняя: HTTP за туннелем, TLS терминирует сам туннель.
+//
+// Нужен ровно для одного случая - открыть веб-клиент с другого устройства локальной
+// сети. Доступ к микрофону браузер выдаёт только в защищённом контексте, и исключение
+// сделано единственно для localhost. По адресу вида http://192.168.0.5:5000 объект
+// navigator.mediaDevices отсутствует, поэтому звонок в браузере не начинается вовсе.
+//
+// Включается переменной окружения HttpsPort, например HttpsPort=5001. Сертификат
+// берётся из dotnet dev-certs. Без переменной поведение сервера не меняется.
+int httpsPort = builder.Configuration.GetValue<int>("HttpsPort");
+if (httpsPort > 0)
+{
+    builder.WebHost.ConfigureKestrel(options =>
+    {
+        options.ListenAnyIP(httpsPort, listen => listen.UseHttps());
+    });
+    Console.WriteLine($"[Kestrel] HTTPS запрошен на порту {httpsPort}");
+}
 
 // CORS - нужен веб-клиенту (GitHub Pages / PWA), десктопному клиенту не мешает
 builder.Services.AddCors(options =>
