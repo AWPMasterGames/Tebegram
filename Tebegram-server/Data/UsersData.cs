@@ -85,16 +85,23 @@ namespace TebegramServer.Data
         }
 
         /// <summary>
-        /// Сбрасывает токен звонка у ВСЕХ участников: у звонившего он хранится как «token»,
-        /// у вызываемого - как «caller▫token». Иначе после завершения звонка токен зависал
-        /// у второй стороны (фантомный входящий звонок).
+        /// Сбрасывает токен звонка у всех участников. У звонящего он хранится как
+        /// «token», у вызываемого - как «caller▫token▫platform». Без сброса токен
+        /// зависал у второй стороны, и она видела фантомный входящий вызов.
+        ///
+        /// Сравниваются все поля, а не окончание строки. Прежняя проверка через
+        /// EndsWith("▫token") перестала находить токен вызываемого, когда третьим
+        /// полем добавилась платформа: строка стала оканчиваться на неё.
         /// </summary>
         public static void ClearCallTokens(string token)
         {
             if (string.IsNullOrEmpty(token)) return;
             foreach (var user in Users.ToList())
             {
-                if (user.CallToken == token || (user.CallToken?.EndsWith($"▫{token}") ?? false))
+                string current = user.CallToken;
+                if (string.IsNullOrEmpty(current)) continue;
+
+                if (current == token || current.Split('▫').Contains(token))
                     user.CallToken = "";
             }
         }

@@ -21,6 +21,8 @@ const Server = {
   // выпущенные клиенты.
   //
   // Adress.txt в корне репозитория - канонический файл, ведётся вручную.
+  // AlternativeAdress.txt - второй сервер команды. Очередь доходит до него,
+  // только если основной не ответил на /Test: берётся первый живой источник.
   // Tebegram-client/Adress.txt - зеркало для установленных клиентов 2.0.0,
   // адрес в обоих файлах должен совпадать.
   // Ветка main-dev-Test - запасной вариант.
@@ -29,6 +31,7 @@ const Server = {
   // адрес API берётся с текущего домена, см. шаг 2 в resolve.
   ADDRESS_SOURCES: [
     'https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Adress.txt',
+    'https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/AlternativeAdress.txt',
     'https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Tebegram-client/Adress.txt',
     'https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main-dev-Test/Tebegram-client/Adress.txt',
   ],
@@ -250,11 +253,11 @@ const Api = {
 /* ─────────────────────── Голосовые звонки ───────────────────────
    Совместимы с ПК и Android: общий формат - PCM 16 бит, 48 кГц, моно.
    Сервер просто ретранслирует бинарные пакеты всем в комнате.
-  - GET  /Voice/CreateRoom/{myId}-{username}?platform=web → токен комнаты,
+   - GET  /Voice/CreateRoom/{myId}-{username}?platform=web → токен комнаты,
        либо 409, если собеседник не в сети именно в веб-версии
-  - GET  /Voice/GetCallToken/{myId}?platform=web → "NotFound" или
+   - GET  /Voice/GetCallToken/{myId}?platform=web → "NotFound" или
        "caller▫token▫платформа" (чужую платформу сервер не отдаёт)
-  - GET  /Voice/DeclineCall/{myId}-{token}
+   - GET  /Voice/DeclineCall/{myId}-{token}
   - WSS  /Voice/ws?userId={id}&roomToken={t}   → бинарный PCM 48 кГц + текст "CloseConnection"
    ──────────────────────────────────────────────────────────────── */
 const SAMPLE_RATE = 48000;
@@ -2301,7 +2304,17 @@ const PhotoViewer = {
 
     if (isVideo) {
       img.src = '';
+      // Освобождаем превью в списке сообщений: на телефоне число одновременно
+      // загруженных видеоэлементов ограничено, и при исчерпании лимита новый
+      // элемент молча не загружается. Именно поэтому ролик не открывался с
+      // телефона, тогда как на компьютере такого предела нет.
+      this._releasePreviews();
+
       video.src = url;
+      // load() обязателен: close() оставляет элемент после removeAttribute('src')
+      // и load(), и присвоение одного лишь src на мобильном Safari не всегда
+      // запускает загрузку заново.
+      video.load();
       // Автостарт может быть заблокирован автоплей-политикой - тогда просто
       // останется первый кадр с кнопкой воспроизведения, это нормально
       video.play().catch(() => {});
@@ -2325,8 +2338,34 @@ const PhotoViewer = {
     video.pause();
     video.removeAttribute('src');
     video.load();
+    this._restorePreviews();
   },
   isOpen() { return !$('photo-viewer').classList.contains('hidden'); },
+
+  // Превью роликов в списке сообщений. Адреса запоминаем, чтобы вернуть кадры
+  // после закрытия просмотрщика: без этого пузыри остались бы пустыми.
+  _stashed: [],
+
+  _releasePreviews() {
+    this._stashed = [];
+    document.querySelectorAll('video.bubble-video-preview').forEach(v => {
+      const src = v.getAttribute('src');
+      if (!src) return;
+      this._stashed.push({ el: v, src });
+      v.pause();
+      v.removeAttribute('src');
+      v.load();
+    });
+  },
+
+  _restorePreviews() {
+    const list = this._stashed;
+    this._stashed = [];
+    list.forEach(({ el, src }) => {
+      if (!el.isConnected) return;   // сообщение успели перерисовать
+      el.src = src;
+    });
+  },
 };
 
 /* ─────────────── Обрезка аватара (как AvatarCropWindow на ПК) ───────────────

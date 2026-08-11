@@ -28,6 +28,10 @@ namespace Tebegrammmm.Data
         //
         // Adress.txt в корне репозитория - канонический файл, ведётся вручную.
         //
+        // AlternativeAdress.txt - второй сервер команды. Очередь доходит до него,
+        // только когда основной не отвечает на /Test: берётся первый ЖИВОЙ источник,
+        // а не первый скачанный. Переключение выходит автоматическим.
+        //
         // Tebegram-client/Adress.txt - зеркало для установленных клиентов 2.0.0,
         // в цепочке которых корневого пути ещё нет. Пока такие клиенты используются,
         // адрес в обоих файлах должен совпадать; затем зеркало удаляется.
@@ -37,6 +41,7 @@ namespace Tebegrammmm.Data
         private static readonly string[] AdressUrls =
         {
             "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Adress.txt",
+            "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/AlternativeAdress.txt",
             "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Tebegram-client/Adress.txt",
             "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main-dev-Test/Tebegram-client/Adress.txt",
         };
