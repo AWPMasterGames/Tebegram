@@ -40,7 +40,7 @@ namespace TebegramServer.Classes.VoiceClasses
         {
             try
             {
-                // Закрывать можно только открытый или полузакрытый сокет — на мёртвом CloseAsync кидает исключение
+                // Закрывать можно только открытый или полузакрытый сокет - на мёртвом CloseAsync кидает исключение
                 if (Member.State == WebSocketState.Open || Member.State == WebSocketState.CloseReceived)
                 {
                     await Member.CloseAsync(webSocketCloseStatus, desciption, cancellationToken);
@@ -48,7 +48,7 @@ namespace TebegramServer.Classes.VoiceClasses
             }
             catch (WebSocketException)
             {
-                // Сокет уже разорван — ничего страшного
+                // Сокет уже разорван - ничего страшного
             }
             finally
             {

@@ -17,7 +17,7 @@ namespace TebegramServer.Controllers
             lock (_lock)
             {
                 string roomToken = new TokenGenerator().GetToken(UsernameCreator);
-                // Счётчик вместо VoiceRooms.Count — Id комнат не должны повторяться после удаления комнат
+                // Счётчик вместо VoiceRooms.Count - Id комнат не должны повторяться после удаления комнат
                 VoiceRoom VR = new VoiceRoom(_nextRoomId++, roomToken);
                 VoiceRooms.Add(roomToken, VR);
                 VoiceRoomTokens.Add(roomToken);
@@ -43,7 +43,7 @@ namespace TebegramServer.Controllers
             VoiceRoom? room;
             lock (_lock)
             {
-                // Комната могла быть уже удалена (двойное отключение) — раньше падал KeyNotFoundException
+                // Комната могла быть уже удалена (двойное отключение) - раньше падал KeyNotFoundException
                 if (!VoiceRooms.TryGetValue(Token, out room)) return;
             }
 
@@ -80,7 +80,7 @@ namespace TebegramServer.Controllers
                         string token = VoiceRoomTokens[i];
                         if (!VoiceRooms.TryGetValue(token, out var room)) { VoiceRoomTokens.RemoveAt(i); continue; }
 
-                        // Раньше считалось (CreatedTime - Now) — всегда отрицательное, комнаты не чистились никогда
+                        // Раньше считалось (CreatedTime - Now) - всегда отрицательное, комнаты не чистились никогда
                         bool isOldEnough = (DateTime.Now - room.CreatedTime).TotalMinutes > 5;
                         bool isAbandoned = room.RoomMembers.Count == 0
                             || (room.LastDiscconectTime != default && (DateTime.Now - room.LastDiscconectTime).TotalMinutes > 5 && room.RoomMembers.Count == 0);

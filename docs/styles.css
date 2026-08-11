@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════
-   Tebegram Web — стили в духе нативных iOS-приложений.
+   Tebegram Web - стили в духе нативных iOS-приложений.
    Палитра совпадает с десктопным клиентом (ColorSystem.xaml).
    ═══════════════════════════════════════════════════════════ */
 
@@ -55,7 +55,7 @@
 }
 
 /* Ручной выбор темы в настройках перекрывает системную
-   (data-theme на <html>; без атрибута — авто по prefers-color-scheme) */
+   (data-theme на <html>; без атрибута - авто по prefers-color-scheme) */
 :root[data-theme="light"] {
   --bg-deep: #E8ECF5;
   --bg-primary: #FFFFFF;
@@ -109,7 +109,7 @@
 html, body {
   height: 100%;
   overflow: hidden;
-  /* Системный шрифт платформы — на iPhone это SF Pro, поэтому выглядит «как родное» */
+  /* Системный шрифт платформы - на iPhone это SF Pro, поэтому выглядит «как родное» */
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
   background: var(--bg-primary);
   color: var(--text-primary);
@@ -124,7 +124,7 @@ html, body {
 /* Безопасные зоны iPhone (чёлка и полоса внизу) */
 .safe-top { padding-top: calc(env(safe-area-inset-top, 0px) + 8px); }
 /* Не полный inset (34px на iPhone), а сильно урезанный: панели почти у самого
-   края. Это НЕ заблокировано системой — iOS рисует «домашний индикатор» поверх
+   края. Это НЕ заблокировано системой - iOS рисует «домашний индикатор» поверх
    нашего контента; ~10px хватает, чтобы кнопки не попадали ровно под полоску.
    max() не даёт уйти в 0 на устройствах без «чёлки». */
 .safe-bottom { padding-bottom: max(calc(env(safe-area-inset-bottom, 0px) - 24px), 4px); }
@@ -133,7 +133,7 @@ html, body {
 .screen {
   position: fixed;
   /* Привязка ко ВСЕМ четырём краям (bottom:0 прижимает таббар к самому низу).
-     Никаких height:100vh/dvh — на iPhone-ярлыке они врут, оставляя полосу снизу:
+     Никаких height:100vh/dvh - на iPhone-ярлыке они врут, оставляя полосу снизу:
      фиксированный элемент, растянутый через inset, физически не может её оставить */
   inset: 0;
   display: flex;
@@ -174,7 +174,7 @@ html, body {
 
 .field input, .field textarea {
   width: 100%;
-  /* 16px минимум — иначе iOS приближает страницу при фокусе */
+  /* 16px минимум - иначе iOS приближает страницу при фокусе */
   font-size: 16px;
   padding: 13px 14px;
   border: 1px solid var(--border-default);
@@ -218,7 +218,7 @@ html, body {
 
 .search-wrap { margin-top: 8px; }
 
-/* Папки контактов — горизонтальная лента чипсов */
+/* Папки контактов - горизонтальная лента чипсов */
 .folder-chips {
   display: flex;
   gap: 8px;
@@ -329,7 +329,7 @@ html, body {
   /* Прибит к НИЗУ вьюпорта жёстко (fixed), а не через flex: на iPhone (Safari
      standalone) flex-раскладка оставляла полосу под панелью, хотя в Chromium всё
      было ровно. Фиксированной позиции всё равно на высотные капризы движка.
-     z-index 10 < 20 (.screen-chat) — экран чата выезжает ПОВЕРХ панели. */
+     z-index 10 < 20 (.screen-chat) - экран чата выезжает ПОВЕРХ панели. */
   position: fixed;
   left: 0;
   right: 0;
@@ -341,7 +341,7 @@ html, body {
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
 }
-/* Панель плавает над контентом — списку и настройкам нужен нижний отступ,
+/* Панель плавает над контентом - списку и настройкам нужен нижний отступ,
    чтобы последний элемент не прятался под ней */
 .chat-list,
 .settings {
@@ -441,6 +441,62 @@ html, body {
   margin-top: 3px;
   opacity: .6;
 }
+/* ── Создание группы ── */
+/* Кнопка в шапке «Чаты» прижимается вправо, к краю строки */
+.header-action { margin-left: auto; }
+
+.group-name-input {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-input, transparent);
+  color: inherit;
+  font: inherit;
+}
+.group-hint {
+  font-size: 12px;
+  opacity: .65;
+  margin-bottom: 10px;
+}
+/* Список участников прокручивается: контактов может быть много,
+   а модалка не должна вылезать за экран телефона */
+.group-members {
+  max-height: min(46vh, 320px);
+  overflow-y: auto;
+  margin-bottom: 12px;
+}
+.group-member {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 4px;
+  cursor: pointer;
+}
+.group-member input { width: 18px; height: 18px; flex: none; }
+.group-member-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.group-members-empty { font-size: 13px; opacity: .65; padding: 8px 4px; }
+
+/* Галочки статуса своего сообщения (одна - отправлено, две - прочитано).
+   Вторая галочка накладывается со сдвигом, как в win-клиенте. */
+.msg-status {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
+  vertical-align: -1px;
+}
+.msg-tick {
+  width: 11px;
+  height: 11px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+/* Две галочки - «внахлёст», иначе пара занимает слишком много места */
+.msg-status--seen .msg-tick + .msg-tick { margin-left: -5px; }
 .bubble--file { text-decoration: none; display: block; }
 .bubble--file .file-name { font-weight: 600; text-decoration: underline; }
 /* Вторая строка карточки файла: «MP4-файл · скачать» */
@@ -451,7 +507,7 @@ html, body {
   display: block;
   width: 100%;
   border-radius: 12px;
-  /* Кадр может быть любых пропорций — ограничиваем высоту, как у фото */
+  /* Кадр может быть любых пропорций - ограничиваем высоту, как у фото */
   max-height: 320px;
   object-fit: cover;
   background: #000;
@@ -474,14 +530,14 @@ html, body {
   pointer-events: none;
 }
 .video-play svg { width: 22px; height: 22px; display: block; }
-/* Универсальная карточка неизвестного файла — плашка вместо простой ссылки */
+/* Универсальная карточка неизвестного файла - плашка вместо простой ссылки */
 .bubble--doc .file-name { text-decoration: none; }
 .bubble--doc {
   background: var(--bg-elevated);
   border: 1px solid var(--border-default);
 }
 .bubble--doc.bubble--out {
-  /* На акцентном фоне своего пузыря — полупрозрачная плашка, как в win-клиенте */
+  /* На акцентном фоне своего пузыря - полупрозрачная плашка, как в win-клиенте */
   background: rgba(255, 255, 255, .18);
   border-color: rgba(255, 255, 255, .28);
 }
@@ -580,17 +636,17 @@ html, body {
   object-fit: contain;
 }
 /* Фото-пузырь: минимальная рамка (u исходящих фон был широкой обводкой),
-   время — плашкой поверх фото, как в Telegram */
+   время - плашкой поверх фото, как в Telegram */
 .bubble--photo {
   padding: 3px;
   position: relative;
   /* Без этого пузырь широких (горизонтальных) фото растягивался до НАТУРАЛЬНОЙ
-     ширины картинки, хотя сама она ужата до 240px — справа оставалась пустота,
+     ширины картинки, хотя сама она ужата до 240px - справа оставалась пустота,
      и время «висело в воздухе» вместо наложения на фото */
   width: fit-content;
   max-width: min(246px, 78%);
 }
-/* Время плашкой поверх вложения — одинаково у фото и у превью видео */
+/* Время плашкой поверх вложения - одинаково у фото и у превью видео */
 .bubble--photo .bubble-time,
 .bubble--video .bubble-time {
   position: absolute;
@@ -631,7 +687,24 @@ html, body {
   border: 1px solid var(--border-default);
   border-radius: 18px;
   padding: 8px 14px;
+  /* Опорная точка для счётчика символов - он лежит поверх, в правом нижнем углу */
+  position: relative;
 }
+
+/* Счётчик символов: неприметный, появляется только когда в поле есть текст.
+   Абсолютное позиционирование - чтобы появление и исчезновение не двигали поле. */
+.char-counter {
+  position: absolute;
+  right: 12px;
+  bottom: 2px;
+  font-size: 10px;
+  line-height: 1;
+  color: var(--text-muted);
+  pointer-events: none;   /* клик проходит сквозь - попадает в поле ввода */
+  user-select: none;
+}
+.char-counter.warn { color: var(--warning, #E8A13A); }
+.char-counter.full { color: var(--danger, #F0575C); }
 .composer-input-wrap textarea {
   width: 100%;
   max-height: 96px;
@@ -702,7 +775,7 @@ html, body {
   color: var(--text-primary);
   outline: none;
 }
-/* Выпадающий список (тема и т.п.) — в стиле полей ввода, со своей стрелкой,
+/* Выпадающий список (тема и т.п.) - в стиле полей ввода, со своей стрелкой,
    т.к. системная у select не красится под тему */
 .select-wrap { position: relative; }
 .select-wrap select {

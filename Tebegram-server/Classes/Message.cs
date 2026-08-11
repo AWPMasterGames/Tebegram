@@ -32,13 +32,15 @@
             _MessageType = messageType;
             _ServerAdress = serverAdress;
         }
-        // ПЕРЕХОД НА ChatId: в v2 (main-dev) сюда добавляется поле ChatId и оно идёт
-        // ПЕРВЫМ в ToString: $"{ChatId}▫{Sender}▫…". Менять только вместе с клиентами
-        // (win: Classes/Message.ToString + MessengerWindow.AddMessageToUser;
-        // веб: docs/app.js parseMessage/buildRaw) — иначе у выпущенных клиентов
-        // ломается разбор. ВАЖНО: в main-dev вместо Sender шлётся
-        // UsersData.FindUserByUsername(Sender).Name — так делать нельзя: клиенты ищут
-        // контакт ПО USERNAME в этом поле, плюс NRE, если пользователь удалён.
+        // В версии протокола 2 добавляется поле ChatId, и в ToString оно идёт первым:
+        // $"{ChatId}▫{Sender}▫…". Формат меняется одновременно с клиентами, иначе у
+        // выпущенных версий нарушается разбор. Затрагиваются Classes/Message.ToString
+        // и MessengerWindow.AddMessageToUser в клиенте Windows, parseMessage и
+        // buildRaw в docs/app.js.
+        //
+        // В поле Sender передаётся именно логин. Подстановка отображаемого имени
+        // через UsersData.FindUserByUsername(Sender).Name недопустима: клиенты ищут
+        // по этому полю контакт, а для удалённого пользователя вызов даёт исключение.
         public override string ToString()
         {
             return $"{Sender}▫{Reciver}▫{MessageType}▫{Time}▫{ServerAdress}▫{Text}";

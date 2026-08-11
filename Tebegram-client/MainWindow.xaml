@@ -18,7 +18,7 @@
 
     <Window.Resources>
 
-        <!-- Поле ввода без рамки — для PasswordBox и TextBox внутри кастомного контейнера -->
+        <!-- Поле ввода без рамки - для PasswordBox и TextBox внутри кастомного контейнера -->
         <ControlTemplate x:Key="InnerPasswordBox" TargetType="PasswordBox">
             <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center" Margin="8,0,0,0" />
         </ControlTemplate>
@@ -97,7 +97,7 @@
             </ControlTemplate.Triggers>
         </ControlTemplate>
 
-        <!--  «Тихая» текстовая кнопка (как в настройках) — для переключателя сервера  -->
+        <!--  «Тихая» текстовая кнопка (как в настройках) - для переключателя сервера  -->
         <ControlTemplate x:Key="GhostButtonTemplate" TargetType="Button">
             <Border
                 x:Name="Bd"

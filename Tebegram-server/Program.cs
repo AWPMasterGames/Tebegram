@@ -14,24 +14,60 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Привязка порта задаётся в appsettings.json (Kestrel:Endpoints → http://0.0.0.0:5000).
 // Раньше здесь стоял UseUrls("https://localhost:5000"), но Kestrel:Endpoints его молча
-// переопределял, из-за чего порт 5000 фактически слушал HTTP, а конфиг ложно обещал HTTPS —
+// переопределял, из-за чего порт 5000 фактически слушал HTTP, а конфиг ложно обещал HTTPS -
 // это путало настройку devtunnel и приводило к зависанию соединения (красная лампочка).
 
-// CORS — нужен веб-клиенту (GitHub Pages / PWA), десктопному клиенту не мешает
+// Необязательный HTTPS-эндпоинт, по умолчанию выключен. Основная схема работы
+// прежняя: HTTP за туннелем, TLS терминирует сам туннель.
+//
+// Нужен ровно для одного случая - открыть веб-клиент с другого устройства локальной
+// сети. Доступ к микрофону браузер выдаёт только в защищённом контексте, и исключение
+// сделано единственно для localhost. По адресу вида http://192.168.0.5:5000 объект
+// navigator.mediaDevices отсутствует, поэтому звонок в браузере не начинается вовсе.
+//
+// Включается переменной окружения HttpsPort, например HttpsPort=5001. Без переменной
+// поведение сервера не меняется.
+//
+// Сертификат по умолчанию берётся из dotnet dev-certs, но он выписан только на
+// localhost, поэтому при заходе по адресу вида https://192.168.0.5:5001 браузер
+// сообщит о несовпадении имени. Свой сертификат с нужными адресами в поле
+// subjectAltName задаётся переменными HttpsCertPath и HttpsCertPassword.
+int httpsPort = builder.Configuration.GetValue<int>("HttpsPort");
+if (httpsPort > 0)
+{
+    string? certPath = builder.Configuration["HttpsCertPath"];
+    string? certPassword = builder.Configuration["HttpsCertPassword"];
+
+    builder.WebHost.ConfigureKestrel(options =>
+    {
+        options.ListenAnyIP(httpsPort, listen =>
+        {
+            if (!string.IsNullOrWhiteSpace(certPath) && File.Exists(certPath))
+                listen.UseHttps(certPath, certPassword);
+            else
+                listen.UseHttps();
+        });
+    });
+
+    Console.WriteLine(string.IsNullOrWhiteSpace(certPath) || !File.Exists(certPath)
+        ? $"[Kestrel] HTTPS на порту {httpsPort}, сертификат dev-certs (только localhost)"
+        : $"[Kestrel] HTTPS на порту {httpsPort}, сертификат {certPath}");
+}
+
+// CORS - нужен веб-клиенту (GitHub Pages / PWA), десктопному клиенту не мешает
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
         policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 });
 
-// Предел размера загружаемого файла — 16 МБ.
-// Сам Kestrel потянул бы куда больше, но перед сервером стоит туннель devtunnel,
-// а у него ЖЁСТКИЙ потолок тела запроса 16 МБ: файл больше по туннелю не доходит,
-// обрывается почти в конце. Поэтому держим общий предел 16 МБ во всех трёх местах:
-// здесь, в клиенте (MessengerWindow.SendFileToServer, MaxUploadBytes) и в вебе
-// (docs/app.js, MAX_UPLOAD_BYTES) — клиенты отсеивают файл ДО отправки и сразу
-// показывают понятное сообщение. Уйдём с бесплатного туннеля на прямой хостинг —
-// поднять во всех трёх местах.
+// Предел размера загружаемого файла - 16 МБ. Ограничение задаёт не Kestrel, а
+// туннель devtunnel: тело запроса свыше 16 МБ он обрывает почти в самом конце.
+//
+// Значение продублировано в трёх местах: здесь, в MessengerWindow.MaxUploadBytes
+// и в MAX_UPLOAD_BYTES файла docs/app.js. Клиенты отсеивают файл до отправки и
+// сообщают о причине. При переходе с туннеля на прямой хостинг предел поднимается
+// во всех трёх местах.
 const long MaxUploadBytes = 16L * 1024 * 1024;
 builder.WebHost.ConfigureKestrel(options => options.Limits.MaxRequestBodySize = MaxUploadBytes);
 builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
@@ -60,8 +96,8 @@ Thread thread = new Thread(() => {
 thread.Start();
 
 // ─── Раздача веб-клиента (PWA) по адресу /app ────────────────────────────────
-// При запуске из репозитория — папка docs (всегда свежая, единый источник для GitHub Pages),
-// в опубликованном сервере — wwwroot рядом с exe.
+// При запуске из репозитория - папка docs (всегда свежая, единый источник для GitHub Pages),
+// в опубликованном сервере - wwwroot рядом с exe.
 string[] webRootCandidates =
 {
     Path.GetFullPath(Path.Combine(app.Environment.ContentRootPath, "..", "docs")),
@@ -71,13 +107,30 @@ string? webRoot = webRootCandidates.FirstOrDefault(Directory.Exists);
 if (webRoot != null)
 {
     var webFileProvider = new PhysicalFileProvider(webRoot);
+
+    // Адрес /app без косой черты в конце обрабатывается здесь, до UseDefaultFiles.
+    // Штатный редирект той середины собирает АБСОЛЮТНУЮ ссылку из заголовка Host,
+    // а туннель кладёт в Host внутренний порт. Наружу уходило
+    // https://<адрес-туннеля>:5000/app/ - такой адрес не открывается, и пользователь
+    // видел ошибку вместо веб-клиента. Относительная ссылка браузер разрешает сам
+    // относительно текущего адреса, поэтому порт подставиться не может.
+    app.Use(async (context, next) =>
+    {
+        if (context.Request.Path == "/app")
+        {
+            context.Response.Redirect("/app/" + context.Request.QueryString, permanent: true);
+            return;
+        }
+        await next();
+    });
+
     app.UseDefaultFiles(new DefaultFilesOptions { FileProvider = webFileProvider, RequestPath = "/app" });
     app.UseStaticFiles(new StaticFileOptions
     {
         FileProvider = webFileProvider,
         RequestPath = "/app",
         // no-cache: браузеры (особенно iPhone) неделями держали старые app.js/index.html
-        // в эвристическом HTTP-кэше — обновления «не доезжали» до пользователей.
+        // в эвристическом HTTP-кэше - обновления «не доезжали» до пользователей.
         // Файлы маленькие, перепроверка на каждый запуск не мешает.
         OnPrepareResponse = ctx => ctx.Context.Response.Headers.CacheControl = "no-cache"
     });
@@ -88,13 +141,14 @@ if (webRoot != null)
 // поэтому создаём его один раз, а не на каждый запрос файла.
 var contentTypeProvider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
 
-// Типы, которые браузер показывает САМ — только они отдаются как inline.
-// Список согласован с клиентами (win: Classes/Message.cs, веб: docs/app.js FILE_KINDS):
-// там такие файлы предлагают «открыть», а всё прочее — «скачать», и заголовок
-// не должен обещать иного. Редкие контейнеры (mkv, avi, wmv) сюда НЕ входят:
-// браузер их не проигрывает, честнее сразу отдать вложением.
-// SVG намеренно вне списка: inline-SVG с пользовательским содержимым — это
-// исполнение скрипта в контексте нашего домена (XSS), отдаём только вложением.
+// Типы, которые браузер отображает без сторонних средств. Только они отдаются
+// как inline. Список согласован с клиентами: Classes/Message.cs в приложении
+// Windows и FILE_KINDS в docs/app.js. Там такие файлы предлагаются к открытию,
+// остальные к загрузке, и заголовок ответа не должен этому противоречить.
+//
+// Редкие контейнеры mkv, avi и wmv в список не входят: браузер их не проигрывает.
+// SVG исключён намеренно. Файл с произвольным содержимым, показанный как inline,
+// исполняет скрипт в контексте домена сервера, то есть открывает XSS.
 var inlineTypes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
 {
     "image/png", "image/jpeg", "image/gif", "image/bmp", "image/webp",
@@ -103,17 +157,19 @@ var inlineTypes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
     "application/pdf"
 };
 
-// Отдача файла клиенту (общая для /upload/{имя} и /avatars/{имя}).
+// Отдача файла клиенту, общая для /upload/{имя} и /avatars/{имя}.
 //
-// Значение заголовка Content-Disposition обязано быть ASCII. Раньше имя файла
-// подставлялось как есть, и на кириллице («Без_названия_(2).jpg») Kestrel кидал
-// InvalidOperationException: Invalid non-ASCII character in header — запрос падал,
-// файл не доходил вообще (у фото с русскими именами были пустые пузыри, у видео —
-// ошибка загрузки). По RFC 6266 отдаём два варианта имени: ASCII-фолбэк в filename=
-// и UTF-8 в filename*= — второй понимают все актуальные браузеры.
+// Значение заголовка Content-Disposition обязано быть в кодировке ASCII. Ранее имя
+// подставлялось без преобразования, и на кириллице Kestrel выбрасывал
+// InvalidOperationException: Invalid non-ASCII character in header. Запрос падал
+// целиком, файл до клиента не доходил: фотографии с русскими именами показывались
+// пустыми пузырями, видео сообщало об ошибке загрузки.
 //
-// Медиа помечаем inline, чтобы браузер ПОКАЗЫВАЛ фото/видео/аудио (клик по чипу
-// файла в win-клиенте и открытие ссылки в вебе), остальное остаётся attachment.
+// По RFC 6266 передаются оба варианта имени: транслитерация в filename= и исходное
+// имя в кодировке UTF-8 в filename*=. Второй вариант понимают актуальные браузеры.
+//
+// Медиафайлы помечаются как inline, чтобы браузер отображал их вместо загрузки.
+// Остальные типы остаются attachment.
 async Task SendFileToClientAsync(HttpContext context, Microsoft.Extensions.FileProviders.IFileInfo fileInfo, string fileName, bool longLived = false)
 {
     // Неизвестное расширение → application/octet-stream: браузер не станет гадать
@@ -134,18 +190,81 @@ async Task SendFileToClientAsync(HttpContext context, Microsoft.Extensions.FileP
     // Вложения из /upload лежат под УНИКАЛЬНЫМ именем (см. CreateUniqueFile) и
     // никогда не меняются, поэтому их можно кэшировать «навсегда»: браузер и
     // веб-клиент перестают перекачивать одно и то же фото при каждом открытии
-    // чата. Для app.js/index.html так делать нельзя — там стоит no-cache, иначе
+    // чата. Для app.js/index.html так делать нельзя - там стоит no-cache, иначе
     // обновления не доезжают до пользователей.
     if (longLived)
         context.Response.Headers.CacheControl = "public, max-age=31536000, immutable";
 
     context.Response.ContentType = contentType;
+
+    // ── Частичная отдача (HTTP Range) ────────────────────────────────────────
+    // Без неё элемент <video> не поддерживает перемотку: ползунок перемещается,
+    // а кадр остаётся прежним. На телефоне это не проявлялось, поскольку ролик
+    // загружался целиком, на компьютере перемотка не работала. По той же причине
+    // не действовал preload="metadata": кадр предпросмотра не строился, и видео
+    // отображалось в чате строкой с именем файла.
+    //
+    // SendFileAsync принимает смещение и длину, поэтому достаточно разобрать
+    // заголовок Range и ответить кодом 206 с заголовком Content-Range.
+    long fileLength = fileInfo.Length;
+    context.Response.Headers.AcceptRanges = "bytes";
+
+    string rangeHeader = context.Request.Headers.Range.ToString();
+    if (!string.IsNullOrEmpty(rangeHeader) && rangeHeader.StartsWith("bytes=", StringComparison.OrdinalIgnoreCase))
+    {
+        // Поддерживаем один диапазон: "bytes=НАЧАЛО-КОНЕЦ", "bytes=НАЧАЛО-", "bytes=-ХВОСТ".
+        // Составные диапазоны (через запятую) браузеры для видео не используют.
+        string spec = rangeHeader.Substring("bytes=".Length).Split(',')[0].Trim();
+        int dash = spec.IndexOf('-');
+        if (dash >= 0 && fileLength > 0)
+        {
+            string fromRaw = spec.Substring(0, dash).Trim();
+            string toRaw = spec.Substring(dash + 1).Trim();
+
+            long start, end;
+            bool ok;
+            if (fromRaw.Length == 0)
+            {
+                // "-500" - последние 500 байт
+                ok = long.TryParse(toRaw, out long tail) && tail > 0;
+                start = ok ? Math.Max(0, fileLength - tail) : 0;
+                end = fileLength - 1;
+            }
+            else
+            {
+                ok = long.TryParse(fromRaw, out start) && start >= 0 && start < fileLength;
+                end = fileLength - 1;
+                if (ok && toRaw.Length > 0)
+                {
+                    ok = long.TryParse(toRaw, out end) && end >= start;
+                    if (end > fileLength - 1) end = fileLength - 1;
+                }
+            }
+
+            if (ok)
+            {
+                long count = end - start + 1;
+                context.Response.StatusCode = (int)HttpStatusCode.PartialContent;   // 206
+                context.Response.Headers.ContentRange = $"bytes {start}-{end}/{fileLength}";
+                context.Response.ContentLength = count;
+                await context.Response.SendFileAsync(fileInfo, start, count);
+                return;
+            }
+
+            // Диапазон за пределами файла - по RFC отвечаем 416 и говорим реальный размер
+            context.Response.StatusCode = (int)HttpStatusCode.RequestedRangeNotSatisfiable;
+            context.Response.Headers.ContentRange = $"bytes */{fileLength}";
+            return;
+        }
+    }
+
+    context.Response.ContentLength = fileLength;
     await context.Response.SendFileAsync(fileInfo);
 }
 
 // Уведомление о прочтении: reader открыл чат с sender, поэтому сообщения sender'а
 // этому reader'у считаются увиденными. Шлём sender'у SEEN▫#▫{reader} на все его
-// открытые сессии — его клиент пометит те сообщения двумя галочками.
+// открытые сессии - его клиент пометит те сообщения двумя галочками.
 async Task NotifySeen(string reader, string sender)
 {
     User? senderUser = UsersData.FindUserByUsername(sender);
@@ -162,21 +281,23 @@ async Task NotifySeen(string reader, string sender)
         }
         catch (WebSocketException)
         {
-            // Сокет умер между проверкой и отправкой — пропускаем
+            // Сокет умер между проверкой и отправкой - пропускаем
         }
     }
 }
 
-// Создаёт файл с УНИКАЛЬНЫМ именем и возвращает открытый поток (имя — в savedName).
+// Создаёт файл с уникальным именем и возвращает открытый поток. Имя записывается
+// в savedName.
 //
-// Раньше файл сохранялся под исходным именем, и второй «photo.jpg» затирал первый:
-// у старого сообщения внезапно менялась картинка, а у пользователей с одинаковыми
-// названиями снимков (IMG_0001.jpg с телефона — обычное дело) фото перемешивались.
-// Уникальность нужна и клиентскому кэшу: он хранит файлы по имени, и повторное
-// использование имени означало бы, что на экране остаётся устаревшая картинка.
+// Ранее файл сохранялся под исходным именем, и повторный photo.jpg затирал прежний:
+// у старого сообщения менялось изображение. Телефоны выдают снимкам одинаковые
+// имена вида IMG_0001.jpg, поэтому файлы разных пользователей перемешивались.
+// Уникальность требуется и клиентскому кэшу: он хранит файлы по имени, и повторное
+// имя означало бы показ устаревшего изображения.
 //
-// FileMode.CreateNew с повтором, а не «проверил Exists и создал»: два одновременных
-// запроса успевают выбрать одно и то же свободное имя между проверкой и созданием.
+// Используется FileMode.CreateNew с повтором, а не проверка File.Exists перед
+// созданием: два одновременных запроса успевают выбрать одно свободное имя в
+// промежутке между проверкой и созданием.
 FileStream CreateUniqueFile(string directory, string originalName, out string savedName)
 {
     // Path.GetFileName отрезает возможные пути в имени файла (защита от ../)
@@ -197,7 +318,7 @@ FileStream CreateUniqueFile(string directory, string originalName, out string sa
         }
         catch (IOException)
         {
-            // Имя занято — пробуем следующее
+            // Имя занято - пробуем следующее
         }
     }
 
@@ -215,7 +336,23 @@ app.MapGet("/Test", async (HttpContext context) =>
 
 app.MapPost("/upload", async (HttpContext context) =>
 {
-    IFormFileCollection files = context.Request.Form.Files;
+    IFormFileCollection files;
+    try
+    {
+        // Разбор multipart падает, если соединение оборвалось до конца тела
+        // (телефон свернули, туннель разорвал долгую заливку видео). Раньше это
+        // всплывало пятисоткой со стеком, и клиент показывал безликое «500».
+        files = context.Request.Form.Files;
+    }
+    catch (Exception ex)
+    {
+        Logs.Save($"Загрузка не принята: {ex.Message}");
+        Console.WriteLine($"[Upload] Тело запроса пришло не полностью: {ex.Message}");
+        context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+        await context.Response.WriteAsync("Загрузка прервана - файл дошёл не полностью");
+        return;
+    }
+
     var uploadFiles = $"{Directory.GetCurrentDirectory()}/uploads";
     Directory.CreateDirectory(uploadFiles);
 
@@ -225,9 +362,44 @@ app.MapPost("/upload", async (HttpContext context) =>
     {
         // Имя подбирается свободное: одинаковые названия снимков больше не затирают
         // друг друга (клиенту возвращается то имя, под которым файл реально лёг)
-        using var fileStream = CreateUniqueFile(uploadFiles, file.FileName, out FName);
-        await file.CopyToAsync(fileStream);
-        Logs.Save($"Загружен файл {FName}");
+        string savedName;
+        string savedPath;
+        long written;
+        try
+        {
+            using (var fileStream = CreateUniqueFile(uploadFiles, file.FileName, out savedName))
+            {
+                savedPath = fileStream.Name;
+                await file.CopyToAsync(fileStream);
+                written = fileStream.Length;
+            }
+        }
+        catch (Exception ex)
+        {
+            // Соединение оборвалось посреди заливки (частый случай на больших видео
+            // через туннель или с телефона): раньше на диске навсегда оставался
+            // огрызок, а причина нигде не фиксировалась.
+            Logs.Save($"Загрузка файла {file.FileName} прервана: {ex.Message}");
+            Console.WriteLine($"[Upload] Прервана загрузка {file.FileName}: {ex.Message}");
+            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            await context.Response.WriteAsync("Загрузка прервана - файл дошёл не полностью");
+            return;
+        }
+
+        // Клиент объявляет размер в multipart-заголовке. Если записали меньше - 
+        // файл неполный (битое видео/фото), отдавать такой в чат нельзя.
+        if (file.Length > 0 && written != file.Length)
+        {
+            try { File.Delete(savedPath); } catch { /* уже нет - не мешаем ответу */ }
+            Logs.Save($"Файл {file.FileName} дошёл не полностью: {written} из {file.Length} байт");
+            Console.WriteLine($"[Upload] {file.FileName}: получено {written} из {file.Length} байт - файл удалён");
+            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            await context.Response.WriteAsync($"Файл дошёл не полностью ({written} из {file.Length} байт)");
+            return;
+        }
+
+        FName = savedName;
+        Logs.Save($"Загружен файл {FName} ({written} байт)");
     }
 
     await context.Response.WriteAsync(FName);
@@ -247,7 +419,7 @@ app.MapGet("/upload/{FileName}", async (HttpContext context, string FileName) =>
         return;
     }
 
-    // longLived: имя файла уникально и содержимое неизменно — пусть браузер
+    // longLived: имя файла уникально и содержимое неизменно - пусть браузер
     // и веб-клиент держат его у себя и не качают повторно
     await SendFileToClientAsync(context, fileInfo, safeName, longLived: true);
 });
@@ -271,7 +443,7 @@ app.MapPost("/avatars/{UserId:int}", async (HttpContext context, int UserId) =>
     foreach (var file in files)
     {
         // Уникальное имя важно и здесь: раньше два пользователя, залившие «me.jpg»,
-        // получали ОДИН файл на двоих — второй затирал аватарку первого
+        // получали ОДИН файл на двоих - второй затирал аватарку первого
         using var fileStream = CreateUniqueFile(uploadFiles, file.FileName, out FName);
         await file.CopyToAsync(fileStream);
         Logs.Save($"Загружен файл {FName}");
@@ -296,7 +468,7 @@ app.MapGet("/avatarsFileName/{UserId:int}", async (HttpContext context, int User
 
 app.MapGet("/avatars/{FileName}", async (HttpContext context, string FileName) =>
 {
-    // Раньше файл искали в Data/avatars, а загружали в avatars — аватарки никогда не находились.
+    // Раньше файл искали в Data/avatars, а загружали в avatars - аватарки никогда не находились.
     string safeName = Path.GetFileName(FileName);
     var fileProvider = new PhysicalFileProvider(Directory.GetCurrentDirectory());
     var fileInfo = fileProvider.GetFileInfo($"avatars/{safeName}");
@@ -315,7 +487,7 @@ app.MapGet("/login/{UserLogin}-{UserPassword}", async (HttpContext Context, stri
 {
     // Коды ответов: раньше ЛЮБАЯ ошибка отдавалась с кодом 200 и текстом в теле,
     // и клиенту приходилось угадывать её по началу строки. Теперь код честный
-    // (401 — неверные данные), а ТЕКСТ остался прежним — иначе сломались бы
+    // (401 - неверные данные), а ТЕКСТ остался прежним - иначе сломались бы
     // выпущенные клиенты, которые опознают ошибку именно по тексту.
     if (!UsersData.IsExistUser(UserLogin))
     {
@@ -347,10 +519,10 @@ app.MapGet("/register/{UserLogin}-{UserPassword}-{Username}-{Name}", async (Http
 {
     // Проверка ДО создания пользователя: поля подставляются прямо в адрес запроса,
     // где разделителем служит дефис, поэтому опасные символы должны отсекаться
-    // здесь — на клиенте это лишь удобство, старый клиент проверку не сделает
+    // здесь - на клиенте это лишь удобство, старый клиент проверку не сделает
     string? validationError = Tebegram.Shared.UserValidation.CheckRegistration(UserLogin, UserPassword, Username, Name);
 
-    // Как и во входе: код ответа честный (400 — данные не годятся, 409 — занято),
+    // Как и во входе: код ответа честный (400 - данные не годятся, 409 - занято),
     // текст прежний, чтобы выпущенные клиенты продолжали его понимать
     if (string.IsNullOrWhiteSpace(UserLogin) || string.IsNullOrWhiteSpace(UserPassword) ||
         string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Name))
@@ -376,7 +548,7 @@ app.MapGet("/register/{UserLogin}-{UserPassword}-{Username}-{Name}", async (Http
     }
     else
     {
-        // GetNextUserId вместо UsersCount + 1 — иначе после удаления пользователей Id дублировались
+        // GetNextUserId вместо UsersCount + 1 - иначе после удаления пользователей Id дублировались
         User NewUser = new User(UsersData.GetNextUserId(), UserLogin, UserPassword, Name, Username,
                 new ObservableCollection<ChatFolder> {
                 new ChatFolder("Все чаты",
@@ -391,7 +563,7 @@ app.MapGet("/register/{UserLogin}-{UserPassword}-{Username}-{Name}", async (Http
 });
 
 // Глобальный поиск пользователей по подстроке логина/имени (для поиска через @).
-// Ответ: id▫username▫name❂id▫username▫name❂…  Точное совпадение логина — первым.
+// Ответ: id▫username▫name❂id▫username▫name❂…  Точное совпадение логина - первым.
 app.MapGet("/Users/find/{query}", async (HttpContext Context, string query) =>
 {
     string q = query.Trim().TrimStart('@');
@@ -473,7 +645,7 @@ app.MapPost("/messages", async (HttpContext Context) =>
 
     if (ReferenceEquals(ReciverUser, SenderUser))
     {
-        // Чат с собой (Избранное) — сохраняем один раз, иначе дублировалось
+        // Чат с собой (Избранное) - сохраняем один раз, иначе дублировалось
         SenderUser?.AddMessage(message);
     }
     else
@@ -501,7 +673,7 @@ app.MapDelete("/message", async (HttpContext Context) =>
     string contactUsername = d[1];
     string scope = d[2];
     string time = d[3];
-    // текст мог содержать ▫ — склеиваем хвост
+    // текст мог содержать ▫ - склеиваем хвост
     string text = string.Join('▫', d.Skip(4));
 
     User? owner = UsersData.FindUserById(ownerId);
@@ -657,7 +829,7 @@ app.MapPut("/Folders/{userId:int}", async (HttpContext Context, int userId) =>
             foreach (string username in f[2].Split('&'))
             {
                 Contact? known = user.FindContactByUsername(username.Trim());
-                // Лёгкая копия без сообщений — история хранится только в «Все чаты»
+                // Лёгкая копия без сообщений - история хранится только в «Все чаты»
                 if (known != null) contacts.Add(new Contact(known.UserId, known.Username, known.Name));
             }
 
@@ -679,7 +851,12 @@ static Message? ParseMessage(string raw)
 
     if (messageData[2] == "Text")
     {
-        string text = string.Join('▫', messageData.Skip(5));
+        // Текст чистится и на сервере, хотя оба клиента уже вызывают SanitizeMessage
+        // перед отправкой. Проверка на одной стороне защищает только от опечаток:
+        // запрос в обход клиента доставит ❂ в историю, и одно сообщение при чтении
+        // разделится на два, а хвост придёт мусором.
+        string text = Tebegram.Shared.UserValidation.SanitizeMessage(string.Join('▫', messageData.Skip(5)));
+        if (text == null) return null;
         return new Message(messageData[0], messageData[1], text, messageData[3]);
     }
     if (messageData[2] == "File")
@@ -702,10 +879,27 @@ app.MapGet("/Voice/CreateRoom/{userId:int}-{calledUserUsername}", async (HttpCon
         await Context.Response.WriteAsync("Пользователь не найден");
         return;
     }
+    // Платформа звонящего (?platform=win|web). Звонок пойдёт ТОЛЬКО на такую же
+    // платформу собеседника: win звонит в win, веб - в веб. Причина простая - 
+    // звук и сигнализация у платформ разные, а раньше токен был один на
+    // пользователя, и вызов звонил сразу везде, где человек залогинен.
+    string callerPlatform = Context.Request.Query["platform"].ToString();
+    if (string.IsNullOrWhiteSpace(callerPlatform)) callerPlatform = "legacy";
+
+    // Собеседник должен быть в сети НА ТОЙ ЖЕ платформе, иначе звонить некуда
+    if (callerPlatform != "legacy" && !calledUser.IsOnlineOn(callerPlatform))
+    {
+        Context.Response.StatusCode = (int)HttpStatusCode.Conflict;
+        await Context.Response.WriteAsync("Собеседник сейчас не в сети в этом приложении");
+        return;
+    }
+
     string token = VoiceRoomsController.CreateRoom(user.Username + calledUser.Username);
 
     user.CallToken = token;
-    calledUser.CallToken = $"{user.Username}▫{token}";
+    // Третьим полем - платформа, для которой предназначен вызов. Старые клиенты
+    // читают только первые два поля, поэтому формат для них не изменился.
+    calledUser.CallToken = $"{user.Username}▫{token}▫{callerPlatform}";
 
     await Context.Response.WriteAsync(token);
 });
@@ -720,23 +914,51 @@ app.MapGet("/Voice/GetCallToken/{userId:int}", async (HttpContext Context, int u
     {
         response = "NotFound";
     }
-    else {
+    else
+    {
         response = user.CallToken;
+
+        // Клиент сообщает свою платформу - отдаём вызов только «своей».
+        // Без параметра (старый клиент) поведение прежнее: получает всё.
+        string asking = Context.Request.Query["platform"].ToString();
+        if (!string.IsNullOrWhiteSpace(asking))
+        {
+            string[] parts = response.Split('▫');
+            // parts: [звонящий, токен, платформа]. Платформы нет - вызов от старого
+            // клиента, его показываем всем, иначе он вообще никому не дозвонится.
+            if (parts.Length >= 3 && parts[2] != "legacy" && parts[2] != asking)
+                response = "NotFound";
+        }
     }
 
     await Context.Response.WriteAsync(response);
 });
 
-app.MapGet("/Voice/DeclineCall/{userId:int}-{token}", async (HttpContext Context, int userId, string token) =>
+// Сегмент принимаем ЦЕЛИКОМ и делим по первому дефису вручную.
+// Причина: TokenGenerator отдаёт URL-safe Base64 ('+'→'-', '/'→'_'), то есть сам
+// токен почти всегда содержит дефисы. На маршруте "{userId:int}-{token}" такой
+// запрос не совпадал и возвращал 404 - сервер не чистил CallToken и не рассылал
+// "CloseConnection", из-за чего у второй стороны звонок не завершался.
+// Форма URL осталась прежней, менять клиенты не нужно.
+app.MapGet("/Voice/DeclineCall/{data}", async (HttpContext Context, string data) =>
 {
+    int sep = data.IndexOf('-');
+    if (sep <= 0 || !int.TryParse(data.Substring(0, sep), out int userId))
+    {
+        Context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+        await Context.Response.WriteAsync("Некорректный запрос");
+        return;
+    }
+    string token = data.Substring(sep + 1);
+
     User? user = UsersData.FindUserById(userId);
 
     if (user != null) user.CallToken = "";
 
-    // Токен зависал у второй стороны звонка — чистим у всех участников
+    // Токен зависал у второй стороны звонка - чистим у всех участников
     UsersData.ClearCallTokens(token);
 
-    // Комната могла уже быть удалена — раньше тут падал KeyNotFoundException
+    // Комната могла уже быть удалена - раньше тут падал KeyNotFoundException
     if (VoiceRoomsController.VoiceRooms.TryGetValue(token, out var room))
     {
         await room.SendTextToRoom("CloseConnection");
@@ -768,7 +990,7 @@ app.Map("/Voice/ws", async context =>
     VoiceRoomsController.ConnectingToRoom(ws, Token, user);
     Console.WriteLine($"Пользователь {user.Username} Подключился к комнате Id: {VoiceRoomsController.GetRoomId(Token)}");
 
-    // Как только в комнате стало двое — разговор реально состоялся. До этого
+    // Как только в комнате стало двое - разговор реально состоялся. До этого
     // клиент показывает «Соединяем…», а по этому событию запускает отсчёт времени
     // (раньше таймер стартовал сразу после подключения СВОЕГО сокета, то есть ещё
     // до того, как собеседник взял трубку).
@@ -785,7 +1007,7 @@ app.Map("/Voice/ws", async context =>
             {
                 if (result.MessageType == WebSocketMessageType.Binary)
                 {
-                    // Пересылаем ровно столько байт, сколько пришло — раньше уходил весь буфер 4096 с мусором в хвосте
+                    // Пересылаем ровно столько байт, сколько пришло - раньше уходил весь буфер 4096 с мусором в хвосте
                     if (VoiceRoomsController.VoiceRooms.TryGetValue(Token, out var room))
                     {
                         byte[] voice = new byte[result.Count];
@@ -795,11 +1017,11 @@ app.Map("/Voice/ws", async context =>
                 }
                 else if (result.MessageType == WebSocketMessageType.Text)
                 {
-                    // Состояние микрофона участника: MIC:1 — включен, MIC:0 — выключен.
+                    // Состояние микрофона участника: MIC:1 - включен, MIC:0 - выключен.
                     // Пересылаем ОСТАЛЬНЫМ, чтобы у них значок рядом с аватаром этого
                     // человека показывал именно ЕГО микрофон.
                     //
-                    // Ретранслируем только префикс MIC: — иначе клиент мог бы прислать
+                    // Ретранслируем только префикс MIC: - иначе клиент мог бы прислать
                     // служебное «CloseConnection» и повесить трубку всей комнате.
                     string voiceText = Encoding.UTF8.GetString(buffer, 0, result.Count);
                     if (voiceText.StartsWith("MIC:")
@@ -817,7 +1039,7 @@ app.Map("/Voice/ws", async context =>
     }
     finally
     {
-        // Клиент мог закрыться аварийно (без Close-фрейма) — убираем его из комнаты в любом случае,
+        // Клиент мог закрыться аварийно (без Close-фрейма) - убираем его из комнаты в любом случае,
         // иначе комната держит мёртвый сокет и не удаляется
         await VoiceRoomsController.DisconnectFromRoom(ws, Token, WebSocketCloseStatus.NormalClosure, "Соединение разорвано", CancellationToken.None);
     }
@@ -842,7 +1064,7 @@ static async Task ReceiveMessage(WebSocket socket, Func<WebSocketReceiveResult, 
         }
         catch (WebSocketException)
         {
-            // Аварийный разрыв соединения (клиент убит/потерял сеть) — выходим, cleanup сделает вызывающий код
+            // Аварийный разрыв соединения (клиент убит/потерял сеть) - выходим, cleanup сделает вызывающий код
             break;
         }
 
@@ -857,20 +1079,22 @@ static async Task ReceiveMessage(WebSocket socket, Func<WebSocketReceiveResult, 
 
 #region Chat
 
-// Создание чата (перенос из main-dev, коммит 64bc1ab, с фиксами).
-// {usernames} — один или несколько логинов через ▫: до двух участников — личный чат,
-// три и больше — группа (владелец — создатель, имя — из имён участников).
-// Наши клиенты этот эндпоинт пока не вызывают (чаты — «спящая» сущность),
-// но клиент из main-dev уже умеет. Фиксы против оригинала:
-// — FindUserByUsername может вернуть null: в оригинале null попадал в members
-//   и ронял CreateChat (NRE), здесь — понятная ошибка 400;
-// — при НЕпустых Name/Avatar чата в ответ шли пустые строки (переменные
-//   инициализировались empty и заполнялись только когда поля чата пусты);
-// — для чата с собой после дедупа участник один — оригинальный members[1]
-//   кидал ArgumentOutOfRangeException.
-// Название группы приходит ОТДЕЛЬНЫМ параметром запроса (?name=…), а не в пути:
-// в пути разделителем служит дефис, и любое имя с дефисом сдвинуло бы разбор —
-// ровно так рождались мусорные аккаунты при регистрации.
+// Создание чата. Перенесено из ветки main-dev, коммит 64bc1ab, с исправлениями.
+//
+// {usernames} - логины через разделитель ▫. Двое участников образуют личный чат,
+// трое и более - группу, владельцем которой становится создатель.
+//
+// Название группы передаётся параметром запроса ?name, а не в составе пути:
+// в пути разделителем служит дефис, поэтому название с дефисом сдвинуло бы разбор.
+// По этой же причине испорченные учётные записи возникали при регистрации.
+//
+// Исправления относительно исходной версии:
+// FindUserByUsername может вернуть null. Ранее null попадал в список участников и
+// вызывал NullReferenceException внутри CreateChat, теперь возвращается ошибка 400.
+// При заполненных полях Name и Avatar ответ содержал пустые строки: переменные
+// инициализировались пустыми и заполнялись только для незаданных полей чата.
+// В чате с самим собой после удаления повторов остаётся один участник, и обращение
+// к members[1] вызывало ArgumentOutOfRangeException.
 app.MapGet("/Chat/Create/{userId}-{usernames}", async (HttpContext Context, int userId, string usernames) =>
 {
     User? creator = UsersData.FindUserById(userId);
@@ -900,7 +1124,7 @@ app.MapGet("/Chat/Create/{userId}-{usernames}", async (HttpContext Context, int 
     string owner = chat.Owner != null ? $"{chat.Owner.Id}" : "None";
 
     // Личный чат в ответе показываем как собеседника (у самого чата имя/аватар пустые);
-    // чат с собой («Избранное») — как себя
+    // чат с собой («Избранное») - как себя
     string name = chat.Name;
     string avatar = chat.Avatar;
     if (!chat.IsGroup)
@@ -915,9 +1139,9 @@ app.MapGet("/Chat/Create/{userId}-{usernames}", async (HttpContext Context, int 
 
 // Список чатов пользователя. ОТДЕЛЬНЫЙ эндпоинт, а не расширение ответа логина:
 // формат /login разбирают все выпущенные клиенты (контакты читаются с индекса 9
-// до конца), и дописать туда чаты — значит сломать их. Новый клиент просто
+// до конца), и дописать туда чаты - значит сломать их. Новый клиент просто
 // делает ещё один запрос, старый про него не знает.
-// Формат: чаты через ❂, поля чата — id&имя&группа?&аватар&владелец&участники.
+// Формат: чаты через ❂, поля чата - id&имя&группа?&аватар&владелец&участники.
 app.MapGet("/Chats/{userId:int}", async (HttpContext Context, int userId) =>
 {
     User? user = UsersData.FindUserById(userId);
@@ -940,7 +1164,7 @@ app.MapGet("/Chats/{userId:int}", async (HttpContext Context, int userId) =>
 });
 
 // История группового чата: сообщения через ❂ в том же виде, что приходят по WS
-// (без конверта — конверт нужен только чтобы отличить чат в живом потоке).
+// (без конверта - конверт нужен только чтобы отличить чат в живом потоке).
 app.MapGet("/Chat/History/{chatId:int}", async (HttpContext Context, int chatId) =>
 {
     if (!ChatsController.Chats.TryGetValue(chatId, out Chat? chat))
@@ -976,7 +1200,9 @@ app.Map("/Chat/ws", async context =>
     }
 
     using var ws = await context.WebSockets.AcceptWebSocketAsync();
-    user.ChatsSessions.Add(ws);
+    // Платформа нужна для маршрутизации звонков (см. User.IsOnlineOn).
+    // Параметра нет - старый клиент, такая сессия принимает звонки с любой платформы.
+    user.AddSession(ws, context.Request.Query["platform"].ToString());
 
     try
     {
@@ -993,7 +1219,7 @@ app.Map("/Chat/ws", async context =>
                     {
                         // ПЕРЕХОД НА ChatId: клиенты сейчас шлют SEND▫#▫0▫#▫username▫#▫payload
                         // (chatId всегда 0, чат ищется по username в CheckIsExist).
-                        // В v2 клиент шлёт реальный chatId — поле username останется
+                        // В v2 клиент шлёт реальный chatId - поле username останется
                         // фолбэком для старых клиентов, ломать формат кадра не нужно.
                         case "SEND":
                             if (data.Length < 4 || !int.TryParse(data[1], out int requestedChatId)) break;
@@ -1008,12 +1234,19 @@ app.Map("/Chat/ws", async context =>
                             if (data.Length >= 3) await NotifySeen(data[1], data[2]);
                             break;
 
-                        // DELETEChat▫#▫{ChatId} — удаление чата (пока только группы,
+                        // DELETEChat▫#▫{ChatId} - удаление чата (пока только группы,
                         // и только владельцем). int.TryParse + await: битый id больше
                         // не роняет соединение, а исключение из DeleteChat не теряется.
                         case "DELETECHAT":
                             if (data.Length >= 2 && int.TryParse(data[1], out int delChatId))
                                 await ChatsController.DeleteChat(delChatId, user);
+                            break;
+
+                        // LEAVEChat▫#▫{ChatId} - выход из группы. Доступен любому
+                        // участнику и убирает из чата только его, см. LeaveChat.
+                        case "LEAVECHAT":
+                            if (data.Length >= 2 && int.TryParse(data[1], out int leaveChatId))
+                                await ChatsController.LeaveChat(leaveChatId, user);
                             break;
                     }
                 }
@@ -1029,9 +1262,9 @@ app.Map("/Chat/ws", async context =>
     }
     finally
     {
-        // Убираем сессию всегда — даже при аварийном разрыве.
+        // Убираем сессию всегда - даже при аварийном разрыве.
         // Раньше мёртвые сокеты копились в ChatsSessions навсегда.
-        user.ChatsSessions.Remove(ws);
+        user.RemoveSession(ws);
     }
 });
 

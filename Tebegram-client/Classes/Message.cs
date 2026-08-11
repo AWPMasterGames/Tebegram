@@ -44,8 +44,8 @@ namespace Tebegrammmm
 
         /// <summary>
         /// URL файла для показа/скачивания. Если сохранённый адрес потерян
-        /// (сервер до фикса не хранил ServerAdress в базе — фото приходили «пустыми»),
-        /// строим стандартный путь /upload/имя. Для не-файлов — null, чтобы
+        /// (сервер до фикса не хранил ServerAdress в базе - фото приходили «пустыми»),
+        /// строим стандартный путь /upload/имя. Для не-файлов - null, чтобы
         /// картинка в пузыре не пыталась грузиться.
         /// </summary>
         public string FileUrl
@@ -63,7 +63,7 @@ namespace Tebegrammmm
         // Картинка грузится своими руками через MediaCache (а не WPF-загрузчиком по
         // URI): загрузчик иногда молча не справлялся, и фото выглядели пустыми
         // сообщениями, а кроме того он не умеет складывать файлы на диск.
-        // _imageCache — кэш В ПАМЯТИ процесса (диск отдельно, см. MediaCache).
+        // _imageCache - кэш В ПАМЯТИ процесса (диск отдельно, см. MediaCache).
         private static readonly Dictionary<string, System.Windows.Media.Imaging.BitmapImage> _imageCache = new();
         private static readonly object _imageCacheLock = new();
 
@@ -71,13 +71,16 @@ namespace Tebegrammmm
         private bool _fileImageRequested;
 
         // ── Классификация вложений по расширению ────────────────────────────
-        // Три группы: картинка (превью в пузыре), «проигрываемое» медиа (открываем —
-        // браузер/плеер это покажет) и ВСЁ ОСТАЛЬНОЕ — неизвестный файл, для которого
-        // используется универсальная карточка со скачиванием. В список playable
-        // попадают только форматы, которые браузер реально умеет открыть: mkv/avi/
-        // архивы/документы туда не входят, иначе клик открывал бы пустую вкладку.
-        // Списки согласованы с сервером (Program.cs, выбор inline/attachment)
-        // и веб-клиентом (docs/app.js, FILE_KINDS).
+        // Вложения делятся на три группы. Изображение показывается миниатюрой в
+        // сообщении. Воспроизводимое медиа открывается браузером или плеером.
+        // Всё прочее считается неизвестным файлом и получает карточку с загрузкой.
+        //
+        // В список playable входят только форматы, которые браузер действительно
+        // открывает. Контейнеры mkv и avi, архивы и документы исключены, иначе
+        // нажатие открывало бы пустую вкладку.
+        //
+        // Списки согласованы с сервером, где выбирается inline или attachment,
+        // и с FILE_KINDS в docs/app.js.
         private static readonly HashSet<string> ImageExt = new()
             { ".png", ".jpg", ".jpeg", ".bmp", ".gif", ".webp" };
         private static readonly HashSet<string> VideoExt = new()
@@ -92,7 +95,7 @@ namespace Tebegrammmm
         /// <summary>Файл-картинка? По расширению из Text (там лежит имя файла на сервере).</summary>
         public bool IsImageFile => ImageExt.Contains(Ext);
 
-        /// <summary>Показывать превью фото? Во время заливки — нет (файла ещё нет на сервере).</summary>
+        /// <summary>Показывать превью фото? Во время заливки - нет (файла ещё нет на сервере).</summary>
         public bool ShowImagePreview => IsImageFile && !IsUploading;
 
         /// <summary>Видео или аудио, которое открывается плеером/браузером.</summary>
@@ -101,12 +104,12 @@ namespace Tebegrammmm
         /// <summary>
         /// Неизвестный файл (архив, документ, exe, редкий контейнер видео…).
         /// Показывается универсальной карточкой: открыть его нечем, поэтому
-        /// единственное действие — скачать.
+        /// единственное действие - скачать.
         /// </summary>
         public bool IsUnknownFile => _MessageType == MessageType.File && !IsImageFile && !IsPlayableFile;
 
         /// <summary>
-        /// Файл НЕ-картинка (видео/аудио/документ). Рисуется чипом с именем файла —
+        /// Файл НЕ-картинка (видео/аудио/документ). Рисуется чипом с именем файла - 
         /// раньше такой файл шёл в путь картинки, декодирование молча падало и
         /// пузырь оставался пустым («видосы не отображаются»).
         /// </summary>
@@ -181,7 +184,7 @@ namespace Tebegrammmm
 
         /// <summary>
         /// Чип с именем файла. Показывается для всего, кроме картинок и видео с
-        /// готовым превью, А ТАКЖЕ для любого файла, пока он заливается — тогда в
+        /// готовым превью, А ТАКЖЕ для любого файла, пока он заливается - тогда в
         /// чипе рисуется полоска прогресса вместо подписи.
         /// </summary>
         public bool ShowFileChip => IsUploading || (IsPlainFile && !ShowVideoPreview);
@@ -189,7 +192,7 @@ namespace Tebegrammmm
         /// <summary>
         /// У фото и превью видео время рисуется полупрозрачной плашкой прямо на
         /// картинке (как в веб-клиенте), поэтому обычная строка времени под пузырём
-        /// в этом случае не нужна — иначе время показывалось бы дважды.
+        /// в этом случае не нужна - иначе время показывалось бы дважды.
         /// </summary>
         public bool ShowMediaTimeOverlay => ShowImagePreview || ShowVideoPreview;
 
@@ -222,12 +225,12 @@ namespace Tebegrammmm
             var dispatcher = System.Windows.Application.Current?.Dispatcher;
             if (dispatcher == null) return;
 
-            // Дальше — работа с диском, поэтому уходим с потока интерфейса: сюда
+            // Дальше - работа с диском, поэтому уходим с потока интерфейса: сюда
             // попадают из привязки, а чтение файлов на нём даёт рывки при прокрутке
             _ = Task.Run(() =>
             {
                 // Кадр с прошлого запуска: раньше он снимался заново КАЖДЫЙ раз, а для
-                // этого MediaPlayer вытягивал с сервера начало ролика — из-за этого чат
+                // этого MediaPlayer вытягивал с сервера начало ролика - из-за этого чат
                 // с видео открывался медленно и на пустом месте тратил трафик
                 if (Data.MediaCache.TryLoadPreview(url, out var savedFrame))
                 {
@@ -237,7 +240,7 @@ namespace Tebegrammmm
                     return;
                 }
 
-                // Ролик уже скачан — снимаем кадр с ЛОКАЛЬНОГО файла, без сети.
+                // Ролик уже скачан - снимаем кадр с ЛОКАЛЬНОГО файла, без сети.
                 // url остаётся ключом кэша: он один и тот же для памяти и для диска.
                 string source = Data.MediaCache.TryGetLocalPath(url, out string localPath) ? localPath : url;
                 GrabVideoFrame(dispatcher, url, source);
@@ -254,7 +257,7 @@ namespace Tebegrammmm
             {
                 try
                 {
-                    // ScrubbingEnabled + Play/Pause — иначе кадр не декодируется и
+                    // ScrubbingEnabled + Play/Pause - иначе кадр не декодируется и
                     // в RenderTargetBitmap попадает пустота
                     var player = new System.Windows.Media.MediaPlayer { Volume = 0, ScrubbingEnabled = true };
                     var timeout = new System.Windows.Threading.DispatcherTimer
@@ -284,7 +287,7 @@ namespace Tebegrammmm
                                 int w = player.NaturalVideoWidth, h = player.NaturalVideoHeight;
                                 if (w <= 0 || h <= 0) { Cleanup(); return; }
 
-                                // Уменьшаем до ширины превью — незачем держать полный кадр
+                                // Уменьшаем до ширины превью - незачем держать полный кадр
                                 double scale = Math.Min(1.0, 320.0 / w);
                                 int tw = Math.Max(1, (int)(w * scale)), th = Math.Max(1, (int)(h * scale));
 
@@ -316,12 +319,12 @@ namespace Tebegrammmm
 
                     player.MediaFailed += (_, args) =>
                     {
-                        // Нет кодека (mkv/avi и пр.) — превью не будет, покажем чип файла
+                        // Нет кодека (mkv/avi и пр.) - превью не будет, покажем чип файла
                         Classes.Log.Save($"[Message.VideoThumbnail] не открылось: {args.ErrorException?.Message}");
                         Cleanup();
                     };
 
-                    timeout.Tick += (_, _) => Cleanup(); // видео недоступно — не висим вечно
+                    timeout.Tick += (_, _) => Cleanup(); // видео недоступно - не висим вечно
                     timeout.Start();
 
                     player.Open(new Uri(source, UriKind.Absolute));
@@ -334,9 +337,9 @@ namespace Tebegrammmm
         }
 
         /// <summary>
-        /// Готовит картинку для пузыря. Порядок источников — от самого быстрого:
+        /// Готовит картинку для пузыря. Порядок источников - от самого быстрого:
         /// память процесса → превью на диске → оригинал (тоже из дискового кэша,
-        /// и только при промахе — из сети). Подробнее об устройстве кэша см.
+        /// и только при промахе - из сети). Подробнее об устройстве кэша см.
         /// Data/MediaCache.cs.
         /// </summary>
         private async Task LoadFileImageAsync()
@@ -355,7 +358,7 @@ namespace Tebegrammmm
             }
 
             // Превью с прошлого запуска: ни сети, ни разбора полноразмерного файла.
-            // Чтение и распаковка — в фоне: этот метод запускается из привязки, то
+            // Чтение и распаковка - в фоне: этот метод запускается из привязки, то
             // есть на потоке интерфейса, и десяток фото подряд дал бы заметный рывок
             var saved = await Task.Run(() =>
                 Data.MediaCache.TryLoadPreview(url, out var image) ? image : null).ConfigureAwait(false);
@@ -391,15 +394,19 @@ namespace Tebegrammmm
                     if (attempt == 0) await Task.Delay(1500).ConfigureAwait(false);
                 }
             }
-            _fileImageRequested = false; // не вышло — позволим повторить при следующем обращении
+            _fileImageRequested = false; // не вышло - позволим повторить при следующем обращении
         }
 
         /// <summary>
-        /// Разбирает фото в размер пузыря. Уменьшаем при декодировании, а не при
-        /// показе: снимок с телефона занимает в памяти десятки мегабайт, и на
-        /// чате с полусотней фото это заметно и по памяти, и по задержке отрисовки.
-        /// Маленькие картинки не трогаем — DecodePixelWidth задаёт ТОЧНУЮ ширину,
-        /// и превью 200 px растянулось бы в мыло на 640.
+        /// Декодирует фотографию в размер сообщения.
+        ///
+        /// Уменьшение выполняется при декодировании, а не при выводе: снимок с
+        /// телефона занимает в памяти десятки мегабайт, и в чате с полусотней
+        /// фотографий это заметно по расходу памяти и задержке отрисовки.
+        ///
+        /// Изображения меньше целевой ширины остаются без изменений: DecodePixelWidth
+        /// задаёт точное значение, поэтому миниатюра 200 пикселей была бы растянута
+        /// до 640 с потерей резкости.
         /// </summary>
         private static System.Windows.Media.Imaging.BitmapImage DecodePreview(byte[] bytes)
         {
@@ -434,8 +441,8 @@ namespace Tebegrammmm
         public string Message_FilePath { get { return _FilePath; } }
 
         // ── Статус доставки (как галочки в Telegram) ─────────────────────────
-        // Пузырь показывает статус СВОИХ сообщений: часики — пока сервер не
-        // подтвердил, галочка — подтвердил, красный «!» — не отправилось.
+        // Пузырь показывает статус СВОИХ сообщений: часики - пока сервер не
+        // подтвердил, галочка - подтвердил, красный «!» - не отправилось.
         // Уведомление обязательно: статус меняется УЖЕ ПОСЛЕ появления пузыря
         // (сообщение показывается сразу, а подтверждение приходит по WS позже).
         public MessageStatus Status
@@ -457,9 +464,9 @@ namespace Tebegrammmm
         /// <summary>Показывать индикатор статуса? Только у своих сообщений.</summary>
         public bool ShowStatus => IsOutgoing;
         public bool ShowClock => IsOutgoing && _Status == MessageStatus.Pending;
-        /// <summary>Одна галочка — сервер принял, но получатель ещё не открывал чат.</summary>
+        /// <summary>Одна галочка - сервер принял, но получатель ещё не открывал чат.</summary>
         public bool ShowCheck => IsOutgoing && _Status == MessageStatus.Sent;
-        /// <summary>Две галочки — получатель открыл чат с нами (см. SEEN-уведомление).</summary>
+        /// <summary>Две галочки - получатель открыл чат с нами (см. SEEN-уведомление).</summary>
         public bool ShowDoubleCheck => IsOutgoing && _Status == MessageStatus.Seen;
         public bool ShowFailed => IsOutgoing && _Status == MessageStatus.Failed;
 
@@ -519,7 +526,7 @@ namespace Tebegrammmm
 
         /// <summary>
         /// Загрузка окончена: имя файла на сервере могло смениться (photo_1.jpg
-        /// при совпадении имён), поэтому заодно обновляем адрес — по нему потом
+        /// при совпадении имён), поэтому заодно обновляем адрес - по нему потом
         /// строятся превью и открывается просмотрщик.
         /// </summary>
         public void FinishUpload(string serverFileName, string url)
@@ -549,10 +556,10 @@ namespace Tebegrammmm
             _Status = MessageStatus.Sent; // По умолчанию
         }
         // ПЕРЕХОД НА ChatId: в протоколе v2 (main-dev) первым полем добавляется
-        // {ChatId}▫ — тогда же нужно синхронно сдвинуть индексы разбора в
+        // {ChatId}▫ - тогда же нужно синхронно сдвинуть индексы разбора в
         // MessengerWindow.AddMessageToUser и добавить поле ChatId в этот класс.
         // Менять только ВМЕСТЕ с сервером (Tebegram-server/Classes/Message.ToString)
-        // и вебом (docs/app.js: parseMessage/buildRaw) — иначе ломается доставка
+        // и вебом (docs/app.js: parseMessage/buildRaw) - иначе ломается доставка
         // у всех уже установленных клиентов.
         public override string ToString()
         {
@@ -566,13 +573,13 @@ namespace Tebegrammmm
         private bool TryParseTime(out DateTime dt)
             => DateTime.TryParseExact(_Time, FullFormats, Ru, DateTimeStyles.None, out dt);
 
-        /// <summary>Время для показа в пузыре — только ЧЧ:ММ (без даты).</summary>
+        /// <summary>Время для показа в пузыре - только ЧЧ:ММ (без даты).</summary>
         public string TimeShort
         {
             get
             {
                 if (TryParseTime(out DateTime dt)) return dt.ToString("HH:mm");
-                return _Time; // старый формат — показываем как есть
+                return _Time; // старый формат - показываем как есть
             }
         }
 

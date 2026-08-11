@@ -5,7 +5,7 @@ namespace Tebegrammmm.Controls
 {
     /// <summary>
     /// Кружок аватара: фон + иконка-человечек по умолчанию + фото (заполняет весь круг) + рамка.
-    /// Avatar — DependencyProperty, поэтому можно привязывать: Avatar="{Binding Avatar}".
+    /// Avatar - DependencyProperty, поэтому можно привязывать: Avatar="{Binding Avatar}".
     /// </summary>
     public partial class UserControl1 : UserControl
     {

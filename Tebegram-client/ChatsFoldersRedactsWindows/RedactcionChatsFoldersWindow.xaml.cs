@@ -51,19 +51,20 @@ namespace Tebegrammmm.ChatsFoldersRedactsWindows
         }
 
         /// <summary>
-        /// Создание группового чата — пока только UI (окно собирает название и участников).
-        /// Логику создания подключает Максим: после ShowDialog() == true у окна доступны
-        /// GroupName и SelectedUsernames, сервер уже умеет GET /Chat/Create/{userId}-{логины через ▫}.
+        /// Открывает окно создания группового чата.
+        ///
+        /// Запрос на сервер отправляет само окно, поэтому результат true означает,
+        /// что группа уже создана. В списке чатов она появляется по команде addChat,
+        /// которую сервер рассылает участникам, см. MessengerWindow.HandleAddChat.
         /// </summary>
         private void CreateGroupChat_Click(object sender, RoutedEventArgs e)
         {
             var createWindow = new CreateGroupChatWindow { Owner = this };
             if (createWindow.ShowDialog() == true)
             {
-                // TODO(Максим): вызвать /Chat/Create и добавить чат в UI (или дождаться WS «addChat»)
                 Tebegrammmm.Classes.Log.Save(
-                    $"[CreateGroupChat] Собраны данные группы «{createWindow.GroupName}»: " +
-                    string.Join(", ", createWindow.SelectedUsernames) + " — логика создания ещё не подключена");
+                    $"[CreateGroupChat] Создана группа «{createWindow.GroupName}»: " +
+                    string.Join(", ", createWindow.SelectedUsernames));
             }
         }
 

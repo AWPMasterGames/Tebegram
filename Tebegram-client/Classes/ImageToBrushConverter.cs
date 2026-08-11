@@ -7,22 +7,22 @@ using System.Windows.Media.Imaging;
 namespace Tebegrammmm.Classes
 {
     /// <summary>
-    /// Значение (URL-строка или готовый ImageSource) → ImageBrush для заливки Ellipse/Border.
+    /// Преобразует URL-строку или готовый ImageSource в ImageBrush для заливки
+    /// Ellipse и Border.
     ///
-    /// Зачем: раньше в XAML писали
-    ///     &lt;Ellipse&gt;&lt;Ellipse.Fill&gt;&lt;ImageBrush ImageSource="{Binding Avatar}"/&gt;…
-    /// то есть Binding сидел ВНУТРИ ImageBrush. ImageBrush — Freezable, а не
-    /// FrameworkElement: он не участвует в наследовании DataContext и не видит
-    /// NameScope, поэтому окно сыпало ошибками привязки
-    ///   «Не удается найти управляющий FrameworkElement… для целевого элемента»
-    /// (особенно с ElementName, как в UserControl1), а при пустом аватаре — ещё и
-    ///   «ImageSourceConverter cannot convert from (null)».
-    /// Теперь Binding стоит на самом элементе (Ellipse.Fill / Border.Background),
-    /// то есть на FrameworkElement, а кисть собирает этот конвертер. Он же гасит
-    /// null: возвращает null вместо попытки сконвертировать пустоту в ImageSource.
+    /// Прежний вариант помещал привязку внутрь кисти:
+    ///     &lt;Ellipse.Fill&gt;&lt;ImageBrush ImageSource="{Binding Avatar}"/&gt;
+    /// ImageBrush наследует Freezable, а не FrameworkElement, поэтому не участвует
+    /// в наследовании DataContext и не видит NameScope. Привязка не разрешалась, и
+    /// окно выдавало ошибку поиска управляющего FrameworkElement, а при пустом
+    /// аватаре дополнительно ошибку преобразования null в ImageSource.
     ///
-    /// ConverterParameter — режим растяжения: "Uniform" (вписать целиком, для
-    /// превью файлов) или по умолчанию "UniformToFill" (заполнить круг аватара).
+    /// Теперь привязка стоит на самом элементе, то есть на FrameworkElement, а
+    /// кисть собирает конвертер. Пустое значение он возвращает как null.
+    ///
+    /// ConverterParameter задаёт режим растяжения: "Uniform" вписывает изображение
+    /// целиком и применяется к превью файлов, "UniformToFill" заполняет круг
+    /// аватара и используется по умолчанию.
     /// </summary>
     public class ImageToBrushConverter : IValueConverter
     {
@@ -43,7 +43,7 @@ namespace Tebegrammmm.Classes
                 }
                 catch (Exception ex)
                 {
-                    // Битый URL — рисуем «пустой» аватар вместо падения привязки
+                    // Битый URL - рисуем «пустой» аватар вместо падения привязки
                     Log.Save($"[ImageToBrush] {ex.GetType().Name}: {ex.Message} ({url})");
                     return null;
                 }
@@ -56,7 +56,7 @@ namespace Tebegrammmm.Classes
 
             // Заморозка удешевляет отрисовку списков, НО картинка по http грузится
             // асинхронно: пока идёт загрузка, Freeze() кидает InvalidOperationException
-            // («не удается заморозить этот объект Freezable») — и это исключение летит
+            // («не удается заморозить этот объект Freezable») - и это исключение летит
             // прямо из привязки. Поэтому замораживаем только когда WPF это разрешает.
             if (brush.CanFreeze) brush.Freeze();
             return brush;

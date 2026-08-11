@@ -47,7 +47,7 @@ namespace TebegramServer.Classes.VoiceClasses
         public async Task SendVoiceToRoom(WebSocket member, byte[] voice)
         {
             // Снимок списка: участники могут отключаться во время рассылки.
-            // await обязателен — два параллельных SendAsync на одном сокете кидают исключение.
+            // await обязателен - два параллельных SendAsync на одном сокете кидают исключение.
             foreach (RoomMember roomMember in _RoomMembers.ToList())
             {
                 if (roomMember.Member == member)
@@ -69,7 +69,7 @@ namespace TebegramServer.Classes.VoiceClasses
         /// <summary>
         /// Текст всем, КРОМЕ отправителя. Нужно для состояния микрофона: значок
         /// рядом с аватаром показывает микрофон СОБЕСЕДНИКА, поэтому своё же
-        /// уведомление возвращать себе нельзя — иначе оно перебьёт свой значок.
+        /// уведомление возвращать себе нельзя - иначе оно перебьёт свой значок.
         /// </summary>
         public async Task SendTextToRoomExcept(WebSocket sender, string text)
         {

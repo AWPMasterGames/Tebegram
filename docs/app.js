@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════
-   Tebegram Web — мобильный PWA-клиент.
+   Tebegram Web - мобильный PWA-клиент.
    Работает с тем же сервером и протоколом, что и десктопный клиент:
    разделитель полей ▫, сообщения Sender▫Reciver▫Type▫Time▫ServerAdress▫Text,
    реалтайм через WebSocket /Chat/ws.
@@ -15,20 +15,20 @@ const WS_SEP = '▫#▫';
 const Server = {
   address: null,
 
-  // Тот же механизм и ТОТ ЖЕ ПОРЯДОК, что у десктопного клиента (см.
-  // Tebegram-client/Data/ServerData.cs): адрес devtunnel лежит в Adress.txt
-  // в репозитории, все источники ведут на main — по нему живут релизные клиенты.
+  // Механизм и порядок источников те же, что у десктопного клиента, см.
+  // Tebegram-client/Data/ServerData.cs. Адрес туннеля лежит в Adress.txt
+  // репозитория, все источники указывают на ветку main: по ней работают
+  // выпущенные клиенты.
   //
-  // ПЕРВЫМ идёт Tebegrammmm/Adress.txt — это канонический файл, его ведут вручную.
-  // Tebegram-client/Adress.txt — зеркало для новой раскладки; оно вторым намеренно:
-  // если обновить только канонический файл, зеркало останется устаревшим, и при
-  // ВЫКЛЮЧЕННЫХ серверах победил бы устаревший адрес (проверка живости не спасает).
-  // Ветка main-dev-Test — последний запасной вариант.
+  // Adress.txt в корне репозитория - канонический файл, ведётся вручную.
+  // Tebegram-client/Adress.txt - зеркало для установленных клиентов 2.0.0,
+  // адрес в обоих файлах должен совпадать.
+  // Ветка main-dev-Test - запасной вариант.
   //
-  // Когда страница открыта с самого сервера (путь /app), до этого списка дело
-  // вообще не доходит — API берётся со своего домена (см. resolve, шаг 2).
+  // При открытии страницы с самого сервера, по пути /app, список не используется:
+  // адрес API берётся с текущего домена, см. шаг 2 в resolve.
   ADDRESS_SOURCES: [
-    'https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Tebegrammmm/Adress.txt',
+    'https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Adress.txt',
     'https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Tebegram-client/Adress.txt',
     'https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main-dev-Test/Tebegram-client/Adress.txt',
   ],
@@ -41,7 +41,7 @@ const Server = {
       return this.address;
     }
 
-    // 2. Если веб-клиент открыт с самого сервера (путь /app) — API на том же домене
+    // 2. Если веб-клиент открыт с самого сервера (путь /app) - API на том же домене
     if (location.pathname.startsWith('/app')) {
       try {
         const r = await fetchWithTimeout(`${location.origin}/Test`, 3000);
@@ -49,13 +49,13 @@ const Server = {
           this.address = location.origin;
           return this.address;
         }
-      } catch { /* не тот хост — идём дальше */ }
+      } catch { /* не тот хост - идём дальше */ }
     }
 
     // 3. Adress.txt на GitHub. Кандидат берётся, только если его сервер ЖИВ
     // (/Test отвечает «HI!»): раньше побеждал первый успешно скачанный адрес,
     // и мёртвый туннель в файле «закупоривал» цепочку, хотя дальше по ней лежал
-    // рабочий. Если не жив ни один — берём первый скачанный (прежнее поведение).
+    // рабочий. Если не жив ни один - берём первый скачанный (прежнее поведение).
     let firstFetched = null;
     for (const src of this.ADDRESS_SOURCES) {
       let line = '';
@@ -63,7 +63,7 @@ const Server = {
         const r = await fetchWithTimeout(`${src}?t=${Date.now()}`, 5000);
         if (!r.ok) continue;
         line = (await r.text()).split('\n')[0].trim().replace(/\/+$/, '');
-      } catch { continue; /* источник недоступен — следующий */ }
+      } catch { continue; /* источник недоступен - следующий */ }
       if (!line) continue;
 
       if (firstFetched === null) firstFetched = line;
@@ -74,7 +74,7 @@ const Server = {
           this.address = line;
           return this.address;
         }
-      } catch { /* кандидат не отвечает — пробуем следующий */ }
+      } catch { /* кандидат не отвечает - пробуем следующий */ }
     }
 
     if (firstFetched) {
@@ -97,9 +97,14 @@ function fetchWithTimeout(url, ms, options = {}) {
 const Store = {
   user: null,          // { id, login, name, username, avatar }
   contacts: [],        // [{ id, username, name, avatar, messages: [] }]
-  folders: [],         // [{ name, icon, usernames: [] }] — папки, созданные в десктопе
+  folders: [],         // [{ name, icon, usernames: [] }] - папки, созданные в десктопе
   activeFolder: null,  // null = «Все чаты»
   activeContact: null,
+
+  // Результаты поиска по @логину среди ВСЕХ пользователей сервера.
+  // Хранятся в состоянии, а не дописываются в DOM: список чатов рисует один
+  // метод (UI.renderChatList), поэтому найденные не могут наложиться на своих.
+  globalResults: [],
 
   findContact(username) {
     return this.contacts.find(c => c.username === username) || null;
@@ -123,6 +128,35 @@ const Api = {
   async history(userId) {
     const r = await fetchWithTimeout(`${Server.address}/messages/${userId}`, 10000);
     return r.ok ? r.text() : '';
+  },
+
+  // Групповые чаты пользователя. Личные чаты сюда не попадают - их клиент
+  // уже видит как контакты (см. /Chats на сервере).
+  async getChats(userId) {
+    try {
+      const r = await fetchWithTimeout(`${Server.address}/Chats/${userId}`, 10000);
+      if (!r.ok) return [];
+      const body = await r.text();
+      return body.split(MSG_SEP).map(s => s.trim()).filter(Boolean).map(parseChatLine).filter(Boolean);
+    } catch { return []; }
+  },
+
+  // Создание группы. Ники участников (без себя) разделяются ▫, название - в query.
+  // Сервер сам разошлёт всем участникам addChat, поэтому отдельно добавлять
+  // группу в список не нужно - её подхватит обработчик конверта.
+  async createChat(userId, usernames, name) {
+    const path = usernames.map(encodeURIComponent).join(encodeURIComponent(SEP));
+    const r = await fetchWithTimeout(
+      `${Server.address}/Chat/Create/${userId}-${path}?name=${encodeURIComponent(name)}`, 10000);
+    return { ok: r.ok, text: await r.text() };
+  },
+
+  // История группы: сообщения через ❂ в обычном формате (без конверта)
+  async chatHistory(chatId) {
+    try {
+      const r = await fetchWithTimeout(`${Server.address}/Chat/History/${chatId}`, 10000);
+      return r.ok ? r.text() : '';
+    } catch { return ''; }
   },
 
   // Дублирующая запись сообщения (как в десктопе): WS рассылает, POST сохраняет
@@ -188,9 +222,14 @@ const Api = {
     const fd = new FormData();
     fd.append('file', file, file.name);
     const r = await fetch(`${Server.address}/upload`, { method: 'POST', body: fd });
-    // Раньше ответ брался как есть: при отказе сервера (например, 413 — файл
-    // больше лимита) в чат уходило сообщение с пустым или мусорным именем файла
-    if (!r.ok) throw new Error(`upload ${r.status}`);
+    // Раньше ответ брался как есть: при отказе сервера (например, 413 - файл
+    // больше лимита) в чат уходило сообщение с пустым или мусорным именем файла.
+    // Текст ответа показываем пользователю: сервер объясняет причину отказа
+    // («файл дошёл не полностью» и т.п.) - раньше был только безликий код.
+    if (!r.ok) {
+      const reason = await r.text().catch(() => '');
+      throw new Error(reason.trim() || `сервер ответил ${r.status}`);
+    }
     const stored = (await r.text()).trim();
     if (!stored) throw new Error('upload: пустой ответ');
     return stored; // сервер возвращает сохранённое имя файла
@@ -209,12 +248,14 @@ const Api = {
 };
 
 /* ─────────────────────── Голосовые звонки ───────────────────────
-   Совместимы с ПК и Android: общий формат — PCM 16 бит, 48 кГц, моно.
+   Совместимы с ПК и Android: общий формат - PCM 16 бит, 48 кГц, моно.
    Сервер просто ретранслирует бинарные пакеты всем в комнате.
-   - GET  /Voice/CreateRoom/{myId}-{username}   → токен комнаты
-   - GET  /Voice/GetCallToken/{myId}            → "NotFound" или "caller▫token"
-   - GET  /Voice/DeclineCall/{myId}-{token}
-   - WSS  /Voice/ws?userId={id}&roomToken={t}   → бинарный PCM 48 кГц + текст "CloseConnection"
+  - GET  /Voice/CreateRoom/{myId}-{username}?platform=web → токен комнаты,
+       либо 409, если собеседник не в сети именно в веб-версии
+  - GET  /Voice/GetCallToken/{myId}?platform=web → "NotFound" или
+       "caller▫token▫платформа" (чужую платформу сервер не отдаёт)
+  - GET  /Voice/DeclineCall/{myId}-{token}
+  - WSS  /Voice/ws?userId={id}&roomToken={t}   → бинарный PCM 48 кГц + текст "CloseConnection"
    ──────────────────────────────────────────────────────────────── */
 const SAMPLE_RATE = 48000;
 
@@ -234,18 +275,24 @@ const Voice = {
   timer: null,
   seconds: 0,
 
+  // platform=web - звонок пойдёт ТОЛЬКО в веб-клиент собеседника. Если у него
+  // открыт лишь десктоп, сервер ответит 409 и звонок не начнётся: сигнализация
+  // и звук у платформ разные, а раньше вызов звонил сразу везде.
   async createRoom(contactUsername) {
-    const r = await fetch(`${Server.address}/Voice/CreateRoom/${Store.user.id}-${encodeURIComponent(contactUsername)}`);
-    return r.text();
+    const r = await fetch(`${Server.address}/Voice/CreateRoom/${Store.user.id}-${encodeURIComponent(contactUsername)}?platform=web`);
+    const text = await r.text();
+    if (r.status === 409) return { offline: true, message: text };
+    if (!r.ok) return { error: true, message: text };
+    return { token: text.trim() };
   },
 
   async getIncomingCall() {
     try {
-      const r = await fetch(`${Server.address}/Voice/GetCallToken/${Store.user.id}`);
+      const r = await fetch(`${Server.address}/Voice/GetCallToken/${Store.user.id}?platform=web`);
       const t = await r.text();
       if (t === 'NotFound') return null;
       const [caller, token] = t.split(SEP);
-      // Свой же токен исходящего звонка (без ▫) — это не входящий звонок
+      // Свой же токен исходящего звонка (без ▫) - это не входящий звонок
       if (!caller || !token) return null;
       return { caller, token };
     } catch { return null; }
@@ -261,11 +308,11 @@ const Voice = {
     return Server.wsUrl(`/Voice/ws?userId=${Store.user.id}&roomToken=${encodeURIComponent(token)}`);
   },
 
-  // Запрос микрофона. ВАЖНО: вызывается ПЕРВЫМ, прямо из обработчика нажатия —
+  // Запрос микрофона. ВАЖНО: вызывается ПЕРВЫМ, прямо из обработчика нажатия - 
   // iOS/Android считают «активацию жеста» истёкшей после сетевых await (fetch/WS),
   // и getUserMedia после них молча отклонялся с Permission denied.
   async _getMic() {
-    // getUserMedia работает только в безопасном контексте — по http://IP браузер
+    // getUserMedia работает только в безопасном контексте - по http://IP браузер
     // запрещает микрофон молча, поэтому объясняем явно
     if (!window.isSecureContext)
       throw new Error('звонки работают только по HTTPS. Открой приложение по ссылке туннеля (https://…devtunnels.ms/app), а не по http или IP-адресу');
@@ -273,29 +320,29 @@ const Voice = {
       throw new Error('браузер не поддерживает доступ к микрофону');
 
     // ВЕДЁМ с включённой БРАУЗЕРНОЙ обработкой (echoCancellation + noiseSuppression +
-    // autoGainControl) — это НАСТОЯЩее шумо-/эхоподавление и нормализация (тот же
+    // autoGainControl) - это НАСТОЯЩее шумо-/эхоподавление и нормализация (тот же
     // движок, что в FaceTime/видеозвонках). Раньше вели с {audio:true} → браузерная
     // обработка ОТКЛЮЧАЛАСЬ, сырой микрофон с ветром/шорохами → «много помех».
     // Эти три флага широко поддерживаются и Samsung их принимает (ронял только
-    // channelCount, которого тут НЕТ). {audio:true} — крайний фолбэк.
+    // channelCount, которого тут НЕТ). {audio:true} - крайний фолбэк.
     const attempts = [
       { audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } },
       { audio: true },
     ];
 
     let lastErr = null;
-    for (let round = 0; round < 2; round++) {         // до 2 проходов (второй — «прогрев» железа)
+    for (let round = 0; round < 2; round++) {         // до 2 проходов (второй - «прогрев» железа)
       for (const constraints of attempts) {
         try {
           return await navigator.mediaDevices.getUserMedia(constraints);
         } catch (e) {
           lastErr = e;
-          // Отказ в доступе — дальнейшие попытки бессмысленны, выходим сразу
+          // Отказ в доступе - дальнейшие попытки бессмысленны, выходим сразу
           if (e && (e.name === 'NotAllowedError' || e.name === 'SecurityError')) round = 99;
           if (round === 99) break;
         }
       }
-      // NotFoundError иногда транзиентный (микрофон «просыпается») — ждём и пробуем ещё раз
+      // NotFoundError иногда транзиентный (микрофон «просыпается») - ждём и пробуем ещё раз
       if (lastErr && lastErr.name === 'NotFoundError' && round === 0)
         await new Promise(r => setTimeout(r, 500));
       else
@@ -317,27 +364,27 @@ const Voice = {
   },
 
   // Подсказка под платформу: Android блокирует навсегда после одного отказа
-  // и больше НЕ показывает запрос — пользователь должен включить доступ руками
+  // и больше НЕ показывает запрос - пользователь должен включить доступ руками
   _micDeniedHint() {
     const ua = navigator.userAgent;
     if (/android/i.test(ua))
-      return 'нет доступа к микрофону. Нажми значок замка (или настроек) в адресной строке → Разрешения → Микрофон → Разрешить. Если запрос вообще не появлялся — проверь доступ к микрофону у браузера: Настройки Android → Приложения → Chrome/Samsung Internet → Разрешения';
+      return 'нет доступа к микрофону. Нажми значок замка (или настроек) в адресной строке → Разрешения → Микрофон → Разрешить. Если запрос вообще не появлялся - проверь доступ к микрофону у браузера: Настройки Android → Приложения → Chrome/Samsung Internet → Разрешения';
     if (/iphone|ipad|ipod/i.test(ua))
       return 'нет доступа к микрофону. iPhone: Настройки → Приложения → Safari → Микрофон (или всплывающий запрос при звонке)';
     return 'нет доступа к микрофону. Разреши его в настройках сайта (значок замка в адресной строке)';
   },
 
   // NotFoundError: микрофон есть физически, но браузер его не отдал.
-  // inputs — сколько аудио-входов видит браузер (0 = вообще не видит, >0 = есть, но захват сорвался).
+  // inputs - сколько аудио-входов видит браузер (0 = вообще не видит, >0 = есть, но захват сорвался).
   _micNotFoundHint(inputs) {
     const android = /android/i.test(navigator.userAgent);
     if (inputs === 0) {
-      // Классика Samsung Internet в режиме установленного PWA — он не отдаёт устройства
+      // Классика Samsung Internet в режиме установленного PWA - он не отдаёт устройства
       if (android)
-        return 'браузер не видит микрофон, хотя разрешение выдано. Обычно помогает: (1) открыть приложение в Chrome, а не в Samsung Internet; (2) закрыть телефонный звонок/диктофон, если они держат микрофон; (3) если открыто как установленное приложение — открой ту же ссылку обычной вкладкой браузера. После смены — перезапусти звонок.';
+        return 'браузер не видит микрофон, хотя разрешение выдано. Обычно помогает: (1) открыть приложение в Chrome, а не в Samsung Internet; (2) закрыть телефонный звонок/диктофон, если они держат микрофон; (3) если открыто как установленное приложение - открой ту же ссылку обычной вкладкой браузера. После смены - перезапусти звонок.';
       return 'браузер не видит микрофон. Проверь, что он не занят другим приложением, и попробуй Chrome.';
     }
-    // Устройство есть в списке, но захват не удался — как правило, помогает перезапуск браузера
+    // Устройство есть в списке, но захват не удался - как правило, помогает перезапуск браузера
     return 'микрофон найден, но захват не удался. Закрой другие приложения, использующие микрофон, полностью закрой и открой браузер (или переоткрой приложение) и попробуй снова.';
   },
 
@@ -348,13 +395,26 @@ const Voice = {
     this.role = 'caller';
     UI.showCall(contact, 'outgoing');
     try {
-      this.stream = await this._getMic(); // до сетевых запросов — см. _getMic
+      this.stream = await this._getMic(); // до сетевых запросов - см. _getMic
       await this._ensureAudio();          // аудиоконтекст тоже создаём в жесте (iOS)
       this._acquireWakeLock();            // экран не гаснет во время звонка
-      this.token = await this.createRoom(contact.username);
+
+      const room = await this.createRoom(contact.username);
+      if (room.offline) {
+        // Собеседник в сети, но не в веб-версии - звонить некуда
+        UI.toast(`${contact.name} сейчас не в сети в веб-версии. Позвонить можно только тому, у кого открыт такой же клиент.`);
+        this.hangup();
+        return;
+      }
+      if (room.error || !room.token) {
+        UI.toast('Не удалось начать звонок: ' + (room.message || 'сервер не ответил'));
+        this.hangup();
+        return;
+      }
+      this.token = room.token;
       await this._connectAudio(this.token);
       // Таймер НЕ стартуем: держим «Вызов…», пока собеседник не принял.
-      // «Идёт разговор» + таймер включит его ПЕРВЫЙ аудио-кадр (см. _connectAudio) —
+      // «Идёт разговор» + таймер включит его ПЕРВЫЙ аудио-кадр (см. _connectAudio) - 
       // так время звонка на обоих телефонах начинается одновременно.
     } catch (e) {
       UI.toast('Не удалось начать звонок: ' + (e.message || e));
@@ -371,7 +431,7 @@ const Voice = {
     this.role = 'callee';
     this._incoming = null;
     try {
-      this.stream = await this._getMic(); // до сетевых запросов — см. _getMic
+      this.stream = await this._getMic(); // до сетевых запросов - см. _getMic
       await this._ensureAudio();          // аудиоконтекст тоже создаём в жесте (iOS)
       this._acquireWakeLock();            // экран не гаснет во время звонка
       await this._connectAudio(this.token);
@@ -383,22 +443,26 @@ const Voice = {
     }
   },
 
-  // Аудиоконтекст на РОДНОЙ частоте устройства + worklet + аудио-элемент вывода.
-  // Вызывается прямо в жесте нажатия (iOS требует создавать/будить аудио в жесте).
+  // Создаёт аудиоконтекст на собственной частоте устройства, worklet и элемент
+  // вывода. Вызывается непосредственно в обработчике нажатия: iOS разрешает
+  // создавать и возобновлять аудио только внутри жеста пользователя.
   //
-  // Три защиты от «тишины» на iPhone:
-  // 1) sampleRate НЕ задаём: при несовпадении с частотой железа (часто 44100)
-  //    WebKit молча отдаёт тишину из createMediaStreamSource. Пересэмплируем сами.
-  // 2) Вывод звука идёт через <audio>-элемент (MediaStreamAudioDestinationNode):
-  //    в режиме «микрофон+динамик» iOS прямой выход Web Audio может не звучать
-  //    вовсе, а медиа-путь через <audio> работает и играет через громкоговоритель.
-  // 3) При включении микрофона iOS переводит контекст в НЕСТАНДАРТНОЕ состояние
-  //    'interrupted' (не 'suspended'!) и сам не будит — ловим statechange и будим.
+  // Три меры против полной тишины на iPhone:
+  // 1) sampleRate не задаётся. При несовпадении с частотой оборудования, обычно
+  //    44100, WebKit возвращает из createMediaStreamSource тишину без ошибки.
+  //    Пересчёт частоты выполняется здесь.
+  // 2) Вывод идёт через элемент <audio> и MediaStreamAudioDestinationNode.
+  //    В режиме одновременной работы микрофона и динамика прямой выход Web Audio
+  //    на iOS может не звучать, тогда как медиапуть работает и использует
+  //    громкоговоритель.
+  // 3) При включении микрофона iOS переводит контекст в нестандартное состояние
+  //    'interrupted', а не 'suspended', и самостоятельно из него не выходит.
+  //    Возобновление выполняется по событию statechange.
   async _ensureAudio() {
     if (!this.ctx || this.ctx.state === 'closed') {
       const AC = window.AudioContext || window.webkitAudioContext;
       this.ctx = new AC();
-      // ?v= — чтобы телефоны не держали старый worklet в HTTP-кэше
+      // ?v= - чтобы телефоны не держали старый worklet в HTTP-кэше
       await this.ctx.audioWorklet.addModule('./voice-worklet.js?v=1.0.10');
 
       // Автопробуждение: iOS «прерывает» контекст при смене аудио-сессии
@@ -410,7 +474,7 @@ const Voice = {
     // resume безусловно: state может быть и 'interrupted' (WebKit), не только 'suspended'
     if (this.ctx.state !== 'running') await this.ctx.resume().catch(() => {});
 
-    // Выходной путь: worklet → MediaStreamDestination → <audio>. play() — в жесте.
+    // Выходной путь: worklet → MediaStreamDestination → <audio>. play() - в жесте.
     if (!this.playbackDest || this.playbackDest.context !== this.ctx)
       this.playbackDest = this.ctx.createMediaStreamDestination();
     if (!this._audioEl) {
@@ -424,15 +488,15 @@ const Voice = {
       await this._audioEl.play();
       this._elPlaying = true;
     } catch {
-      this._elPlaying = false; // автоплей не дали — подстрахуемся прямым выходом
+      this._elPlaying = false; // автоплей не дали - подстрахуемся прямым выходом
     }
   },
 
   // ── Wake Lock: экран не гаснет во время звонка ──────────────────────────
   // Без него iPhone блокировал экран посреди разговора и звонок «исчезал».
-  // Поддерживается iOS 16.4+ / Chrome / Samsung Internet; если API нет — просто
+  // Поддерживается iOS 16.4+ / Chrome / Samsung Internet; если API нет - просто
   // пропускаем (хуже не станет). Система сама отпускает блокировку при уходе
-  // приложения в фон — возвращаем её на visibilitychange (см. bindEvents).
+  // приложения в фон - возвращаем её на visibilitychange (см. bindEvents).
   _wakeLock: null,
   async _acquireWakeLock() {
     try {
@@ -440,7 +504,7 @@ const Voice = {
         this._wakeLock = await navigator.wakeLock.request('screen');
         this._wakeLock.addEventListener('release', () => { this._wakeLock = null; });
       }
-    } catch { /* нет API или запрещено — не критично */ }
+    } catch { /* нет API или запрещено - не критично */ }
   },
   _releaseWakeLock() {
     try { this._wakeLock && this._wakeLock.release(); } catch {}
@@ -449,9 +513,9 @@ const Voice = {
 
   // Адаптивный шумовой гейт для исходящих кадров (Float32, ~20 мс).
   // ТОЛЬКО приглушает (коэффициент 0.35…1), НИКОГДА не усиливает.
-  // ПРОТИВ ОБРЕЗАНИЯ НАЧАЛА ФРАЗ — lookahead на один кадр: решение «речь/фон»
+  // ПРОТИВ ОБРЕЗАНИЯ НАЧАЛА ФРАЗ - lookahead на один кадр: решение «речь/фон»
   // принимается по ТЕКУЩЕМУ кадру, а наружу уходит ПРЕДЫДУЩИЙ с уже новым
-  // коэффициентом (задержка 20 мс, неощутимо). Против обрезания ХВОСТОВ —
+  // коэффициентом (задержка 20 мс, неощутимо). Против обрезания ХВОСТОВ - 
   // удержание увеличено до ~480 мс, порог закрытия снижен, спад плавнее.
   _gateOutgoing(frame, rate) {
     if (!this._gate) {
@@ -467,7 +531,7 @@ const Voice = {
     const rms = Math.sqrt(sum / frame.length);
 
     if (!g.init) { g.floor = rms; g.init = true; }
-    // Оценка фона: вниз — мгновенно; вверх — быстро (~1 с), но ТОЛЬКО пока сигнал
+    // Оценка фона: вниз - мгновенно; вверх - быстро (~1 с), но ТОЛЬКО пока сигнал
     // не похож на речь (ниже 1.5×порога открытия): речь «пол» не задирает, а шум,
     // появившийся посреди звонка, выучивается и приглушается за ~секунду
     const openPrev = Math.max(0.01, g.floor * 2.2);
@@ -476,17 +540,17 @@ const Voice = {
     g.floor = Math.max(1e-4, g.floor);
 
     const open = Math.max(0.01, g.floor * 2.2);
-    const close = Math.max(0.006, g.floor * 1.3); // ниже — мягче к тихим хвостам слов
+    const close = Math.max(0.006, g.floor * 1.3); // ниже - мягче к тихим хвостам слов
     if (rms > open) g.hold = 24;                  // удержание ~480 мс
     else if (rms > close && g.hold > 0) g.hold = Math.min(24, g.hold + 1);
     else if (g.hold > 0) g.hold--;
     const target = g.hold > 0 ? 1 : 0.35;         // фон приглушён, но не «в вакуум»
 
-    // Lookahead: обрабатываем и отдаём ПРЕДЫДУЩИЙ кадр с целью от ТЕКУЩЕГО —
+    // Lookahead: обрабатываем и отдаём ПРЕДЫДУЩИЙ кадр с целью от ТЕКУЩЕГО - 
     // к моменту начала речи гейт уже открыт, первые слоги не съедаются
     const prev = g.pending;
     g.pending = frame;
-    if (!prev) return new Float32Array(frame.length); // первый кадр — 20 мс тишины
+    if (!prev) return new Float32Array(frame.length); // первый кадр - 20 мс тишины
 
     const out = new Float32Array(prev.length);
     for (let i = 0; i < prev.length; i++) {
@@ -511,12 +575,12 @@ const Voice = {
     });
 
     // 3. Захват + «подсластитель» голоса поверх браузерного NS/AEC/AGC.
-    // База (шумо-/эхоподавление, авто-громкость) — сам браузер (флаги в _getMic).
-    // Дальше — цепочка нативных узлов Web Audio, чтобы голос звучал приятнее и
+    // База (шумо-/эхоподавление, авто-громкость) - сам браузер (флаги в _getMic).
+    // Дальше - цепочка нативных узлов Web Audio, чтобы голос звучал приятнее и
     // ровнее; всё работает на УЖЕ очищенном браузером сигнале, поэтому безопасно.
     const src = this.ctx.createMediaStreamSource(this.stream);
 
-    // (а) ФВЧ 90 Гц — убрать остаточный гул/бубнёж плозивов
+    // (а) ФВЧ 90 Гц - убрать остаточный гул/бубнёж плозивов
     const hpf = this.ctx.createBiquadFilter();
     hpf.type = 'highpass'; hpf.frequency.value = 90; hpf.Q.value = 0.7;
 
@@ -530,17 +594,17 @@ const Voice = {
     const deharsh = this.ctx.createBiquadFilter();
     deharsh.type = 'lowpass'; deharsh.frequency.value = 7800; deharsh.Q.value = 0.7;
 
-    // (д) компрессор — СИЛЬНЕЕ выравнивает громкость (тихое↑, громкое↓)
+    // (д) компрессор - СИЛЬНЕЕ выравнивает громкость (тихое↑, громкое↓)
     const comp = this.ctx.createDynamicsCompressor();
     comp.threshold.value = -28; comp.knee.value = 20; comp.ratio.value = 3.5;
     comp.attack.value = 0.004; comp.release.value = 0.18;
 
-    // (е) makeup gain — общий подъём после компрессии (усиливает нормализацию).
+    // (е) makeup gain - общий подъём после компрессии (усиливает нормализацию).
     // Умеренный (×1.7): сигнал уже очищен браузером, фон почти не поднимется.
     const makeup = this.ctx.createGain();
     makeup.gain.value = 1.7;
 
-    // (ж) шумовой гейт делаем в обработчике кадра — АДАПТИВНЫЙ и ТОЛЬКО приглушает
+    // (ж) шумовой гейт делаем в обработчике кадра - АДАПТИВНЫЙ и ТОЛЬКО приглушает
     // (никогда не усиливает) → срезает остаточный фон между словами, безопасно.
     this._gate = null;
     this.captureNode = new AudioWorkletNode(this.ctx, 'tbg-capture');
@@ -556,7 +620,7 @@ const Voice = {
     mute.gain.value = 0;
     this.captureNode.connect(mute).connect(this.ctx.destination);
 
-    // 4. Воспроизведение входящего: через <audio>-элемент (iOS), иначе — напрямую
+    // 4. Воспроизведение входящего: через <audio>-элемент (iOS), иначе - напрямую
     this.playbackNode = new AudioWorkletNode(this.ctx, 'tbg-playback');
     this.playbackNode.connect(this._elPlaying ? this.playbackDest : this.ctx.destination);
 
@@ -617,7 +681,7 @@ const Voice = {
     this.micEnabled = true;
     UI.hideCall();
 
-    // Отправляем запись о звонке ПОСЛЕ очистки (обычным сообщением — попадает
+    // Отправляем запись о звонке ПОСЛЕ очистки (обычным сообщением - попадает
     // в историю и видна обеим сторонам; формат тот же, что на ПК)
     if (reportContact) {
       const text = reportSeconds < 1
@@ -641,13 +705,52 @@ const Voice = {
 
   // Опрос входящих звонков (аналог десктопного GetCallToken)
   _incoming: null,
+  _pollBusy: false,
+
+  /**
+   * Проверяет, продолжается ли показываемый входящий звонок.
+   *
+   * До принятия вызова WebSocket комнаты не открыт, см. acceptIncoming, поэтому
+   * служебное сообщение CloseConnection получить неоткуда, и при отмене вызова
+   * окно оставалось бы на экране. Сервер при завершении обнуляет CallToken обеих
+   * сторон, и признаком отмены служит исчезновение этого значения.
+   *
+   * Сетевая ошибка трактуется как продолжение звонка: кратковременный обрыв связи
+   * не должен сбрасывать действительный вызов.
+   */
+  async _incomingStillAlive() {
+    if (!this._incoming) return false;
+    try {
+      const r = await fetch(`${Server.address}/Voice/GetCallToken/${Store.user.id}?platform=web`);
+      if (!r.ok) return true;
+      const t = await r.text();
+      if (t === 'NotFound') return false;
+      return t.includes(this._incoming.token);
+    } catch {
+      return true; // сеть недоступна - окно не трогаем
+    }
+  },
+
   startPolling() {
     this._poll = setInterval(async () => {
-      if (this.active || this._incoming) return;
-      const call = await this.getIncomingCall();
-      if (call) {
-        this._incoming = call;
-        UI.showIncoming(call.caller);
+      if (this.active || this._pollBusy) return;
+      this._pollBusy = true;
+      try {
+        if (this._incoming) {
+          // Показывается входящий - следим, не отменил ли звонящий вызов
+          if (!(await this._incomingStillAlive())) {
+            this._incoming = null;
+            UI.hideCall();
+          }
+          return;
+        }
+        const call = await this.getIncomingCall();
+        if (call) {
+          this._incoming = call;
+          UI.showIncoming(call.caller);
+        }
+      } finally {
+        this._pollBusy = false;
       }
     }, 1800);
   },
@@ -661,7 +764,7 @@ const Voice = {
 };
 
 // Линейный ресэмплер: протокол всегда 48 кГц, а аудиоконтекст работает на родной
-// частоте устройства (см. Voice._ensureAudio) — переводим кадры туда и обратно.
+// частоте устройства (см. Voice._ensureAudio) - переводим кадры туда и обратно.
 // Для голоса линейной интерполяции достаточно.
 function resamplePcm(f32, fromRate, toRate) {
   if (fromRate === toRate || f32.length === 0) return f32;
@@ -693,12 +796,36 @@ function int16ToFloat32(i16) {
 }
 
 /* ─────────────────────── Разбор сообщений ───────────────────────
-   ПЕРЕХОД НА ChatId: в протоколе v2 (main-dev) ПЕРВЫМ полем добавляется chatId —
+   ПЕРЕХОД НА ChatId: в протоколе v2 (main-dev) ПЕРВЫМ полем добавляется chatId - 
    тогда здесь появляется chatId: p[0], все индексы сдвигаются на +1, а раскладка
    входящих меняется с поиска контакта по sender на поиск чата по chatId.
    Менять только СИНХРОННО с сервером (Tebegram-server/Classes/Message.ToString)
-   и win-клиентом (Classes/Message.ToString + AddMessageToUser) — иначе ломается
+   и win-клиентом (Classes/Message.ToString + AddMessageToUser) - иначе ломается
    доставка у всех уже установленных клиентов. */
+/* Предел длины сообщения - тот же, что в win-клиенте
+   (Tebegram-server/Classes/UserValidation.cs, MessageMaxLength). */
+const MAX_MESSAGE_LENGTH = 512;
+
+/* Чистит текст перед отправкой - зеркало UserValidation.SanitizeMessage.
+   Эмодзи, иероглифы и любые алфавиты НЕ трогаем: это мессенджер. Убираем только
+   то, что ломает передачу: разделители протокола ▫ и ❂ (второй разрывал строку
+   на два «сообщения») и невидимые управляющие символы. Плюс обрезка по длине - 
+   на случай вставки из буфера мимо ограничения поля. */
+function sanitizeMessage(text) {
+  if (!text) return '';
+  let out = '';
+  for (const ch of text) {
+    if (ch === SEP || ch === MSG_SEP) { out += ' '; continue; }
+    if (ch === '\n' || ch === '\r' || ch === '\t') { out += ch; continue; }
+    const code = ch.codePointAt(0);
+    // Управляющие диапазоны C0/C1 - выбрасываем (эмодзи сюда не попадают)
+    if (code < 0x20 || (code >= 0x7f && code <= 0x9f)) continue;
+    out += ch;
+  }
+  out = out.trim();
+  return out.length > MAX_MESSAGE_LENGTH ? out.slice(0, MAX_MESSAGE_LENGTH) : out;
+}
+
 function parseMessage(raw) {
   const p = raw.split(SEP);
   if (p.length < 6) return null;
@@ -717,7 +844,7 @@ function serializeMessage(m) {
   return `${m.sender}${SEP}${m.receiver}${SEP}${m.type}${SEP}${m.time}${SEP}${m.serverAddress || ''}${SEP}${m.text}`;
 }
 
-// Полная дата+время для хранения (dd.MM.yyyy HH:mm) — как в десктопном клиенте
+// Полная дата+время для хранения (dd.MM.yyyy HH:mm) - как в десктопном клиенте
 function nowFull() {
   const d = new Date();
   const p = n => String(n).padStart(2, '0');
@@ -727,8 +854,8 @@ function nowFull() {
 /* ─── Классификация вложений по расширению ───────────────────────────────
    Списки согласованы с win-клиентом (Classes/Message.cs) и сервером
    (Program.cs, выбор inline/attachment): «открыть» предлагаем только для того,
-   что браузер реально показывает сам. Всё прочее — архивы, документы, exe,
-   редкие контейнеры вроде mkv/avi — считается неизвестным файлом, и для него
+   что браузер реально показывает сам. Всё прочее - архивы, документы, exe,
+   редкие контейнеры вроде mkv/avi - считается неизвестным файлом, и для него
    используется универсальная карточка со скачиванием. */
 const FILE_KINDS = {
   image: ['png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp'],
@@ -817,7 +944,164 @@ function makeContact(id, username, name) {
   return { id, username, name: name || username, avatar: '', messages: [] };
 }
 
-/* ── «Избранное» — чат с самим собой (как в Telegram) ── */
+/* ─────────────────────── Групповые чаты ───────────────────────
+   Группа хранится в том же списке, что и контакты, - как «псевдо-контакт»
+   с синтетическим username вида "group:123". Так весь существующий код
+   (список чатов, открытие, отрисовка пузырей) работает без изменений,
+   а различия сводятся к нескольким проверкам isGroupChat().            */
+const GROUP_PREFIX = 'group:';
+
+/** Строка чата с сервера: id&имя&группа?&аватар&владелец&участники_через_запятую */
+function parseChatLine(line) {
+  const p = String(line).split('&');
+  const chatId = Number(p[0]);
+  if (!Number.isFinite(chatId) || chatId <= 0) return null;
+  if (String(p[2]).toLowerCase() !== 'true') return null; // личные чаты - это контакты
+  return {
+    chatId,
+    name: p[1] || 'Группа',
+    avatarFile: p[3] || '',
+    ownerId: Number(p[4]) || null,
+    memberIds: (p[5] || '').split(',').map(Number).filter(Boolean),
+  };
+}
+
+function makeGroup(info) {
+  return {
+    id: info.chatId,
+    chatId: info.chatId,
+    username: GROUP_PREFIX + info.chatId, // ключ для findContact
+    name: info.name,
+    avatar: info.avatarFile ? Api.avatarUrl(info.avatarFile) : '',
+    messages: [],
+    isGroup: true,
+    ownerId: info.ownerId,
+    memberIds: info.memberIds,
+    historyLoaded: false,
+  };
+}
+
+function isGroupChat(c) { return !!c && c.isGroup === true; }
+
+/** «5 участников» с правильным окончанием - подпись в шапке группы. */
+function groupMembersLabel(g) {
+  const n = (g.memberIds && g.memberIds.length) || 0;
+  if (!n) return 'групповой чат';
+  const last = n % 10, tens = n % 100;
+  const word = (last === 1 && tens !== 11) ? 'участник'
+    : (last >= 2 && last <= 4 && (tens < 12 || tens > 14)) ? 'участника'
+    : 'участников';
+  return `${n} ${word}`;
+}
+
+function findGroup(chatId) {
+  const id = Number(chatId);
+  return Store.contacts.find(c => c.isGroup && c.chatId === id) || null;
+}
+
+/** Добавляет группу в список, если её ещё нет. Возвращает её. */
+function upsertGroup(info) {
+  if (!info) return null;
+  const existing = findGroup(info.chatId);
+  if (existing) {
+    existing.name = info.name;
+    // Ответ /Chat/Create участников не содержит (в отличие от конверта addChat) - 
+    // пустым списком не затираем уже известный состав
+    if (info.memberIds.length) existing.memberIds = info.memberIds;
+    return existing;
+  }
+  const g = makeGroup(info);
+  Store.contacts.push(g);
+  return g;
+}
+
+/** Пришло addMessage▫$▫{chatId}▫{сообщение} - сообщение группового чата. */
+function routeGroupMessage(payload) {
+  const cut = payload.indexOf(SEP);
+  if (cut < 0) return;
+  const group = findGroup(payload.slice(0, cut));
+  if (!group) return; // про эту группу мы ещё не знаем - подтянется при следующем входе
+  const m = parseMessage(payload.slice(cut + 1));
+  if (!m) return;
+  m.outgoing = m.sender === Store.user.username;
+  group.messages.push(m);
+  UI.onMessageAdded(group, m);
+}
+
+/* ── Создание группы ── */
+/** Собеседники, которых можно позвать: без себя («Избранное») и без групп. */
+function groupCandidates() {
+  return Store.contacts.filter(c => !isGroupChat(c) && !isFavorites(c));
+}
+
+function openGroupModal() {
+  const box = $('group-members');
+  box.textContent = '';
+  const candidates = groupCandidates();
+
+  if (!candidates.length) {
+    const empty = document.createElement('div');
+    empty.className = 'group-members-empty';
+    empty.textContent = 'Сначала добавь собеседников: найди их через @логин в поиске.';
+    box.appendChild(empty);
+  } else {
+    for (const c of candidates) {
+      const row = document.createElement('label');
+      row.className = 'group-member';
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.value = c.username;
+      const name = document.createElement('span');
+      name.className = 'group-member-name';
+      name.textContent = c.name;
+      row.append(cb, name);
+      box.appendChild(row);
+    }
+  }
+
+  $('group-name').value = '';
+  $('modal-group').classList.remove('hidden');
+}
+
+function closeGroupModal() { $('modal-group').classList.add('hidden'); }
+
+async function createGroupFromModal() {
+  const usernames = [...document.querySelectorAll('#group-members input:checked')].map(i => i.value);
+  const name = $('group-name').value.trim();
+
+  // Сервер считает группой чат от трёх участников: я + минимум двое.
+  // При меньшем числе он молча создал бы личный чат, поэтому проверяем здесь.
+  if (usernames.length < 2) { UI.toast('Выбери хотя бы двух собеседников'); return; }
+  if (!name) { UI.toast('Введи название группы'); return; }
+
+  const btn = $('btn-group-create');
+  btn.disabled = true;
+  try {
+    const res = await Api.createChat(Store.user.id, usernames, name);
+    if (!res.ok) { UI.toast(res.text || 'Не удалось создать группу'); return; }
+    // Обычно группа уже пришла конвертом addChat; на случай, если WS молчит,
+    // добавляем её из ответа сами (upsert не создаст дубль).
+    const group = upsertGroup(parseChatLine(res.text));
+    UI.renderChatList();
+    closeGroupModal();
+    if (group) UI.openChat(group);
+  } catch {
+    UI.toast('Нет связи с сервером');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+/** Пришло removeChat▫$▫{chatId} - группу удалил владелец. */
+function handleRemoveChat(chatId) {
+  const group = findGroup(chatId);
+  if (!group) return;
+  if (Store.activeContact === group) UI.closeChat();
+  Store.contacts.splice(Store.contacts.indexOf(group), 1);
+  UI.renderChatList();
+}
+
+/* ── «Избранное» - чат с самим собой (как в Telegram) ── */
 function isFavorites(c) {
   return !!Store.user && c.username === Store.user.username;
 }
@@ -825,7 +1109,7 @@ function isFavorites(c) {
 function favoritesAvatar(cls) {
   const div = document.createElement('div');
   div.className = `avatar avatar--fav ${cls || ''}`;
-  // Закладка — статичная иконка, пользовательских данных нет
+  // Закладка - статичная иконка, пользовательских данных нет
   div.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>';
   return div;
 }
@@ -857,7 +1141,7 @@ const Chat = {
     while (!this.closed) {
       try {
         await this._connectOnce();
-      } catch { /* обрыв — переподключимся */ }
+      } catch { /* обрыв - переподключимся */ }
       UI.setConnected(false);
       if (this.closed) return;
       await new Promise(res => setTimeout(res, 3000));
@@ -866,25 +1150,32 @@ const Chat = {
 
   _connectOnce() {
     return new Promise((resolve, reject) => {
-      const ws = new WebSocket(Server.wsUrl(`/Chat/ws?userId=${Store.user.id}`));
+      const ws = new WebSocket(Server.wsUrl(`/Chat/ws?userId=${Store.user.id}&platform=web`));
       this.ws = ws;
       ws.onopen = () => UI.setConnected(true);
       ws.onmessage = e => {
         let data = String(e.data);
         // Команда удаления сообщения у собеседника
         if (data.startsWith(`DEL${WS_SEP}`)) { handleDeleteNotification(data); return; }
-        // Отметка «прочитано» (две галочки в win-клиенте). На вебе индикатора
-        // статуса нет, поэтому просто пропускаем, чтобы SEEN не ушёл в разбор
-        // сообщений (иначе принялся бы за отправителя).
-        if (data.startsWith(`SEEN${WS_SEP}`)) return;
-        // Конверты команд сервера. Оба относятся к ГРУППОВЫМ чатам, которых на
-        // вебе пока нет, поэтому просто пропускаем:
-        //   addChat▫$▫    — создана группа;
-        //   addMessage▫$▫ — сообщение группы (внутри первым полем идёт ChatId).
-        // Раньше здесь конверт снимался и payload шёл в обычный разбор — тогда
-        // ChatId принимался за отправителя и сообщение уходило «в никуда».
+        // Отметка «прочитано»: собеседник открыл чат с нами - наши сообщения
+        // ему становятся двумя галочками (как в win-клиенте).
+        if (data.startsWith(`SEEN${WS_SEP}`)) { handleSeenNotification(data); return; }
+        // Конверты команд сервера для ГРУППОВЫХ чатов. Внутри addMessage первым
+        // полем идёт ChatId - без конверта его приняли бы за отправителя.
         // Личные сообщения приходят без конверта и обрабатываются как прежде.
-        if (data.startsWith('addChat▫$▫') || data.startsWith('addMessage▫$▫')) return;
+        if (data.startsWith('addChat▫$▫')) {
+          const group = upsertGroup(parseChatLine(data.slice('addChat▫$▫'.length)));
+          if (group) UI.renderChatList();
+          return;
+        }
+        if (data.startsWith('removeChat▫$▫')) {
+          handleRemoveChat(data.slice('removeChat▫$▫'.length));
+          return;
+        }
+        if (data.startsWith('addMessage▫$▫')) {
+          routeGroupMessage(data.slice('addMessage▫$▫'.length));
+          return;
+        }
         routeMessage(data);
       };
       ws.onerror = () => reject(new Error('ws error'));
@@ -899,14 +1190,37 @@ const Chat = {
   },
 };
 
+/* ─────────────────────── Статус «прочитано» ─────────────────────── */
+/**
+ * Пришло SEEN▫#▫{кто-открыл}: собеседник открыл чат с нами, значит все наши
+ * отправленные ему сообщения прочитаны - переводим их в две галочки.
+ * Формат и семантика совпадают с HandleSeenNotification в win-клиенте.
+ */
+function handleSeenNotification(raw) {
+  const parts = raw.split(WS_SEP);
+  const reader = parts[1];
+  if (!reader) return;
+
+  const contact = Store.findContact(reader);
+  if (!contact) return;
+
+  let changed = false;
+  for (const m of contact.messages) {
+    if (m.outgoing && !m.seen) { m.seen = true; changed = true; }
+  }
+  // Перерисовываем, только если открыт именно этот чат и что-то поменялось
+  if (changed && Store.activeContact === contact) UI.renderMessages();
+}
+
 /* ─────────────────────── Удаление сообщений ─────────────────────── */
 let _menuTarget = null;
 
 function showMessageMenu(contact, m) {
   if (!contact || !m) return;
   _menuTarget = { contact, m };
-  // В «Избранном» собеседник — ты сам, «удалить у всех» не имеет смысла
-  $('msg-del-all').classList.toggle('hidden', isFavorites(contact));
+  // В «Избранном» собеседник - ты сам, «удалить у всех» не имеет смысла.
+  // В группе - тоже: сервер адресует удаление по нику собеседника, а у группы его нет.
+  $('msg-del-all').classList.toggle('hidden', isFavorites(contact) || isGroupChat(contact));
   $('msg-menu').classList.remove('hidden');
 }
 
@@ -920,14 +1234,17 @@ async function deleteTargetMessage(scope) {
   hideMessageMenu();
   if (!t) return;
   UI.removeMessage(t.contact, t.m);
+  // Серверное удаление адресуется по нику собеседника - для группы такого ника
+  // нет, поэтому там прячем сообщение только у себя (иначе получили бы ошибку).
+  if (isGroupChat(t.contact)) return;
   try {
     await Api.deleteMessage(Store.user.id, t.contact.username, scope, t.m.time, t.m.text);
   } catch {
-    UI.toast('Не удалось удалить на сервере — проверь соединение');
+    UI.toast('Не удалось удалить на сервере - проверь соединение');
   }
 }
 
-// Сервер прислал «DEL▫#▫username▫#▫time▫#▫text» — собеседник удалил сообщение у всех
+// Сервер прислал «DEL▫#▫username▫#▫time▫#▫text» - собеседник удалил сообщение у всех
 function handleDeleteNotification(raw) {
   const rest = raw.slice(`DEL${WS_SEP}`.length);
   const i1 = rest.indexOf(WS_SEP);
@@ -947,9 +1264,10 @@ function handleDeleteNotification(raw) {
 
 /* ─────────────────────── Отправка сообщений ─────────────────────── */
 async function sendMessage(contact, text, type = 'Text', serverAddress = '') {
+  const group = isGroupChat(contact);
   const m = {
     sender: Store.user.username,
-    receiver: contact.username,
+    receiver: group ? contact.name : contact.username, // в группе адресат - её имя
     type,
     time: nowFull(),
     serverAddress,
@@ -957,14 +1275,18 @@ async function sendMessage(contact, text, type = 'Text', serverAddress = '') {
   };
   const raw = serializeMessage(m);
 
-  // ПЕРЕХОД НА ChatId: вместо 0 подставить реальный id чата
+  // Для группы отправляем реальный chatId - сервер по нему находит чат.
+  // ПЕРЕХОД НА ChatId: для личных чатов вместо 0 подставить реальный id
   // (сервер пока сам ищет/создаёт чат по username в CheckIsExist)
-  if (!Chat.send(`SEND${WS_SEP}0${WS_SEP}${contact.username}${WS_SEP}${raw}`)) {
-    UI.toast('Нет соединения с сервером — попробуй ещё раз');
+  const chatId = group ? contact.chatId : 0;
+  if (!Chat.send(`SEND${WS_SEP}${chatId}${WS_SEP}${contact.username}${WS_SEP}${raw}`)) {
+    UI.toast('Нет соединения с сервером - попробуй ещё раз');
     return false;
   }
-  // Дублируем в POST /messages для сохранения на сервере (как десктопный клиент)
-  Api.postMessage(raw).catch(() => { /* история догрузится позже */ });
+  // Дублируем в POST /messages для сохранения на сервере (как десктопный клиент).
+  // Группы пропускаем: этот эндпоинт раскладывает сообщение по НИКАМ, а имя
+  // группы ником не является - сообщение осело бы в несуществующем контакте.
+  if (!group) Api.postMessage(raw).catch(() => { /* история догрузится позже */ });
   return true;
 }
 
@@ -1020,6 +1342,13 @@ async function enterApp(payload, login, password) {
     Store.user.avatar = Api.avatarUrl(user.avatarFile);
     UI.renderSettings();
   }
+
+  // Групповые чаты приходят отдельным запросом: в ответе /login их нет
+  Api.getChats(user.id).then(chats => {
+    if (!chats.length) return;
+    chats.forEach(upsertGroup);
+    UI.renderChatList();
+  });
 
   // История, затем реалтайм
   try {
@@ -1120,17 +1449,19 @@ const UI = {
         c.name.toLowerCase().includes(qq) || c.username.toLowerCase().includes(qq));
     }
 
-    if (!contacts.length) {
-      // При @поиске пустоту не показываем — снизу появится «Глобальный поиск»
-      if (q.startsWith('@')) return;
+    const globals = q.startsWith('@') ? (Store.globalResults || []) : [];
+
+    if (!contacts.length && !globals.length) {
       const empty = document.createElement('div');
       empty.className = 'chat-list-empty';
-      empty.textContent = q ? 'Ничего не найдено' : 'Пока нет чатов.\nНайди собеседника: введи @логин в поиске.';
+      empty.textContent = q.startsWith('@')
+        ? 'Ищем на сервере…'
+        : (q ? 'Ничего не найдено' : 'Пока нет чатов.\nНайди собеседника: введи @логин в поиске.');
       list.appendChild(empty);
       return;
     }
 
-    // «Избранное» (чат с собой) — всегда первым
+    // «Избранное» (чат с собой) - всегда первым
     contacts = [...contacts].sort((a, b) =>
       (isFavorites(b) ? 1 : 0) - (isFavorites(a) ? 1 : 0));
 
@@ -1155,14 +1486,55 @@ const UI = {
 
       const preview = document.createElement('div');
       preview.className = 'chat-item-preview';
+      // В группе подписываем автора (в личном чате он и так очевиден),
+      // а вместо ника у пустой группы - число участников: "group:123" - 
+      // внутренний ключ, показывать его нельзя.
+      const author = last && !last.outgoing && isGroupChat(c) ? `${last.sender}: ` : (last && last.outgoing ? 'Вы: ' : '');
       preview.textContent = last
-        ? (last.type === 'File' ? '📎 Файл' : (last.outgoing ? 'Вы: ' : '') + last.text)
-        : `@${c.username}`;
+        ? (last.type === 'File' ? `${author}📎 Файл` : author + last.text)
+        : (isGroupChat(c) ? groupMembersLabel(c) : `@${c.username}`);
 
       body.append(top, preview);
       item.appendChild(body);
       item.addEventListener('click', () => this.openChat(c));
       list.appendChild(item);
+    }
+
+    // Найденные на сервере - отдельной секцией ПОД своими контактами.
+    // Рисуются здесь же, а не дописываются в DOM отдельно, поэтому наложиться
+    // на список контактов физически не могут (см. GlobalSearch.run).
+    if (globals.length) {
+      const header = document.createElement('div');
+      header.className = 'gs-header';
+      header.textContent = 'Глобальный поиск';
+      list.appendChild(header);
+
+      for (const g of globals) {
+        const item = document.createElement('div');
+        item.className = 'chat-item gs-item';
+
+        const av = document.createElement('div');
+        av.className = 'avatar';
+        av.textContent = initials(g.name);
+        item.appendChild(av);
+
+        const body = document.createElement('div');
+        body.className = 'chat-item-body';
+        const top = document.createElement('div');
+        top.className = 'chat-item-top';
+        const nm = document.createElement('span');
+        nm.className = 'chat-item-name';
+        nm.textContent = g.name;
+        top.appendChild(nm);
+        const sub = document.createElement('div');
+        sub.className = 'chat-item-preview';
+        sub.textContent = `@${g.username}`;
+        body.append(top, sub);
+        item.appendChild(body);
+
+        item.addEventListener('click', () => GlobalSearch.add(g.username));
+        list.appendChild(item);
+      }
     }
   },
 
@@ -1174,9 +1546,37 @@ const UI = {
     $('screen-chat').classList.remove('hidden');
     requestAnimationFrame(() => $('screen-chat').classList.add('open'));
 
+    // История группы лежит отдельно от личных сообщений - подтягиваем при
+    // первом открытии (дальше сообщения приходят по WS конвертом addMessage).
+    if (isGroupChat(contact) && !contact.historyLoaded) {
+      contact.historyLoaded = true;
+      Api.chatHistory(contact.chatId).then(body => {
+        const rows = String(body).split(MSG_SEP).map(s => s.trim()).filter(Boolean);
+        if (!rows.length) return;
+        const key = m => `${m.sender}|${m.time}|${m.text}`;
+        // Пока грузилась история, по WS могли прийти новые сообщения - они
+        // должны остаться в конце, поэтому историю кладём ПЕРЕД ними (без
+        // сортировки: сервер и так отдаёт её в хронологическом порядке).
+        const live = contact.messages.slice();
+        const liveKeys = new Set(live.map(key));
+        const history = [];
+        for (const raw of rows) {
+          const m = parseMessage(raw);
+          if (!m || liveKeys.has(key(m))) continue;
+          m.outgoing = m.sender === Store.user.username;
+          history.push(m);
+        }
+        if (!history.length) return;
+        contact.messages.length = 0;
+        contact.messages.push(...history, ...live);
+        if (Store.activeContact === contact) this.renderMessages();
+        this.renderChatList();
+      });
+    }
+
     // Сообщаем собеседнику, что открыли чат: у него наши прочитанные сообщения
-    // станут двумя галочками (в win-клиенте). Сам веб статус не показывает.
-    if (contact && Store.user && contact.username !== Store.user.username) {
+    // станут двумя галочками. В группе адресата нет - не отправляем.
+    if (contact && Store.user && !isGroupChat(contact) && contact.username !== Store.user.username) {
       Chat.send(`SEEN${WS_SEP}${Store.user.username}${WS_SEP}${contact.username}`);
     }
   },
@@ -1191,13 +1591,17 @@ const UI = {
   updateChatHeader() {
     const c = Store.activeContact;
     const fav = isFavorites(c);
+    const group = isGroupChat(c);
     $('chat-header-name').textContent = fav ? 'Избранное' : c.name;
-    $('chat-header-username').textContent = fav ? 'ваши сохранённые сообщения' : `@${c.username}`;
+    // У группы ника нет - вместо @username показываем число участников
+    $('chat-header-username').textContent = fav
+      ? 'ваши сохранённые сообщения'
+      : group ? groupMembersLabel(c) : `@${c.username}`;
     const holder = $('chat-header-avatar');
     const av = fav ? favoritesAvatar('avatar--sm') : this.avatarNode(c, 'avatar--sm');
     holder.replaceWith(Object.assign(av, { id: 'chat-header-avatar' }));
-    // Звонок самому себе не нужен
-    $('btn-call').style.display = fav ? 'none' : '';
+    // Звонок самому себе не нужен; групповых звонков сервер не поддерживает
+    $('btn-call').style.display = (fav || group) ? 'none' : '';
   },
 
   renderMessages() {
@@ -1239,7 +1643,7 @@ const UI = {
       name.textContent = `📎 ${m.text}`;
       let meta = null; // вторая строка карточки: что за файл и что будет по клику
 
-      // Фото — инлайн-превью, как в десктопном клиенте; при ошибке загрузки
+      // Фото - инлайн-превью, как в десктопном клиенте; при ошибке загрузки
       // остаётся обычная ссылка с именем файла
       if (kind === 'image') {
         // bubble--photo: узкая рамка + время плашкой поверх фото
@@ -1252,7 +1656,7 @@ const UI = {
         name.style.display = 'none';
         img.onerror = () => { img.remove(); name.style.display = ''; el.classList.remove('bubble--photo'); };
         el.appendChild(img);
-        // Клик по фото — просмотр в лайтбоксе, а не переход по ссылке
+        // Клик по фото - просмотр в лайтбоксе, а не переход по ссылке
         // (медиа сервер отдаёт с Content-Disposition: inline, но лайтбокс удобнее)
         el.addEventListener('click', e => {
           e.preventDefault();
@@ -1260,7 +1664,7 @@ const UI = {
         });
       } else {
         // Видео/аудио открываются в браузере (сервер отдаёт их inline).
-        // НЕИЗВЕСТНЫЙ файл (архив, документ, exe, редкий контейнер) — универсальная
+        // НЕИЗВЕСТНЫЙ файл (архив, документ, exe, редкий контейнер) - универсальная
         // карточка: открывать его нечем, поэтому единственное действие «скачать».
         // Атрибут download просит браузер сохранить файл, а не уходить на вкладку
         if (kind === 'other') {
@@ -1270,7 +1674,7 @@ const UI = {
         } else if (kind === 'video') {
           // Превью-кадр вместо скрепки: preload=metadata + #t=0.3 заставляет браузер
           // показать кадр с 0.3 секунды (нулевой часто чёрный), сам ролик не грузится.
-          // Поверх — круглая кнопка play, как в десктопном клиенте
+          // Поверх - круглая кнопка play, как в десктопном клиенте
           el.classList.add('bubble--video');
           const prev = document.createElement('video');
           prev.className = 'bubble-video-preview';
@@ -1278,11 +1682,11 @@ const UI = {
           prev.muted = true;
           prev.playsInline = true;
           // Медиафрагмент #t= браузеры применяют не всегда (Chromium показывает кадр
-          // с нуля, а он у многих роликов чёрный) — пробуем довести позицию руками.
+          // с нуля, а он у многих роликов чёрный) - пробуем довести позицию руками.
           // Подписка ДО присвоения src: из кэша метаданные приходят мгновенно,
           // и подписка после src уже опаздывала на событие.
           // У файлов без индекса (например, записанных MediaRecorder) перемотка
-          // может «схлопнуться» обратно в 0 — тогда просто останется нулевой кадр
+          // может «схлопнуться» обратно в 0 - тогда просто останется нулевой кадр
           const seekToFrame = () => {
             if (prev.currentTime < 0.05 && prev.duration > 0.5) {
               try { prev.currentTime = Math.min(0.3, prev.duration / 2); } catch {}
@@ -1297,13 +1701,13 @@ const UI = {
           // из-за них треугольник не попадал в центр кружка.
           // viewBox подобран так, чтобы в центре SVG оказался ЦЕНТР МАСС
           // треугольника (вершины 8,5 / 8,19 / 19,12 → центроид 11.67, 12),
-          // а не середина его рамки — иначе значок выглядит смещённым влево
+          // а не середина его рамки - иначе значок выглядит смещённым влево
           play.innerHTML = '<svg viewBox="4.17 4.5 15 15" aria-hidden="true">' +
                            '<path fill="currentColor" d="M8 5v14l11-7z"/></svg>';
           el.appendChild(prev);
           el.appendChild(play);
           name.style.display = 'none';   // имя файла на превью не нужно
-          // Если кадр не отрисовался (нет кодека) — возвращаем обычный вид с именем
+          // Если кадр не отрисовался (нет кодека) - возвращаем обычный вид с именем
           prev.addEventListener('error', () => {
             prev.remove(); play.remove();
             name.style.display = '';
@@ -1335,9 +1739,12 @@ const UI = {
     const time = document.createElement('span');
     time.className = 'bubble-time';
     time.textContent = timeShort(m.time);
+    // Статус своего сообщения, как в win-клиенте: одна галочка - доставлено,
+    // две - собеседник открыл чат (пришло SEEN).
+    if (m.outgoing) time.appendChild(this.statusNode(m));
     el.appendChild(time);
 
-    // Долгое нажатие (моб.) или правый клик (десктоп) — меню удаления
+    // Долгое нажатие (моб.) или правый клик (десктоп) - меню удаления
     let pressTimer;
     el.addEventListener('touchstart', () => {
       pressTimer = setTimeout(() => showMessageMenu(Store.activeContact, m), 500);
@@ -1351,11 +1758,34 @@ const UI = {
     return el;
   },
 
+  /**
+   * Галочки статуса своего сообщения (аналог MsgStatusTemplate в win-клиенте):
+   * одна - сервер принял, две - получатель открыл чат с нами.
+   * Рисуем SVG-галочку, чтобы вид не зависел от наличия глифа в шрифте системы.
+   */
+  statusNode(m) {
+    const wrap = document.createElement('span');
+    wrap.className = `msg-status${m.seen ? ' msg-status--seen' : ''}`;
+    wrap.title = m.seen ? 'Прочитано' : 'Отправлено';
+    const tick = () => {
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('viewBox', '0 0 16 16');
+      svg.setAttribute('class', 'msg-tick');
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', 'M2 8.5 L6 12.5 L14 4');
+      svg.appendChild(path);
+      return svg;
+    };
+    wrap.appendChild(tick());
+    if (m.seen) wrap.appendChild(tick());
+    return wrap;
+  },
+
   onMessageAdded(contact, m) {
     if (Store.activeContact === contact) {
       const box = $('messages');
       const atBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 80;
-      // Разделитель дня, если сообщение — первое за новый день
+      // Разделитель дня, если сообщение - первое за новый день
       const msgs = contact.messages;
       const idx = msgs.indexOf(m);
       const prev = idx > 0 ? msgs[idx - 1] : null;
@@ -1471,11 +1901,11 @@ async function doLogin() {
 /* ─── Проверка полей регистрации ─────────────────────────────────────────
    Зеркало серверных правил (Tebegram-server/Classes/UserValidation.cs).
    Причина ограничений: адрес регистрации выглядит как
-   /register/{логин}-{пароль}-{ник}-{имя}, то есть разделитель — ДЕФИС, и любой
+   /register/{логин}-{пароль}-{ник}-{имя}, то есть разделитель - ДЕФИС, и любой
    дефис внутри поля сдвигает разбор (реальный случай: имя «top-9» создало
    аккаунт с логином «top9-1234» и ником «top»). Плюс запрещены символы
    протокола (▫ ❂ &) и служебные символы URL.
-   При правке правил менять и серверный файл — он общий для сервера и win-клиента. */
+   При правке правил менять и серверный файл - он общий для сервера и win-клиента. */
 const FORBIDDEN_CHARS = ['-', '▫', '❂', '&', '/', '\\', '#', '?', '%', '+', ':', '='];
 
 function checkLoginField(value, fieldName) {
@@ -1537,19 +1967,38 @@ async function doRegister() {
 
 async function doSend() {
   const input = $('msg-input');
-  const text = input.value.trim();
+  const text = sanitizeMessage(input.value);
   const contact = Store.activeContact;
   if (!text || !contact) return;
   if (await sendMessage(contact, text)) {
     input.value = '';
     input.style.height = 'auto';
+    updateCharCounter();
   }
 }
 
+/* Счётчик символов под полем ввода: скрыт, пока пусто; подсвечивается на подходе
+   к пределу и краснеет на нём. Вызывается на каждый ввод и после отправки. */
+function updateCharCounter() {
+  const input = $('msg-input');
+  const counter = $('char-counter');
+  if (!input || !counter) return;
+
+  const len = input.value.length;
+  if (len === 0) {
+    counter.classList.add('hidden');
+    return;
+  }
+  counter.textContent = `${len}/${MAX_MESSAGE_LENGTH}`;
+  counter.classList.remove('hidden');
+  counter.classList.toggle('full', len >= MAX_MESSAGE_LENGTH);
+  counter.classList.toggle('warn', len >= MAX_MESSAGE_LENGTH - 50 && len < MAX_MESSAGE_LENGTH);
+}
+
 /* Нормализация фото перед отправкой:
-   1) применяет EXIF-ориентацию (иначе на ПК-клиенте фото с телефона перевёрнуто —
+   1) применяет EXIF-ориентацию (иначе на ПК-клиенте фото с телефона перевёрнуто - 
       WPF не читает EXIF);
-   2) пережимает в JPEG q0.92 с ограничением длинной стороны 2560px — качество
+   2) пережимает в JPEG q0.92 с ограничением длинной стороны 2560px - качество
       сохраняется, а вес предсказуем. GIF и не-картинки не трогаем. */
 async function normalizePhoto(file) {
   if (!/^image\//.test(file.type) || file.type === 'image/gif') return file;
@@ -1569,11 +2018,11 @@ async function normalizePhoto(file) {
     const name = file.name.replace(/\.[^.]+$/, '') + '.jpg';
     return new File([blob], name, { type: 'image/jpeg' });
   } catch {
-    return file; // не смогли обработать — шлём как есть
+    return file; // не смогли обработать - шлём как есть
   }
 }
 
-/* Предел размера файла — 16 МБ, как у сервера (Program.cs) и win-клиента.
+/* Предел размера файла - 16 МБ, как у сервера (Program.cs) и win-клиента.
    Это потолок туннеля devtunnel (тело запроса до 16 МБ), а не самого сервера.
    Проверяем до отправки: иначе телефон полчаса заливает файл по мобильной сети,
    чтобы в конце получить обрыв. */
@@ -1584,18 +2033,23 @@ async function doSendFile(file) {
   if (!file || !contact) return;
 
   if (file.size > MAX_UPLOAD_BYTES) {
-    UI.toast(`Файл больше ${MAX_UPLOAD_BYTES / 1024 / 1024} МБ — столько не отправить`);
+    UI.toast(`Файл больше ${MAX_UPLOAD_BYTES / 1024 / 1024} МБ - столько не отправить`);
     return;
   }
 
-  UI.toast('Загружаем файл…');
+  // У больших видео заливка занимает десятки секунд - показываем размер, чтобы
+  // было понятно, что процесс идёт, а приложение не «зависло»
+  const mb = file.size / 1024 / 1024;
+  UI.toast(mb >= 1 ? `Загружаем файл (${mb.toFixed(1)} МБ)…` : 'Загружаем файл…');
   try {
     file = await normalizePhoto(file);
     const stored = await Api.uploadFile(file);
     await sendMessage(contact, stored, 'File', Api.fileUrl(stored));
   } catch (e) {
     console.warn('[doSendFile]', e);
-    UI.toast('Не удалось загрузить файл');
+    // Причина от сервера («файл дошёл не полностью») полезнее общей фразы:
+    // обрыв на больших видео и отказ по размеру теперь различимы.
+    UI.toast(`Не удалось загрузить файл: ${e.message || 'нет связи с сервером'}`);
   }
 }
 
@@ -1622,50 +2076,41 @@ const GlobalSearch = {
       text = r.ok ? (await r.text()).trim() : '';
     } catch { return; }
 
-    // Пока ждали ответ, запрос мог измениться — не рисуем устаревшее
+    // Пока ждали ответ, запрос мог измениться - не рисуем устаревшее
     if (seq !== this._seq) return;
     const raw = $('chat-search').value.trim();
     if (!raw.startsWith('@') || raw.slice(1) !== q) return;
 
-    const list = $('chat-list');
-    list.querySelectorAll('.gs-header, .gs-item').forEach(el => el.remove());
-    if (!text) return;
-
-    const header = document.createElement('div');
-    header.className = 'gs-header';
-    header.textContent = 'Глобальный поиск';
-    list.appendChild(header);
-
-    for (const rawU of text.split(MSG_SEP)) {
-      const [, username, name] = rawU.split(SEP);
-      if (!username || username === Store.user.username) continue;
-      if (Store.findContact(username)) continue; // свои контакты уже выше
-
-      const item = document.createElement('div');
-      item.className = 'chat-item gs-item';
-
-      const av = document.createElement('div');
-      av.className = 'avatar';
-      av.textContent = initials(name || username);
-      item.appendChild(av);
-
-      const body = document.createElement('div');
-      body.className = 'chat-item-body';
-      const top = document.createElement('div');
-      top.className = 'chat-item-top';
-      const nm = document.createElement('span');
-      nm.className = 'chat-item-name';
-      nm.textContent = name || username;
-      top.appendChild(nm);
-      const sub = document.createElement('div');
-      sub.className = 'chat-item-preview';
-      sub.textContent = `@${username}`;
-      body.append(top, sub);
-      item.appendChild(body);
-
-      item.addEventListener('click', () => this.add(username));
-      list.appendChild(item);
+    // Результаты сохраняются в состоянии, после чего список перерисовывается целиком.
+    //
+    // Ранее они дописывались непосредственно в DOM в обход renderChatList, который
+    // начинает работу с очистки списка и выводит только контакты. Любая его
+    // перерисовка по внешней причине - пришло сообщение, загрузился аватар,
+    // сменилась папка - накладывалась на дописывание: результаты исчезали либо
+    // оказывались среди контактов, а строки перекрывали друг друга. Теперь у списка
+    // один источник данных и один метод отрисовки.
+    Store.globalResults = [];
+    if (text) {
+      for (const rawU of text.split(MSG_SEP)) {
+        const [, username, name] = rawU.split(SEP);
+        if (!username || username === Store.user.username) continue;
+        if (Store.findContact(username)) continue;   // свои контакты уже выше
+        if (Store.globalResults.some(g => g.username === username)) continue; // без дублей
+        Store.globalResults.push({ username, name: name || username });
+      }
     }
+    UI.renderChatList();
+  },
+
+  /** Сбрасывает результаты (поиск очищен или ушли с @-режима). */
+  clear() {
+    this._seq++;                 // отменяем ответ на запрос, который ещё в пути
+    clearTimeout(this._timer);
+    if (Store.globalResults.length) {
+      Store.globalResults = [];
+      return true;
+    }
+    return false;
   },
 
   async add(username) {
@@ -1677,6 +2122,7 @@ const GlobalSearch = {
       Store.contacts.push(contact);
       loadContactAvatar(contact);
       $('chat-search').value = '';
+      this.clear();              // контакт стал своим - секция поиска не нужна
       UI.renderChatList();
       UI.openChat(contact);
     } catch {
@@ -1710,8 +2156,13 @@ function bindEvents() {
   $('btn-register').addEventListener('click', doRegister);
 
   $('chat-search').addEventListener('input', () => {
+    // Ушли с @-режима (или очистили поиск) - старые результаты сервера больше
+    // не относятся к текущему запросу, убираем их ДО перерисовки
+    const raw = $('chat-search').value.trim();
+    if (!raw.startsWith('@') || raw.length < 3) GlobalSearch.clear();
+
     UI.renderChatList();
-    GlobalSearch.schedule(); // @логин — поиск среди всех пользователей сервера
+    GlobalSearch.schedule(); // @логин - поиск среди всех пользователей сервера
   });
   $('btn-chat-back').addEventListener('click', () => UI.closeChat());
   $('btn-send').addEventListener('click', doSend);
@@ -1723,6 +2174,7 @@ function bindEvents() {
   msgInput.addEventListener('input', () => {
     msgInput.style.height = 'auto';
     msgInput.style.height = Math.min(msgInput.scrollHeight, 96) + 'px';
+    updateCharCounter();
   });
 
   $('msg-file').addEventListener('change', e => {
@@ -1738,6 +2190,13 @@ function bindEvents() {
   $('msg-del-all').addEventListener('click', () => deleteTargetMessage('all'));
   $('msg-menu-cancel').addEventListener('click', hideMessageMenu);
   $('msg-menu').addEventListener('click', e => { if (e.target.id === 'msg-menu') hideMessageMenu(); });
+
+  // Создание группы
+  $('btn-new-group').addEventListener('click', openGroupModal);
+  $('btn-group-cancel').addEventListener('click', closeGroupModal);
+  $('btn-group-create').addEventListener('click', createGroupFromModal);
+  // Клик по затемнению вне карточки закрывает модалку (как у обрезки аватара)
+  $('modal-group').addEventListener('click', e => { if (e.target.id === 'modal-group') closeGroupModal(); });
 
   document.querySelectorAll('.tabbar-item').forEach(b =>
     b.addEventListener('click', () => UI.switchTab(b.dataset.tab)));
@@ -1776,19 +2235,19 @@ function bindEvents() {
     localStorage.setItem('tbg.hintShown', '1');
   });
 
-  // Wake lock отпускается системой при сворачивании — возвращаем его,
+  // Wake lock отпускается системой при сворачивании - возвращаем его,
   // когда приложение снова на экране и звонок ещё идёт
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible' && Voice.active) Voice._acquireWakeLock();
   });
 
-  // Просмотр фото: крестик или клик по фону закрывают (клик по самому фото — нет)
+  // Просмотр фото: крестик или клик по фону закрывают (клик по самому фото - нет)
   $('pv-close').addEventListener('click', () => PhotoViewer.close());
   $('photo-viewer').addEventListener('click', e => {
     if (e.target === e.currentTarget) PhotoViewer.close();
   });
 
-  // ── Свайп слева направо — жест «назад» (как в iOS) ──
+  // ── Свайп слева направо - жест «назад» (как в iOS) ──
   // Начинать можно из любой точки ЛЕВОЙ ПОЛОВИНЫ экрана, не только с края
   let edgeSwipe = null;
   document.addEventListener('touchstart', e => {
@@ -1831,7 +2290,7 @@ const Theme = {
 /* ─────────────── Просмотр фото (как ImageViewerWindow на ПК) ─────────────── */
 const PhotoViewer = {
   // Один просмотрщик на фото и видео: для видео показываем <video controls>
-  // (пауза и перемотка — штатные средства браузера), для фото — <img>
+  // (пауза и перемотка - штатные средства браузера), для фото - <img>
   open(url, name) {
     const isVideo = fileKind(name) === 'video';
     const img = $('pv-img');
@@ -1843,7 +2302,7 @@ const PhotoViewer = {
     if (isVideo) {
       img.src = '';
       video.src = url;
-      // Автостарт может быть заблокирован автоплей-политикой — тогда просто
+      // Автостарт может быть заблокирован автоплей-политикой - тогда просто
       // останется первый кадр с кнопкой воспроизведения, это нормально
       video.play().catch(() => {});
     } else {
@@ -1898,7 +2357,7 @@ const AvatarCrop = {
     img.onerror = () => UI.toast('Не удалось открыть изображение');
     img.src = this.url;
 
-    // Перетаскивание (мышь и палец) — pointer events
+    // Перетаскивание (мышь и палец) - pointer events
     const area = $('crop-area');
     if (!area._cropBound) {
       area._cropBound = true;
@@ -1965,7 +2424,7 @@ const AvatarCrop = {
     try {
       const file = new File([blob], `avatar_${Store.user.id}_${Date.now()}.png`, { type: 'image/png' });
       const stored = await Api.uploadAvatar(Store.user.id, file);
-      // ?t= обходит кэш картинок — аватар обновляется сразу
+      // ?t= обходит кэш картинок - аватар обновляется сразу
       Store.user.avatar = Api.avatarUrl(stored) + `?t=${Date.now()}`;
       UI.renderSettings();
       UI.toast('Аватар обновлён');
@@ -1986,10 +2445,10 @@ function maybeShowInstallHint() {
 
 async function boot() {
   bindEvents();
-  Theme.apply(Theme.current()); // сохранённая тема — до отрисовки экранов
+  Theme.apply(Theme.current()); // сохранённая тема - до отрисовки экранов
   $('app-version').textContent = APP_VERSION;
 
-  // Service worker — оффлайн-оболочка и «настоящее приложение» для iOS
+  // Service worker - оффлайн-оболочка и «настоящее приложение» для iOS
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').catch(() => { /* не критично */ });
   }
@@ -2000,7 +2459,7 @@ async function boot() {
     await Server.resolve();
   } catch {
     UI.toast('Сервер сейчас недоступен', 4000);
-    return; // остаёмся на экране входа — попробует ещё раз при входе
+    return; // остаёмся на экране входа - попробует ещё раз при входе
   }
 
   // Автовход
@@ -2013,7 +2472,7 @@ async function boot() {
         await enterApp(resp, login, password);
         return;
       }
-    } catch { /* сервер недоступен — показываем экран входа */ }
+    } catch { /* сервер недоступен - показываем экран входа */ }
   }
   UI.show('screen-login');
 }

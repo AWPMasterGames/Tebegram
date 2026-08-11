@@ -29,6 +29,51 @@ namespace TebegramServer
         public ObservableCollection<Message> NewMessages = new ObservableCollection<Message>();
         public ObservableCollection<WebSocket> ChatsSessions = new ObservableCollection<WebSocket>();
 
+        // ── Платформа сессии ─────────────────────────────────────────────────
+        // Вызов приходит только на ту платформу, с которой звонят: из приложения
+        // Windows в приложение Windows, из браузера в браузер. Ранее токен звонка
+        // был единственным на пользователя и опрашивался обеими платформами,
+        // поэтому вызов поступал на все устройства одновременно.
+        //
+        // Платформу сообщает клиент при подключении сокета чата, параметр
+        // /Chat/ws?userId=..&platform=win|web. Выпущенные ранее клиенты его не
+        // передают, такая сессия помечается значением "legacy" и принимает любой
+        // вызов: иначе они перестали бы получать звонки.
+        private readonly Dictionary<WebSocket, string> _sessionPlatform = new();
+
+        public void AddSession(WebSocket socket, string platform)
+        {
+            lock (_sessionPlatform)
+            {
+                _sessionPlatform[socket] = string.IsNullOrWhiteSpace(platform) ? "legacy" : platform;
+            }
+            ChatsSessions.Add(socket);
+        }
+
+        public void RemoveSession(WebSocket socket)
+        {
+            lock (_sessionPlatform) { _sessionPlatform.Remove(socket); }
+            ChatsSessions.Remove(socket);
+        }
+
+        /// <summary>
+        /// Есть ли живое подключение с этой платформы? Сессия без платформы
+        /// (старый клиент) считается подходящей для любой - иначе звонок таким
+        /// пользователям вообще перестал бы доходить.
+        /// </summary>
+        public bool IsOnlineOn(string platform)
+        {
+            lock (_sessionPlatform)
+            {
+                foreach (var pair in _sessionPlatform)
+                {
+                    if (pair.Key.State != WebSocketState.Open) continue;
+                    if (pair.Value == platform || pair.Value == "legacy") return true;
+                }
+                return false;
+            }
+        }
+
         public User(int id, string login, string password, string name, string username, ObservableCollection<ChatFolder> chatsFolders, string avatar)
         {
             _Id = id;
@@ -46,13 +91,16 @@ namespace TebegramServer
             return false;
         }
 
-        // ПЕРЕХОД НА ChatId: ответ логина намеренно в СТАРОМ формате (контакты) —
-        // его разбирают все выпущенные клиенты. В v2 сюда добавляется блок чатов
-        // (как в main-dev: {chat.Id}&{name}&{IsGroup}&{avatar}&{ownerId}&{memberIds}▫),
-        // но с фиксами оригинала: для 1:1-чата имя/аватар собеседника подставлять
-        // ТОЛЬКО при пустых полях чата (в main-dev при заполненных слались пустые
-        // строки), а для чата с собой («Избранное») участник ОДИН — обращение к
-        // Members[1] там падает. Готовый пример выдачи — эндпоинт /Chat/Create в Program.cs.
+        // Ответ на вход намеренно сохраняет прежний формат со списком контактов:
+        // его разбирают все выпущенные клиенты. В версии протокола 2 добавляется
+        // блок чатов вида {chat.Id}&{name}&{IsGroup}&{avatar}&{ownerId}&{memberIds}▫.
+        //
+        // При переносе учесть два исправления. Имя и аватар собеседника в личном
+        // чате подставляются только при незаполненных полях чата, иначе в ответ
+        // уходят пустые строки. В чате с самим собой участник один, поэтому
+        // обращение к Members[1] вызывает исключение.
+        //
+        // Пример готовой выдачи содержит эндпоинт /Chat/Create в Program.cs.
         public string ToClientSend()
         {
             // Формируем строку с данными пользователя для отправки клиенту
@@ -95,9 +143,10 @@ namespace TebegramServer
 
             // Перенос из main-dev (коммит 311bff0): чат кладётся и в папку «Все чаты»,
             // чтобы у пользователя была живая коллекция объектов, а не только id.
-            // С защитой TryGetValue — в оригинале голый индексатор кидал
-            // KeyNotFoundException, если комнаты с таким id нет в ChatsController
-            // (например, после рестарта сервера — чаты пока не сохраняются в базу).
+            // С защитой TryGetValue - в оригинале голый индексатор кидал
+            // KeyNotFoundException, если чата с таким id нет в ChatsController.
+            // Такое возможно при рассинхронизации Users.json и Chats.json, например
+            // если один из файлов восстановлен из резервной копии.
             if (Controllers.ChatsController.Chats.TryGetValue(chatId, out var chat))
                 ChatsFolders[0].AddChat(chat);
         }
@@ -110,7 +159,7 @@ namespace TebegramServer
         public const string FavoritesName = "Избранное";
 
         /// <summary>
-        /// Гарантирует наличие «Избранного» — чата с самим собой (как в Telegram).
+        /// Гарантирует наличие «Избранного» - чата с самим собой (как в Telegram).
         /// Это контакт с собственным username, всегда первым в списке.
         /// </summary>
         public void EnsureFavorites()
@@ -157,7 +206,7 @@ namespace TebegramServer
         }
         public void AddMessage(Message message)
         {
-            // Чат с собой (Избранное): sender == reciver == я — кладём один раз
+            // Чат с собой (Избранное): sender == reciver == я - кладём один раз
             if (message.Sender == Username && message.Reciver == Username)
             {
                 EnsureFavorites();
@@ -171,7 +220,7 @@ namespace TebegramServer
                 if (contact == null)
                 {
                     User? uConact = UsersData.FindUserByUsername(message.Reciver);
-                    if (uConact == null) return; // получатель не зарегистрирован — раньше тут падал NullReferenceException
+                    if (uConact == null) return; // получатель не зарегистрирован - раньше тут падал NullReferenceException
                     contact = new Contact(uConact.Id, uConact.Username, uConact.Name);
                     Contacts.Add(contact);
                 }

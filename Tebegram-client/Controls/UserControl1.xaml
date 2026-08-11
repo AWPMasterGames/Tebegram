@@ -16,7 +16,7 @@
         <!--  Фоновый круг  -->
         <Ellipse Fill="{DynamicResource Light.BgElevatedBrush}" />
 
-        <!--  Иконка по умолчанию (видна, пока нет фото); без отступов — на весь круг  -->
+        <!--  Иконка по умолчанию (видна, пока нет фото); без отступов - на весь круг  -->
         <Viewbox Margin="0">
             <Path
                 Data="{StaticResource IconDefaultAvatar}"

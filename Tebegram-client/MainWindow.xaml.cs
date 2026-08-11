@@ -24,7 +24,7 @@ namespace Tebegrammmm
             {
                 ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
             };
-            // Без явного таймаута HttpClient ждёт 100 секунд — при недоступном сервере
+            // Без явного таймаута HttpClient ждёт 100 секунд - при недоступном сервере
             // «Входим…» выглядел бесконечным, а кнопка всё это время была заблокирована
             httpClient = new HttpClient(handler) { Timeout = TimeSpan.FromSeconds(15) };
         }
@@ -35,7 +35,7 @@ namespace Tebegrammmm
             InitializeComponent();
             TBUserLogin.Focus();
 
-            // Фоновая проверка обновлений — не блокирует запуск
+            // Фоновая проверка обновлений - не блокирует запуск
             _ = UpdateChecker.CheckAsync();
 
             // Индикатор соединения с сервером на окнах входа/регистрации
@@ -49,7 +49,7 @@ namespace Tebegrammmm
 
             // Сохранённый вход читаем ТОЛЬКО из AppData (AppPaths).
             //
-            // Раньше здесь был запасной путь «user.data рядом с exe» — остаток
+            // Раньше здесь был запасной путь «user.data рядом с exe» - остаток
             // миграции. Он опасен: любой такой файл в папке установки молча
             // авторизовал бы КАЖДОГО, кто поставил приложение, под чужим
             // аккаунтом. Миграция давно прошла, путь убран совсем.
@@ -64,7 +64,7 @@ namespace Tebegrammmm
                         TBUserLogin.Text = data[0];
                         PBUserPassord.Password = data[1];
                         LoginButton.Focus();
-                        // Автоавторизация — после полного показа окна, без блокировки UI.
+                        // Автоавторизация - после полного показа окна, без блокировки UI.
                         this.Loaded += MainWindow_AutoAuth;
                     }
                 }
@@ -83,7 +83,7 @@ namespace Tebegrammmm
         }
 
         // ── Индикатор соединения с сервером ──────────────────────────────────
-        // Зелёный — сервер на связи, серый — идёт проверка, красный — нет ответа за 3 с.
+        // Зелёный - сервер на связи, серый - идёт проверка, красный - нет ответа за 3 с.
         private static readonly Brush ConnBrushSearching = new SolidColorBrush(Color.FromRgb(0x9C, 0xA3, 0xAF));
         private static readonly Brush ConnBrushConnected = new SolidColorBrush(Color.FromRgb(0x22, 0xC5, 0x5E));
         private static readonly Brush ConnBrushFailed = new SolidColorBrush(Color.FromRgb(0xEF, 0x44, 0x44));
@@ -122,13 +122,13 @@ namespace Tebegrammmm
         }
 
         // ── Переключатель сервера до входа: «main» ↔ «Другой» ──
-        // «main» — адрес из Adress.txt (по умолчанию при первом входе), «Другой» —
+        // «main» - адрес из Adress.txt (по умолчанию при первом входе), «Другой» - 
         // свой адрес. Выбор общий с настройками (serverChoice.data в AppData) и
         // переживает перезапуски.
         private void UpdateServerChoiceLabels()
         {
             string label = ServerData.ServerChoice == "custom" ? "Другой" : "main";
-            // Подписи на обоих экранах (вход и регистрация) — как точки соединения
+            // Подписи на обоих экранах (вход и регистрация) - как точки соединения
             if (LoginServerLabel != null) LoginServerLabel.Text = label;
             if (RegServerLabel != null) RegServerLabel.Text = label;
         }
@@ -145,7 +145,7 @@ namespace Tebegrammmm
         {
             if (ServerData.ServerChoice == "custom")
             {
-                // Уже на «Другой» — возвращаемся на main
+                // Уже на «Другой» - возвращаемся на main
                 ServerData.SetServerChoice("main");
             }
             else
@@ -154,7 +154,7 @@ namespace Tebegrammmm
                     "Укажи адрес своего сервера:",
                     "Другой сервер", ServerData.CustomAdress,
                     placeholder: "https://my-server.example.com");
-                if (string.IsNullOrWhiteSpace(entered)) return; // отменили — остаёмся на main
+                if (string.IsNullOrWhiteSpace(entered)) return; // отменили - остаёмся на main
                 ServerData.SetServerChoice("custom", entered);
             }
 
@@ -165,7 +165,7 @@ namespace Tebegrammmm
 
         private void SetConnStatus(Brush brush, string tooltip)
         {
-            // Обе точки присутствуют в дереве всегда (одна из форм свёрнута) — обновляем обе
+            // Обе точки присутствуют в дереве всегда (одна из форм свёрнута) - обновляем обе
             if (LoginConnDot != null) { LoginConnDot.Fill = brush; LoginConnDot.ToolTip = tooltip; }
             if (RegConnDot != null) { RegConnDot.Fill = brush; RegConnDot.ToolTip = tooltip; }
         }
@@ -187,8 +187,8 @@ namespace Tebegrammmm
                 using HttpResponseMessage response = await httpClient.SendAsync(request);
                 string content = await response.Content.ReadAsStringAsync();
 
-                // Сервер теперь отвечает честными кодами (401 — неверные данные),
-                // но ТЕКСТ ошибки по-прежнему в теле — показываем именно его,
+                // Сервер теперь отвечает честными кодами (401 - неверные данные),
+                // но ТЕКСТ ошибки по-прежнему в теле - показываем именно его,
                 // иначе пользователь видел бы безликое «Сервер вернул ошибку (401)»
                 if (!response.IsSuccessStatusCode || string.IsNullOrEmpty(content))
                 {
@@ -260,7 +260,7 @@ namespace Tebegrammmm
             }
             catch (TaskCanceledException)
             {
-                // Сработал таймаут HttpClient (15 с) — без этого catch async void уронил бы приложение
+                // Сработал таймаут HttpClient (15 с) - без этого catch async void уронил бы приложение
                 Log.Save("[Authorization] Таймаут: сервер не ответил за 15 секунд");
                 MessageBox.Show("Сервер не ответил за 15 секунд.\nПроверь выбор сервера (кнопка в левом верхнем углу окна) и соединение.");
             }
@@ -485,7 +485,7 @@ namespace Tebegrammmm
             }
         }
 
-        // ── Состояние загрузки — логин ───────────────────────────────────────
+        // ── Состояние загрузки - логин ───────────────────────────────────────
         private void SetLoginLoading(bool loading)
         {
             LoginButton.Content   = loading ? "Входим…" : "Войти";
@@ -513,7 +513,7 @@ namespace Tebegrammmm
             }
         }
 
-        // ── Состояние загрузки — регистрация ─────────────────────────────────
+        // ── Состояние загрузки - регистрация ─────────────────────────────────
         private void SetRegLoading(bool loading)
         {
             DoRegisterButton.Content   = loading ? "Создаём аккаунт…" : "Зарегистрироваться";
@@ -571,7 +571,7 @@ namespace Tebegrammmm
             element.BeginAnimation(UIElement.OpacityProperty, anim);
         }
 
-        // ── Кнопка показа пароля — логин ─────────────────────────────────────
+        // ── Кнопка показа пароля - логин ─────────────────────────────────────
         private void LoginEyeBtn_Click(object sender, RoutedEventArgs e)
         {
             bool isShowing = TBLoginPassShow.Visibility == Visibility.Visible;

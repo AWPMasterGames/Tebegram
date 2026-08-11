@@ -48,12 +48,14 @@
     <Color x:Key="ColorSuccessMuted">#0F3326</Color>
 
     <Color x:Key="ColorWarning">#F5A623</Color>
+    <Color x:Key="ColorWarningMuted">#3A2A12</Color>
 
     <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource ColorDanger}" />
     <SolidColorBrush x:Key="DangerHoverBrush" Color="{StaticResource ColorDangerHover}" />
     <SolidColorBrush x:Key="DangerMutedBrush" Color="{StaticResource ColorDangerMuted}" />
     <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource ColorSuccess}" />
     <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource ColorWarning}" />
+    <SolidColorBrush x:Key="WarningMutedBrush" Color="{StaticResource ColorWarningMuted}" />
 
     <!--
         ══════════════════════════════════════════════
@@ -134,7 +136,7 @@
 
     <!--
         ══════════════════════════════════════════════
-        СВЕТЛАЯ ТЕМА — ФОНЫ
+        СВЕТЛАЯ ТЕМА - ФОНЫ
         Белые и светло-серые поверхности с чуть-чуть
         голубоватым оттенком (как Telegram Light / iOS)
         ══════════════════════════════════════════════
@@ -161,8 +163,8 @@
 
     <!--
         ══════════════════════════════════════════════
-        СВЕТЛАЯ ТЕМА — АКЦЕНТ
-        Тот же синий, но чуть насыщеннее — на белом
+        СВЕТЛАЯ ТЕМА - АКЦЕНТ
+        Тот же синий, но чуть насыщеннее - на белом
         фоне #5B6BF5 воспринимается ярче, чем на тёмном
         ══════════════════════════════════════════════
     -->
@@ -180,7 +182,7 @@
 
     <!--
         ══════════════════════════════════════════════
-        СВЕТЛАЯ ТЕМА — СЕМАНТИЧЕСКИЕ
+        СВЕТЛАЯ ТЕМА - СЕМАНТИЧЕСКИЕ
         ══════════════════════════════════════════════
     -->
     <Color x:Key="Light.ColorDanger">#D93025</Color>
@@ -191,18 +193,20 @@
     <Color x:Key="Light.ColorSuccessMuted">#E6F6F0</Color>
 
     <Color x:Key="Light.ColorWarning">#C97A00</Color>
+    <Color x:Key="Light.ColorWarningMuted">#FDF3E3</Color>
 
     <SolidColorBrush x:Key="Light.DangerBrush" Color="{StaticResource Light.ColorDanger}" />
     <SolidColorBrush x:Key="Light.DangerHoverBrush" Color="{StaticResource Light.ColorDangerHover}" />
     <SolidColorBrush x:Key="Light.DangerMutedBrush" Color="{StaticResource Light.ColorDangerMuted}" />
     <SolidColorBrush x:Key="Light.SuccessBrush" Color="{StaticResource Light.ColorSuccess}" />
     <SolidColorBrush x:Key="Light.WarningBrush" Color="{StaticResource Light.ColorWarning}" />
+    <SolidColorBrush x:Key="Light.WarningMutedBrush" Color="{StaticResource Light.ColorWarningMuted}" />
 
     <!--
         ══════════════════════════════════════════════
-        СВЕТЛАЯ ТЕМА — ТЕКСТ
-        Почти чёрный текст на белом — стандарт для
-        читаемости. Мутный — тёплый серый, не холодный.
+        СВЕТЛАЯ ТЕМА - ТЕКСТ
+        Почти чёрный текст на белом - стандарт для
+        читаемости. Мутный - тёплый серый, не холодный.
         ══════════════════════════════════════════════
     -->
     <Color x:Key="Light.ColorTextPrimary">#0D1117</Color>
@@ -219,7 +223,7 @@
 
     <!--
         ══════════════════════════════════════════════
-        СВЕТЛАЯ ТЕМА — ГРАНИЦЫ
+        СВЕТЛАЯ ТЕМА - ГРАНИЦЫ
         ══════════════════════════════════════════════
     -->
     <Color x:Key="Light.ColorBorderSubtle">#EAECF5</Color>
@@ -234,9 +238,9 @@
 
     <!--
         ══════════════════════════════════════════════
-        СВЕТЛАЯ ТЕМА — СООБЩЕНИЯ
-        Исходящие — акцентный синий с белым текстом.
-        Входящие — белая карточка с лёгкой тенью.
+        СВЕТЛАЯ ТЕМА - СООБЩЕНИЯ
+        Исходящие - акцентный синий с белым текстом.
+        Входящие - белая карточка с лёгкой тенью.
         ══════════════════════════════════════════════
     -->
     <Color x:Key="Light.ColorMsgOutgoing">#4A5AE8</Color>
@@ -251,7 +255,7 @@
 
     <!--
         ══════════════════════════════════════════════
-        СВЕТЛАЯ ТЕМА — ПРОЗРАЧНОСТЬ
+        СВЕТЛАЯ ТЕМА - ПРОЗРАЧНОСТЬ
         ══════════════════════════════════════════════
     -->
     <SolidColorBrush

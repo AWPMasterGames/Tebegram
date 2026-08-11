@@ -22,7 +22,7 @@ namespace Tebegrammmm
             base.OnStartup(e);
 
             // Применяем тему до показа окон.
-            // Вызываем ВСЕГДА (даже для светлой) — так кисти темы заменяются на
+            // Вызываем ВСЕГДА (даже для светлой) - так кисти темы заменяются на
             // изменяемые (не замороженные) экземпляры ДО загрузки окон, и последующее
             // переключение применяется вживую ко всем уже открытым окнам.
             try
@@ -38,6 +38,7 @@ namespace Tebegrammmm
                 Log.Save($"[App] Не удалось применить тему: {ex.Message}");
             }
 
+            //ошибки в UI-потоке
             DispatcherUnhandledException += (s, args) =>
             {
                 Log.Save($"[UnhandledDispatcher] {args.Exception.GetType().Name}: {args.Exception.Message}\n{args.Exception.StackTrace}");

@@ -20,7 +20,7 @@ namespace Tebegrammmm
         {
             InitializeComponent();
             TBUsername.Text = UserData.User.Username;
-            TBLogin.Text = UserData.User.Login; // раньше {Binding Login} не работал — TBLogin вне UserInfo
+            TBLogin.Text = UserData.User.Login; // раньше {Binding Login} не работал - TBLogin вне UserInfo
             TBVersion.Text = $"Tebegram {UpdateChecker.CurrentVersion}";
             UserInfo.DataContext = UserData.User;
             CheckInputDevices();
@@ -29,7 +29,7 @@ namespace Tebegrammmm
             UpdateServerChoiceLabel();
             UpdateCacheLabel();
 
-            // Список тем — тот же ComboBox, что и выбор микрофона.
+            // Список тем - тот же ComboBox, что и выбор микрофона.
             // Текущую тему выставляем без вызова обработчика (иначе лишняя запись файла)
             ThemeCB.SelectionChanged -= ThemeCB_SelectionChanged;
             ThemeCB.ItemsSource = new[] { "Светлая тема", "Тёмная тема" };
@@ -82,7 +82,7 @@ namespace Tebegrammmm
         }
 
         /// <summary>
-        /// Очистка кэша. Файлы никуда не денутся — они лежат на сервере и
+        /// Очистка кэша. Файлы никуда не денутся - они лежат на сервере и
         /// скачаются заново при следующем открытии чата.
         /// </summary>
         private void ClearCache_Click(object sender, RoutedEventArgs e)
@@ -117,7 +117,7 @@ namespace Tebegrammmm
             };
             if (dlg.ShowDialog() != true) return;
 
-            // Окно предпросмотра/обрезки — выбираем участок фото под круглый аватар
+            // Окно предпросмотра/обрезки - выбираем участок фото под круглый аватар
             var cropper = new AvatarCropWindow(dlg.FileName) { Owner = this };
             if (cropper.ShowDialog() != true || string.IsNullOrEmpty(cropper.CroppedPngPath))
                 return;
@@ -183,9 +183,9 @@ namespace Tebegrammmm
 
         private void CheckInputDevices()
         {
-            // Список в нумерации WaveInEvent — той же, что использует VoiceRoom
+            // Список в нумерации WaveInEvent - той же, что использует VoiceRoom
             // (waveIn.DeviceNumber). Раньше список брался из MMDeviceEnumerator
-            // (WASAPI), а там ДРУГОЙ порядок устройств — выбранный индекс в звонке
+            // (WASAPI), а там ДРУГОЙ порядок устройств - выбранный индекс в звонке
             // мог указывать на другой микрофон («используется не тот микро»)
             InputDeviceCB.ItemsSource = Classes.AudioDevices.GetInputNames();
             int saved = Classes.AudioDevices.FindByName(UserData.User.SelectedDeviceName);
@@ -200,7 +200,7 @@ namespace Tebegrammmm
             UserData.User.SelectedDeviceName = InputDeviceCB.SelectedItem as string;
             try
             {
-                // Настройки пишем в AppData — в Program Files запись запрещена
+                // Настройки пишем в AppData - в Program Files запись запрещена
                 AppPaths.EnsureDir();
                 File.WriteAllText(AppPaths.DeviceDataFile, $"{UserData.User.SelectedDeviceName}");
             }
