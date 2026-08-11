@@ -86,7 +86,7 @@ namespace TebegramServer.Data
 
         /// <summary>
         /// Сбрасывает токен звонка у ВСЕХ участников: у звонившего он хранится как «token»,
-        /// у вызываемого — как «caller▫token». Иначе после завершения звонка токен зависал
+        /// у вызываемого - как «caller▫token». Иначе после завершения звонка токен зависал
         /// у второй стороны (фантомный входящий звонок).
         /// </summary>
         public static void ClearCallTokens(string token)
@@ -123,7 +123,7 @@ namespace TebegramServer.Data
 
                 List<UserData> usersData = new List<UserData>();
 
-                // Проходим по снимкам коллекций (.ToList()) — иначе автосохранение падает,
+                // Проходим по снимкам коллекций (.ToList()) - иначе автосохранение падает,
                 // если в этот момент другой поток добавляет сообщение или контакт
                 foreach (var currentUser in Users.ToList())
                 {
@@ -151,7 +151,7 @@ namespace TebegramServer.Data
                                     Sender = message.Sender,
                                     Recipient = message.Reciver,
                                     Text = message.Text,
-                                    Time = message.Time, // Время храним как есть — конвертация ломала формат и сдвигала часы
+                                    Time = message.Time, // Время храним как есть - конвертация ломала формат и сдвигала часы
                                     MessageType = message.MessageType.ToString(),
                                     ServerAdress = message.ServerAdress ?? "", // без него фото после рестарта сервера теряли URL
                                     MessageString = message.ToString() // Используем ToString() из Message
@@ -176,9 +176,9 @@ namespace TebegramServer.Data
                 // Резервная копия рядом: Users.backup.json не является артефактом сборки,
                 // поэтому переживает пересборки/чистки. Если основной файл пропадёт
                 // (msbuild разово удаляет бывший Content при переходе на Never) или
-                // побьётся — LoadUserList восстановится из копии
+                // побьётся - LoadUserList восстановится из копии
                 try { File.Copy(filePath, Path.ChangeExtension(filePath, ".backup.json"), overwrite: true); }
-                catch { /* не удалось скопировать бэкап — не мешаем основному сохранению */ }
+                catch { /* не удалось скопировать бэкап - не мешаем основному сохранению */ }
 
                 //Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Автосохранение: {Users.Count} пользователей сохранено в файл");
             }
@@ -263,7 +263,7 @@ namespace TebegramServer.Data
 
                 if (!File.Exists(filePath))
                 {
-                    // Основного файла нет — пробуем восстановиться из резервной копии
+                    // Основного файла нет - пробуем восстановиться из резервной копии
                     // (Users.backup.json пишется при каждом автосохранении и не
                     // затирается сборкой, в отличие от бывшего Content-файла)
                     string backupPath = Path.ChangeExtension(filePath, ".backup.json");
@@ -271,7 +271,7 @@ namespace TebegramServer.Data
                     {
                         Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
                         File.Copy(backupPath, filePath);
-                        Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Users.json не найден — восстановлен из резервной копии {backupPath}");
+                        Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Users.json не найден - восстановлен из резервной копии {backupPath}");
                     }
                     else
                     {
@@ -300,7 +300,7 @@ namespace TebegramServer.Data
                                 foreach (var messageData in contactData.Messages)
                                 {
                                     var messageType = Enum.TryParse<MessageType>(messageData.MessageType, out var type) ? type : MessageType.Text;
-                                    // ServerAdress восстанавливаем — раньше терялся, и фото после
+                                    // ServerAdress восстанавливаем - раньше терялся, и фото после
                                     // рестарта сервера приходили клиентам с пустым URL (пустые пузыри)
                                     string? serverAdress = string.IsNullOrEmpty(messageData.ServerAdress) ? null : messageData.ServerAdress;
                                     messages.Add(new Message(messageData.Sender, messageData.Recipient, messageData.Text, messageData.Time, messageType, serverAdress));

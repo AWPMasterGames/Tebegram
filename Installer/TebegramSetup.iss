@@ -1,14 +1,14 @@
 ﻿; ─────────────────────────────────────────────────────────────────────────────
-; Tebegram — установщик Inno Setup (обычный setup.exe)
+; Tebegram - установщик Inno Setup (обычный setup.exe)
 ;
 ; Перед компиляцией нужно опубликовать клиент со встроенным .NET:
-;   запусти Installer\build-installer.ps1 — он сделает всё сам
+;   запусти Installer\build-installer.ps1 - он сделает всё сам
 ;   (dotnet publish + компиляция этого скрипта).
 ;
 ; Версию поднимай синхронно в трёх местах:
 ;   1) MyAppVersion ниже
 ;   2) Tebegram-client\Classes\UpdateChecker.cs (CurrentVersion)
-;   3) version.txt в корне репозитория (ветка main) — по нему клиенты
+;   3) version.txt в корне репозитория (ветка main) - по нему клиенты
 ;      узнают о выходе обновления
 ; ─────────────────────────────────────────────────────────────────────────────
 
@@ -23,7 +23,7 @@
 #endif
 
 [Setup]
-; Уникальный Id приложения — НЕ менять между версиями, иначе сломается обновление поверх
+; Уникальный Id приложения - НЕ менять между версиями, иначе сломается обновление поверх
 AppId={{8C6E4B7A-2D91-4A6F-B3E8-5F0A9C7D1234}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
@@ -31,7 +31,7 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}/releases
-; Установка без прав администратора — в папку пользователя (как Telegram/Discord).
+; Установка без прав администратора - в папку пользователя (как Telegram/Discord).
 ; Это же избавляет от проблем с записью файлов в Program Files.
 PrivilegesRequired=lowest
 DefaultDirName={autopf}\{#MyAppName}
@@ -58,10 +58,10 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [InstallDelete]
 ; ПЕРВАЯ установка не должна открываться под чужим аккаунтом: сохранённый вход
-; мог остаться на машине от прошлых запусков (в т.ч. тестовых — test1), и
+; мог остаться на машине от прошлых запусков (в т.ч. тестовых - test1), и
 ; поставленное приложение молча заходило под ним.
 ;
-; При ОБНОВЛЕНИИ поверх существующей версии вход НЕ трогаем — иначе после каждого
+; При ОБНОВЛЕНИИ поверх существующей версии вход НЕ трогаем - иначе после каждого
 ; обновления пришлось бы вводить логин и пароль заново (см. IsFreshInstall).
 ; Обычное «закрыл и открыл приложение» вход тоже сохраняет: файл читается из
 ; AppData и удаляется только кнопкой «Выйти из аккаунта».
@@ -71,7 +71,7 @@ Type: files; Name: "{localappdata}\Tebegram\user.data"; Check: IsFreshInstall
 Type: files; Name: "{app}\user.data"
 
 [Files]
-; Весь результат dotnet publish (self-contained — .NET уже внутри)
+; Весь результат dotnet publish (self-contained - .NET уже внутри)
 Source: "{#PublishDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
@@ -91,7 +91,7 @@ Type: filesandordirs; Name: "{localappdata}\Tebegram"
   (PrivilegesRequired=lowest) пишет запись в HKCU.
 
   ВАЖНО: строка ниже должна совпадать с AppId из секции [Setup]. Если AppId
-  когда-нибудь поменяется — поправить и здесь, иначе обновление будет считаться
+  когда-нибудь поменяется - поправить и здесь, иначе обновление будет считаться
   первой установкой и станет сбрасывать сохранённый вход. }
 function IsFreshInstall: Boolean;
 var

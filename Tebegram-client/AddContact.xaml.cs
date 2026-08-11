@@ -13,7 +13,7 @@ namespace Tebegrammmm
         {
             InitializeComponent();
 
-            // Если окно уже открыто — вывести его на передний план
+            // Если окно уже открыто - вывести его на передний план
             if (_instance != null)
             {
                 _instance.Activate();

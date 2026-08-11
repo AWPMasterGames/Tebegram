@@ -6,21 +6,20 @@ using System.Windows.Interop;
 namespace Tebegrammmm.Classes
 {
     /// <summary>
-    /// Размеры и положение окон приложения — в одном месте.
+    /// Размеры и положение окон приложения, собранные в одном месте.
     ///
-    /// Как считается размер. Раньше просмотрщик брал размер прямо от разрешения
-    /// (0.92 рабочей области) и подгонялся под каждое фото: на 4K открывался почти
-    /// во весь экран, на ноутбуке — как придётся. Чисто фиксированный размер тоже
-    /// плох: на маленьком ноутбуке 1000x680 занимает 92% высоты (снова «во весь
-    /// экран»), а на 4K@100% — жалкие 26% ширины.
+    /// Ни один из простых способов расчёта не подошёл. Доля от разрешения (0,92
+    /// рабочей области) раскрывала просмотрщик почти на весь экран 4K. Постоянный
+    /// размер 1000x680 занимает 92% высоты на небольшом ноутбуке и всего 26%
+    /// ширины на 4K при масштабе 100%.
     ///
-    /// Поэтому здесь ГИБРИД: у каждого окна есть базовый комфортный размер, но он
-    /// зажат в вилку долей рабочей области (<see cref="MinFraction"/>..<see cref="MaxFraction"/>).
-    /// На обычных мониторах работает базовый размер, на маленьких окно ужимается,
-    /// на больших — растёт вместе с экраном, никогда не занимая его целиком.
+    /// Применён смешанный расчёт: у окна есть базовый размер, зажатый в вилку долей
+    /// рабочей области <see cref="MinFraction"/>..<see cref="MaxFraction"/>. На
+    /// типовом мониторе действует базовый размер, на малом окно сжимается, на
+    /// большом увеличивается, но экран целиком не занимает.
     ///
-    /// Все размеры — в единицах WPF (DIP), то есть с уже учтённым масштабированием
-    /// Windows: при 150% «1000» превращается в 1500 физических пикселей.
+    /// Значения заданы в единицах WPF (DIP), масштабирование Windows уже учтено:
+    /// при 150% величина 1000 соответствует 1500 физическим пикселям.
     /// </summary>
     public static class UiSizes
     {
@@ -31,7 +30,7 @@ namespace Tebegrammmm.Classes
         public const double MessengerMinWidth  = 600;
         public const double MessengerMinHeight = 350;
 
-        // Просмотрщик фото и видео — одинаковый для обоих
+        // Просмотрщик фото и видео - одинаковый для обоих
         public const double ViewerWidth  = 1000;
         public const double ViewerHeight = 680;
         public const double ViewerMinWidth  = 480;
@@ -64,7 +63,7 @@ namespace Tebegrammmm.Classes
             {
                 double min = available * MinFraction;
                 double max = available * MaxFraction;
-                // На совсем узких экранах вилка может «схлопнуться» — max главнее:
+                // На совсем узких экранах вилка может «схлопнуться» - max главнее:
                 // окно никогда не должно быть больше экрана
                 if (min > max) return max;
                 return Math.Min(Math.Max(value, min), max);
@@ -75,7 +74,7 @@ namespace Tebegrammmm.Classes
         /// Ставит окну размер по правилам выше и центрирует его на том мониторе,
         /// где находится окно-владелец (или главное окно). Центрируем вручную:
         /// WindowStartupLocation=CenterScreen срабатывает в момент показа, а размер
-        /// нередко выставляется позже — и окно уезжает от центра.
+        /// нередко выставляется позже - и окно уезжает от центра.
         /// </summary>
         public static void ApplyAndCenter(Window window, double baseWidth, double baseHeight)
         {
@@ -84,7 +83,7 @@ namespace Tebegrammmm.Classes
 
             window.Width  = size.Width;
             window.Height = size.Height;
-            window.Left   = work.Left + (work.Width  - size.Width)  / 2;
+            window.Left   = work.Left + (work.Width - size.Width)  / 2;
             window.Top    = work.Top  + (work.Height - size.Height) / 2;
         }
 
@@ -111,7 +110,7 @@ namespace Tebegrammmm.Classes
         public static Rect WorkAreaFor(Window window) => MonitorRect(window, workArea: true);
 
         /// <summary>
-        /// ПОЛНЫЕ границы монитора, включая область панели задач — для режима
+        /// ПОЛНЫЕ границы монитора, включая область панели задач - для режима
         /// «во весь экран» в просмотрщике.
         /// </summary>
         public static Rect MonitorBoundsFor(Window window) => MonitorRect(window, workArea: false);
@@ -140,7 +139,7 @@ namespace Tebegrammmm.Classes
 
                 RECT r = workArea ? info.rcWork : info.rcMonitor;
 
-                // Windows отдаёт физические пиксели — переводим в единицы WPF,
+                // Windows отдаёт физические пиксели - переводим в единицы WPF,
                 // иначе при масштабировании 125/150% окно оказалось бы больше экрана
                 var source = PresentationSource.FromVisual(anchor);
                 double scaleX = source?.CompositionTarget?.TransformToDevice.M11 ?? 1.0;

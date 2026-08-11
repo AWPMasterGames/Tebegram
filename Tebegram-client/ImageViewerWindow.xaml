@@ -63,7 +63,7 @@
             </Style.Triggers>
         </Style>
 
-        <!--  Системные кнопки (свернуть / развернуть) — прямоугольные, как в Windows  -->
+        <!--  Системные кнопки (свернуть / развернуть) - прямоугольные, как в Windows  -->
         <ControlTemplate x:Key="CaptionBtnTemplate" TargetType="Button">
             <Border x:Name="Bd" Background="Transparent">
                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
@@ -78,7 +78,7 @@
             </ControlTemplate.Triggers>
         </ControlTemplate>
 
-        <!--  Кнопка закрытия — красный фон при наведении  -->
+        <!--  Кнопка закрытия - красный фон при наведении  -->
         <ControlTemplate x:Key="CloseBtnTemplate" TargetType="Button">
             <Border x:Name="Bd" Background="Transparent">
                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
@@ -99,7 +99,7 @@
         <Grid.Resources>
             <!--  Невидимая «ручка» для изменения размера окна. Нужна, потому что при
                   AllowsTransparency=True и WindowStyle=None у окна нет системной рамки,
-                  а стандартный ResizeGrip попадает в прозрачную тень — потянуть за край
+                  а стандартный ResizeGrip попадает в прозрачную тень - потянуть за край
                   было нечем ни у фото, ни у видео  -->
             <Style x:Key="ResizeThumbStyle" TargetType="Thumb">
                 <Setter Property="Template">
@@ -189,7 +189,7 @@
 
                 <!--  Область просмотра.
                       Две строки: содержимое и панель управления видео. Панель именно
-                      в СВОЕЙ строке, а не поверх кадра — иначе она перекрывала низ
+                      в СВОЕЙ строке, а не поверх кадра - иначе она перекрывала низ
                       видео и его приходилось «поднимать», чтобы увидеть целиком  -->
                 <Grid Grid.Row="1">
                     <Grid.RowDefinitions>
@@ -231,10 +231,10 @@
                         </Grid>
                     </ScrollViewer>
 
-                    <!--  Видео: тот же просмотрщик, что и для фото, но ВНЕ ScrollViewer —
+                    <!--  Видео: тот же просмотрщик, что и для фото, но ВНЕ ScrollViewer - 
                           Stretch=Uniform вписывает кадр в доступную область целиком,
                           скроллить и масштабировать ничего не нужно.
-                          LoadedBehavior=Manual — воспроизведением управляем сами  -->
+                          LoadedBehavior=Manual - воспроизведением управляем сами  -->
                     <MediaElement
                         x:Name="MainVideo"
                         Grid.Row="0"
@@ -249,7 +249,7 @@
                         UnloadedBehavior="Manual"
                         Visibility="Collapsed" />
 
-                    <!--  Grip изменения размера — помещён внутрь видимой области,
+                    <!--  Grip изменения размера - помещён внутрь видимой области,
                           т.к. с AllowsTransparency=True стандартный grip попадает в прозрачную тень  -->
 
                     <!--  Панель управления видео ЛЕЖИТ ПОВЕРХ кадра (та же строка Grid)
@@ -278,7 +278,7 @@
                                 ValueChanged="VideoSlider_ValueChanged" />
 
                             <Grid>
-                                <!--  Текущее время / длительность — слева  -->
+                                <!--  Текущее время / длительность - слева  -->
                                 <TextBlock
                                     x:Name="VideoTimeText"
                                     HorizontalAlignment="Left"
@@ -287,7 +287,7 @@
                                     Foreground="#CCFFFFFF"
                                     Text="0:00 / 0:00" />
 
-                                <!--  Пауза/воспроизведение — по центру, кнопка КВАДРАТНАЯ  -->
+                                <!--  Пауза/воспроизведение - по центру, кнопка КВАДРАТНАЯ  -->
                                 <Button
                                     x:Name="PlayPauseBtn"
                                     Width="36"
@@ -308,7 +308,7 @@
                                     </Viewbox>
                                 </Button>
 
-                                <!--  Полноэкранный режим — справа снизу  -->
+                                <!--  Полноэкранный режим - справа снизу  -->
                                 <Button
                                     x:Name="FullscreenBtn"
                                     Width="36"
@@ -332,7 +332,7 @@
                         </StackPanel>
                     </Border>
 
-                    <!--  Плавающий бейдж масштаба — появляется при изменении зума  -->
+                    <!--  Плавающий бейдж масштаба - появляется при изменении зума  -->
                     <Border
                         x:Name="ZoomBadge"
                         HorizontalAlignment="Center"

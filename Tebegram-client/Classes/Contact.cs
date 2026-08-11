@@ -33,7 +33,7 @@ namespace Tebegrammmm
         public string Username { get; set; }
 
         // Уведомление обязательно: аватар подгружается с сервера асинхронно ПОСЛЕ
-        // привязки UI — без него список чатов оставался со старым/пустым аватаром
+        // привязки UI - без него список чатов оставался со старым/пустым аватаром
         public string Avatar
         {
             get { return _Avatar; }
@@ -41,7 +41,7 @@ namespace Tebegrammmm
         }
         public string Draft { get; set; } = string.Empty; // Черновик сообщения
 
-        /// <summary>Чат с самим собой («Избранное») — рисуется постоянной иконкой-закладкой.</summary>
+        /// <summary>Чат с самим собой («Избранное») - рисуется постоянной иконкой-закладкой.</summary>
         public bool IsFavorites =>
             UserData.User != null && Username == UserData.User.Username;
 
@@ -95,7 +95,7 @@ namespace Tebegrammmm
                 using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/avatarsFileName/{UserId}");
                 using HttpResponseMessage response = await httpClient.SendAsync(request);
                 string content = await response.Content.ReadAsStringAsync();
-                // Ставим аватар только при успешном ответе — иначе в URL попадал текст ошибки сервера
+                // Ставим аватар только при успешном ответе - иначе в URL попадал текст ошибки сервера
                 if (response.IsSuccessStatusCode && !string.IsNullOrWhiteSpace(content))
                 {
                     // ?t=… обходит кэш картинок WPF (живёт весь процесс): без него после

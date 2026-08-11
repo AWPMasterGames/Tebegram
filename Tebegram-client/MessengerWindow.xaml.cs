@@ -42,7 +42,7 @@ namespace Tebegrammmm
         {
             InitializeComponent();
 
-            // Размер главного окна — от рабочей области монитора, но в разумной
+            // Размер главного окна - от рабочей области монитора, но в разумной
             // вилке (см. UiSizes): не во весь экран на ноутбуке и не «марка» на 4K
             UiSizes.ApplyAndCenter(this, UiSizes.MessengerWidth, UiSizes.MessengerHeight);
 
@@ -82,7 +82,7 @@ namespace Tebegrammmm
             CaltokenThread = new Thread(new ThreadStart(GetCallToken)) { IsBackground = true };
             CaltokenThread.Start();
 
-            // По завершении звонка (у звонившего) пишем в чат «📞 Аудиозвонок (м:сс)» —
+            // По завершении звонка (у звонившего) пишем в чат «📞 Аудиозвонок (м:сс)» - 
             // как запись в истории, видна обеим сторонам
             VoiceRoom.CallEnded = (contact, duration) => Dispatcher.BeginInvoke(new Action(() =>
             {
@@ -93,16 +93,16 @@ namespace Tebegrammmm
                 _ = SendMessageToContactAsync(contact, text);
             }));
 
-            // Файл настроек устройства читаем из AppData; старый файл рядом с exe — для миграции
+            // Файл настроек устройства читаем из AppData; старый файл рядом с exe - для миграции
             string devicePath = File.Exists(AppPaths.DeviceDataFile) ? AppPaths.DeviceDataFile
                               : File.Exists("userDevice.data") ? "userDevice.data"
                               : null;
             if (devicePath != null)
             {
                 UserData.User.SelectedDeviceName = File.ReadAllText(devicePath);
-                // Индекс ищем в нумерации WaveInEvent — той же, что у VoiceRoom.
+                // Индекс ищем в нумерации WaveInEvent - той же, что у VoiceRoom.
                 // Раньше индекс брался из списка MMDeviceEnumerator (WASAPI), а его
-                // порядок ДРУГОЙ — в звонок мог уходить не тот микрофон
+                // порядок ДРУГОЙ - в звонок мог уходить не тот микрофон
                 int deviceIdx = Classes.AudioDevices.FindByName(UserData.User.SelectedDeviceName);
                 if (deviceIdx >= 0) UserData.User.SelectedDeviceNum = deviceIdx;
             }
@@ -120,7 +120,7 @@ namespace Tebegrammmm
                     ws = new ClientWebSocket();
                     // https → wss (раньше подставлялось ws:// на https-туннель и соединение не устанавливалось)
                     string wsAddress = ServerData.ServerAdress.Replace("https:", "wss:").Replace("http:", "ws:");
-                    // platform=win — по нему сервер решает, куда направлять звонок:
+                    // platform=win - по нему сервер решает, куда направлять звонок:
                     // вызов с win-клиента должен звонить только на win-клиент
                     // собеседника, а не на все его устройства сразу (см. Program.cs,
                     // /Voice/CreateRoom и User.IsOnlineOn)
@@ -148,7 +148,7 @@ namespace Tebegrammmm
                 WebSocketReceiveResult result;
                 do
                 {
-                    // Копим фрагменты до EndOfMessage — раньше длинные сообщения (>1 КБ) резались на куски
+                    // Копим фрагменты до EndOfMessage - раньше длинные сообщения (>1 КБ) резались на куски
                     result = await ws.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
                     ms.Write(buffer, 0, result.Count);
                 } while (!result.EndOfMessage);
@@ -166,7 +166,7 @@ namespace Tebegrammmm
                             continue;
                         }
 
-                        // Получатель открыл чат с нами — наши сообщения ему помечаем
+                        // Получатель открыл чат с нами - наши сообщения ему помечаем
                         // двумя галочками (см. HandleSeenNotification)
                         if (textMessage.StartsWith("SEEN▫#▫"))
                         {
@@ -176,7 +176,7 @@ namespace Tebegrammmm
 
                         // Конверт «addMessage▫$▫» = сообщение ГРУППОВОГО чата, внутри
                         // первым полем идёт ChatId. Личные сообщения приходят без
-                        // конверта в старом формате — так выпущенные клиенты не ломаются.
+                        // конверта в старом формате - так выпущенные клиенты не ломаются.
                         if (textMessage.StartsWith("addMessage▫$▫"))
                         {
                             HandleGroupMessage(textMessage.Substring("addMessage▫$▫".Length));
@@ -236,7 +236,7 @@ namespace Tebegrammmm
                             string[] data = Content.Split('▫');
                             if (data.Length < 2)
                             {
-                                // Свой же токен исходящего звонка (без ▫) — это не входящий звонок.
+                                // Свой же токен исходящего звонка (без ▫) - это не входящий звонок.
                                 // Раньше data[1] бросал IndexOutOfRange и убивал поток опроса звонков.
                                 Thread.Sleep(1500);
                                 continue;
@@ -264,7 +264,7 @@ namespace Tebegrammmm
                     }
                     catch (HttpRequestException)
                     {
-                        // Сервер недоступен — ждём, иначе цикл долбит его без паузы
+                        // Сервер недоступен - ждём, иначе цикл долбит его без паузы
                         Thread.Sleep(3000);
                         continue;
                     }
@@ -297,12 +297,12 @@ namespace Tebegrammmm
         private readonly System.Collections.Generic.Dictionary<ChatFolder, Classes.ChatListSource> _chatListSources = new();
 
         /// <summary>
-        /// Наполняет список чатов: «Избранное» → группы → остальные контакты
-        /// (порядок держит ChatListSource).
+        /// Наполняет список чатов в порядке «Избранное», группы, прочие контакты.
+        /// Порядок обеспечивает ChatListSource.
         ///
-        /// Раньше сюда подставлялись только Contacts, а коллекция Chats не
-        /// использовалась в интерфейсе НИГДЕ — из-за этого созданные группы
-        /// приходили с сервера, но на экране не появлялись.
+        /// Ранее использовалась только коллекция Contacts, а Chats не участвовала
+        /// в интерфейсе, поэтому созданные группы приходили с сервера, но на экране
+        /// не появлялись.
         /// </summary>
         private void SetChatListSource(ChatFolder folder)
         {
@@ -315,7 +315,7 @@ namespace Tebegrammmm
                 _chatListSources[folder] = source;
             }
 
-            // Тот же источник уже стоит — не трогаем, иначе слетит выделение
+            // Тот же источник уже стоит - не трогаем, иначе слетит выделение
             // (после поиска сюда приходят с тем же списком)
             if (!ReferenceEquals(LBChats.ItemsSource, source))
                 LBChats.ItemsSource = source;
@@ -340,7 +340,7 @@ namespace Tebegrammmm
 
         private void LBChats_SelectionChangedChat(object sender, SelectionChangedEventArgs e)
         {
-            // Сохраняем черновик для предыдущего чата — им мог быть и контакт, и группа
+            // Сохраняем черновик для предыдущего чата - им мог быть и контакт, и группа
             if (TBMessage != null)
             {
                 if (Contact != null) Contact.Draft = TBMessage.Text;
@@ -360,11 +360,11 @@ namespace Tebegrammmm
                 return;
             }
 
-            _openGroup = null;   // выбрали контакт — групповой чат больше не открыт
+            _openGroup = null;   // выбрали контакт - групповой чат больше не открыт
             Contact = LBChats.SelectedItem as Contact;
             Log.Save($"[LBChats_SelectionChanged] Selected contact: {Contact?.Name} ({Contact?.Username})");
 
-            // Результат глобального поиска: пользователя ещё нет в контактах —
+            // Результат глобального поиска: пользователя ещё нет в контактах - 
             // сначала добавляем его на сервере, потом открываем чат
             if (Contact != null && Contact.IsGlobalResult)
             {
@@ -383,7 +383,7 @@ namespace Tebegrammmm
             Dispatcher.BeginInvoke(new Action(() => ScrollToLastMessageIfCurrent(Contact)),
                 System.Windows.Threading.DispatcherPriority.Loaded);
 
-            // Мы открыли чат с этим контактом — сообщаем ему, что видели его
+            // Мы открыли чат с этим контактом - сообщаем ему, что видели его
             // сообщения (у него они станут двумя галочками)
             _ = SendSeenAsync(Contact.Username);
 
@@ -396,8 +396,8 @@ namespace Tebegrammmm
         }
 
         // ── Отметки «прочитано» (две галочки) ────────────────────────────────
-        // Модель простая, как просил пользователь: одна галочка — сервер принял;
-        // две — получатель ОТКРЫЛ чат с нами (скорее всего увидел). «Закрашенных»
+        // Модель простая, как просил пользователь: одна галочка - сервер принял;
+        // две - получатель ОТКРЫЛ чат с нами (скорее всего увидел). «Закрашенных»
         // как в оригинальном Telegram не делаем.
 
         /// <summary>
@@ -410,7 +410,7 @@ namespace Tebegrammmm
             {
                 if (ws == null || ws.State != WebSocketState.Open) return;
                 if (string.IsNullOrEmpty(contactUsername)) return;
-                if (contactUsername == UserData.User.Username) return; // «Избранное» — некому
+                if (contactUsername == UserData.User.Username) return; // «Избранное» - некому
 
                 string request = $"SEEN▫#▫{UserData.User.Username}▫#▫{contactUsername}";
                 await ws.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes(request)),
@@ -440,23 +440,23 @@ namespace Tebegrammmm
                 foreach (Message m in contact.Messages)
                 {
                     // До Seen доводим только реально ушедшие (Sent/Pending); Failed
-                    // не трогаем — его ещё нужно переотправить
+                    // не трогаем - его ещё нужно переотправить
                     if (m.IsOutgoing && (m.Status == MessageStatus.Sent || m.Status == MessageStatus.Pending))
                         m.Status = MessageStatus.Seen;
                 }
-                Log.Save($"[Seen] {reader} открыл чат — наши сообщения ему отмечены прочитанными");
+                Log.Save($"[Seen] {reader} открыл чат - наши сообщения ему отмечены прочитанными");
             }));
         }
 
         /// <summary>
-        /// Настраивает кнопки в шапке чата под его тип.
+        /// Настраивает кнопки в заголовке чата по его типу.
         ///
-        /// «Избранное» — чат с самим собой: звонить туда некому, и «изменить
-        /// контакт» тоже нечего (имя и аватар свои, они меняются в настройках).
-        /// Группа — звонка пока нет: комната голосовой связи заводится на ПАРУ
-        /// собеседников (VoiceRoom работает по username), группового режима в
-        /// протоколе ещё не существует. Кнопка меню при этом остаётся и открывает
-        /// настройки группы.
+        /// В «Избранном», то есть чате с самим собой, скрыты звонок и изменение
+        /// контакта: собеседника нет, а собственные имя и аватар задаются в настройках.
+        ///
+        /// В группе скрыт звонок: голосовая комната рассчитана на двоих и адресуется
+        /// по логину, группового режима в протоколе нет. Кнопка меню остаётся и
+        /// открывает настройки группы.
         /// </summary>
         private void UpdateChatHeaderButtons(bool isFavorites, bool isGroup)
         {
@@ -466,7 +466,7 @@ namespace Tebegrammmm
 
             // Снимаем ОБА обработчика перед добавлением одного. Раньше снимался
             // только противоположный, и при подряд идущих открытиях чатов ОДНОГО
-            // типа обработчик копился — по клику кнопка открывала бы по нескольку
+            // типа обработчик копился - по клику кнопка открывала бы по нескольку
             // окон. Привязку Click из XAML тоже убрали: единственный источник
             // истины теперь здесь.
             BtnChatMenu.Click -= Button_Click_ContactRedact;
@@ -485,9 +485,9 @@ namespace Tebegrammmm
 
         /// <summary>
         /// «Удалить группу». Просит сервер удалить чат; сам локально ничего не
-        /// сносит — сервер вернёт removeChat▫$▫ ВСЕМ участникам (включая нас), и
+        /// сносит - сервер вернёт removeChat▫$▫ ВСЕМ участникам (включая нас), и
         /// удаление у всех пойдёт одним путём (см. HandleRemoveChat). Удалить
-        /// может только владелец — это проверяет сервер.
+        /// может только владелец - это проверяет сервер.
         /// </summary>
         private async void DeleteGroup_Click(object sender, RoutedEventArgs e)
         {
@@ -496,7 +496,7 @@ namespace Tebegrammmm
 
             // Удалить группу может только её создатель. Флаг IOwner приходит с
             // сервера в addChat/​/Chats (owner==наш Id) и надёжен во всех путях
-            // загрузки. Проверяем сразу на клиенте — иначе сервер молча игнорирует
+            // загрузки. Проверяем сразу на клиенте - иначе сервер молча игнорирует
             // запрос, и у не-владельца «удаление» выглядит как зависшее без ответа.
             if (!group.IOwner)
             {
@@ -506,7 +506,7 @@ namespace Tebegrammmm
                 return;
             }
 
-            // Действие необратимо и затрагивает всех — спрашиваем подтверждение
+            // Действие необратимо и затрагивает всех - спрашиваем подтверждение
             if (!TbgDialogWindow.Confirm(
                     $"Удалить группу «{group.Name}» для всех участников? Отменить будет нельзя.",
                     "Удаление группы", "Удалить", "Отмена"))
@@ -529,19 +529,19 @@ namespace Tebegrammmm
             {
                 // async void: без catch обрыв связи здесь ронял всё приложение
                 Log.Save($"[DeleteGroup] {ex.GetType().Name}: {ex.Message}");
-                TbgDialogWindow.Show("Не удалось удалить группу — соединение прервано.", "Удаление группы");
+                TbgDialogWindow.Show("Не удалось удалить группу - соединение прервано.", "Удаление группы");
             }
         }
 
         // ── Групповые чаты ───────────────────────────────────────────────────
         // Открытая сейчас группа (null, если открыт обычный чат с контактом).
-        // Хранится отдельно от Contact: маршрутизация у них разная — контакту
+        // Хранится отдельно от Contact: маршрутизация у них разная - контакту
         // сообщение адресуется по нику, группе по её Id.
         private Classes.Chat _openGroup;
 
         /// <summary>
         /// Загружает список групповых чатов пользователя (GET /Chats/{userId}).
-        /// Формат: чаты через ❂, поля — id&amp;имя&amp;группа?&amp;аватар&amp;владелец&amp;участники.
+        /// Формат: чаты через ❂, поля - id&amp;имя&amp;группа?&amp;аватар&amp;владелец&amp;участники.
         /// </summary>
         private async Task LoadGroupChatsAsync()
         {
@@ -621,7 +621,7 @@ namespace Tebegrammmm
                         if (message != null) chat.Messages.Add(message);
                     }
 
-                    // История пришла — можно докладывать её вложения в кэш
+                    // История пришла - можно докладывать её вложения в кэш
                     PrefetchChatMedia(chat.Messages);
 
                     // …и встать в конец переписки, если открыта именно эта группа
@@ -636,7 +636,7 @@ namespace Tebegrammmm
         }
 
         /// <summary>
-        /// Разбирает сообщение группы: Sender▫Reciver▫Type▫Time▫ServerAdress▫Text —
+        /// Разбирает сообщение группы: Sender▫Reciver▫Type▫Time▫ServerAdress▫Text - 
         /// тот же формат, что и у личных сообщений (конверт с ChatId снимается выше).
         /// </summary>
         private Message ParseGroupMessage(string raw)
@@ -654,7 +654,7 @@ namespace Tebegrammmm
                 { IsOutgoing = outgoing, Status = MessageStatus.Sent };
             }
 
-            // Текст мог содержать разделитель — склеиваем хвост обратно
+            // Текст мог содержать разделитель - склеиваем хвост обратно
             string text = string.Join('▫', parts.Skip(5));
             return new Message(senderName, parts[1], text, parts[3])
             { IsOutgoing = outgoing, Status = MessageStatus.Sent };
@@ -662,7 +662,7 @@ namespace Tebegrammmm
 
         /// <summary>
         /// Клик по результату глобального поиска: добавляем пользователя в контакты
-        /// и открываем с ним чат. Поиск при этом сбрасывается — контакт уже «свой».
+        /// и открываем с ним чат. Поиск при этом сбрасывается - контакт уже «свой».
         /// </summary>
         private async Task AddGlobalResultAsync(Contact found)
         {
@@ -676,7 +676,7 @@ namespace Tebegrammmm
         }
 
         /// <summary>
-        /// Сервер сообщил, что группа удалена (removeChat▫$▫{id}) — убираем её из
+        /// Сервер сообщил, что группа удалена (removeChat▫$▫{id}) - убираем её из
         /// списка. Выполняется на UI-потоке (как и остальной приём WS), поэтому
         /// правка ObservableCollection безопасна.
         /// </summary>
@@ -687,7 +687,7 @@ namespace Tebegrammmm
             if (chat == null) return;
             UserData.User.Chats.Remove(chat);
 
-            // Удалили открытую сейчас группу — закрываем её панель, иначе на экране
+            // Удалили открытую сейчас группу - закрываем её панель, иначе на экране
             // остаётся «призрак» удалённого чата, в который ещё можно писать
             if (_openGroup != null && _openGroup.Id == chatId)
             {
@@ -700,19 +700,22 @@ namespace Tebegrammmm
         }
 
         /// <summary>
-        /// Приём нового чата от сервера (перенос из main-dev, коммит 64bc1ab, с фиксами:
-        /// в оригинале в AddChat передавался ТИП Chat вместо переменной chat — это даже
-        /// не компилируется, — а сам чат добавлялся дважды: и в папку напрямую, и через
-        /// User.AddChat, который кладёт в ту же коллекцию).
-        /// Формат данных: id&name&isGroup&avatar&ownerId. Чаты пока «спящая» сущность
-        /// (переписка живёт в Contact.Messages), поэтому просто кладём в коллекцию.
+        /// Приём нового чата от сервера. Перенесено из ветки main-dev, коммит 64bc1ab.
+        ///
+        /// Формат данных: id&amp;name&amp;isGroup&amp;avatar&amp;ownerId. Переписка хранится
+        /// в Contact.Messages, поэтому чат помещается в коллекцию без дальнейшей
+        /// обработки.
+        ///
+        /// Исправления относительно исходной версии: в AddChat передавался тип Chat
+        /// вместо переменной chat, что не компилируется, а сам чат добавлялся дважды -
+        /// напрямую в папку и через User.AddChat, который пишет в ту же коллекцию.
         /// </summary>
         private void HandleAddChat(string payload)
         {
             try
             {
                 // Replace здесь больше не нужен: сервер добавляет конверт РОВНО ОДИН
-                // раз (раньше он клеился дважды, и это гасилось здесь — две ошибки
+                // раз (раньше он клеился дважды, и это гасилось здесь - две ошибки
                 // компенсировали друг друга, а односторонняя правка всё ломала)
                 string[] chatData = payload.Split('&');
                 if (chatData.Length < 3 || !int.TryParse(chatData[0], out int chatId)) return;
@@ -739,7 +742,7 @@ namespace Tebegrammmm
         /// <summary>
         /// Сообщение ГРУППОВОГО чата: payload = ChatId▫Sender▫Reciver▫Type▫Time▫Server▫Text.
         /// Именно ради этого первого поля и нужен конверт: в личном чате клиент
-        /// понимает, куда класть сообщение, по собеседнику, а в группе — не может.
+        /// понимает, куда класть сообщение, по собеседнику, а в группе - не может.
         /// </summary>
         private void HandleGroupMessage(string payload)
         {
@@ -756,9 +759,9 @@ namespace Tebegrammmm
                 Dispatcher.Invoke(new Action(() =>
                 {
                     Classes.Chat chat = UserData.User.FindChatById(chatId);
-                    if (chat == null) return; // группа ещё не пришла — придёт вместе с addChat
+                    if (chat == null) return; // группа ещё не пришла - придёт вместе с addChat
 
-                    // Эхо своего сообщения в группе — подтверждаем уже показанный
+                    // Эхо своего сообщения в группе - подтверждаем уже показанный
                     // пузырь (часики → галочка), а не дублируем его
                     if (message.IsOutgoing
                         && TryConfirmOutgoing(chat.Messages, message.MessageType, message.Text, message.Time))
@@ -778,11 +781,11 @@ namespace Tebegrammmm
             }
         }
 
-        // ПЕРЕХОД НА ChatId: сейчас поле [0] — username отправителя, и сообщение
+        // ПЕРЕХОД НА ChatId: сейчас поле [0] - username отправителя, и сообщение
         // раскладывается ПОИСКОМ КОНТАКТА по нему. В протоколе v2 первым полем
-        // придёт ChatId — тогда: 1) все индексы ниже сдвигаются на +1;
+        // придёт ChatId - тогда: 1) все индексы ниже сдвигаются на +1;
         // 2) маршрутизация меняется на UserData.User.FindChatById(chatId) и
-        // chat.Messages.Add(...) — поиск контакта останется только как фолбэк
+        // chat.Messages.Add(...) - поиск контакта останется только как фолбэк
         // для старых сообщений без ChatId (см. историю в GetMessages).
         private async void AddMessageToUser(string MessageData)
         {
@@ -805,14 +808,14 @@ namespace Tebegrammmm
                 }
                 if (messageData[2] == "Text")
                 {
-                    // Хвост склеиваем с разделителем — раньше символ ▫ из текста терялся
+                    // Хвост склеиваем с разделителем - раньше символ ▫ из текста терялся
                     string text = string.Join('▫', messageData.Skip(5));
 
                     Dispatcher.Invoke(new Action(() =>
                     {
                         // Эхо своего сообщения: сначала пробуем подтвердить уже
                         // показанный пузырь (часики → галочка), и лишь если такого
-                        // нет (отправлено с другого устройства) — добавляем новый
+                        // нет (отправлено с другого устройства) - добавляем новый
                         if (TryConfirmOutgoing(contact.Messages, MessageType.Text, text, messageData[3]))
                             return;
 
@@ -847,7 +850,7 @@ namespace Tebegrammmm
             {
                 using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/UserName/{messageData[0]}");
                 using HttpResponseMessage response = await httpClient.SendAsync(request);
-                // Отправитель мог быть удалён на сервере — иначе int.Parse ниже падал
+                // Отправитель мог быть удалён на сервере - иначе int.Parse ниже падал
                 // с «Необработанной ошибкой» на тексте «Пользователь не найден»
                 if (!response.IsSuccessStatusCode) return;
                 string[] content = (await response.Content.ReadAsStringAsync()).Split("▫");
@@ -855,7 +858,7 @@ namespace Tebegrammmm
                 if (messageData[2] == "Text")
                 {
                     string text = string.Join('▫', messageData.Skip(5));
-                    // Входящее от нового контакта — отправитель это контакт, а не мы
+                    // Входящее от нового контакта - отправитель это контакт, а не мы
                     Message message = new Message(contact.Name, UserData.User.Username, text, messageData[3]);
                     message.Status = MessageStatus.Sent; // Все сообщения просто сохраняются
                     Dispatcher.Invoke(new Action(() =>
@@ -922,7 +925,7 @@ namespace Tebegrammmm
                     }
                 }
 
-            // Сообщение пришло в ОТКРЫТЫЙ сейчас чат — сразу отмечаем прочитанным,
+            // Сообщение пришло в ОТКРЫТЫЙ сейчас чат - сразу отмечаем прочитанным,
             // чтобы у отправителя появилась вторая галочка, пока мы смотрим переписку
             if (messageData.Length > 0 && messageData[0] != UserData.User.Username)
             {
@@ -1123,9 +1126,9 @@ namespace Tebegrammmm
             }
 
             // Чистим текст перед отправкой: убираем разделители протокола и
-            // невидимые символы, режем по длине. Эмодзи и любые алфавиты остаются —
+            // невидимые символы, режем по длине. Эмодзи и любые алфавиты остаются - 
             // ломают передачу только ▫ и ❂ (см. UserValidation.SanitizeMessage).
-            // Для файлов message — это имя файла на сервере, его не трогаем.
+            // Для файлов message - это имя файла на сервере, его не трогаем.
             if (messageType == MessageType.Text)
             {
                 message = Tebegram.Shared.UserValidation.SanitizeMessage(message);
@@ -1136,7 +1139,7 @@ namespace Tebegrammmm
                 }
             }
 
-            // Открыт групповой чат — у него своя маршрутизация (по Id чата)
+            // Открыт групповой чат - у него своя маршрутизация (по Id чата)
             if (_openGroup != null)
             {
                 await SendGroupMessageAsync(_openGroup, message, messageType, ServerFilePath);
@@ -1168,7 +1171,7 @@ namespace Tebegrammmm
 
             if (ws == null || ws.State != WebSocketState.Open)
             {
-                // Нет связи — помечаем сообщение как неотправленное (красный «!»),
+                // Нет связи - помечаем сообщение как неотправленное (красный «!»),
                 // но не роняем его: текст пользователя не пропадает
                 Message.Status = MessageStatus.Failed;
                 return;
@@ -1194,13 +1197,16 @@ namespace Tebegrammmm
         }
 
         /// <summary>
-        /// Отправка в ГРУППУ. Отличие от личного чата одно: в команде SEND идёт
-        /// реальный Id чата, а поле получателя серверу не нужно — по существующему
-        /// Id он находит чат сразу (CheckIsExist возвращает его первой же проверкой)
-        /// и рассылает сообщение всем участникам.
-        /// Своё сообщение показываем СРАЗУ (часики), а когда сервер вернёт его нам
-        /// эхом — подтверждаем ту же запись (галочка), а не добавляем заново
-        /// (см. HandleGroupMessage → TryConfirmOutgoing).
+        /// Отправка сообщения в группу.
+        ///
+        /// От личного чата отличается одним: в команде SEND передаётся действительный
+        /// Id чата, а поле получателя серверу не требуется. По готовому Id сервер
+        /// находит чат первой же проверкой в CheckIsExist и рассылает сообщение
+        /// всем участникам.
+        ///
+        /// Собственное сообщение выводится сразу со статусом ожидания, а вернувшееся
+        /// от сервера эхо подтверждает ту же запись вместо добавления второй копии,
+        /// см. HandleGroupMessage и TryConfirmOutgoing.
         /// </summary>
         private async Task SendGroupMessageAsync(Classes.Chat chat, string message,
             MessageType messageType, string ServerFilePath)
@@ -1250,9 +1256,9 @@ namespace Tebegrammmm
         }
 
         // ── Ограничение длины сообщения ──────────────────────────────────────
-        // Верхний предел один для всех клиентов (веб — MAX_MESSAGE_LENGTH в app.js).
+        // Верхний предел один для всех клиентов (веб - MAX_MESSAGE_LENGTH в app.js).
         // Само поле ограничено MaxLength="512" в разметке, поэтому лишнее просто не
-        // наберётся; проверка при отправке — на случай вставки из буфера в обход.
+        // наберётся; проверка при отправке - на случай вставки из буфера в обход.
         public const int MaxMessageLength = 512;
 
         /// <summary>
@@ -1370,7 +1376,7 @@ namespace Tebegrammmm
                     {
                         for (int j = 0; j < UserData.User.ChatsFolders[i].Contacts.Count; j++)
                         {
-                            // Сравниваем по Username (уникален), а не по отображаемому имени —
+                            // Сравниваем по Username (уникален), а не по отображаемому имени - 
                             // иначе удалялся чужой контакт с таким же именем
                             if (UserData.User.ChatsFolders[i].Contacts[j].Username == contact.Username)
                             {
@@ -1407,18 +1413,19 @@ namespace Tebegrammmm
         }
 
         /// <summary>
-        /// Помечает своё отправленное сообщение как подтверждённое сервером
-        /// (часики → галочка). Сообщение показывается СРАЗУ со статусом Pending, а
-        /// когда сервер возвращает его нам эхом, мы находим ту же запись и ставим
-        /// Sent — вместо того чтобы добавлять её заново.
+        /// Помечает отправленное сообщение как принятое сервером, заменяя часы на
+        /// галочку. Сообщение появляется в чате сразу со статусом Pending; когда
+        /// сервер возвращает его обратно, найденная запись переводится в Sent
+        /// вместо добавления второй копии.
         ///
-        /// Совпадение ищем по (тип, текст/имя файла, время до минуты) среди своих
-        /// ещё не подтверждённых сообщений. Берём ПЕРВОЕ подходящее: если в ту же
-        /// минуту отправлено два одинаковых сообщения, каждое эхо подтвердит по
-        /// одному. Возвращает false, если пары нет (сообщение с другого устройства
-        /// или после перезапуска) — тогда его добавляют как обычно.
+        /// Совпадение ищется среди неподтверждённых сообщений по типу, тексту либо
+        /// имени файла и времени с точностью до минуты. Берётся первое подходящее:
+        /// два одинаковых сообщения одной минуты подтверждаются по очереди.
         ///
-        /// Должно вызываться на UI-потоке: меняет Status, а тот уведомляет привязки.
+        /// Возвращает false, если пара не найдена. Так происходит для сообщений с
+        /// другого устройства и после перезапуска; они добавляются обычным путём.
+        ///
+        /// Вызывается только в потоке интерфейса: изменение Status уведомляет привязки.
         /// </summary>
         private static bool TryConfirmOutgoing(System.Collections.Generic.IEnumerable<Message> messages,
             MessageType type, string identity, string time)
@@ -1466,17 +1473,17 @@ namespace Tebegrammmm
 
         // Сколько последних сообщений чата просматриваем на предмет вложений.
         // Больше и не нужно: до старых фото ещё надо долистать, а качать всю
-        // переписку целиком при каждом открытии чата — неуважение к трафику.
+        // переписку целиком при каждом открытии чата - неуважение к трафику.
         private const int PrefetchLimit = 60;
 
         /// <summary>
-        /// Тихо докладывает фото открытого чата в локальный кэш, чтобы при прокрутке
-        /// вверх они уже лежали на диске (список виртуализован — сам он грузит только
-        /// то, что видно на экране).
+        /// Фоновая загрузка фотографий открытого чата в локальный кэш, чтобы при
+        /// прокрутке вверх они уже находились на диске. Список виртуализован и
+        /// самостоятельно загружает только видимую часть.
         ///
-        /// Видео целиком не тянем: ролик может весить сотни мегабайт. Он попадает в
-        /// кэш после первого просмотра, а в списке показывается сохранённый кадр —
-        /// так же устроена автозагрузка в Telegram, где у видео свой потолок размера.
+        /// Видео заранее не загружается: размер ролика доходит до сотен мегабайт.
+        /// Он попадает в кэш после первого просмотра, а в списке показывается
+        /// сохранённый кадр.
         /// </summary>
         private static void PrefetchChatMedia(System.Collections.Generic.IEnumerable<Message> messages)
         {
@@ -1485,7 +1492,7 @@ namespace Tebegrammmm
             // С конца: свежие сообщения пользователь увидит первыми
             foreach (Message message in messages.Reverse().Take(PrefetchLimit))
             {
-                // Пропускаем ещё не залитые заглушки — у них нет адреса на сервере
+                // Пропускаем ещё не залитые заглушки - у них нет адреса на сервере
                 if (message != null && message.IsImageFile && !message.IsUploading)
                     Data.MediaCache.Prefetch(message.FileUrl);
             }
@@ -1571,9 +1578,9 @@ namespace Tebegrammmm
                 using var response = await httpClient.SendAsync(request);
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    // Изменяем имя контакта на новое — ChangeName шлёт PropertyChanged,
+                    // Изменяем имя контакта на новое - ChangeName шлёт PropertyChanged,
                     // список и шапка обновятся через binding.
-                    // ВАЖНО: НЕ присваивать TBChat_Name.Text напрямую — локальное значение
+                    // ВАЖНО: НЕ присваивать TBChat_Name.Text напрямую - локальное значение
                     // затирает binding {Binding Name}, и после первого переименования
                     // заголовок чата переставал меняться при переключении чатов
                     Contact.ChangeName(newName);
@@ -1584,7 +1591,7 @@ namespace Tebegrammmm
                     LBChats.SelectedIndex = LBChats.Items.Count - 1;
                     GridChat.DataContext = Contact;
 
-                    // Системное окно «Имя контакта изменено» убрано — новое имя сразу видно в списке
+                    // Системное окно «Имя контакта изменено» убрано - новое имя сразу видно в списке
                     Log.Save($"[ContactEdit] Контакт изменен: {oldName} -> {Contact.Name}");
                 }
             }
@@ -1629,7 +1636,7 @@ namespace Tebegrammmm
         private async void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             // Флаг останавливает циклы переподключения и опроса звонков.
-            // Раньше здесь был Process.Kill() — он же убивал приложение при «Выйти из аккаунта».
+            // Раньше здесь был Process.Kill() - он же убивал приложение при «Выйти из аккаунта».
             _isClosing = true;
             try
             {
@@ -1646,12 +1653,12 @@ namespace Tebegrammmm
         {
             RedactcionChatsFoldersWindow RCFW = new RedactcionChatsFoldersWindow(UserData.User.ChatsFolders);
             RCFW.ShowDialog();
-            // Диалог закрыт — сохраняем папки на сервер, чтобы не терялись при перезапуске
+            // Диалог закрыт - сохраняем папки на сервер, чтобы не терялись при перезапуске
             await SyncFoldersToServerAsync();
         }
 
         /// <summary>
-        /// Загружает пользовательские папки с сервера. Контакты в папках — те же
+        /// Загружает пользовательские папки с сервера. Контакты в папках - те же
         /// объекты, что в «Все чаты» (по username), чтобы переписка была общей.
         /// </summary>
         private async Task LoadFoldersFromServerAsync()
@@ -1716,18 +1723,19 @@ namespace Tebegrammmm
         }
 
         /// <summary>
-        /// Предел размера файла — 16 МБ. Это НЕ лимит сервера (тот держит 256 МБ),
-        /// а предел туннеля devtunnel: у него жёсткий потолок тела запроса 16 МБ,
-        /// и файл больше него по туннелю не проходит — обрывается почти в конце.
-        /// Проверяем ДО отправки, чтобы сразу показать понятное сообщение, а не
-        /// гнать файл впустую. Если однажды уйдём с бесплатного туннеля на прямой
-        /// хостинг — поднять здесь, в docs/app.js (MAX_UPLOAD_BYTES) и в сервере.
+        /// Предел размера файла - 16 МБ. Ограничение задаёт не сервер, который
+        /// принимает до 256 МБ, а туннель devtunnel: тело запроса свыше 16 МБ он
+        /// обрывает почти в конце передачи.
+        ///
+        /// Проверка выполняется до отправки, чтобы сообщить о причине сразу, а не
+        /// после безрезультатной передачи. При переходе на прямой хостинг значение
+        /// поднимается здесь, в MAX_UPLOAD_BYTES файла docs/app.js и на сервере.
         /// </summary>
         private const long MaxUploadBytes = 16L * 1024 * 1024;
 
         /// <summary>
         /// Отдельный клиент для загрузки файлов. У общего httpClient таймаут по
-        /// умолчанию — 100 секунд, а полусотня мегабайт по туннелю идёт дольше:
+        /// умолчанию - 100 секунд, а полусотня мегабайт по туннелю идёт дольше:
         /// отправка обрывалась на середине, исключение вылетало из async void и
         /// показывалось как «Необработанная ошибка» вместо внятного сообщения.
         /// </summary>
@@ -1739,7 +1747,7 @@ namespace Tebegrammmm
 
         private async Task SendFileToServer(string filePath)
         {
-            // Куда шлём — фиксируем СЕЙЧАС: пока файл заливается, пользователь может
+            // Куда шлём - фиксируем СЕЙЧАС: пока файл заливается, пользователь может
             // переключить чат, и результат должен уйти в тот, где нажали «отправить»
             Contact targetContact = _openGroup == null ? Contact : null;
             Classes.Chat targetGroup = _openGroup;
@@ -1750,7 +1758,7 @@ namespace Tebegrammmm
             }
 
             // Тип по расширению нужен только как подсказка серверу. Неизвестное
-            // расширение (exe, rar, psd…) — НЕ повод отказывать: такой файл
+            // расширение (exe, rar, psd…) - НЕ повод отказывать: такой файл
             // показывается универсальной карточкой «скачать», ради неё всё и
             // делалось. Раньше здесь стояла проверка на application/octet-stream,
             // и отправить установщик или архив было нельзя.
@@ -1768,7 +1776,7 @@ namespace Tebegrammmm
             string localName = Path.GetFileName(filePath).Replace(" ", "_");
             string receiver = targetContact != null ? targetContact.Username : targetGroup.Name;
 
-            // Пузырь-заглушка появляется СРАЗУ и показывает полоску загрузки — видно,
+            // Пузырь-заглушка появляется СРАЗУ и показывает полоску загрузки - видно,
             // что отправка идёт. По готовности он же превращается в обычное вложение
             // (см. Message.BeginUpload/FinishUpload), а не создаётся заново.
             var placeholder = new Message(UserData.User.Username, receiver, localName,
@@ -1788,7 +1796,7 @@ namespace Tebegrammmm
 
             // Весь путь в try: раньше обрыв связи или таймаут вылетал исключением
             // из async void (Button_Click_SelectFile) и всплывал окном
-            // «Необработанная ошибка» — по нему нельзя было понять, что случилось.
+            // «Необработанная ошибка» - по нему нельзя было понять, что случилось.
             try
             {
                 Log.Save($"[SendFileToServer] Отправляю {localName}, {info.Length / 1024.0 / 1024:0.#} МБ, тип {mimeType}");
@@ -1832,7 +1840,7 @@ namespace Tebegrammmm
                 string url = $"{ServerData.ServerAdress}/upload/{savedName}";
                 Dispatcher.Invoke(new Action(() => placeholder.FinishUpload(savedName, url)));
 
-                // Файл на сервере — теперь отправляем само сообщение. Статус станет
+                // Файл на сервере - теперь отправляем само сообщение. Статус станет
                 // Sent, когда сервер вернёт его эхом (TryConfirmOutgoing).
                 if (ws == null || ws.State != WebSocketState.Open)
                 {
@@ -1890,7 +1898,7 @@ namespace Tebegrammmm
         }
 
         /// <summary>
-        /// Выделение в списке сообщений нам не нужно — только сбрасываем его.
+        /// Выделение в списке сообщений нам не нужно - только сбрасываем его.
         /// Вложения открываются по КЛИКУ (Attachment_Click): выделение может
         /// меняться и программно (например, при смене чата), и тогда файл
         /// открывался бы сам собой.
@@ -1902,7 +1910,7 @@ namespace Tebegrammmm
 
         /// <summary>
         /// Клик по вложению в пузыре: фото и видео открываем во встроенном
-        /// просмотрщике, аудио — системным плеером, неизвестный файл — скачиваем.
+        /// просмотрщике, аудио - системным плеером, неизвестный файл - скачиваем.
         /// </summary>
         private void Attachment_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
@@ -1921,7 +1929,7 @@ namespace Tebegrammmm
                 return;
             }
 
-            // Аудио — системным приложением
+            // Аудио - системным приложением
             string url = msg.FileUrl;
             if (string.IsNullOrEmpty(url)) return;
             try
@@ -1936,7 +1944,7 @@ namespace Tebegrammmm
 
         /// <summary>
         /// Открывает фото или видео в просмотрщике. Одно и то же вложение не
-        /// открывается дважды — повторный клик поднимает уже открытое окно.
+        /// открывается дважды - повторный клик поднимает уже открытое окно.
         /// </summary>
         private void OpenInViewer(Message msg)
         {
@@ -1960,7 +1968,7 @@ namespace Tebegrammmm
         private void SaveFile_Click(object sender, RoutedEventArgs e)
             => _ = DownloadFileAsync(MessageFromMenu(sender));
 
-        /// <summary>Клик по чипу файла — та же логика, что и по превью (см. Attachment_Click).</summary>
+        /// <summary>Клик по чипу файла - та же логика, что и по превью (см. Attachment_Click).</summary>
         private void FileChip_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
             => Attachment_Click(sender, e);
 
@@ -1992,7 +2000,7 @@ namespace Tebegrammmm
         // ── Модальные окна поверх мессенджера (настройки и т.п.) ─────────────
         // Пока открыт модальный диалог, кликать по чату нельзя (ShowDialog гасит
         // окно-владельца). Но если пользователь всё же щёлкает по мессенджеру, он
-        // ждёт, что диалог вынырнет наверх и встанет по центру — это и делаем.
+        // ждёт, что диалог вынырнет наверх и встанет по центру - это и делаем.
         private Window _activeModal;
 
         /// <summary>Показывает окно модально, по центру экрана, и запоминает его на время показа.</summary>
@@ -2072,16 +2080,16 @@ namespace Tebegrammmm
             if (Contact == null) return;
 
             // async void: недоступный сервер кидал здесь HttpRequestException и приложение
-            // падало при попытке позвонить. Теперь — понятное сообщение вместо краша
+            // падало при попытке позвонить. Теперь - понятное сообщение вместо краша
             try
             {
-                // platform=win — звоним только на win-клиент собеседника
+                // platform=win - звоним только на win-клиент собеседника
                 using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get,
                     $"{ServerData.ServerAdress}/Voice/CreateRoom/{UserData.User.Id}-{Contact.Username}?platform=win");
                 using HttpResponseMessage response = await httpClient.SendAsync(request);
                 string token = (await response.Content.ReadAsStringAsync()).Trim();
 
-                // 409 — собеседник не в сети именно в приложении для Windows
+                // 409 - собеседник не в сети именно в приложении для Windows
                 // (мог быть открыт только веб-клиент). Звонок не начинаем.
                 if (response.StatusCode == HttpStatusCode.Conflict)
                 {
@@ -2096,7 +2104,7 @@ namespace Tebegrammmm
                 if (!response.IsSuccessStatusCode || string.IsNullOrEmpty(token))
                 {
                     Log.Save($"[CallContact] Сервер не выдал токен: {(int)response.StatusCode}");
-                    TbgDialogWindow.Show("Не удалось начать звонок — сервер не ответил. Проверь соединение.", "Звонок");
+                    TbgDialogWindow.Show("Не удалось начать звонок - сервер не ответил. Проверь соединение.", "Звонок");
                     return;
                 }
 
@@ -2124,7 +2132,7 @@ namespace Tebegrammmm
             {
                 if (_IsInSearch)
                 {
-                    // Возвращаем полный список — вместе с группами, а не только контакты
+                    // Возвращаем полный список - вместе с группами, а не только контакты
                     SetChatListSource(LBChatsLoders.SelectedItem as ChatFolder
                                       ?? UserData.User.ChatsFolders[0]);
                     _IsInSearch = false;
@@ -2134,7 +2142,7 @@ namespace Tebegrammmm
             else
             {
                 _IsInSearch = true;
-                // Папка может быть не выбрана — раньше здесь падало исключение,
+                // Папка может быть не выбрана - раньше здесь падало исключение,
                 // и до глобального поиска ниже дело уже не доходило
                 TempContacts = (LBChatsLoders.SelectedItem as ChatFolder)?.Contacts
                                ?? UserData.User.ChatsFolders[0].Contacts;
@@ -2160,7 +2168,7 @@ namespace Tebegrammmm
                 FindedContacts = new ObservableCollection<Contact>(exact.Concat(prefix).Concat(rest));
                 LBChats.ItemsSource = FindedContacts;
 
-                // Запрос с @ — ищем ещё и среди ВСЕХ пользователей сервера (как в вебе)
+                // Запрос с @ - ищем ещё и среди ВСЕХ пользователей сервера (как в вебе)
                 ScheduleGlobalSearch();
             }
         }
@@ -2171,7 +2179,7 @@ namespace Tebegrammmm
         private System.Windows.Threading.DispatcherTimer _globalSearchTimer;
         private int _globalSearchSeq;
 
-        /// <summary>Подсказка под списком чатов (null — спрятать).</summary>
+        /// <summary>Подсказка под списком чатов (null - спрятать).</summary>
         private void SetSearchHint(string text)
         {
             if (SearchEmptyHint == null) return;
@@ -2182,7 +2190,7 @@ namespace Tebegrammmm
         private void ScheduleGlobalSearch()
         {
             string raw = SearchContactBarTB.Text.Trim();
-            // Ищем только по явному @ и минимум двум символам — как на сервере
+            // Ищем только по явному @ и минимум двум символам - как на сервере
             // (/Users/find отвечает пустотой на запрос короче двух символов)
             if (!raw.StartsWith("@") || raw.Length < 3)
             {
@@ -2232,7 +2240,7 @@ namespace Tebegrammmm
                 return;
             }
 
-            // Пока ждали ответ, запрос мог смениться — не рисуем устаревшее
+            // Пока ждали ответ, запрос мог смениться - не рисуем устаревшее
             if (seq != _globalSearchSeq) return;
             string current = SearchContactBarTB.Text.Trim();
             if (!current.StartsWith("@") || current.TrimStart('@') != query) return;
@@ -2246,14 +2254,14 @@ namespace Tebegrammmm
 
                 string username = parts[1];
                 if (username == UserData.User.Username) continue;                 // себя не предлагаем
-                if (UserData.User.FindContactByUsername(username) != null) continue; // уже в контактах — он выше
+                if (UserData.User.FindContactByUsername(username) != null) continue; // уже в контактах - он выше
                 if (FindedContacts.Any(c => c.Username == username)) continue;    // не дублируем
 
                 FindedContacts.Add(new Contact(id, username, parts[2]) { IsGlobalResult = true });
                 added++;
             }
 
-            // Итог поиска показываем явно — иначе пустой список читается как «не работает»
+            // Итог поиска показываем явно - иначе пустой список читается как «не работает»
             if (FindedContacts.Count > 0)
                 SetSearchHint(null);
             else
@@ -2271,7 +2279,7 @@ namespace Tebegrammmm
             string query = SearchContactBarTB.Text.Trim().TrimStart('@');
             if (string.IsNullOrEmpty(query)) return;
 
-            // Уже в контактах — просто открываем
+            // Уже в контактах - просто открываем
             Contact existing = UserData.User.FindContactByUsername(query);
             if (existing != null)
             {
@@ -2292,7 +2300,7 @@ namespace Tebegrammmm
         }
 
         // ── Ширина списка чатов меняется перетаскиванием (GridSplitter) ──────
-        // Уже 140px — компактный режим «только аватарки», шире — полный список.
+        // Уже 140px - компактный режим «только аватарки», шире - полный список.
         private const double CompactThreshold = 140;
         private const double CompactWidth = 72;
 
@@ -2323,7 +2331,7 @@ namespace Tebegrammmm
         private void ChatSplitter_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
             // Два фиксатора: «только аватарки» (72) и стандартная ширина (250).
-            // Узкая зона прилипает к 72, зона вокруг стандартной — к 250, шире — свободно.
+            // Узкая зона прилипает к 72, зона вокруг стандартной - к 250, шире - свободно.
             double w = ChatListColumn.ActualWidth;
             if (w < CompactThreshold)
                 ChatListColumn.Width = new GridLength(CompactWidth);
@@ -2335,7 +2343,7 @@ namespace Tebegrammmm
         private void OpenContact(Contact contact)
         {
             _IsInSearch = false;
-            LBChatsLoders.SelectedIndex = 0; // «Все чаты» — там точно есть новый контакт
+            LBChatsLoders.SelectedIndex = 0; // «Все чаты» - там точно есть новый контакт
             SetChatListSource(UserData.User.ChatsFolders[0]);
             LBChats.SelectedItem = contact;
             LBChats.ScrollIntoView(contact);

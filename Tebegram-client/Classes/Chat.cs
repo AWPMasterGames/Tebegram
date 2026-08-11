@@ -6,20 +6,21 @@ using Tebegrammmm.Data;
 namespace Tebegrammmm.Classes
 {
     /// <summary>
-    /// Сущность «чат» — задел под ГРУППОВЫЕ чаты (перенос из main-dev, коммит
-    /// 311bff0, с исправлениями). Пока НЕ используется текущим потоком данных:
-    /// переписка по-прежнему живёт в Contact.Messages, потому что переход на
-    /// чаты требует смены протокола (ChatId в сообщениях) и формата логина —
-    /// это ломает совместимость со всеми выпущенными клиентами и делается
-    /// отдельной миграцией (см. roadmap, Этап 23 п.5).
+    /// Сущность «чат», задел под групповые чаты. Перенесена из ветки main-dev,
+    /// коммит 311bff0, с исправлениями.
     ///
-    /// Отличия от версии main-dev:
-    /// — Avatar с INotifyPropertyChanged (как у Contact): аватар грузится
-    ///   асинхронно ПОСЛЕ привязки UI, без уведомления список не обновится;
-    /// — загрузка аватара не выполняется для пустого списка участников
-    ///   (в оригинале UserId оставался 0 и клиент запрашивал /avatarsFileName/0);
-    /// — к URL аватара добавляется ?t=… против кэша картинок WPF;
-    /// — убран мусорный using Microsoft.VisualBasic.
+    /// Текущим потоком данных не используется: переписка хранится в Contact.Messages.
+    /// Переход на чаты требует добавить ChatId в протокол и изменить формат логина,
+    /// что нарушает совместимость с выпущенными клиентами и выполняется отдельной
+    /// миграцией.
+    ///
+    /// Отличия от исходной версии:
+    /// Avatar реализует INotifyPropertyChanged, как у Contact. Аватар загружается
+    /// асинхронно уже после привязки интерфейса, без уведомления список не обновится.
+    /// Загрузка аватара пропускается при пустом списке участников: в исходной версии
+    /// UserId оставался нулевым и клиент запрашивал /avatarsFileName/0.
+    /// К URL аватара добавлен параметр ?t, отключающий кэш изображений WPF.
+    /// Удалён неиспользуемый using Microsoft.VisualBasic.
     /// </summary>
     public class Chat : System.ComponentModel.INotifyPropertyChanged
     {
@@ -54,7 +55,7 @@ namespace Tebegrammmm.Classes
         // Список LBChats показывает и контакты, и группы одним шаблоном, поэтому
         // у Chat должны быть те же свойства, к которым привязан шаблон. Иначе
         // привязки к отсутствующим свойствам сыпали бы ошибками в окно вывода.
-        public bool IsFavorites => false;        // «Избранное» — только личный чат с собой
+        public bool IsFavorites => false;        // «Избранное» - только личный чат с собой
         public bool IsGlobalResult => false;     // группа не бывает результатом @-поиска
         public string GlobalHint => string.Empty;
         public string Draft { get; set; } = string.Empty;
@@ -62,7 +63,7 @@ namespace Tebegrammmm.Classes
         /// <summary>История с сервера уже загружена? (чтобы не тянуть повторно)</summary>
         public bool HistoryLoaded { get; set; }
 
-        /// <summary>Подпись под названием группы в списке — сколько участников.</summary>
+        /// <summary>Подпись под названием группы в списке - сколько участников.</summary>
         public string MembersHint => IsGroup && Members.Count > 0
             ? $"Участников: {Members.Count}"
             : string.Empty;
@@ -93,7 +94,7 @@ namespace Tebegrammmm.Classes
         {
             if (IsGroup) return;
 
-            // Ищем собеседника (не себя). Участники могут быть ещё не загружены —
+            // Ищем собеседника (не себя). Участники могут быть ещё не загружены - 
             // тогда просто выходим, аватар подтянется при их заполнении.
             int peerId = 0;
             foreach (var member in Members)
@@ -112,7 +113,7 @@ namespace Tebegrammmm.Classes
                 string content = await response.Content.ReadAsStringAsync();
                 if (response.IsSuccessStatusCode && !string.IsNullOrWhiteSpace(content))
                 {
-                    // ?t=… — тот же обход процессного кэша картинок WPF, что у Contact
+                    // ?t=… - тот же обход процессного кэша картинок WPF, что у Contact
                     Avatar = $"{ServerData.ServerAdress}/avatars/{content}?t={DateTime.UtcNow.Ticks}";
                 }
             }

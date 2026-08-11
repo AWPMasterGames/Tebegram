@@ -16,7 +16,7 @@ namespace TebegramServer
 
         public ObservableCollection<Contact> Contacts;
         // Задел под групповые чаты (перенос из main-dev, коммит 311bff0):
-        // коллекция пока пуста — наполнение начнётся после миграции протокола
+        // коллекция пока пуста - наполнение начнётся после миграции протокола
         public ObservableCollection<Classes.Chat> Chats;
 
         public ChatFolder(string icon = "📁", bool isCanRedact = true)
@@ -42,7 +42,7 @@ namespace TebegramServer
         }
 
         // Конструктор «папка из чатов» (из main-dev). ВАЖНО: Contacts тоже
-        // инициализируем — в оригинале он оставался null, и весь ТЕКУЩИЙ код
+        // инициализируем - в оригинале он оставался null, и весь ТЕКУЩИЙ код
         // (ToClientSend, автосохранение, /messages) упал бы на такой папке.
         public ChatFolder(string folderName, ObservableCollection<Classes.Chat> chats, string icon = "📁", bool isCanRedact = true)
         {

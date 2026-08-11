@@ -17,7 +17,7 @@ namespace TebegramServer.Controllers
 
         public const string RemoveChatEnvelope = "removeChat▫$▫";
 
-        /// <summary>Конверт сообщения ГРУППОВОГО чата (внутри — ChatId первым полем).</summary>
+        /// <summary>Конверт сообщения ГРУППОВОГО чата (внутри - ChatId первым полем).</summary>
         public const string AddMessageEnvelope = "addMessage▫$▫";
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace TebegramServer.Controllers
         }
 
         /// <param name="groupName">
-        /// Название группы из интерфейса. Пусто — соберём из имён участников
+        /// Название группы из интерфейса. Пусто - соберём из имён участников
         /// (так вело себя старое поведение).
         /// </param>
         public static int CreateChat(List<User> members, string groupName = "")
@@ -43,10 +43,10 @@ namespace TebegramServer.Controllers
 
             lock (_lock)
             {
-                // Убираем дубли — для чата с собой members = [user, user] превращается в [user]
+                // Убираем дубли - для чата с собой members = [user, user] превращается в [user]
                 members = members.Distinct().ToList();
 
-                // Генерируем Id, пока не найдём свободный — раньше случайный Id мог совпасть и Add кидал исключение
+                // Генерируем Id, пока не найдём свободный - раньше случайный Id мог совпасть и Add кидал исключение
                 int id;
                 do
                 {
@@ -55,12 +55,12 @@ namespace TebegramServer.Controllers
 
                 if (members.Count < 3)
                 {
-                    // Личный чат (или чат с собой — «Избранное»)
+                    // Личный чат (или чат с собой - «Избранное»)
                     chat = new Chat(id, "", false, "", null, members, new ObservableCollection<Message>());
                 }
                 else
                 {
-                    // Группа: имя из интерфейса, а если его не передали — перечисление имён участников
+                    // Группа: имя из интерфейса, а если его не передали - перечисление имён участников
                     string gName = string.IsNullOrWhiteSpace(groupName)
                         ? string.Join(", ", members.Select(m => m.Name))
                         : groupName.Trim();
@@ -95,7 +95,7 @@ namespace TebegramServer.Controllers
                 // Удалять группу может только её владелец
                 if (chat.Owner != owner) return;
 
-                // Снимок участников ДО удаления — по нему разошлём уведомление.
+                // Снимок участников ДО удаления - по нему разошлём уведомление.
                 // Всю правку структур делаем под тем же _lock, что и остальной
                 // ChatsController, иначе рассылка/сохранение могут поймать полусостояние.
                 members = chat.Members.ToList();
@@ -104,7 +104,7 @@ namespace TebegramServer.Controllers
             }
 
             // Рассылку выносим ИЗ-под lock: держать блокировку через await нельзя.
-            // Уведомляем всех участников (включая владельца) — у каждого чат
+            // Уведомляем всех участников (включая владельца) - у каждого чат
             // пропадёт из списка (см. клиент, HandleRemoveChat).
             byte[] payload = Encoding.UTF8.GetBytes($"{RemoveChatEnvelope}{chatId}");
             foreach (User u in members)
@@ -119,7 +119,7 @@ namespace TebegramServer.Controllers
                     }
                     catch (WebSocketException)
                     {
-                        // Сокет умер между проверкой State и отправкой — пропускаем
+                        // Сокет умер между проверкой State и отправкой - пропускаем
                     }
                 }
             }
@@ -128,7 +128,7 @@ namespace TebegramServer.Controllers
         /// <summary>
         /// Сообщает участникам группы, что чат создан. Конверт добавляется РОВНО ОДИН
         /// раз (в исходной версии префикс клеился дважды, и клиенту приходило
-        /// «addChat▫$▫addChat▫$▫…»; на клиенте это гасилось Replace — пара ошибок
+        /// «addChat▫$▫addChat▫$▫…»; на клиенте это гасилось Replace - пара ошибок
         /// компенсировала друг друга, но любая односторонняя правка всё ломала).
         /// </summary>
         private static async Task NotifyChatCreatedAsync(Chat chat)
@@ -150,7 +150,7 @@ namespace TebegramServer.Controllers
                         }
                         catch (WebSocketException)
                         {
-                            // Сокет умер между проверкой состояния и отправкой — пропускаем
+                            // Сокет умер между проверкой состояния и отправкой - пропускаем
                         }
                     }
                 }
@@ -174,7 +174,7 @@ namespace TebegramServer.Controllers
             Message? message = null;
             if (messageData.Length >= 6 && messageData[2] == "Text")
             {
-                // Текст может содержать ▫ — склеиваем хвост обратно с разделителем
+                // Текст может содержать ▫ - склеиваем хвост обратно с разделителем
                 string text = string.Join('▫', messageData.Skip(5));
                 message = new Message(messageData[0], messageData[1], text, messageData[3]);
             }
@@ -186,8 +186,8 @@ namespace TebegramServer.Controllers
 
             chat.Messages.Add(message);
 
-            // Личный чат — СТАРЫЙ формат без конверта: его понимают все выпущенные
-            // клиенты, ломать их нельзя. Группа — конверт с ChatId первым полем:
+            // Личный чат - СТАРЫЙ формат без конверта: его понимают все выпущенные
+            // клиенты, ломать их нельзя. Группа - конверт с ChatId первым полем:
             // в 1:1 клиент определяет чат по собеседнику, а в группе отправитель
             // не говорит, куда класть сообщение, поэтому Id обязателен.
             string wire = chat.IsGroup
@@ -209,7 +209,7 @@ namespace TebegramServer.Controllers
                         }
                         catch (WebSocketException)
                         {
-                            // Сокет умер между проверкой State и отправкой — просто пропускаем
+                            // Сокет умер между проверкой State и отправкой - просто пропускаем
                         }
                     }
                 }
@@ -217,13 +217,16 @@ namespace TebegramServer.Controllers
         }
 
         /// <summary>
-        /// Возвращает Id чата для отправки. Если чат с таким Id не существует,
-        /// ищет существующий личный чат между этими двумя пользователями
-        /// (раньше на каждое сообщение создавался новый чат, т.к. клиент всегда шлёт chatId=0).
-        /// Если и его нет — создаёт новый. Возвращает -1, если получатель не найден.
-        /// ПЕРЕХОД НА ChatId: когда клиенты начнут слать реальный chatId в SEND,
-        /// весь поиск по username здесь станет фолбэком для старых клиентов —
-        /// основной путь сведётся к первой проверке ContainsChat(chatId).
+        /// Возвращает Id чата для отправки сообщения.
+        ///
+        /// Если чат с указанным Id отсутствует, выполняется поиск личного чата между
+        /// двумя пользователями. Поиск добавлен потому, что клиент всегда передаёт
+        /// chatId=0 и на каждое сообщение создавался новый чат. Если подходящего
+        /// чата нет, создаётся новый. Значение -1 означает, что получатель не найден.
+        ///
+        /// После перехода клиентов на передачу действительного chatId в команде SEND
+        /// поиск по логину станет запасным путём для выпущенных ранее версий,
+        /// а основным останется первая проверка ContainsChat(chatId).
         /// </summary>
         public static int CheckIsExist(int chatId, User user, string receiver)
         {
@@ -244,7 +247,7 @@ namespace TebegramServer.Controllers
                     if (chat.IsGroup) continue;
                     if (isSelfChat)
                     {
-                        // Чат с собой — ровно один участник (я). Иначе совпал бы любой мой чат.
+                        // Чат с собой - ровно один участник (я). Иначе совпал бы любой мой чат.
                         if (chat.Members.Count == 1 && chat.Members[0] == user) return chat.Id;
                     }
                     else if (chat.Members.Contains(user) && chat.Members.Contains(receiverUser))

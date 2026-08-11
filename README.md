@@ -9,6 +9,9 @@
 [![Платформа](https://img.shields.io/badge/платформа-Windows%20%7C%20Web-626A7C)](#структура-репозитория)
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4)](https://dotnet.microsoft.com/)
 
+**Веб-версия открывается без установки: [awpmastergames.github.io/Tebegram](https://awpmastergames.github.io/Tebegram/)**
+Десктопное приложение: [последний релиз](https://github.com/AWPMasterGames/Tebegram/releases/latest), файл `TebegramSetup-2.0.1.exe`.
+
 <!-- СКРИНШОТ-ГЕРОЙ
      Положите главное окно с открытым чатом в docs/screenshots/main.png
      и раскомментируйте строку ниже:
@@ -76,7 +79,7 @@ dotnet run --project Tebegram-client
 
 ### 3. Веб-версия
 
-Запущенный сервер раздаёт её самостоятельно по адресу `http://localhost:5000/app`.
+Опубликованная копия доступна по адресу [awpmastergames.github.io/Tebegram](https://awpmastergames.github.io/Tebegram/): устанавливать ничего не требуется, страница сама находит адрес сервера. Запущенный локально сервер раздаёт ту же версию по адресу `http://localhost:5000/app`.
 
 ### Как клиент находит сервер
 
@@ -125,7 +128,7 @@ dotnet run --project Tebegram-client
 |---|---|
 | [`Tebegram-client/`](Tebegram-client) | десктопное приложение под Windows: C#, WPF, .NET 8 |
 | [`Tebegram-server/`](Tebegram-server) | сервер: C#, ASP.NET Core, Minimal API |
-| [`docs/`](docs) | веб-клиент PWA, эта же папка раздаётся через GitHub Pages |
+| [`docs/`](docs) | веб-клиент PWA; эта же папка опубликована через GitHub Pages по адресу [awpmastergames.github.io/Tebegram](https://awpmastergames.github.io/Tebegram/) |
 | [`Installer/`](Installer) | сборка установщика на Inno Setup |
 | [`Adress.txt`](Adress.txt) | адрес сервера; клиенты читают первую строку при выборе источника «main» |
 | `Tebegram-client/Adress.txt` | зеркало предыдущего файла для установленных клиентов версии 2.0.0; адрес в обоих файлах должен совпадать |
@@ -171,10 +174,12 @@ C#, ASP.NET Core в стиле Minimal API. Около 26 HTTP-эндпоинт�
 
 ## Документация
 
-- [Wiki проекта](https://github.com/AWPMasterGames/Tebegram/wiki): установка, запуск, тестирование
-- [Сборка установщика](Installer/README.md)
-- [Веб-клиент и GitHub Pages](docs/README.md)
-- [Форма обратной связи](https://docs.google.com/forms/d/e/1FAIpQLSc5bHIBepWwhbfkXFlERIS5FmcU8wjlDdAZgtobFgl0gf7b2w/viewform?usp=dialog)
+| Материал | Содержание |
+|---|---|
+| [Wiki проекта](https://github.com/AWPMasterGames/Tebegram/wiki) | описание, установка, запуск, ответы на вопросы, кейсы тестирования, история версий |
+| [Веб-клиент и установка на телефон](docs/README.md) | публикация PWA, установка на Android и iPhone |
+| [Сборка установщика](Installer/README.md) | параметры Inno Setup, выпуск релиза |
+| [Форма обратной связи](https://docs.google.com/forms/d/e/1FAIpQLSc5bHIBepWwhbfkXFlERIS5FmcU8wjlDdAZgtobFgl0gf7b2w/viewform?usp=dialog) | отзывы и замечания пользователей |
 
 ---
 

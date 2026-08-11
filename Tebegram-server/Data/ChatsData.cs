@@ -6,15 +6,15 @@ using TebegramServer.Controllers;
 namespace TebegramServer.Data
 {
     /// <summary>
-    /// Сохранение и загрузка чатов (в первую очередь ГРУППОВЫХ).
+    /// Сохранение и загрузка чатов, прежде всего групповых.
     ///
-    /// Зачем отдельный файл: чаты живут в памяти в ChatsController.Chats, а в
-    /// Users.json сериализуются только контакты с их перепиской. Из-за этого
-    /// группы исчезали при каждом перезапуске сервера. Здесь тот же подход, что
-    /// у UsersData: файл рядом с exe, полная перезапись, резервная копия.
+    /// Чаты хранятся в памяти в ChatsController.Chats, тогда как в Users.json
+    /// сериализуются только контакты с перепиской. Без отдельного файла группы
+    /// пропадали при каждом перезапуске сервера. Схема повторяет UsersData: файл
+    /// рядом с исполняемым, полная перезапись, резервная копия.
     ///
-    /// Порядок при старте важен: сначала загружаются пользователи (UsersData),
-    /// только потом чаты — участники ищутся по Id среди уже загруженных.
+    /// Порядок загрузки при старте существенен: сначала UsersData, затем чаты,
+    /// поскольку участники разыскиваются по Id среди уже загруженных пользователей.
     /// </summary>
     public static class ChatsData
     {
@@ -77,7 +77,7 @@ namespace TebegramServer.Data
             }
         }
 
-        /// <summary>Вызывать ПОСЛЕ загрузки пользователей — участники ищутся по Id.</summary>
+        /// <summary>Вызывать ПОСЛЕ загрузки пользователей - участники ищутся по Id.</summary>
         public static void Load()
         {
             try
@@ -89,11 +89,11 @@ namespace TebegramServer.Data
                     {
                         Directory.CreateDirectory(Path.GetDirectoryName(path)!);
                         File.Copy(BackupPath, path);
-                        Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Chats.json не найден — восстановлен из резервной копии");
+                        Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Chats.json не найден - восстановлен из резервной копии");
                     }
                     else
                     {
-                        Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Файл чатов не найден — групп пока нет");
+                        Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Файл чатов не найден - групп пока нет");
                         return;
                     }
                 }
@@ -125,7 +125,7 @@ namespace TebegramServer.Data
 
                     ChatsController.Chats[chat.Id] = chat;
 
-                    // Возвращаем чат в списки участников — иначе он есть на сервере,
+                    // Возвращаем чат в списки участников - иначе он есть на сервере,
                     // но пользователь про него «не знает»
                     foreach (User member in members)
                     {

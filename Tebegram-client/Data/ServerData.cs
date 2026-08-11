@@ -12,9 +12,9 @@ namespace Tebegrammmm.Data
         private const string DefaultAdress = "http://localhost:5000";
 
         /// <summary>
-        /// Выбор сервера: "main" — адрес из Adress.txt на GitHub (по умолчанию, при
-        /// первом входе), "custom" — адрес, введённый пользователем (пункт «Другой»).
-        /// Хранится в serverChoice.data, сам адрес «Другого» — в customServer.data,
+        /// Выбор сервера: "main" - адрес из Adress.txt на GitHub (по умолчанию, при
+        /// первом входе), "custom" - адрес, введённый пользователем (пункт «Другой»).
+        /// Хранится в serverChoice.data, сам адрес «Другого» - в customServer.data,
         /// поэтому выбор переживает перезапуски (для автоматических входов).
         /// </summary>
         public static string ServerChoice { get; private set; } = "main";
@@ -22,22 +22,18 @@ namespace Tebegrammmm.Data
         /// <summary>Адрес своего сервера (вариант «Другой»); пуст, если не задан.</summary>
         public static string CustomAdress { get; private set; } = "";
 
-        // Источники адреса сервера в порядке приоритета. Все ведут на main — по
-        // нему живут релизные сборки у тестеров, и рабочая ветка не должна
-        // случайно уводить их на временный адрес.
+        // Источники адреса сервера в порядке приоритета. Все указывают на ветку
+        // main: по ней работают выпущенные сборки, и рабочая ветка не должна
+        // уводить их на временный адрес.
         //
-        // ПЕРВЫМ идёт Adress.txt В КОРНЕ репозитория — это канонический файл, его
-        // ведут вручную. Раньше он лежал в Tebegrammmm/ — папке от старой раскладки,
-        // которая на GitHub выглядела забытым мусором; файл вынесен в корень, папка
-        // удалена.
+        // Adress.txt в корне репозитория - канонический файл, ведётся вручную.
         //
-        // Tebegram-client/Adress.txt — зеркало: его читают уже установленные клиенты
-        // 2.0.0, у которых корневого пути в цепочке ещё нет. Пока такие клиенты в
-        // ходу, оба файла нужно держать с одинаковым адресом. Когда все обновятся,
-        // зеркало можно удалить и оставить один файл в корне.
+        // Tebegram-client/Adress.txt - зеркало для установленных клиентов 2.0.0,
+        // в цепочке которых корневого пути ещё нет. Пока такие клиенты используются,
+        // адрес в обоих файлах должен совпадать; затем зеркало удаляется.
         //
-        // Ветка main-dev-Test — последний запасной вариант.
-        // Недоступный путь просто пропускается, поэтому лишних записей не боимся.
+        // Ветка main-dev-Test - запасной вариант. Недоступный источник пропускается,
+        // поэтому лишние записи в списке безопасны.
         private static readonly string[] AdressUrls =
         {
             "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/Adress.txt",
@@ -80,20 +76,21 @@ namespace Tebegrammmm.Data
             LoadChoice();
 
             // Вариант «Другой»: используем адрес, введённый пользователем, как есть.
-            // Пустой custom не должен обрубать вход — тогда падаем на цепочку main.
+            // Пустой custom не должен обрубать вход - тогда падаем на цепочку main.
             if (ServerChoice == "custom" && !string.IsNullOrWhiteSpace(CustomAdress))
             {
                 _ServerAdress = CustomAdress.TrimEnd('/');
                 return;
             }
 
-            // Вариант «main»: адрес ВСЕГДА берётся из Adress.txt на GitHub и не
-            // должен «залипать» на адресе «Другого» с прошлого выбора. Раньше при
-            // переключении custom→main, если GitHub был недоступен, _ServerAdress
-            // сохранял свой (custom) адрес — и клиент под меткой «main» продолжал
-            // ходить на личный сервер (жалоба «выбрал main, а подключился к своему»).
-            // Поэтому сбрасываем на localhost: если ни один кандидат не скачается,
-            // индикатор честно покажет «сервер не отвечает», а не чужой адрес.
+            // Вариант «main» всегда берёт адрес из Adress.txt на GitHub и не должен
+            // сохранять адрес, введённый в варианте «Другой». Ранее при переключении
+            // с собственного адреса на main и недоступном GitHub поле _ServerAdress
+            // сохраняло прежнее значение, и клиент с отметкой «main» продолжал
+            // обращаться к личному серверу.
+            //
+            // Поэтому значение сбрасывается на localhost: если ни один источник не
+            // загрузится, индикатор покажет отсутствие связи, а не посторонний адрес.
             _ServerAdress = DefaultAdress;
 
             // Кандидат берётся, только если его сервер ЖИВ (/Test отвечает «HI!»).
@@ -111,7 +108,7 @@ namespace Tebegrammmm.Data
                 }
                 catch
                 {
-                    // этот источник недоступен — пробуем следующий
+                    // этот источник недоступен - пробуем следующий
                     continue;
                 }
                 if (string.IsNullOrWhiteSpace(adress)) continue;
@@ -146,7 +143,7 @@ namespace Tebegrammmm.Data
         /// <summary>
         /// Читает сохранённый выбор сервера и адрес «Другого» из файлов.
         /// Любое старое/незнакомое значение (в т.ч. прежние "auto"/"drunkman")
-        /// приводим к "main" — новых вариантов только два.
+        /// приводим к "main" - новых вариантов только два.
         /// </summary>
         private static void LoadChoice()
         {
@@ -155,7 +152,7 @@ namespace Tebegrammmm.Data
                 if (System.IO.File.Exists(AppPaths.ServerChoiceFile))
                     ServerChoice = System.IO.File.ReadAllText(AppPaths.ServerChoiceFile).Trim();
             }
-            catch { /* нет файла — main */ }
+            catch { /* нет файла - main */ }
             if (ServerChoice != "custom") ServerChoice = "main";
 
             try
@@ -164,13 +161,13 @@ namespace Tebegrammmm.Data
                     CustomAdress = System.IO.File.ReadAllText(AppPaths.CustomServerFile)
                         .Split('\n')[0].Trim().TrimEnd('/');
             }
-            catch { /* нет своего адреса — пусто */ }
+            catch { /* нет своего адреса - пусто */ }
         }
 
         /// <summary>
         /// Меняет выбор сервера и СОХРАНЯЕТ его для следующих автовходов.
-        /// choice = "main" — цепочка Adress.txt; "custom" — адрес customAdress
-        /// (если передан — запоминается). Применяется сразу.
+        /// choice = "main" - цепочка Adress.txt; "custom" - адрес customAdress
+        /// (если передан - запоминается). Применяется сразу.
         /// </summary>
         public static void SetServerChoice(string choice, string customAdress = null)
         {
@@ -197,7 +194,7 @@ namespace Tebegrammmm.Data
                 System.IO.File.WriteAllText(AppPaths.ServerChoiceFile, ServerChoice);
                 System.IO.File.WriteAllText(AppPaths.CustomServerFile, CustomAdress ?? "");
             }
-            catch { /* не сохранилось — применим хотя бы на эту сессию */ }
+            catch { /* не сохранилось - применим хотя бы на эту сессию */ }
         }
 
         /// <summary>
@@ -208,7 +205,7 @@ namespace Tebegrammmm.Data
         public static async Task<bool> PingAsync()
         {
             try { await Ready.ConfigureAwait(true); }
-            catch { /* адрес мог не загрузиться — всё равно пробуем текущий */ }
+            catch { /* адрес мог не загрузиться - всё равно пробуем текущий */ }
 
             try
             {
