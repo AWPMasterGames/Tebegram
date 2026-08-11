@@ -39,6 +39,7 @@ namespace Tebegrammmm
             ["Light.DangerMutedBrush"]   = Color.FromRgb(0xFD, 0xEC, 0xEC),
             ["Light.SuccessBrush"]       = Color.FromRgb(0x30, 0xA4, 0x6C),
             ["Light.WarningBrush"]       = Color.FromRgb(0xD9, 0x82, 0x0A),
+            ["Light.WarningMutedBrush"]  = Color.FromRgb(0xFD, 0xF3, 0xE3), // фон пункта «Выйти из группы»
             ["Light.TextPrimaryBrush"]   = Color.FromRgb(0x14, 0x16, 0x1C),
             ["Light.TextSecondaryBrush"] = Color.FromRgb(0x5B, 0x61, 0x72),
             ["Light.TextMutedBrush"]     = Color.FromRgb(0x99, 0xA0, 0xB0),
@@ -77,6 +78,7 @@ namespace Tebegrammmm
             ["Light.DangerMutedBrush"]   = Color.FromRgb(0x3A, 0x1A, 0x1A),
             ["Light.SuccessBrush"]       = Color.FromRgb(0x3D, 0xD6, 0x8C),
             ["Light.WarningBrush"]       = Color.FromRgb(0xE8, 0xA1, 0x3A),
+            ["Light.WarningMutedBrush"]  = Color.FromRgb(0x3A, 0x2A, 0x12), // фон пункта «Выйти из группы»
             ["Light.TextPrimaryBrush"]   = Color.FromRgb(0xE9, 0xEC, 0xF2),
             ["Light.TextSecondaryBrush"] = Color.FromRgb(0x99, 0xA0, 0xB0),
             ["Light.TextMutedBrush"]     = Color.FromRgb(0x62, 0x6A, 0x7C),

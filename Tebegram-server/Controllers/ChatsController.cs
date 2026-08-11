@@ -126,6 +126,54 @@ namespace TebegramServer.Controllers
         }
 
         /// <summary>
+        /// Убирает участника из группы по его собственному желанию.
+        ///
+        /// В отличие от DeleteChat, действие доступно любому участнику и затрагивает
+        /// только его: у остальных чат остаётся на месте. Ушедшему отправляется тот же
+        /// конверт removeChat, что и при удалении группы, поэтому отдельная обработка
+        /// на клиенте не нужна.
+        ///
+        /// Владелец тоже может выйти, право переходит к самому раннему из оставшихся:
+        /// иначе группу стало бы некому удалить. Когда уходит последний участник,
+        /// чат удаляется целиком.
+        ///
+        /// Оставшимся участникам уведомление не рассылается: протокол не описывает
+        /// события «участник вышел», а повторный addChat клиент отбрасывает как
+        /// дубликат. Состав группы у них обновится при следующем входе.
+        /// </summary>
+        public static async Task LeaveChat(int chatId, User user)
+        {
+            lock (_lock)
+            {
+                if (!Chats.TryGetValue(chatId, out Chat chat)) return;
+                // Из личного чата выходить некуда: он определяется парой собеседников
+                if (!chat.IsGroup) return;
+                // Remove вернёт false, если запрос пришёл не от участника
+                if (!chat.Members.Remove(user)) return;
+                user.RemoveChat(chatId);
+
+                if (chat.Members.Count == 0) Chats.Remove(chatId);
+                else if (chat.Owner == user) chat.Owner = chat.Members[0];
+            }
+
+            // Рассылка вне lock: держать блокировку через await нельзя
+            byte[] payload = Encoding.UTF8.GetBytes($"{RemoveChatEnvelope}{chatId}");
+            foreach (WebSocket session in user.ChatsSessions.ToList())
+            {
+                if (session.State != WebSocketState.Open) continue;
+                try
+                {
+                    await session.SendAsync(new ArraySegment<byte>(payload),
+                        WebSocketMessageType.Text, true, CancellationToken.None);
+                }
+                catch (WebSocketException)
+                {
+                    // Сокет умер между проверкой State и отправкой - пропускаем
+                }
+            }
+        }
+
+        /// <summary>
         /// Сообщает участникам группы, что чат создан. Конверт добавляется РОВНО ОДИН
         /// раз (в исходной версии префикс клеился дважды, и клиенту приходило
         /// «addChat▫$▫addChat▫$▫…»; на клиенте это гасилось Replace - пара ошибок

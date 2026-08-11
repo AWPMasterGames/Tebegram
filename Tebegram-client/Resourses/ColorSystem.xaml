@@ -48,12 +48,14 @@
     <Color x:Key="ColorSuccessMuted">#0F3326</Color>
 
     <Color x:Key="ColorWarning">#F5A623</Color>
+    <Color x:Key="ColorWarningMuted">#3A2A12</Color>
 
     <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource ColorDanger}" />
     <SolidColorBrush x:Key="DangerHoverBrush" Color="{StaticResource ColorDangerHover}" />
     <SolidColorBrush x:Key="DangerMutedBrush" Color="{StaticResource ColorDangerMuted}" />
     <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource ColorSuccess}" />
     <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource ColorWarning}" />
+    <SolidColorBrush x:Key="WarningMutedBrush" Color="{StaticResource ColorWarningMuted}" />
 
     <!--
         ══════════════════════════════════════════════
@@ -191,12 +193,14 @@
     <Color x:Key="Light.ColorSuccessMuted">#E6F6F0</Color>
 
     <Color x:Key="Light.ColorWarning">#C97A00</Color>
+    <Color x:Key="Light.ColorWarningMuted">#FDF3E3</Color>
 
     <SolidColorBrush x:Key="Light.DangerBrush" Color="{StaticResource Light.ColorDanger}" />
     <SolidColorBrush x:Key="Light.DangerHoverBrush" Color="{StaticResource Light.ColorDangerHover}" />
     <SolidColorBrush x:Key="Light.DangerMutedBrush" Color="{StaticResource Light.ColorDangerMuted}" />
     <SolidColorBrush x:Key="Light.SuccessBrush" Color="{StaticResource Light.ColorSuccess}" />
     <SolidColorBrush x:Key="Light.WarningBrush" Color="{StaticResource Light.ColorWarning}" />
+    <SolidColorBrush x:Key="Light.WarningMutedBrush" Color="{StaticResource Light.ColorWarningMuted}" />
 
     <!--
         ══════════════════════════════════════════════

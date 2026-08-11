@@ -1241,6 +1241,13 @@ app.Map("/Chat/ws", async context =>
                             if (data.Length >= 2 && int.TryParse(data[1], out int delChatId))
                                 await ChatsController.DeleteChat(delChatId, user);
                             break;
+
+                        // LEAVEChat▫#▫{ChatId} - выход из группы. Доступен любому
+                        // участнику и убирает из чата только его, см. LeaveChat.
+                        case "LEAVECHAT":
+                            if (data.Length >= 2 && int.TryParse(data[1], out int leaveChatId))
+                                await ChatsController.LeaveChat(leaveChatId, user);
+                            break;
                     }
                 }
                 else if (result.MessageType == WebSocketMessageType.Close)

@@ -233,11 +233,47 @@
             </Setter>
         </Style>
 
+        <!--  Пункт меню выхода из группы (янтарный, скруглённый ховер).
+              Цвет намеренно отличается от красного «Удалить группу»: пункты стоят
+              рядом, а последствия у них разные - выход касается только себя,
+              удаление уничтожает переписку у всех участников  -->
+        <Style x:Key="TbgMenuItemWarningStyle" TargetType="MenuItem">
+            <Setter Property="Foreground" Value="{DynamicResource Light.WarningBrush}" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Padding" Value="14,9" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="MenuItem">
+                        <Border
+                            x:Name="Bd"
+                            Padding="{TemplateBinding Padding}"
+                            Background="Transparent"
+                            CornerRadius="7">
+                            <ContentPresenter VerticalAlignment="Center" ContentSource="Header" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.WarningMutedBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <!--  Меню группового чата: открывается кнопкой-шестерёнкой в шапке.
               Отдельным ресурсом, а не через ContextMenu на кнопке: у обычного чата
               та же кнопка открывает окно редактирования контакта, и меню там
-              не должно вылезать даже по правому клику (см. UpdateChatHeaderButtons)  -->
+              не должно вылезать даже по правому клику (см. UpdateChatHeaderButtons)
+
+              Порядок пунктов: сначала выход, он доступен каждому, затем удаление,
+              доступное только владельцу. Разделитель между ними защищает от промаха  -->
         <ContextMenu x:Key="GroupChatMenu" Style="{StaticResource TbgContextMenuStyle}">
+            <MenuItem
+                Click="LeaveGroup_Click"
+                Header="Выйти из группы"
+                Style="{StaticResource TbgMenuItemWarningStyle}" />
+            <Separator Background="{DynamicResource Light.BorderSubtleBrush}" Margin="8,4" />
             <MenuItem
                 Click="DeleteGroup_Click"
                 Header="Удалить группу"

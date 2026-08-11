@@ -489,6 +489,49 @@ namespace Tebegrammmm
         /// удаление у всех пойдёт одним путём (см. HandleRemoveChat). Удалить
         /// может только владелец - это проверяет сервер.
         /// </summary>
+        /// <summary>
+        /// Выход из группы. Доступен любому участнику, включая владельца: право
+        /// на удаление переходит к самому раннему из оставшихся, см. LeaveChat
+        /// на сервере.
+        ///
+        /// Сервер отвечает тем же конвертом removeChat, что и при удалении группы,
+        /// поэтому чат пропадает из списка через общий HandleRemoveChat.
+        /// </summary>
+        private async void LeaveGroup_Click(object sender, RoutedEventArgs e)
+        {
+            var group = _openGroup;
+            if (group == null) return;
+
+            // Переписку вернуть нельзя: истории у вышедшего не остаётся, а обратно
+            // его добавит только участник группы. Поэтому спрашиваем подтверждение.
+            string question = group.IOwner
+                ? $"Выйти из группы «{group.Name}»? Право удалить группу перейдёт другому участнику."
+                : $"Выйти из группы «{group.Name}»? Переписка перестанет быть доступна.";
+
+            if (!TbgDialogWindow.Confirm(question, "Выход из группы", "Выйти", "Отмена"))
+                return;
+
+            try
+            {
+                if (ws == null || ws.State != WebSocketState.Open)
+                {
+                    TbgDialogWindow.Show("Нет соединения с сервером. Попробуй ещё раз через пару секунд.",
+                                         "Выход из группы");
+                    return;
+                }
+
+                string request = $"LEAVEChat▫#▫{group.Id}";
+                await ws.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes(request)),
+                    WebSocketMessageType.Text, true, CancellationToken.None);
+            }
+            catch (Exception ex)
+            {
+                // async void: без catch обрыв связи здесь ронял всё приложение
+                Log.Save($"[LeaveGroup] {ex.GetType().Name}: {ex.Message}");
+                TbgDialogWindow.Show("Не удалось выйти из группы - соединение прервано.", "Выход из группы");
+            }
+        }
+
         private async void DeleteGroup_Click(object sender, RoutedEventArgs e)
         {
             var group = _openGroup;
