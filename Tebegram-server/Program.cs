@@ -25,16 +25,33 @@ var builder = WebApplication.CreateBuilder(args);
 // сделано единственно для localhost. По адресу вида http://192.168.0.5:5000 объект
 // navigator.mediaDevices отсутствует, поэтому звонок в браузере не начинается вовсе.
 //
-// Включается переменной окружения HttpsPort, например HttpsPort=5001. Сертификат
-// берётся из dotnet dev-certs. Без переменной поведение сервера не меняется.
+// Включается переменной окружения HttpsPort, например HttpsPort=5001. Без переменной
+// поведение сервера не меняется.
+//
+// Сертификат по умолчанию берётся из dotnet dev-certs, но он выписан только на
+// localhost, поэтому при заходе по адресу вида https://192.168.0.5:5001 браузер
+// сообщит о несовпадении имени. Свой сертификат с нужными адресами в поле
+// subjectAltName задаётся переменными HttpsCertPath и HttpsCertPassword.
 int httpsPort = builder.Configuration.GetValue<int>("HttpsPort");
 if (httpsPort > 0)
 {
+    string? certPath = builder.Configuration["HttpsCertPath"];
+    string? certPassword = builder.Configuration["HttpsCertPassword"];
+
     builder.WebHost.ConfigureKestrel(options =>
     {
-        options.ListenAnyIP(httpsPort, listen => listen.UseHttps());
+        options.ListenAnyIP(httpsPort, listen =>
+        {
+            if (!string.IsNullOrWhiteSpace(certPath) && File.Exists(certPath))
+                listen.UseHttps(certPath, certPassword);
+            else
+                listen.UseHttps();
+        });
     });
-    Console.WriteLine($"[Kestrel] HTTPS запрошен на порту {httpsPort}");
+
+    Console.WriteLine(string.IsNullOrWhiteSpace(certPath) || !File.Exists(certPath)
+        ? $"[Kestrel] HTTPS на порту {httpsPort}, сертификат dev-certs (только localhost)"
+        : $"[Kestrel] HTTPS на порту {httpsPort}, сертификат {certPath}");
 }
 
 // CORS - нужен веб-клиенту (GitHub Pages / PWA), десктопному клиенту не мешает
