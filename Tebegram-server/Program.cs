@@ -89,6 +89,35 @@ UsersData.Initialize(); // Принудительно инициализируе
 ChatsData.Load();
 Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Данные пользователей загружены, запускаем веб-сервер...");
 
+// Разовый проход по ранее загруженным видео: переносим moov в начало файла.
+// Новые файлы приводятся к этому виду при загрузке, но ролики, отправленные до
+// появления обработки, иначе так и остались бы неоткрываемыми на телефоне.
+// Файлы, уже имеющие правильный порядок блоков, пропускаются, поэтому повторные
+// запуски сервера ничего не переписывают.
+try
+{
+    string uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
+    if (Directory.Exists(uploadsDir))
+    {
+        int fixedCount = 0;
+        foreach (string videoPath in Directory.EnumerateFiles(uploadsDir))
+        {
+            string videoExt = Path.GetExtension(videoPath);
+            if (!videoExt.Equals(".mp4", StringComparison.OrdinalIgnoreCase)
+                && !videoExt.Equals(".m4v", StringComparison.OrdinalIgnoreCase)
+                && !videoExt.Equals(".mov", StringComparison.OrdinalIgnoreCase)) continue;
+
+            if (TebegramServer.Tools.Mp4FastStart.TryApply(videoPath)) fixedCount++;
+        }
+        if (fixedCount > 0)
+            Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Видео приведены к faststart: {fixedCount}");
+    }
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Проход по видео пропущен: {ex.Message}");
+}
+
 Thread thread = new Thread(() => {
     Console.WriteLine("Запущен поток чистки голосых каналов.");
     VoiceRoomsController.CheckEmptyVoices();
@@ -396,6 +425,19 @@ app.MapPost("/upload", async (HttpContext context) =>
             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
             await context.Response.WriteAsync($"Файл дошёл не полностью ({written} из {file.Length} байт)");
             return;
+        }
+
+        // Видео приводим к faststart: блок метаданных moov переносится в начало.
+        // Туннель не передаёт заголовок Range и отвечает кодом 200 вместо 206, а без
+        // Range плеер не может дочитать moov из конца файла. Safari на iPhone в таком
+        // случае вообще отказывался открывать ролик. Подробности в Mp4FastStart.
+        string ext = Path.GetExtension(savedName);
+        if (ext.Equals(".mp4", StringComparison.OrdinalIgnoreCase)
+            || ext.Equals(".m4v", StringComparison.OrdinalIgnoreCase)
+            || ext.Equals(".mov", StringComparison.OrdinalIgnoreCase))
+        {
+            if (TebegramServer.Tools.Mp4FastStart.TryApply(savedPath))
+                Console.WriteLine($"[Upload] {savedName}: moov перенесён в начало файла");
         }
 
         FName = savedName;
