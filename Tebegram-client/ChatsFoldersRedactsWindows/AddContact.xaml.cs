@@ -19,7 +19,7 @@ namespace Tebegrammmm.ChatsFoldersRedactsWindows
         {
             if (string.IsNullOrWhiteSpace(TB_Name.Text) || string.IsNullOrWhiteSpace(TB_IP.Text))
             {
-                MessageBox.Show("Заполните все поля");
+                MessageBox.Show("Р—Р°РїРѕР»РЅРёС‚Рµ РІСЃРµ РїРѕР»СЏ");
                 return;
             }
 

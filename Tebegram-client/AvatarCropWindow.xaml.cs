@@ -31,7 +31,7 @@ namespace Tebegrammmm
             bmp.BeginInit();
             bmp.CacheOption = BitmapCacheOption.OnLoad;
             bmp.UriSource = new Uri(imagePath, UriKind.Absolute);
-            // WPF игнорирует EXIF-ориентацию — фото с телефона грузилось повёрнутым,
+            // WPF игнорирует EXIF-ориентацию - фото с телефона грузилось повёрнутым,
             // и аватар после обрезки оказывался «на боку»/«вверх ногами»
             bmp.Rotation = ReadExifRotation(imagePath);
             bmp.EndInit();
@@ -61,7 +61,7 @@ namespace Tebegrammmm
             }
             catch
             {
-                // метаданных нет (PNG/BMP) или не читаются — без поворота
+                // метаданных нет (PNG/BMP) или не читаются - без поворота
             }
             return Rotation.Rotate0;
         }
@@ -126,7 +126,7 @@ namespace Tebegrammmm
                 RingOverlay.Visibility = Visibility.Collapsed;
                 CropArea.UpdateLayout();
 
-                // Рендерим через VisualBrush сразу в 512px — раньше рендерили 300px
+                // Рендерим через VisualBrush сразу в 512px - раньше рендерили 300px
                 // и растягивали (аватар терял в качестве)
                 var dv = new DrawingVisual();
                 using (var dc = dv.RenderOpen())

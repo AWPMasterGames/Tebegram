@@ -13,7 +13,7 @@ namespace Tebegrammmm
 {
     public partial class ImageViewerWindow : Window
     {
-        // Сертификат сервера самоподписанный — как и в остальных клиентских запросах
+        // Сертификат сервера самоподписанный - как и в остальных клиентских запросах
         private static readonly HttpClient _http = new(new HttpClientHandler
         {
             ServerCertificateCustomValidationCallback = (m, c, ch, e) => true
@@ -25,7 +25,7 @@ namespace Tebegrammmm
         private const double TitleBarH        = 36;
         private const double HorizChrome = (ShadowMargin + ScrollSideMargin) * 2; // 40
         private const double VertChrome  = TitleBarH + ScrollSideMargin + ShadowMargin * 2; // 68
-        // Панель управления видео (слайдер + кнопка) с отступами — резервируем под неё высоту,
+        // Панель управления видео (слайдер + кнопка) с отступами - резервируем под неё высоту,
         // иначе она перекрывает нижнюю часть кадра
         private const double VideoBarH = 92;
 
@@ -61,10 +61,10 @@ namespace Tebegrammmm
         // Тот же просмотрщик показывает и видео: снизу кнопка паузы и полоса перемотки.
         private readonly bool _isVideo;
         private DispatcherTimer _videoTimer;   // тикает, пока идёт воспроизведение
-        private bool _videoSliderDragging;     // пользователь тащит ползунок — не перебиваем его позицией
+        private bool _videoSliderDragging;     // пользователь тащит ползунок - не перебиваем его позицией
         private bool _videoPlaying;
 
-        // Автоскрытие панели управления: секунда без движения мыши — и она уходит
+        // Автоскрытие панели управления: секунда без движения мыши - и она уходит
         private DispatcherTimer _barHideTimer;
         private bool _barVisible = true;
 
@@ -72,7 +72,7 @@ namespace Tebegrammmm
         private bool _isFullscreen;
         private Rect _preFullscreenBounds;
 
-        // Ролик играли потоком с сервера — после закрытия окна докачаем его в кэш
+        // Ролик играли потоком с сервера - после закрытия окна докачаем его в кэш
         private bool _cacheAfterClose;
 
         /// <summary>Расширения, которые открываем как видео (их играет MediaElement/WMP).</summary>
@@ -112,8 +112,8 @@ namespace Tebegrammmm
         // ── Видео: запуск, перемотка, пауза ──────────────────────────────────────
 
         /// <summary>
-        /// Запускает ролик. Если он уже в кэше — играем ФАЙЛ С ДИСКА: старт без
-        /// ожидания и перемотка мгновенная. Если нет — играем потоком с сервера,
+        /// Запускает ролик. Если он уже в кэше - играем ФАЙЛ С ДИСКА: старт без
+        /// ожидания и перемотка мгновенная. Если нет - играем потоком с сервера,
         /// как раньше, а копию в кэш докачиваем после закрытия окна (см. Window_Closed),
         /// чтобы загрузка не отбирала канал у самого воспроизведения.
         /// </summary>
@@ -129,7 +129,7 @@ namespace Tebegrammmm
                 MainVideo.Visibility = Visibility.Visible;
                 VideoBar.Visibility = Visibility.Visible;
                 // Полосы прокрутки для видео не нужны (кадр всегда вписан), но сам
-                // ScrollViewer оставляем видимым — внутри него живёт LoadingText,
+                // ScrollViewer оставляем видимым - внутри него живёт LoadingText,
                 // который показывает «Загрузка…» и ошибку кодека
                 ImageScrollViewer.HorizontalScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility.Disabled;
                 ImageScrollViewer.VerticalScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility.Disabled;
@@ -139,7 +139,7 @@ namespace Tebegrammmm
                 // Панель видна сразу после открытия, дальше живёт по движению мыши
                 ShowVideoBar();
 
-                // Полоса перемотки обновляется 4 раза в секунду — этого хватает
+                // Полоса перемотки обновляется 4 раза в секунду - этого хватает
                 // и не грузит UI лишними перерисовками
                 _videoTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(250) };
                 _videoTimer.Tick += (_, _) => UpdateVideoProgress();
@@ -160,20 +160,17 @@ namespace Tebegrammmm
         {
             LoadingText.Visibility = Visibility.Collapsed;
 
-            // Подгоняем окно под пропорции видео, чтобы кадр был виден ЦЕЛИКОМ:
-            // окно = размер кадра + рамки окна + высота панели управления.
-            // Панель занимает свою строку Grid, поэтому её высоту нужно учесть,
-            // иначе кадр «уезжает» под неё.
-            // Размер окна НЕ подгоняется под ролик: он задан константами (UiSizes),
-            // как и у фото — чтобы просмотрщик всегда открывался одинаково.
-            // Кадр вписывается в доступную область сам (Stretch=Uniform).
+            // Размер окна под пропорции ролика не подгоняется: он задан константами
+            // UiSizes, как и для фотографий, поэтому просмотрщик всегда открывается
+            // одинаково. Кадр вписывается в доступную область сам, Stretch=Uniform.
+            // Здесь остаётся выставить длину ролика на шкале перемотки.
             if (MainVideo.NaturalDuration.HasTimeSpan)
                 VideoSlider.Maximum = MainVideo.NaturalDuration.TimeSpan.TotalSeconds;
 
             UpdateVideoProgress();
         }
 
-        /// <summary>Клик по кадру — пауза/продолжить (окно двигается за верхнюю панель).</summary>
+        /// <summary>Клик по кадру - пауза/продолжить (окно двигается за верхнюю панель).</summary>
         private void Video_Click(object sender, MouseButtonEventArgs e) => TogglePlayPause();
 
         // ── Панель управления: показ по движению мыши, скрытие через секунду ──
@@ -203,9 +200,9 @@ namespace Tebegrammmm
             {
                 timer.Stop();
 
-                // Прячем независимо от того, где стоит курсор — важно именно
+                // Прячем независимо от того, где стоит курсор - важно именно
                 // ОТСУТСТВИЕ ДВИЖЕНИЯ (любое движение вернёт панель мгновенно).
-                // Единственное исключение — пока тянут ползунок перемотки:
+                // Единственное исключение - пока тянут ползунок перемотки:
                 // выдёргивать его из-под пальца нельзя
                 if (_videoSliderDragging) { timer.Start(); return; }
 
@@ -224,7 +221,7 @@ namespace Tebegrammmm
         /// <summary>
         /// Во весь экран и обратно. Запоминаем прежние границы окна, чтобы повторное
         /// нажатие вернуло ровно тот размер и положение, что были до переключения.
-        /// Занимаем ВЕСЬ монитор (а не рабочую область) — панель задач тоже скрывается.
+        /// Занимаем ВЕСЬ монитор (а не рабочую область) - панель задач тоже скрывается.
         /// </summary>
         private void ToggleFullscreen()
         {
@@ -246,7 +243,7 @@ namespace Tebegrammmm
                 Top    = screen.Top;
                 Width  = screen.Width;
                 Height = screen.Height;
-                OuterGrid.Margin = new Thickness(0);   // без полей — кадр во весь экран
+                OuterGrid.Margin = new Thickness(0);   // без полей - кадр во весь экран
                 _isFullscreen = true;
             }
 
@@ -263,19 +260,19 @@ namespace Tebegrammmm
 
         private void Video_MediaFailed(object sender, ExceptionRoutedEventArgs e)
         {
-            // Нет кодека (частый случай для mkv/avi) — предлагаем открыть системным плеером
+            // Нет кодека (частый случай для mkv/avi) - предлагаем открыть системным плеером
             Log.Save($"[ImageViewer.Video] {e.ErrorException?.Message}");
             VideoBar.Visibility = Visibility.Collapsed;
             MainVideo.Visibility = Visibility.Collapsed;
             LoadingText.Visibility = Visibility.Visible;
-            LoadingText.Text = "Не удалось воспроизвести это видео —\nв системе нет подходящего кодека.\n" +
+            LoadingText.Text = "Не удалось воспроизвести это видео - \nв системе нет подходящего кодека.\n" +
                                "Сохрани файл и открой его своим плеером.";
             _videoTimer?.Stop();
         }
 
         private void Video_MediaEnded(object sender, RoutedEventArgs e)
         {
-            // Возвращаемся в начало и показываем «play» — можно пересмотреть
+            // Возвращаемся в начало и показываем «play» - можно пересмотреть
             MainVideo.Pause();
             MainVideo.Position = TimeSpan.Zero;
             SetPlaying(false);
@@ -291,7 +288,7 @@ namespace Tebegrammmm
                 ? MainVideo.NaturalDuration.TimeSpan
                 : TimeSpan.Zero;
 
-            // Пока тащат ползунок — позицию не перезаписываем, иначе он «убегает» из-под курсора
+            // Пока тащат ползунок - позицию не перезаписываем, иначе он «убегает» из-под курсора
             if (!_videoSliderDragging)
             {
                 _videoSliderSyncing = true;
@@ -338,7 +335,7 @@ namespace Tebegrammmm
         {
             if (!_isVideo || _videoSliderSyncing) return;
 
-            // Клик по дорожке (IsMoveToPointEnabled) приходит сюда без Drag-событий —
+            // Клик по дорожке (IsMoveToPointEnabled) приходит сюда без Drag-событий - 
             // перематываем сразу; во время перетаскивания даём «живую» перемотку
             MainVideo.Position = TimeSpan.FromSeconds(e.NewValue);
             if (_videoSliderDragging) UpdateVideoProgress();
@@ -356,7 +353,7 @@ namespace Tebegrammmm
             try
             {
                 var bytes = await Tebegrammmm.Data.MediaCache.GetBytesAsync(url)
-                            ?? await _http.GetByteArrayAsync(url); // кэш не смог — пробуем напрямую
+                            ?? await _http.GetByteArrayAsync(url); // кэш не смог - пробуем напрямую
                 var bitmap = new BitmapImage();
                 using var ms = new MemoryStream(bytes);
                 bitmap.BeginInit();
@@ -381,12 +378,12 @@ namespace Tebegrammmm
 
         /// <summary>
         /// Вписывает снимок в окно. Размер самого окна БОЛЬШЕ не зависит от размера
-        /// фото и от разрешения монитора — он задан константами (UiSizes) в
+        /// фото и от разрешения монитора - он задан константами (UiSizes) в
         /// конструкторе, поэтому просмотрщик всегда открывается одинаково.
         /// </summary>
         private void FitToScreen(BitmapImage bitmap)
         {
-            // Область просмотра могла ещё не перемериться — вписываем после раскладки
+            // Область просмотра могла ещё не перемериться - вписываем после раскладки
             Dispatcher.BeginInvoke(new Action(() => FitToViewport(resetZoom: true)),
                 DispatcherPriority.Loaded);
         }
@@ -394,7 +391,7 @@ namespace Tebegrammmm
         /// <summary>
         /// Вписывает фото в ФАКТИЧЕСКУЮ область просмотра, чтобы прокрутки не было
         /// вовсе. Раньше зум считался по «прикидке» из констант хрома, а они не
-        /// учитывали, например, полосы прокрутки — фото оказывалось на десяток
+        /// учитывали, например, полосы прокрутки - фото оказывалось на десяток
         /// пикселей больше области, появлялся скролл и снимок можно было таскать.
         /// </summary>
         private void FitToViewport(bool resetZoom)
@@ -422,7 +419,7 @@ namespace Tebegrammmm
 
             // Доводка. Область просмотра сама зависит от полос прокрутки: пока они
             // видны, ViewportWidth/Height меньше на их толщину, и посчитанный по
-            // ним масштаб оставлял снимок на несколько пикселей больше области —
+            // ним масштаб оставлял снимок на несколько пикселей больше области - 
             // фото опять можно было тянуть. Один проход после раскладки убирает
             // остаток: ужимаем ровно во столько, во сколько содержимое вылезло.
             Dispatcher.BeginInvoke(new Action(() =>
@@ -444,7 +441,7 @@ namespace Tebegrammmm
             }), DispatcherPriority.Loaded);
         }
 
-        // Пользователь потянул за край окна — перевписываем фото под новый размер.
+        // Пользователь потянул за край окна - перевписываем фото под новый размер.
         // ВАЖНО: считаем не сразу, а после раскладки. В момент SizeChanged
         // ViewportWidth/Height у ScrollViewer ещё СТАРЫЕ, и масштаб получался
         // рассчитанным под прежний размер окна: после «поиграть с размерами и
@@ -486,14 +483,14 @@ namespace Tebegrammmm
 
             if (ctrl)
             {
-                // Ctrl+колесо — зум с относительным шагом и точками привязки
+                // Ctrl+колесо - зум с относительным шагом и точками привязки
                 double step = _fitZoom * 0.15;
                 SetZoom(SnapZoom(_zoom + (e.Delta > 0 ? step : -step)));
                 e.Handled = true;
             }
             else if (shift)
             {
-                // Shift+колесо — горизонтальный скролл
+                // Shift+колесо - горизонтальный скролл
                 ImageScrollViewer.ScrollToHorizontalOffset(
                     ImageScrollViewer.HorizontalOffset - e.Delta / 3.0);
                 e.Handled = true;
@@ -532,7 +529,7 @@ namespace Tebegrammmm
             }
             else
             {
-                // Фото вписано в окно или отдалено — тянуть за окно
+                // Фото вписано в окно или отдалено - тянуть за окно
                 DragMove();
             }
         }
@@ -570,7 +567,7 @@ namespace Tebegrammmm
 
             // Панель возвращает только РЕАЛЬНОЕ движение курсора. WPF шлёт MouseMove
             // и когда картинка под курсором просто перерисовалась (а видео
-            // перерисовывается каждый кадр) — такие события сбрасывали таймер,
+            // перерисовывается каждый кадр) - такие события сбрасывали таймер,
             // и панель не скрывалась никогда.
             if (!double.IsNaN(_lastMousePos.X) &&
                 Math.Abs(pos.X - _lastMousePos.X) < 1 && Math.Abs(pos.Y - _lastMousePos.Y) < 1)
@@ -603,7 +600,7 @@ namespace Tebegrammmm
             if (_isMaximized)
             {
                 // Восстановление делаем не сразу, а когда мышь действительно
-                // сдвинется — иначе DragMove не получает корректный anchor.
+                // сдвинется - иначе DragMove не получает корректный anchor.
                 _titleDragPending = true;
                 TitleBarRow.CaptureMouse();
                 e.Handled = true;
@@ -694,7 +691,7 @@ namespace Tebegrammmm
             Height = Math.Max(MinHeight, Height + e.VerticalChange);
         }
 
-        // Пробел — привычная пауза/продолжить, как в любом плеере
+        // Пробел - привычная пауза/продолжить, как в любом плеере
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
@@ -738,7 +735,7 @@ namespace Tebegrammmm
                 Log.Save($"[ImageViewer.Closed] {ex.Message}");
             }
 
-            // Ролик смотрели потоком — теперь тихо забираем копию в кэш, чтобы
+            // Ролик смотрели потоком - теперь тихо забираем копию в кэш, чтобы
             // в следующий раз он открылся сразу и без сети
             if (_cacheAfterClose) Tebegrammmm.Data.MediaCache.Prefetch(ImageUrl);
 

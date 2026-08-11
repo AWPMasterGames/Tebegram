@@ -381,7 +381,7 @@
                                             FontSize="15"
                                             Foreground="{DynamicResource Light.TextPrimaryBrush}" />
                                     </StackPanel>
-                                    <!--  Подсказка: логин — то, что вводят другие, чтобы найти тебя.
+                                    <!--  Подсказка: логин - то, что вводят другие, чтобы найти тебя.
                                           Border с прозрачным фоном делает наводимой всю область иконки.  -->
                                     <Border
                                         Grid.Column="1"
@@ -452,7 +452,7 @@
                             </Grid>
                         </Border>
 
-                        <!--  Оформление: выбор темы — список в том же стиле, что выбор микрофона  -->
+                        <!--  Оформление: выбор темы - список в том же стиле, что выбор микрофона  -->
                         <Border
                             Margin="0,0,0,20"
                             Padding="16,14"
@@ -529,7 +529,7 @@
                                     Background="{DynamicResource Light.BorderSubtleBrush}" />
 
                                 <!--  Переключатель сервера: «main» (Adress.txt) ↔ «Другой» (свой адрес).
-                                      Отдельной строкой на всю ширину карточки — раньше эта пара
+                                      Отдельной строкой на всю ширину карточки - раньше эта пара
                                       делила колонку с «Проверить обновления» и обрезалась  -->
                                 <Grid>
                                     <Grid.ColumnDefinitions>
@@ -554,7 +554,7 @@
                                         Click="ToggleServer_Click"
                                         Cursor="Hand"
                                         Template="{StaticResource GhostButtonTemplate}"
-                                        ToolTip="Переключить сервер. Уже открытые соединения переподключатся сами; надёжнее — перезапустить приложение.">
+                                        ToolTip="Переключить сервер. Уже открытые соединения переподключатся сами; надёжнее - перезапустить приложение.">
                                         <TextBlock
                                             FontSize="13"
                                             FontWeight="SemiBold"
@@ -570,7 +570,7 @@
                                     Background="{DynamicResource Light.BorderSubtleBrush}" />
 
                                 <!--  Кэш медиа: сколько занимают скачанные фото и видео.
-                                      Как «Управление памятью» в Telegram — кэш растёт сам,
+                                      Как «Управление памятью» в Telegram - кэш растёт сам,
                                       и у пользователя должен быть способ его увидеть и сбросить  -->
                                 <Grid>
                                     <Grid.ColumnDefinitions>
@@ -587,7 +587,7 @@
                                             x:Name="TBCacheSize"
                                             FontSize="15"
                                             Foreground="{DynamicResource Light.TextPrimaryBrush}"
-                                            Text="Кэш медиа: —" />
+                                            Text="Кэш медиа: - " />
                                     </StackPanel>
                                     <Button
                                         Grid.Column="1"
@@ -595,7 +595,7 @@
                                         Click="ClearCache_Click"
                                         Cursor="Hand"
                                         Template="{StaticResource GhostButtonTemplate}"
-                                        ToolTip="Удалить скачанные фото и видео. Они не пропадут — просто загрузятся заново при следующем открытии.">
+                                        ToolTip="Удалить скачанные фото и видео. Они не пропадут - просто загрузятся заново при следующем открытии.">
                                         <TextBlock
                                             FontSize="13"
                                             FontWeight="SemiBold"

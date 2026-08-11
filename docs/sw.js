@@ -1,5 +1,5 @@
 /* Service worker Tebegram Web.
-   Кэширует оболочку приложения (app shell) — благодаря этому PWA
+   Кэширует оболочку приложения (app shell) - благодаря этому PWA
    запускается мгновенно и открывается даже без сети.
    Запросы к API (другой origin) не трогаем. */
 'use strict';
@@ -34,12 +34,12 @@ self.addEventListener('fetch', e => {
 
   // Только свои статические файлы; API и raw.githubusercontent идут напрямую
   if (e.request.method !== 'GET' || url.origin !== location.origin) return;
-  // На сервере приложение живёт под /app — это тоже наш origin, но API-пути не кэшируем
+  // На сервере приложение живёт под /app - это тоже наш origin, но API-пути не кэшируем
   if (!SHELL.some(p => url.pathname.endsWith(p.replace('./', '/')) || url.pathname.endsWith('/'))) {
     return;
   }
 
-  // Сначала сеть (чтобы обновления доезжали), при неудаче — кэш
+  // Сначала сеть (чтобы обновления доезжали), при неудаче - кэш
   e.respondWith(
     fetch(e.request)
       .then(resp => {

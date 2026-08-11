@@ -6,9 +6,9 @@ namespace Tebegrammmm
 {
     /// <summary>
     /// Диалог в стиле приложения вместо системного MessageBox:
-    /// TbgDialogWindow.Show(...) — сообщение с кнопкой «ОК»,
-    /// TbgDialogWindow.Confirm(...) — вопрос «Да/Нет», возвращает bool,
-    /// TbgDialogWindow.Prompt(...) — ввод строки (адрес сервера), возвращает текст или null.
+    /// TbgDialogWindow.Show(...) - сообщение с кнопкой «ОК»,
+    /// TbgDialogWindow.Confirm(...) - вопрос «Да/Нет», возвращает bool,
+    /// TbgDialogWindow.Prompt(...) - ввод строки (адрес сервера), возвращает текст или null.
     /// </summary>
     public partial class TbgDialogWindow : Window
     {
@@ -40,7 +40,7 @@ namespace Tebegrammmm
                 UpdatePlaceholder();
                 InputBox.TextChanged += (_, __) => UpdatePlaceholder();
 
-                // Фокус и выделение всего текста — сразу можно печатать/заменять
+                // Фокус и выделение всего текста - сразу можно печатать/заменять
                 Loaded += (_, __) => { InputBox.Focus(); InputBox.SelectAll(); };
             }
         }
@@ -74,7 +74,7 @@ namespace Tebegrammmm
 
         /// <summary>
         /// Запрашивает строку в стиле приложения. Возвращает введённый текст
-        /// (обрезанный), либо null — если пользователь отменил или оставил пусто.
+        /// (обрезанный), либо null - если пользователь отменил или оставил пусто.
         /// </summary>
         public static string Prompt(string message, string title, string defaultValue = null,
                                     string placeholder = null,
@@ -113,7 +113,7 @@ namespace Tebegrammmm
             }
             catch
             {
-                // без владельца — просто по центру экрана
+                // без владельца - просто по центру экрана
             }
         }
 

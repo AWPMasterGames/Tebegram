@@ -26,12 +26,12 @@
             <Setter Property="VerticalAlignment" Value="Bottom" />
             <Setter Property="Background" Value="#8C000000" />
             <Setter Property="CornerRadius" Value="9" />
-            <!--  Клик проходит сквозь плашку — открывается фото/видео  -->
+            <!--  Клик проходит сквозь плашку - открывается фото/видео  -->
             <Setter Property="IsHitTestVisible" Value="False" />
         </Style>
 
         <!--  Индикатор статуса своего сообщения (как галочки в Telegram):
-              часики — сервер ещё не подтвердил, галочка — подтвердил, «!» — ошибка.
+              часики - сервер ещё не подтвердил, галочка - подтвердил, «!» - ошибка.
               Общий шаблон, чтобы не повторять разметку у времени в строке, снизу и
               на плашке поверх фото. DataContext = Message (см. Classes/Message.cs).  -->
         <DataTemplate x:Key="MsgStatusTemplate">
@@ -39,7 +39,7 @@
                 Margin="4,0,0,0"
                 VerticalAlignment="Bottom"
                 Visibility="{Binding ShowStatus, Converter={StaticResource BoolToVis}}">
-                <!--  Часики: рисуем сами (кружок + две стрелки) — так глиф есть на любой системе  -->
+                <!--  Часики: рисуем сами (кружок + две стрелки) - так глиф есть на любой системе  -->
                 <Canvas
                     Width="11"
                     Height="11"
@@ -233,11 +233,47 @@
             </Setter>
         </Style>
 
+        <!--  Пункт меню выхода из группы (янтарный, скруглённый ховер).
+              Цвет намеренно отличается от красного «Удалить группу»: пункты стоят
+              рядом, а последствия у них разные - выход касается только себя,
+              удаление уничтожает переписку у всех участников  -->
+        <Style x:Key="TbgMenuItemWarningStyle" TargetType="MenuItem">
+            <Setter Property="Foreground" Value="{DynamicResource Light.WarningBrush}" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Padding" Value="14,9" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="MenuItem">
+                        <Border
+                            x:Name="Bd"
+                            Padding="{TemplateBinding Padding}"
+                            Background="Transparent"
+                            CornerRadius="7">
+                            <ContentPresenter VerticalAlignment="Center" ContentSource="Header" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Light.WarningMutedBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <!--  Меню группового чата: открывается кнопкой-шестерёнкой в шапке.
               Отдельным ресурсом, а не через ContextMenu на кнопке: у обычного чата
               та же кнопка открывает окно редактирования контакта, и меню там
-              не должно вылезать даже по правому клику (см. UpdateChatHeaderButtons)  -->
+              не должно вылезать даже по правому клику (см. UpdateChatHeaderButtons)
+
+              Порядок пунктов: сначала выход, он доступен каждому, затем удаление,
+              доступное только владельцу. Разделитель между ними защищает от промаха  -->
         <ContextMenu x:Key="GroupChatMenu" Style="{StaticResource TbgContextMenuStyle}">
+            <MenuItem
+                Click="LeaveGroup_Click"
+                Header="Выйти из группы"
+                Style="{StaticResource TbgMenuItemWarningStyle}" />
+            <Separator Background="{DynamicResource Light.BorderSubtleBrush}" Margin="8,4" />
             <MenuItem
                 Click="DeleteGroup_Click"
                 Header="Удалить группу"
@@ -261,10 +297,10 @@
                         Stretch="Uniform" />
                 </Viewbox>
                 <Ellipse Fill="{Binding Avatar, Converter={StaticResource ImageToBrush}}" />
-                <!--  «Избранное» — всегда постоянная закладка (поверх любого аватара)  -->
+                <!--  «Избранное» - всегда постоянная закладка (поверх любого аватара)  -->
                 <Grid Visibility="{Binding IsFavorites, Converter={StaticResource BoolToVis}}">
                     <Ellipse Fill="{DynamicResource Light.AccentPrimaryBrush}" />
-                    <!--  Холст 24×24 (родная сетка иконки) — закладка строго по центру круга  -->
+                    <!--  Холст 24×24 (родная сетка иконки) - закладка строго по центру круга  -->
                     <Viewbox Margin="12">
                         <Grid Width="24" Height="24">
                             <Path Data="{StaticResource IconBookmark}" Fill="White" />
@@ -279,7 +315,7 @@
     <Grid Name="MainGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="80" />
-            <!--  Ширина меняется перетаскиванием (GridSplitter ниже); до 140px — режим «только аватарки»  -->
+            <!--  Ширина меняется перетаскиванием (GridSplitter ниже); до 140px - режим «только аватарки»  -->
             <ColumnDefinition
                 x:Name="ChatListColumn"
                 Width="250"
@@ -315,7 +351,7 @@
                         <Setter Property="Background" Value="Transparent" />
                         <Setter Property="BorderThickness" Value="0" />
                         <Setter Property="Padding" Value="4" />
-                        <!--  Stretch — иначе иконка центрируется по ширине текста папки, а не колонки  -->
+                        <!--  Stretch - иначе иконка центрируется по ширине текста папки, а не колонки  -->
                         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
@@ -330,7 +366,7 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel VerticalAlignment="Center">
-                            <!--  Системная папка «Все чаты» (IsCanRedact=False) — векторная иконка  -->
+                            <!--  Системная папка «Все чаты» (IsCanRedact=False) - векторная иконка  -->
                             <Viewbox
                                 Width="26"
                                 Height="26"
@@ -347,7 +383,7 @@
                                 </Viewbox.Style>
                                 <Path Data="{StaticResource IconAllChats}" Fill="{DynamicResource Light.TextSecondaryBrush}" />
                             </Viewbox>
-                            <!--  Пользовательские папки — их эмодзи-иконка  -->
+                            <!--  Пользовательские папки - их эмодзи-иконка  -->
                             <TextBlock
                                 HorizontalAlignment="Center"
                                 FontSize="25"
@@ -438,7 +474,7 @@
                         <Setter Property="Background" Value="Transparent" />
                         <Setter Property="BorderThickness" Value="0" />
                         <Setter Property="Padding" Value="6,4" />
-                        <!--  Stretch — чтобы в компактном режиме аватар центрировался по всей ширине колонки  -->
+                        <!--  Stretch - чтобы в компактном режиме аватар центрировался по всей ширине колонки  -->
                         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
@@ -476,10 +512,10 @@
                                         Stretch="Uniform" />
                                 </Viewbox>
                                 <Ellipse Fill="{Binding Avatar, Converter={StaticResource ImageToBrush}}" />
-                                <!--  «Избранное» — всегда постоянная закладка (поверх любого аватара)  -->
+                                <!--  «Избранное» - всегда постоянная закладка (поверх любого аватара)  -->
                                 <Grid Visibility="{Binding IsFavorites, Converter={StaticResource BoolToVis}}">
                                     <Ellipse Fill="{DynamicResource Light.AccentPrimaryBrush}" />
-                                    <!--  Холст 24×24 (родная сетка иконки) — закладка строго по центру круга  -->
+                                    <!--  Холст 24×24 (родная сетка иконки) - закладка строго по центру круга  -->
                                     <Viewbox Margin="13">
                                         <Grid Width="24" Height="24">
                                             <Path Data="{StaticResource IconBookmark}" Fill="White" />
@@ -607,10 +643,10 @@
                 <Rectangle Grid.Row="1" Fill="{DynamicResource ChatPatternBrush}" />
 
                 <!--  Сообщения  -->
-                <!--  IsSynchronizedWithCurrentItem=False обязателен: ItemsSource — это
+                <!--  IsSynchronizedWithCurrentItem=False обязателен: ItemsSource - это
                       ICollectionView, и по умолчанию WPF синхронизирует выделение с его
                       текущим элементом. При открытии чата список САМ выделял первое
-                      сообщение, срабатывал SelectionChanged — и вложение открывалось
+                      сообщение, срабатывал SelectionChanged - и вложение открывалось
                       без участия пользователя (у test1 сразу запускалось видео).
                       Вложения теперь открываются только по явному клику мышью.  -->
                 <ListBox
@@ -633,7 +669,7 @@
                             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                             <Setter Property="Padding" Value="0,3" />
-                            <!--  Голый шаблон без триггеров — убирает системную (синюю) подсветку
+                            <!--  Голый шаблон без триггеров - убирает системную (синюю) подсветку
                                   при наведении/выборе; клик по файлу продолжает работать  -->
                             <Setter Property="Template">
                                 <Setter.Value>
@@ -671,11 +707,11 @@
                     </ListBox.GroupStyle>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <!--  Пузырь сообщения: свои — справа с акцентным фоном, чужие — слева  -->
+                            <!--  Пузырь сообщения: свои - справа с акцентным фоном, чужие - слева  -->
                             <Border MaxWidth="400" RenderTransformOrigin="0.5,0.5">
                                 <Border.ContextMenu>
                                     <ContextMenu Style="{StaticResource TbgContextMenuStyle}">
-                                        <!--  «Сохранить» — только у файлов/фото  -->
+                                        <!--  «Сохранить» - только у файлов/фото  -->
                                         <MenuItem Click="SaveFile_Click" Header="Сохранить">
                                             <MenuItem.Style>
                                                 <Style BasedOn="{StaticResource TbgMenuItemStyle}" TargetType="MenuItem">
@@ -738,7 +774,7 @@
                                             <!--  Раньше статус Pending красил пузырь в бледный MsgPendingBrush.
                                                   На светлой теме он сливался с фоном (особенно у пузыря
                                                   загрузки файла). Статус теперь виден по значку (часики), а
-                                                  пузырь остаётся своим акцентным цветом — контрастным.  -->
+                                                  пузырь остаётся своим акцентным цветом - контрастным.  -->
                                             <DataTrigger Binding="{Binding Status}" Value="Failed">
                                                 <Setter Property="Background" Value="{DynamicResource Light.MsgFailedBrush}" />
                                             </DataTrigger>
@@ -774,7 +810,7 @@
                                         </TextBlock.Style>
                                     </TextBlock>
                                     <!--  Вложение-фото: скруглённое, без имени файла.
-                                          Только для картинок (IsImageFile) — видео/аудио идут чипом ниже  -->
+                                          Только для картинок (IsImageFile) - видео/аудио идут чипом ниже  -->
                                     <Border
                                         MaxWidth="320"
                                         MaxHeight="220"
@@ -795,9 +831,9 @@
                                             </Style>
                                         </Border.Style>
                                         <!--  FileImage: картинка скачивается нашим HttpClient с кэшем и
-                                              повтором — встроенный загрузчик WPF иногда молча не справлялся,
+                                              повтором - встроенный загрузчик WPF иногда молча не справлялся,
                                               и фото выглядели пустыми сообщениями.
-                                              Привязка на Background (а не внутри ImageBrush) — иначе, пока
+                                              Привязка на Background (а не внутри ImageBrush) - иначе, пока
                                               картинка грузится, FileImage=null уходил в ImageSourceConverter
                                               и сыпал ошибками привязки  -->
                                         <Border.Background>
@@ -811,7 +847,7 @@
                                                 Opacity="0"
                                                 Source="{Binding FileImage}"
                                                 Stretch="Uniform" />
-                                            <!--  Время + статус — полупрозрачной плашкой прямо на фото (как в вебе)  -->
+                                            <!--  Время + статус - полупрозрачной плашкой прямо на фото (как в вебе)  -->
                                             <Border Style="{StaticResource MediaTimeBadgeStyle}">
                                                 <StackPanel Orientation="Horizontal">
                                                     <TextBlock
@@ -827,7 +863,7 @@
 
                                     <!--  Вложение-видео: первый кадр + значок play по центру.
                                           Кадр снимается MediaPlayer'ом (Message.VideoThumbnail);
-                                          пока он не готов или нет кодека — показывается чип ниже  -->
+                                          пока он не готов или нет кодека - показывается чип ниже  -->
                                     <Grid
                                         Margin="0,0,0,4"
                                         HorizontalAlignment="Left"
@@ -849,7 +885,7 @@
                                                 Source="{Binding VideoThumbnail}"
                                                 Stretch="Uniform" />
                                         </Border>
-                                        <!--  Время + статус — плашкой в углу кадра, как у фото  -->
+                                        <!--  Время + статус - плашкой в углу кадра, как у фото  -->
                                         <Border Style="{StaticResource MediaTimeBadgeStyle}">
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock
@@ -874,7 +910,7 @@
                                                   и сверху от геометрии (у IconPlay это 8 и 5 единиц),
                                                   и значок уезжал вправо-вниз на ~2 пикселя.
                                                   Сдвиг 2.6/0.5 доводит ЦЕНТР МАСС треугольника до
-                                                  центра круга — у треугольника он левее середины рамки  -->
+                                                  центра круга - у треугольника он левее середины рамки  -->
                                             <Viewbox
                                                 Width="20"
                                                 Height="20"
@@ -911,11 +947,11 @@
                                                 <Setter Property="Visibility" Value="Collapsed" />
                                                 <Style.Triggers>
                                                     <!--  ShowFileChip, а не IsPlainFile: у видео с готовым
-                                                          превью чип не нужен — там кадр с кнопкой play  -->
+                                                          превью чип не нужен - там кадр с кнопкой play  -->
                                                     <DataTrigger Binding="{Binding ShowFileChip}" Value="True">
                                                         <Setter Property="Visibility" Value="Visible" />
                                                     </DataTrigger>
-                                                    <!--  На акцентном фоне своего пузыря — полупрозрачная плашка  -->
+                                                    <!--  На акцентном фоне своего пузыря - полупрозрачная плашка  -->
                                                     <DataTrigger Binding="{Binding IsOutgoing}" Value="True">
                                                         <Setter Property="Background" Value="#33FFFFFF" />
                                                     </DataTrigger>
@@ -928,7 +964,7 @@
                                                 Height="16"
                                                 Margin="0,0,8,0"
                                                 VerticalAlignment="Center">
-                                                <!--  Скрепка у медиа, стрелка «скачать» — у неизвестных файлов  -->
+                                                <!--  Скрепка у медиа, стрелка «скачать» - у неизвестных файлов  -->
                                                 <Path Stretch="Uniform">
                                                     <Path.Style>
                                                         <Style TargetType="Path">
@@ -965,7 +1001,7 @@
                                                     </TextBlock.Style>
                                                 </TextBlock>
                                                 <!--  Подпись «Видео · открыть» / «ZIP-файл · скачать».
-                                                      Во время заливки прячется — вместо неё полоска прогресса ниже  -->
+                                                      Во время заливки прячется - вместо неё полоска прогресса ниже  -->
                                                 <TextBlock FontSize="11" Text="{Binding FileCaption}">
                                                     <TextBlock.Style>
                                                         <Style TargetType="TextBlock">
@@ -1011,14 +1047,14 @@
                                         </StackPanel>
                                     </Border>
                                     <!--  Текст + время: у коротких однострочных сообщений время
-                                          справа в той же строке, у длинных/файлов — снизу  -->
+                                          справа в той же строке, у длинных/файлов - снизу  -->
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
                                         <!--  Текст сообщения (у файлов-фото не показываем имя).
-                                              Read-only TextBox без рамки — текст можно выделять и копировать (Ctrl+C);
+                                              Read-only TextBox без рамки - текст можно выделять и копировать (Ctrl+C);
                                               ContextMenu=null отключает системное меню TextBox, правый клик
                                               показывает меню пузыря  -->
                                         <TextBox
@@ -1181,9 +1217,26 @@
                                     FontSize="14"
                                     Foreground="{DynamicResource Light.TextPrimaryBrush}"
                                     KeyDown="TBMessage_KeyDown_SendMessage"
+                                    MaxLength="512"
+                                    TextChanged="TBMessage_TextChanged"
                                     TextWrapping="Wrap" />
                             </ScrollViewer>
                         </Border>
+
+                        <!--  Счётчик символов: неприметный, появляется только когда в поле
+                              что-то есть. Лежит ПОВЕРХ правого нижнего угла поля ввода
+                              (Grid.Column=1), поэтому не двигает разметку, когда исчезает.
+                              На подходе к пределу подсвечивается.  -->
+                        <TextBlock
+                            x:Name="TBCharCounter"
+                            Grid.Column="1"
+                            Margin="0,0,10,-2"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Bottom"
+                            FontSize="10"
+                            Foreground="{DynamicResource Light.TextMutedBrush}"
+                            IsHitTestVisible="False"
+                            Visibility="Collapsed" />
 
                         <!--  Отправить  -->
                         <Button
@@ -1209,8 +1262,8 @@
             </Grid>
         </Border>
 
-        <!--  Перетаскиваемая граница списка чатов: влево до режима «только аватарки», вправо — шире.
-              Лежит на левом краю области чата (последним в разметке — поверх неё),
+        <!--  Перетаскиваемая граница списка чатов: влево до режима «только аватарки», вправо - шире.
+              Лежит на левом краю области чата (последним в разметке - поверх неё),
               чтобы не перекрывать тонкий скроллбар списка чатов  -->
         <GridSplitter
             Grid.Column="2"

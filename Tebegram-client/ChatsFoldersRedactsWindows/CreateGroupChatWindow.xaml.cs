@@ -8,15 +8,16 @@ using Tebegrammmm.Data;
 namespace Tebegrammmm.ChatsFoldersRedactsWindows
 {
     /// <summary>
-    /// Поверхностный UI создания ГРУППОВОГО чата (стилистика — как у создания папки):
-    /// название + перекидывание контактов между «все» и «в группе».
+    /// Окно создания группового чата. Оформление повторяет окно создания папки:
+    /// поле названия и перенос контактов между списками «все» и «в группе».
     ///
-    /// ЛОГИКИ СОЗДАНИЯ ЗДЕСЬ НЕТ — её пишет Максим. Окно только собирает данные:
-    /// после ShowDialog() == true доступны GroupName и SelectedUsernames.
-    /// Серверная часть уже готова: GET /Chat/Create/{userId}-{usernames},
-    /// где usernames — логины через ▫ (три и больше участников => группа,
-    /// владелец — создатель). Ответ: id&name&isGroup&avatar&ownerId.
-    /// Клиент также уже понимает WS-команду «addChat▫$▫…» (см. HandleAddChat).
+    /// Запрос уходит на GET /Chat/Create/{userId}-{usernames}, где usernames -
+    /// логины через разделитель ▫. Три и более участника создают группу, её
+    /// владельцем становится создатель. Ответ содержит id&amp;name&amp;isGroup&amp;avatar&amp;ownerId.
+    /// Остальным участникам сервер рассылает WS-команду addChat▫$▫, которую
+    /// обрабатывает MessengerWindow.HandleAddChat.
+    ///
+    /// После ShowDialog() == true доступны свойства GroupName и SelectedUsernames.
     /// </summary>
     public partial class CreateGroupChatWindow : Window
     {
@@ -27,7 +28,7 @@ namespace Tebegrammmm.ChatsFoldersRedactsWindows
         /// <summary>Название группы (после успешного закрытия окна).</summary>
         public string GroupName { get; private set; } = string.Empty;
 
-        /// <summary>Логины выбранных участников (без самого себя — сервер добавит создателя).</summary>
+        /// <summary>Логины выбранных участников (без самого себя - сервер добавит создателя).</summary>
         public string[] SelectedUsernames { get; private set; } = System.Array.Empty<string>();
 
         private readonly ObservableCollection<Contact> _allContacts = new();
@@ -47,7 +48,7 @@ namespace Tebegrammmm.ChatsFoldersRedactsWindows
             LBGroupMembers.ItemsSource = _members;
         }
 
-        // Клик слева — контакт уходит в группу
+        // Клик слева - контакт уходит в группу
         private void LBMyContacts_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             if (LBMyContacts.SelectedItem is not Contact contact) return;
@@ -56,7 +57,7 @@ namespace Tebegrammmm.ChatsFoldersRedactsWindows
             LBMyContacts.SelectedItem = null;
         }
 
-        // Клик справа — контакт возвращается в общий список
+        // Клик справа - контакт возвращается в общий список
         private void LBGroupMembers_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             if (LBGroupMembers.SelectedItem is not Contact contact) return;
@@ -98,7 +99,7 @@ namespace Tebegrammmm.ChatsFoldersRedactsWindows
         /// <summary>
         /// Создаёт группу на сервере. Название передаём отдельным параметром запроса
         /// (?name=…), а не в пути: в пути разделителем служит дефис, и название с
-        /// дефисом сдвинуло бы разбор — так уже рождались мусорные аккаунты.
+        /// дефисом сдвинуло бы разбор - так уже рождались мусорные аккаунты.
         /// </summary>
         private async System.Threading.Tasks.Task<bool> SendCreateGroupRequestAsync()
         {
@@ -127,7 +128,7 @@ namespace Tebegrammmm.ChatsFoldersRedactsWindows
             {
                 // async void без try/catch ронял приложение при недоступном сервере
                 Classes.Log.Save($"[CreateGroup] {ex.GetType().Name}: {ex.Message}");
-                ShowValidation("Нет связи с сервером — группа не создана");
+                ShowValidation("Нет связи с сервером - группа не создана");
                 return false;
             }
         }

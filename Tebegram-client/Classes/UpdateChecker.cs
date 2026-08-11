@@ -8,17 +8,17 @@ namespace Tebegrammmm.Classes
 {
     /// <summary>
     /// Проверка обновлений: сравнивает свою версию с version.txt в репозитории.
-    /// Если на GitHub версия новее — предлагает открыть страницу загрузки установщика.
+    /// Если на GitHub версия новее - предлагает открыть страницу загрузки установщика.
     /// Чтобы выпустить обновление: поднять версию здесь и в Installer/TebegramSetup.iss,
     /// собрать установщик, выложить его в GitHub Releases и поднять версию в version.txt (ветка main).
     /// </summary>
     public static class UpdateChecker
     {
         // Текущая версия клиента. Должна совпадать с MyAppVersion в Installer/TebegramSetup.iss
-        public const string CurrentVersion = "2.0.1";
+        public const string CurrentVersion = "2.0.2";
 
-        // Кандидаты в порядке приоритета: main — основной источник для пользователей
-        // (там лежит версия последнего релиза), main-dev-Test — запасной, если main
+        // Кандидаты в порядке приоритета: main - основной источник для пользователей
+        // (там лежит версия последнего релиза), main-dev-Test - запасной, если main
         // почему-то недоступен. Недоступный источник просто пропускается.
         private static readonly string[] VersionUrls =
         {
@@ -47,7 +47,7 @@ namespace Tebegrammmm.Classes
                     }
                     catch
                     {
-                        // этот источник недоступен (например, 404 в main) — пробуем следующий
+                        // этот источник недоступен (например, 404 в main) - пробуем следующий
                     }
                 }
 
@@ -76,7 +76,7 @@ namespace Tebegrammmm.Classes
             }
             catch (Exception ex)
             {
-                // Нет сети или GitHub недоступен — тихая проверка просто пропускается
+                // Нет сети или GitHub недоступен - тихая проверка просто пропускается
                 Log.Save($"[UpdateChecker] {ex.GetType().Name}: {ex.Message}");
                 if (notifyIfLatest) TbgDialogWindow.Show("Не удалось проверить обновления. Проверь подключение к интернету.", "Обновление Tebegram");
             }

@@ -10,13 +10,13 @@ namespace TebegramServer.Tools
             var salt = Guid.NewGuid().ToString().Replace("-", "").ToLower();
             var base64Salt = ToBase64String(salt);
             var hashedSalt = MD5.HashData(Convert.FromBase64String(base64Salt));
-            // ToHexString — раньше byte[] интерполировался в литерал "System.Byte[]",
+            // ToHexString - раньше byte[] интерполировался в литерал "System.Byte[]",
             // и хэш-часть токена была одинаковой у всех токенов
             var secret = $"{base64Salt}.{text}.{Convert.ToHexString(hashedSalt)}";
             var token = ToBase64String(secret);
 
             // URL-безопасный base64: токен ходит в пути (/Voice/DeclineCall/1-{token})
-            // и в query (roomToken=), где «/» ломает маршрут, а «+» превращается в пробел —
+            // и в query (roomToken=), где «/» ломает маршрут, а «+» превращается в пробел - 
             // из-за этого звонки случайным образом не работали.
             return token.Replace('+', '-').Replace('/', '_');
         }

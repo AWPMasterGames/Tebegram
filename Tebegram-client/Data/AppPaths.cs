@@ -13,7 +13,7 @@ namespace Tebegrammmm.Data
         public static readonly string ThemeDataFile   = Path.Combine(AppDataDir, "theme.data");
         // Выбор сервера: "main" (Adress.txt с GitHub) или "custom" (свой адрес)
         public static readonly string ServerChoiceFile = Path.Combine(AppDataDir, "serverChoice.data");
-        // Адрес своего сервера для варианта «Другой» — сохраняется для автовходов
+        // Адрес своего сервера для варианта «Другой» - сохраняется для автовходов
         public static readonly string CustomServerFile = Path.Combine(AppDataDir, "customServer.data");
 
         public static void EnsureDir() => Directory.CreateDirectory(AppDataDir);

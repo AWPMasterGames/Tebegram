@@ -40,7 +40,7 @@ namespace Tebegrammmm
 
         // Сторож входящего звонка: пока трубку не взяли, WebSocket не открыт (см. Init),
         // поэтому служебное "CloseConnection" до нас дойти не может. Если звонивший
-        // отменил вызов, окно висело бы бесконечно — поэтому опрашиваем свой CallToken.
+        // отменил вызов, окно висело бы бесконечно - поэтому опрашиваем свой CallToken.
         private DispatcherTimer _incomingWatchdog;
         private bool _watchdogBusy;
         private TimeSpan _callDuration;
@@ -48,7 +48,7 @@ namespace Tebegrammmm
         /// <summary>
         /// Вызывается по завершении звонка у ЗВОНИВШЕГО (contact, длительность).
         /// MessengerWindow подписывается и пишет в чат «📞 Аудиозвонок (м:сс)».
-        /// Только звонивший — чтобы сообщение не дублировалось с двух сторон.
+        /// Только звонивший - чтобы сообщение не дублировалось с двух сторон.
         /// </summary>
         public static Action<Contact, TimeSpan> CallEnded;
 
@@ -58,7 +58,7 @@ namespace Tebegrammmm
         {
             InitializeComponent();
 
-            // Если окно уже открыто — вывести его на передний план
+            // Если окно уже открыто - вывести его на передний план
             if (_instance != null)
             {
                 _instance.Activate();
@@ -79,7 +79,7 @@ namespace Tebegrammmm
                 case Mode.AcceptCall:
                     DefoultVoiceRoom.Visibility = Visibility.Visible;
                     ActiveVoiceRoom.Visibility = Visibility.Collapsed;
-                    // Входящий звонок: звука пока нет, поэтому вся сигнализация —
+                    // Входящий звонок: звука пока нет, поэтому вся сигнализация - 
                     // визуальная. Окно выносим на передний план по центру монитора.
                     Loaded += (_, __) => { AnnounceIncomingCall(); StartIncomingWatchdog(); };
                     break;
@@ -110,17 +110,17 @@ namespace Tebegrammmm
         private const uint FLASHW_TIMERNOFG = 12; // мигать, пока окно не станет активным
 
         /// <summary>
-        /// Показывает входящий звонок так, чтобы его нельзя было не заметить:
-        /// окно по центру монитора, поверх остальных и с миганием в панели задач.
+        /// Выводит окно входящего звонка по центру монитора, поверх прочих окон и
+        /// с миганием кнопки в панели задач.
         ///
-        /// Центрируем здесь, а не через WindowStartupLocation: у окна
-        /// SizeToContent="Height", то есть высота становится известна уже ПОСЛЕ
-        /// показа, и штатное центрирование промахивается.
+        /// Центрирование выполняется здесь, а не через WindowStartupLocation:
+        /// у окна задано SizeToContent="Height", поэтому высота становится известна
+        /// только после показа и штатное центрирование даёт смещение.
         ///
-        /// Topmost нужен потому, что Windows не даёт фоновому приложению просто так
-        /// забрать фокус: один Activate() в лучшем случае мигнёт кнопкой в панели
-        /// задач. Снимаем его, когда звонок приняли (см. AnimateToActive) — активный
-        /// разговор поверх всех окон висеть не должен.
+        /// Свойство Topmost необходимо, поскольку Windows не позволяет фоновому
+        /// приложению перехватить фокус: вызов Activate приводит лишь к миганию
+        /// кнопки в панели задач. После принятия звонка свойство снимается в
+        /// AnimateToActive, чтобы окно разговора не перекрывало остальные.
         /// </summary>
         private void AnnounceIncomingCall()
         {
@@ -144,7 +144,7 @@ namespace Tebegrammmm
             }
             catch (Exception ex)
             {
-                // Не смогли привлечь внимание — не повод ронять звонок
+                // Не смогли привлечь внимание - не повод ронять звонок
                 Log.Save($"[VoiceRoom.AnnounceIncomingCall] {ex.GetType().Name}: {ex.Message}");
             }
         }
@@ -163,7 +163,7 @@ namespace Tebegrammmm
 
         /// <summary>
         /// Запуск звонка. Обёртка над InitAsync: это async void (обработчик кнопки),
-        /// поэтому НИ ОДНО исключение не должно из него вылететь — необработанное
+        /// поэтому НИ ОДНО исключение не должно из него вылететь - необработанное
         /// исключение в async void убивает всё приложение. Так и падало в аудитории
         /// при принятии звонка на машинах без микрофона/наушников.
         /// </summary>
@@ -185,7 +185,7 @@ namespace Tebegrammmm
         {
             ws = new ClientWebSocket();
 
-            // Приёмный буфер нужен всегда — в него пишет ReceiveVoice, даже если
+            // Приёмный буфер нужен всегда - в него пишет ReceiveVoice, даже если
             // воспроизводить нечем (тогда звук просто отбрасывается)
             waveProvider = new BufferedWaveProvider(new WaveFormat(48000, 16, 1))
             {
@@ -197,7 +197,7 @@ namespace Tebegrammmm
             SetupMicrophone();
             SetupSpeaker();
 
-            // Совсем без звука звонок бессмысленен — честно говорим об этом и выходим
+            // Совсем без звука звонок бессмысленен - честно говорим об этом и выходим
             if (waveIn == null && waveOut == null)
             {
                 TbgDialogWindow.Show("Не найдено ни микрофона, ни устройства воспроизведения. " +
@@ -220,7 +220,7 @@ namespace Tebegrammmm
         }
 
         /// <summary>
-        /// Микрофон: устройств может не быть вовсе, а сохранённый индекс — указывать
+        /// Микрофон: устройств может не быть вовсе, а сохранённый индекс - указывать
         /// на отключённую гарнитуру (после переподключения нумерация WaveIn меняется).
         /// Без микрофона звонок продолжается в режиме «только слушать».
         /// </summary>
@@ -230,23 +230,23 @@ namespace Tebegrammmm
             {
                 if (WaveInEvent.DeviceCount == 0)
                 {
-                    Log.Save("[VoiceRoom] Микрофон не найден — звонок только на приём");
-                    TbgDialogWindow.Show("Микрофон не найден — собеседник тебя не услышит. " +
+                    Log.Save("[VoiceRoom] Микрофон не найден - звонок только на приём");
+                    TbgDialogWindow.Show("Микрофон не найден - собеседник тебя не услышит. " +
                                          "Слышать его ты сможешь.", "Звонок");
                     return;
                 }
 
                 // Сначала ищем сохранённое устройство ПО ИМЕНИ (индекс мог сдвинуться),
-                // и только если не нашли — берём первое доступное
+                // и только если не нашли - берём первое доступное
                 int deviceNumber = Classes.AudioDevices.FindByName(UserData.User.SelectedDeviceName);
                 if (deviceNumber < 0 || deviceNumber >= WaveInEvent.DeviceCount)
                     deviceNumber = 0;
 
                 waveIn = new WaveInEvent { DeviceNumber = deviceNumber };
                 // Общий формат для всех платформ (ПК/веб/Android): PCM 16 бит, 48 кГц, моно.
-                // Это родная частота браузера и Android — звук совместим между устройствами.
+                // Это родная частота браузера и Android - звук совместим между устройствами.
                 waveIn.WaveFormat = new WaveFormat(48000, 16, 1);
-                waveIn.BufferMilliseconds = 20; // короткие пакеты — меньше задержка
+                waveIn.BufferMilliseconds = 20; // короткие пакеты - меньше задержка
 
                 // Шумоподавление + нормализация исходящего звука (как в веб-клиенте)
                 var dsp = new VoiceDsp(48000);
@@ -271,7 +271,7 @@ namespace Tebegrammmm
                 // Устройство занято другим приложением или отвалилось между проверкой и открытием
                 Log.Save($"[VoiceRoom.SetupMicrophone] {ex.GetType().Name}: {ex.Message}");
                 waveIn = null;
-                TbgDialogWindow.Show("Не удалось включить микрофон — возможно, он занят другим приложением. " +
+                TbgDialogWindow.Show("Не удалось включить микрофон - возможно, он занят другим приложением. " +
                                      "Звонок продолжится без него.", "Звонок");
             }
         }
@@ -286,8 +286,8 @@ namespace Tebegrammmm
             {
                 if (WaveOut.DeviceCount == 0)
                 {
-                    Log.Save("[VoiceRoom] Устройство воспроизведения не найдено — звонок только на передачу");
-                    TbgDialogWindow.Show("Устройство воспроизведения не найдено — ты не услышишь собеседника. " +
+                    Log.Save("[VoiceRoom] Устройство воспроизведения не найдено - звонок только на передачу");
+                    TbgDialogWindow.Show("Устройство воспроизведения не найдено - ты не услышишь собеседника. " +
                                          "Он тебя услышит.", "Звонок");
                     return;
                 }
@@ -326,7 +326,7 @@ namespace Tebegrammmm
         /// <summary>
         /// Пока показывается входящий звонок, узнать об отмене можно только опросом:
         /// сервер обнуляет CallToken обеих сторон (ClearCallTokens) при завершении звонка.
-        /// Пропал токен — звонивший отменил вызов, закрываем окно.
+        /// Пропал токен - звонивший отменил вызов, закрываем окно.
         /// </summary>
         private void StartIncomingWatchdog()
         {
@@ -349,9 +349,9 @@ namespace Tebegrammmm
             _watchdogBusy = true;
             try
             {
-                using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/Voice/GetCallToken/{UserData.User.Id}");
+                using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/Voice/GetCallToken/{UserData.User.Id}?platform=win");
                 using HttpResponseMessage response = await httpClient.SendAsync(request);
-                if (!response.IsSuccessStatusCode) return; // сервер моргнул — окно не трогаем
+                if (!response.IsSuccessStatusCode) return; // сервер моргнул - окно не трогаем
                 string content = await response.Content.ReadAsStringAsync();
 
                 if (content == "NotFound" || !content.Contains(Token))
@@ -362,7 +362,7 @@ namespace Tebegrammmm
             }
             catch (Exception ex)
             {
-                // Сервер недоступен — это не повод сбрасывать звонок, просто ждём следующей попытки
+                // Сервер недоступен - это не повод сбрасывать звонок, просто ждём следующей попытки
                 Log.Save($"[VoiceRoom.Watchdog] {ex.GetType().Name}: {ex.Message}");
             }
             finally
@@ -393,7 +393,7 @@ namespace Tebegrammmm
                 {
                     if (IsMicrophoneOn != isOn)
                     {
-                        // Устройство могут выдернуть прямо во время разговора — исключение
+                        // Устройство могут выдернуть прямо во время разговора - исключение
                         // в фоновом потоке роняет приложение целиком, поэтому глушим здесь
                         try
                         {
@@ -419,7 +419,7 @@ namespace Tebegrammmm
         {
             ReceiveVoiceThread = new Thread(() =>
             {
-                // waveOut == null — устройства вывода нет, слушаем сокет вхолостую
+                // waveOut == null - устройства вывода нет, слушаем сокет вхолостую
                 // (иначе звонок оборвался бы у обеих сторон)
                 try { waveOut?.Play(); }
                 catch (Exception ex) { Log.Save($"[VoiceRoom.RVT] {ex.GetType().Name}: {ex.Message}"); }
@@ -452,7 +452,7 @@ namespace Tebegrammmm
                 }
                 catch (Exception ex)
                 {
-                    // Обрыв связи — выходим из цикла, не роняя приложение
+                    // Обрыв связи - выходим из цикла, не роняя приложение
                     Log.Save($"[VoiceRoom.ReceiveVoice] {ex.Message}");
                     break;
                 }
@@ -475,7 +475,7 @@ namespace Tebegrammmm
 
                     switch (message)
                     {
-                        // В комнате стало двое — разговор состоялся, включаем отсчёт
+                        // В комнате стало двое - разговор состоялся, включаем отсчёт
                         case "CallConnected":
                             Dispatcher.Invoke(new Action(() =>
                             {
@@ -499,7 +499,7 @@ namespace Tebegrammmm
 
         private void AnimateToActive()
         {
-            // Звонок приняли — окно больше не должно висеть поверх всех остальных
+            // Звонок приняли - окно больше не должно висеть поверх всех остальных
             Topmost = false;
 
             var easeIn  = new CubicEase { EasingMode = EasingMode.EaseIn };
@@ -609,7 +609,7 @@ namespace Tebegrammmm
             if (_instance != null && _instance != this) return;
 
             _callEnded = true;
-            // Запоминаем длительность ДО сброса таймера — для сообщения в чат
+            // Запоминаем длительность ДО сброса таймера - для сообщения в чат
             TimeSpan callLength = _callDuration;
             StopCallTimer();
             StopIncomingWatchdog();
@@ -640,7 +640,7 @@ namespace Tebegrammmm
             try
             {
                 // Сообщаем серверу о завершении звонка при ЛЮБОМ закрытии окна (крестик,
-                // завершение вызова), а не только по кнопке «Отклонить» — иначе токены звонка
+                // завершение вызова), а не только по кнопке «Отклонить» - иначе токены звонка
                 // зависают на сервере: у собеседника бесконечно всплывает входящий звонок,
                 // а у звонившего падает опрос GetCallToken. Повторный вызов безвреден.
                 using HttpRequestMessage declineRequest = new HttpRequestMessage(HttpMethod.Get, $"{ServerData.ServerAdress}/Voice/DeclineCall/{UserData.User.Id}-{Token}");
@@ -663,7 +663,7 @@ namespace Tebegrammmm
         private async void Button_Click_Decline(object sender, RoutedEventArgs e)
         {
             // async void: недоступный сервер (обрыв связи, туннель выключен) кидал здесь
-            // HttpRequestException — и приложение падало прямо при отклонении звонка.
+            // HttpRequestException - и приложение падало прямо при отклонении звонка.
             // Окно закрываем в любом случае: Window_Closing сам повторит DeclineCall
             try
             {
@@ -707,12 +707,12 @@ namespace Tebegrammmm
         }
 
         // ── Значки микрофона ─────────────────────────────────────────────────
-        // Их ДВА, и показывают они РАЗНОЕ:
-        //   • нижняя кнопка (BtnMic) — свой микрофон, им же и управляем;
-        //   • бейдж у аватара (MicButtonBorder) — микрофон СОБЕСЕДНИКА, чтобы
-        //     понимать, слышит ли он нас.
-        // Раньше одно нажатие меняло оба значка сразу, и по бейджу нельзя было
-        // судить о собеседнике — он просто повторял наше собственное состояние.
+        // Значков два, и отражают они разные состояния. Нижняя кнопка BtnMic
+        // управляет собственным микрофоном. Отметка у аватара MicButtonBorder
+        // показывает микрофон собеседника и отвечает на вопрос, слышит ли он нас.
+        //
+        // Ранее одно нажатие меняло оба значка, поэтому отметка повторяла
+        // собственное состояние и о собеседнике ничего не сообщала.
 
         /// <summary>Свой микрофон: нижняя кнопка.</summary>
         private void AnimateOwnMicToggle(bool muting)
@@ -722,7 +722,7 @@ namespace Tebegrammmm
         private void SetPeerMicMuted(bool muted)
             => ApplyMicVisual(muted, MicAvatarSlashLine, MicAvatarPath, b => MicButtonBorder.Background = b);
 
-        // Фон передаётся сеттером: снизу это Button, у аватара — Border, общего
+        // Фон передаётся сеттером: снизу это Button, у аватара - Border, общего
         // предка со свойством Background у них нет
         private void ApplyMicVisual(bool muted, Line slash, Path icon, Action<Brush> setBackground)
         {

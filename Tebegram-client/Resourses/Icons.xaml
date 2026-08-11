@@ -1,6 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <!--  Все иконки — единый стиль Material Filled (24x24)  -->
+    <!--  Все иконки - единый стиль Material Filled (24x24)  -->
 
     <Geometry x:Key="IconScreenShare">
         M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.11-.9-2-2-2H4c-1.11 0-2 .89-2 2v10c0 1.1.89 2 2 2H0v2h24v-2h-4zm-7-3.53v-2.19c-2.78 0-4.61.85-6 2.72.56-2.67 2.11-5.33 6-5.87V7l4 3.73-4 3.74z
@@ -29,12 +29,12 @@
         M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z
     </Geometry>
 
-    <!--  Скачивание — для карточки неизвестного файла в чате  -->
+    <!--  Скачивание - для карточки неизвестного файла в чате  -->
     <Geometry x:Key="IconDownload">
         M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z
     </Geometry>
 
-    <!--  Воспроизведение / пауза — просмотрщик видео  -->
+    <!--  Воспроизведение / пауза - просмотрщик видео  -->
     <Geometry x:Key="IconPlay">
         M8 5v14l11-7z
     </Geometry>

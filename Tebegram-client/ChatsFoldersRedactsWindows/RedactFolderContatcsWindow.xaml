@@ -297,7 +297,7 @@
                             HorizontalAlignment="Center"
                             FontSize="11"
                             Foreground="{DynamicResource Light.TextMutedBrush}"
-                            Text="Слева — добавить в папку · Справа — убрать из папки" />
+                            Text="Слева - добавить в папку · Справа - убрать из папки" />
 
                         <!--  Кнопка  -->
                         <Button
