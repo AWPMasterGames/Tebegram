@@ -12,6 +12,10 @@
 **Веб-версия открывается без установки: [awpmastergames.github.io/Tebegram](https://awpmastergames.github.io/Tebegram/)**
 Десктопное приложение: [последний релиз](https://github.com/AWPMasterGames/Tebegram/releases/latest), файл `TebegramSetup-2.0.2.exe`.
 
+<a href="https://awpmastergames.github.io/Tebegram/"><img src="docs/screenshots/qr-web.png" alt="QR-код на веб-версию Tebegram" width="170" height="170"></a>
+
+Наведите камеру телефона на код, чтобы открыть веб-версию. Страница добавляется на главный экран как обычное приложение.
+
 <!-- СКРИНШОТ-ГЕРОЙ
      Положите главное окно с открытым чатом в docs/screenshots/main.png
      и раскомментируйте строку ниже:
