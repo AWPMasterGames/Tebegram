@@ -2,14 +2,6 @@
 bin/
 obj/
 
-# Локальные заметки/журналы разработки — описывают процесс, а не сам проект,
-# в итоговый репозиторий (main) не идут. Ведутся локально.
-roadmap.md
-UI-MIGRATION.md
-TUNNEL-TEST-LOG.md
-VOICE-PLAN.md
-Для Github.txt
-
 # Собранные установщики — их место в GitHub Releases, не в репозитории
 Installer/Output/
 
