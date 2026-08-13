@@ -17,13 +17,12 @@ namespace Tebegrammmm.Classes
         // Текущая версия клиента. Должна совпадать с MyAppVersion в Installer/TebegramSetup.iss
         public const string CurrentVersion = "2.0.2";
 
-        // Кандидаты в порядке приоритета: main - основной источник для пользователей
-        // (там лежит версия последнего релиза), main-dev-Test - запасной, если main
-        // почему-то недоступен. Недоступный источник просто пропускается.
+        // Источник версии - ветка main, там лежит версия последнего релиза.
+        // Недоступный источник пропускается: проверка обновлений не сработает,
+        // но приложение продолжит работу.
         private static readonly string[] VersionUrls =
         {
-            "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/version.txt",
-            "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main-dev-Test/version.txt",
+            "https://raw.githubusercontent.com/AWPMasterGames/Tebegram/refs/heads/main/version.txt"
         };
         private const string DownloadPageUrl = "https://github.com/AWPMasterGames/Tebegram/releases/latest";
 

@@ -62,6 +62,7 @@ namespace Tebegrammmm.Data
         {
             var handler = new HttpClientHandler
             {
+                // Отключение проверки TLS-сертификата
                 ServerCertificateCustomValidationCallback = (m, c, ch, e) => true
             };
             return new HttpClient(handler) { Timeout = TimeSpan.FromSeconds(4) };
